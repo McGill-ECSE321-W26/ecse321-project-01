@@ -1,0 +1,13 @@
+namespace ca.mcgill.ecse321.group1.model;
+
+@Entity
+class Person {
+  depend jakarta.persistence.Entity;
+  depend jakarta.persistence.Id;
+
+  @Id
+  lazy username;
+
+  lazy email;
+  lazy password;
+}

@@ -1,59 +1,88 @@
-package ca.mcgill.ecse321.group1.model;
+/*PLEASE DO NOT EDIT THIS CODE*/
+/*This code was generated using the UMPLE 1.35.0.7523.c616a4dce modeling language!*/
 
+package ca.mcgill.ecse321.group1.model;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 
-import java.util.Objects;
-
 @Entity
-public class Person {
+// line 4 "../../../../../model.ump"
+public class Person
+{
 
-    @Id
-    private String username; // Primary key for SQL db
-    private String email;
-    private String password;
+  //------------------------
+  // MEMBER VARIABLES
+  //------------------------
 
-    public Person() {
-    }
+  //Person Attributes
+  private String username;
+  private String email;
+  private String password;
 
-    public Person(String username, String email, String password) {
-        this.username = username;
-        this.email = email;
-        this.password = password;
-    }
+  //------------------------
+  // CONSTRUCTOR
+  //------------------------
 
-    public String getUsername() {
-        return username;
-    }
+  public Person()
+  {
+    username = null;
+    email = null;
+    password = null;
+  }
 
-    public void setUsername(String username) {
-        this.username = username;
-    }
+  //------------------------
+  // INTERFACE
+  //------------------------
 
-    public String getEmail() {
-        return email;
-    }
+  public boolean setUsername(String aUsername)
+  {
+    boolean wasSet = false;
+    username = aUsername;
+    wasSet = true;
+    return wasSet;
+  }
 
-    public void setEmail(String email) {
-        this.email = email;
-    }
+  public boolean setEmail(String aEmail)
+  {
+    boolean wasSet = false;
+    email = aEmail;
+    wasSet = true;
+    return wasSet;
+  }
 
-    public String getPassword() {
-        return password;
-    }
+  public boolean setPassword(String aPassword)
+  {
+    boolean wasSet = false;
+    password = aPassword;
+    wasSet = true;
+    return wasSet;
+  }
 
-    public void setPassword(String password) {
-        this.password = password;
-    }
+  @Id
+  public String getUsername()
+  {
+    return username;
+  }
 
-    @Override
-    public boolean equals(Object o) {
-        if (!(o instanceof Person person)) return false;
-        return Objects.equals(username, person.username) && Objects.equals(email, person.email) && Objects.equals(password, person.password);
-    }
+  public String getEmail()
+  {
+    return email;
+  }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(username, email, password);
-    }
+  public String getPassword()
+  {
+    return password;
+  }
+
+  public void delete()
+  {}
+
+
+  public String toString()
+  {
+    return super.toString() + "["+
+            "username" + ":" + getUsername()+ "," +
+            "email" + ":" + getEmail()+ "," +
+            "password" + ":" + getPassword()+ "]";
+  }
 }
