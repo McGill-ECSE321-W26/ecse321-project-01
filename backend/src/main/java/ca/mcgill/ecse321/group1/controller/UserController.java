@@ -1,23 +1,34 @@
 package ca.mcgill.ecse321.group1.controller;
 
-import ca.mcgill.ecse321.group1.model.User;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import ca.mcgill.ecse321.group1.model.Person;
+import ca.mcgill.ecse321.group1.service.PersonService;
+import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @RequestMapping("api/users")
 @RestController
 public class UserController {
 
+    private final PersonService personService;
+
+    public UserController(PersonService personService) {
+        this.personService = personService;
+    }
+
     @GetMapping
-    public List<User> getUsers() {
-        List<User> users = new ArrayList<>();
-        users.add(new User("santiago.p", "santiago@mail.mcgill.ca","password"));
-        users.add(new User("ethan", "ethan@mail.mcgill.ca","1234567"));
-        return users;
+    public List<Person> getPeople() {
+        return personService.getPeople();
+    }
+
+    @GetMapping("{username}")
+    public Person getPersonByUsername(@PathVariable String username) {
+        return personService.getPersonById(username);
+    }
+
+    @PostMapping
+    public void addPerson(@RequestBody Person person) {
+        personService.insertPerson(person);
     }
 
 }

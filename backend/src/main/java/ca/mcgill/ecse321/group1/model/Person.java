@@ -1,16 +1,22 @@
 package ca.mcgill.ecse321.group1.model;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+
 import java.util.Objects;
 
-public class User {
-    private String username;
+@Entity
+public class Person {
+
+    @Id
+    private String username; // Primary key for SQL db
     private String email;
     private String password;
 
-    public User() {
+    public Person() {
     }
 
-    public User(String username, String email, String password) {
+    public Person(String username, String email, String password) {
         this.username = username;
         this.email = email;
         this.password = password;
@@ -42,8 +48,8 @@ public class User {
 
     @Override
     public boolean equals(Object o) {
-        if (!(o instanceof User user)) return false;
-        return Objects.equals(username, user.username) && Objects.equals(email, user.email) && Objects.equals(password, user.password);
+        if (!(o instanceof Person person)) return false;
+        return Objects.equals(username, person.username) && Objects.equals(email, person.email) && Objects.equals(password, person.password);
     }
 
     @Override
