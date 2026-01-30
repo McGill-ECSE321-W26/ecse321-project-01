@@ -6,13 +6,13 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@RequestMapping("api/users")
+@RequestMapping("api/person")
 @RestController
-public class UserController {
+public class PersonController {
 
     private final PersonService personService;
 
-    public UserController(PersonService personService) {
+    public PersonController(PersonService personService) {
         this.personService = personService;
     }
 
