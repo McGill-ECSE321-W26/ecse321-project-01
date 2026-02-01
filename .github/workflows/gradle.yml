@@ -7,27 +7,6 @@ on:
     branches: [ "main" ]
 
 jobs:
-  # Job 1
-  formatting:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      
-      - name: Set up Oracle OpenJDK 21
-        uses: actions/setup-java@v4
-        with:
-          java-version: '21'
-          distribution: 'oracle'
-      
-      - name: Run Google Java Format
-        uses: axel-op/googlejavaformat-action@v4
-        with:
-          # Pointing to the specific directory for your backend
-          files: "backend/**/*.java"
-          args: "--skip-sorting-imports --replace"
-          commit-message: "Refactor: apply Google Java Format"
-
-  # Job 2
   build:
     runs-on: ubuntu-latest
     permissions:
