@@ -87,6 +87,12 @@
       <property name="allowNonPrintableEscapes" value="true"/>
     </module>
     <module name="AvoidStarImport"/>
+    <module name="UnusedImports">
+      <property name="severity" value="error"/>
+    </module>
+    <module name="UnusedLocalVariable">
+      <property name="severity" value="error"/>
+    </module>
     <module name="OneTopLevelClass"/>
     <module name="NoLineWrap">
       <property name="tokens" value="PACKAGE_DEF, IMPORT, STATIC_IMPORT"/>
