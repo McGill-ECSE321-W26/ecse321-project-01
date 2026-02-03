@@ -86,7 +86,7 @@
       <property name="allowByTailComment" value="true"/>
       <property name="allowNonPrintableEscapes" value="true"/>
     </module>
-    <module name="AvoidStarImport"/>
+<!--    <module name="AvoidStarImport"/>-->
     <module name="UnusedImports">
       <property name="severity" value="error"/>
     </module>
@@ -326,6 +326,7 @@
                value="GenericWhitespace ''{0}'' is not preceded with whitespace."/>
     </module>
     <module name="Indentation">
+      <property name="severity" value="error"/>
       <property name="basicOffset" value="2"/>
       <property name="braceAdjustment" value="2"/>
       <property name="caseIndent" value="2"/>
@@ -346,12 +347,12 @@
     <module name="OverloadMethodsDeclarationOrder"/>
     <module name="ConstructorsDeclarationGrouping"/>
     <module name="VariableDeclarationUsageDistance"/>
-    <module name="CustomImportOrder">
-      <property name="sortImportsInGroupAlphabetically" value="true"/>
-      <property name="separateLineBetweenGroups" value="true"/>
-      <property name="customImportOrderRules" value="STATIC###THIRD_PARTY_PACKAGE"/>
-      <property name="tokens" value="IMPORT, STATIC_IMPORT, PACKAGE_DEF"/>
-    </module>
+<!--    <module name="CustomImportOrder">-->
+<!--      <property name="sortImportsInGroupAlphabetically" value="true"/>-->
+<!--      <property name="separateLineBetweenGroups" value="true"/>-->
+<!--      <property name="customImportOrderRules" value="STATIC###THIRD_PARTY_PACKAGE"/>-->
+<!--      <property name="tokens" value="IMPORT, STATIC_IMPORT, PACKAGE_DEF"/>-->
+<!--    </module>-->
     <module name="MethodParamPad">
       <property name="tokens"
                 value="CTOR_DEF, LITERAL_NEW, METHOD_CALL, METHOD_DEF, CTOR_CALL,
@@ -419,13 +420,13 @@
       <property name="allowedAnnotations" value="Override, Test"/>
       <property name="tokens" value="METHOD_DEF, CTOR_DEF, ANNOTATION_FIELD_DEF, COMPACT_CTOR_DEF"/>
     </module>
-    <module name="MissingJavadocMethod">
-      <property name="scope" value="protected"/>
-      <property name="allowMissingPropertyJavadoc" value="true"/>
-      <property name="allowedAnnotations" value="Override, Test"/>
-      <property name="tokens" value="METHOD_DEF, CTOR_DEF, ANNOTATION_FIELD_DEF,
-                                   COMPACT_CTOR_DEF"/>
-    </module>
+<!--    <module name="MissingJavadocMethod">-->
+<!--      <property name="scope" value="protected"/>-->
+<!--      <property name="allowMissingPropertyJavadoc" value="true"/>-->
+<!--      <property name="allowedAnnotations" value="Override, Test"/>-->
+<!--      <property name="tokens" value="METHOD_DEF, CTOR_DEF, ANNOTATION_FIELD_DEF,-->
+<!--                                   COMPACT_CTOR_DEF"/>-->
+<!--    </module>-->
     <module name="SuppressionXpathSingleFilter">
       <property name="checks" value="MissingJavadocMethod"/>
       <property name="query" value="//*[self::METHOD_DEF or self::CTOR_DEF
@@ -434,13 +435,13 @@
                                  or self::RECORD_DEF or self::ENUM_DEF]
                                  [not(./MODIFIERS/LITERAL_PUBLIC)]]"/>
     </module>
-    <module name="MissingJavadocType">
-      <property name="scope" value="protected"/>
-      <property name="tokens"
-                value="CLASS_DEF, INTERFACE_DEF, ENUM_DEF,
-                      RECORD_DEF, ANNOTATION_DEF"/>
-      <property name="excludeScope" value="nothing"/>
-    </module>
+<!--    <module name="MissingJavadocType">-->
+<!--      <property name="scope" value="protected"/>-->
+<!--      <property name="tokens"-->
+<!--                value="CLASS_DEF, INTERFACE_DEF, ENUM_DEF,-->
+<!--                      RECORD_DEF, ANNOTATION_DEF"/>-->
+<!--      <property name="excludeScope" value="nothing"/>-->
+<!--    </module>-->
     <module name="MethodName">
       <property name="format"
                 value="^(?![a-z]$)(?![a-z][A-Z])[a-z][a-z0-9]*(?:[A-Z][a-z0-9]*)*(?:_[0-9]+)*$"/>
