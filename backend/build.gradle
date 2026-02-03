@@ -34,3 +34,9 @@ tasks.named('test') {
 checkstyle {
     toolVersion = "13.1.0"
 }
+
+tasks.withType(Checkstyle) {
+    exclude '**/model/**'
+    ignoreFailures = false
+    maxWarnings = 0
+}

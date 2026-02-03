@@ -2,7 +2,7 @@ name: Java CI with Gradle (Backend API)
 
 on:
   push:
-    branches: [ "main" ]
+    branches: ["main"]
   pull_request:
     branches: [ "main" ]
 
