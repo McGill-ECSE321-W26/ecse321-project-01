@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<FindBugsFilter>
+    <!-- Exclude model package -->
+    <Match>
+        <Package name="~.*\.model.*"/>
+    </Match>
+</FindBugsFilter>
