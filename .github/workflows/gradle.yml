@@ -46,14 +46,10 @@ jobs:
     - name: Run Linter (Checkstyle plugin)
       working-directory: backend
       run: ./gradlew checkstyleMain
-      continue-on-error: true
-      id: lint-check
 
     - name: Run SpotBugs (Check for Unused Variable)
       working-directory: backend
       run: ./gradlew spotbugsMain
-      continue-on-error: true
-      id: var-check
 
     - name: Build with Gradle Wrapper
       working-directory: backend
