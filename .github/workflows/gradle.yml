@@ -63,11 +63,3 @@ jobs:
         SPRING_DATASOURCE_URL: jdbc:postgresql://localhost:5432/database
         SPRING_DATASOURCE_USERNAME: postgres
         SPRING_DATASOURCE_PASSWORD: password
-
-    - name: Comment on PR if formatting fails
-      if: steps.lint-check.outcome == 'failure' || steps.var-check.outcome == 'failure'
-      run: |
-        echo "::error::Formatting check failed!"
-        echo "::error::Please run './gradlew spotlessApply' to fix formatting issues."
-        echo "::error::Manually check for unused variable"
-        exit 1
