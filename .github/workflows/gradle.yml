@@ -2,8 +2,7 @@ name: Java CI with Gradle (Backend API)
 
 on:
   push:
-    paths-ignore:
-      - 'backend/src/main/java/ca/mcgill/ecse321/group1/model/**'
+    branches: ["main"]
   pull_request:
     branches: [ "main" ]
 
