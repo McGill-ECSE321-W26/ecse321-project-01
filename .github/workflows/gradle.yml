@@ -46,10 +46,14 @@ jobs:
     - name: Run Linter (Checkstyle plugin)
       working-directory: backend
       run: ./gradlew checkstyleMain
+      continue-on-error: true
+      id: lint-check
 
     - name: Run SpotBugs (Check for Unused Variable)
       working-directory: backend
       run: ./gradlew spotbugsMain
+      continue-on-error: true
+      id: var-check
 
     - name: Build with Gradle Wrapper
       working-directory: backend
@@ -59,3 +63,26 @@ jobs:
         SPRING_DATASOURCE_URL: jdbc:postgresql://localhost:5432/database
         SPRING_DATASOURCE_USERNAME: postgres
         SPRING_DATASOURCE_PASSWORD: password
+
+    - name: Comment on PR if formatting fails
+      if: (steps.lint-check.outcome == 'failure' || steps.var-check.outcome == 'failure') && github.event_name == 'pull_request'
+      uses: actions/github-script@v7
+      with:
+        script: |
+          let message = '## ❌ Checks Failed\n\n';
+          if ('${{ steps.lint-check.outcome }}' === 'failure') {
+            message += '❌ Checkstyle failed - Run `./gradlew spotlessApply`\n';
+          }
+          if ('${{ steps.var-check.outcome }}' === 'failure') {
+            message += '❌ SpotBugs failed - Remove unused variables\n';
+          }
+          await github.rest.issues.createComment({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            body: message
+          });
+
+    - name: Fail if checks failed
+      if: steps.lint-check.outcome == 'failure' || steps.var-check.outcome == 'failure'
+      run: exit 1
