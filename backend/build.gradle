@@ -37,4 +37,5 @@ checkstyle {
 
 tasks.withType(Checkstyle) {
     exclude '**/model/**'
+    ignoreFailures = false
 }
