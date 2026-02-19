@@ -1,13 +1,78 @@
 namespace ca.mcgill.ecse321.group1.model;
 
-@Entity
-class Person {
-  depend jakarta.persistence.Entity;
-  depend jakarta.persistence.Id;
+class User {
+  unique email;
+  password;
+  1 -- 0..2 UserRole roles;
+}
 
-  @Id
-  lazy username;
+class UserRole {
+  abstract;
+}
 
-  lazy email;
-  lazy password;
+class Manager {
+  isA UserRole;
+}
+
+class Employee {
+  isA UserRole;
+  1 -- * Order preparingOrders;
+}
+
+class Customer {
+  isA UserRole;
+  int loyaltyPoints;
+  1 -- * Address addresses;
+  1 <@>- 1 Cart;
+  1 -- * Order orders;
+}
+
+class Address {
+  autounique id;
+  street;
+  city;
+  province;
+  postalCode;
+}
+
+class Cart {
+  autounique id;
+  0..1 -- * ClothingItem items;
+}
+
+class Order {
+  autounique id;
+  enum OrderStatus {
+    Preparing,
+    Delivered,
+    Cancelled
+  }
+  OrderStatus orderStatus;
+  Date orderDate;
+  Date deliveryDate;
+  0..1 -- * ClothingItem items;
+}
+
+class ClothingItem {
+  autounique id;
+  * -- 1 ClothingItemProperties properties;
+}
+
+class ClothingItemProperties {
+  autounique id;
+  enum Size {
+    S,
+    M,
+    L,
+    XL
+  }
+  Size size;
+  color;
+  int inStock;
+  * -- 1 ClothingModel model;
+}
+
+class ClothingModel {
+  unqiue name;
+  float price;
 }
