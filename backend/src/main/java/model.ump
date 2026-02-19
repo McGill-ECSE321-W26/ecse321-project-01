@@ -1,26 +1,26 @@
 namespace ca.mcgill.ecse321.group1.model;
 
-class User {
+class Person {
   unique email;
   password;
-  1 -- 0..2 UserRole roles;
+  1 -- 0..2 PersonRole roles;
 }
 
-class UserRole {
+class PersonRole {
   abstract;
 }
 
 class Manager {
-  isA UserRole;
+  isA PersonRole;
 }
 
 class Employee {
-  isA UserRole;
+  isA PersonRole;
   1 -- * Order preparingOrders;
 }
 
 class Customer {
-  isA UserRole;
+  isA PersonRole;
   int loyaltyPoints;
   1 -- * Address addresses;
   1 <@>- 1 Cart;
