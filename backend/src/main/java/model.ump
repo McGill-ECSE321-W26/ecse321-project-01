@@ -39,7 +39,7 @@ class Address {
 
 class Cart {
   cartID;
-  0..1 -- * ClothingItem items;
+  1 -- * CartItem items;
 }
 
 class Order {
@@ -52,16 +52,17 @@ class Order {
   OrderStatus orderStatus;
   Date orderDate;
   Date deliveryDate;
-  0..1 -- * ClothingItem items;
+  0..1 -- * CartItem items;
 }
 
-class ClothingItem {
+class CartItem {
   clothingItemID;
-  * -- 1 ClothingItemProperties properties;
+  int quantity;
+  * -- 1 ClothingVariant variants;
 }
 
-class ClothingItemProperties {
-  clothingItemPropertiesID;
+class ClothingVariant {
+  clothingVariantID;
   enum Size {
     S,
     M,
@@ -70,7 +71,7 @@ class ClothingItemProperties {
   }
   Size size;
   color;
-  int inStock;
+  int stockQuantity;
   * -- 1 ClothingModel model;
 }
 
