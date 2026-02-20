@@ -75,14 +75,13 @@ public class CustomerRepositoryTests {
     customer.setLoyaltyPoints(10);
     customerRepository.save(customer);
 
-    String roleID = customer.getRoleID();
-
     // Update customer
     customer.setAddress("789 New Blvd");
     customer.setLoyaltyPoints(100);
     customerRepository.save(customer);
 
     // Read customer
+    String roleID = customer.getRoleID();
     Customer customerFromDb = customerRepository.findByRoleID(roleID);
 
     // Assertions

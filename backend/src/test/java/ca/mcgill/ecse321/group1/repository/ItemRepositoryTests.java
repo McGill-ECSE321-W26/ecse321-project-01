@@ -236,7 +236,6 @@ public class ItemRepositoryTests {
     order.setCustomer(customer);
     order.setEmployee(employee);
     order = orderRepository.save(order);
-    String orderID = order.getOrderID();
 
     // Link order to item
     Item item = new Item();
@@ -248,6 +247,7 @@ public class ItemRepositoryTests {
 
     // Read back and assert
     Item fromDb = itemRepository.findItemByItemID(itemID);
+    String orderID = order.getOrderID();
     assertNotNull(fromDb);
     assertTrue(fromDb.hasOrder());
     assertEquals(orderID, fromDb.getOrder().getOrderID());
@@ -269,7 +269,6 @@ public class ItemRepositoryTests {
     customer.setLoyaltyPoints(100);
     customer.setPerson(person);
     customer = customerRepository.save(customer);
-    String customerRoleID = customer.getRoleID();
 
     // Link customer to item
     Item item = new Item();
@@ -281,6 +280,7 @@ public class ItemRepositoryTests {
 
     // Read back and assert
     Item fromDb = itemRepository.findItemByItemID(itemID);
+    String customerRoleID = customer.getRoleID();
     assertNotNull(fromDb);
     assertTrue(fromDb.hasCustomer());
     assertEquals(customerRoleID, fromDb.getCustomer().getRoleID());

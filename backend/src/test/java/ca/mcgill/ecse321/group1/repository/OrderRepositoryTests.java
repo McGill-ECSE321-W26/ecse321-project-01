@@ -78,7 +78,6 @@ public class OrderRepositoryTests {
     order.setAddress("123 Main St");
     order.setLoyaltySaving(0f);
     order = orderRepository.save(order);
-    String id = order.getOrderID();
 
     // Update fields
     order.setOrderStatus(Order.OrderStatus.Delivered);
@@ -86,6 +85,7 @@ public class OrderRepositoryTests {
     order.setLoyaltySaving(25.00f);
     orderRepository.save(order);
 
+    String id = order.getOrderID();
     Order updatedOrder = orderRepository.findOrderByOrderID(id);
     assertNotNull(updatedOrder);
     assertEquals(Order.OrderStatus.Delivered, updatedOrder.getOrderStatus());
