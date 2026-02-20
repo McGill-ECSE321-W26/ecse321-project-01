@@ -47,7 +47,7 @@ class Item {
   itemID;
   int quantity;
   float price;
-  * -> 1 ClothingVariant variants;
+  * -> 1 ClothingVariant;
   * -- 0..1 Order;
 }
 

@@ -38,7 +38,7 @@ public class Order
   private Employee employee;
   @ManyToOne
   private Customer customer;
-  @OneToMany(mappedBy = "order", cascade = {CascadeType.ALL})
+  @OneToMany(mappedBy = "order", cascade = {CascadeType.ALL}, fetch = FetchType.EAGER)
   private List<Item> items;
 
   //------------------------
