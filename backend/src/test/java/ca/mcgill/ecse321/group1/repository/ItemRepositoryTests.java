@@ -73,8 +73,8 @@ public class ItemRepositoryTests {
 
         // Assert correct response
         assertNotNull(itemTestFromDb);
-        assertEquals(itemTestFromDb.getQuantity(), quantity);
         assertEquals(price, itemTestFromDb.getPrice());
+        assertEquals(itemTestFromDb.getQuantity(), quantity);
     }
 
     @Test
@@ -214,16 +214,10 @@ public class ItemRepositoryTests {
     @Test
     public void testItemPersistsWithOrder() {
         // Person is required for both Customer and Employee (via PersonRole)
-        Person customerPerson = new Person();
-        customerPerson.setPersonID("personTemp");
-        customerPerson.setEmail("customer@example.com");
-        customerPerson.setPassword("pass1");
+        Person customerPerson = new Person("personTemp", "customer@example.com", "pass1");
         personRepository.save(customerPerson);
 
-        Person employeePerson = new Person();
-        employeePerson.setPersonID("person-2");
-        employeePerson.setEmail("employee@example.com");
-        employeePerson.setPassword("pass2");
+        Person employeePerson = new Person("person-2", "employee@example.com", "pass2");
         personRepository.save(employeePerson);
 
         // Customer and Employee both require a Person
@@ -268,10 +262,8 @@ public class ItemRepositoryTests {
     @Test
     public void testItemPersistsWithCustomer() {
         // Person is required for Customer (via PersonRole)
-        Person person = new Person();
-        person.setPersonID("person-3");
-        person.setEmail("shopper@example.com");
-        person.setPassword("pass3");
+        //parameter: String aPersonID, String aEmail, String aPassword
+        Person person = new Person("person-3","shopper@example.com", "pass3");
         personRepository.save(person);
 
         // Customer requires a Person
