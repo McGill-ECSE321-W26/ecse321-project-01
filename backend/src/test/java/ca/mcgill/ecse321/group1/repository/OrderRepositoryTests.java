@@ -234,7 +234,6 @@ public class OrderRepositoryTests {
     order.setAddress("123 Main St");
     order = orderRepository.save(order);
 
-
     // Create items linked to this order
     Item item1 = new Item();
     item1.setQuantity(2);
@@ -257,7 +256,8 @@ public class OrderRepositoryTests {
     assertTrue(fromDb.hasItems());
     assertEquals(2, fromDb.numberOfItems());
 
-    // this checks if the items referenced when creating the order are still the same in the item repo.
+    // this checks if the items referenced when creating the order are still the same in the item
+    // repo.
     Item item1FromDb = itemRepository.findItemByItemID(item1.getItemID());
     assertNotNull(item1FromDb);
     assertEquals(2, item1FromDb.getQuantity());
