@@ -15,65 +15,65 @@ import org.springframework.boot.test.context.SpringBootTest;
 @SpringBootTest
 public class ManagerRepositoryTests {
 
-    @Autowired private PersonRepository personRepository;
-    @Autowired private ManagerRepository managerRepository;
+  @Autowired private PersonRepository personRepository;
+  @Autowired private ManagerRepository managerRepository;
 
-    @BeforeEach
-    @AfterEach
-    public void clearDatabase() {
-        managerRepository.deleteAll();
-        personRepository.deleteAll();
-    }
+  @BeforeEach
+  @AfterEach
+  public void clearDatabase() {
+    managerRepository.deleteAll();
+    personRepository.deleteAll();
+  }
 
-    @Test
-    public void testPersistAndLoadManager() {
-        // Create and save person
-        Person person = new Person("mgr_person_1", "manager@example.com", "mgrpassword");
-        personRepository.save(person);
+  @Test
+  public void testPersistAndLoadManager() {
+    // Create and save person
+    Person person = new Person("mgr_person_1", "manager@example.com", "mgrpassword");
+    personRepository.save(person);
 
-        // Create and save manager
-        Manager manager = new Manager();
-        manager.setPerson(person);
-        managerRepository.save(manager);
+    // Create and save manager
+    Manager manager = new Manager();
+    manager.setPerson(person);
+    managerRepository.save(manager);
 
-        String roleID = manager.getRoleID();
+    String roleID = manager.getRoleID();
 
-        // Read manager
-        Manager managerFromDb = managerRepository.findByRoleID(roleID);
+    // Read manager
+    Manager managerFromDb = managerRepository.findByRoleID(roleID);
 
-        // Assertions
-        assertNotNull(managerFromDb);
-        assertNotNull(managerFromDb.getPerson());
-        assertEquals(roleID, managerFromDb.getRoleID());
-        assertEquals("manager@example.com", managerFromDb.getPerson().getEmail());
-    }
+    // Assertions
+    assertNotNull(managerFromDb);
+    assertNotNull(managerFromDb.getPerson());
+    assertEquals(roleID, managerFromDb.getRoleID());
+    assertEquals("manager@example.com", managerFromDb.getPerson().getEmail());
+  }
 
-    @Test
-    public void testFindManagerByInvalidRoleID() {
-        Manager managerFromDb = managerRepository.findByRoleID("nonexistent-id");
-        assertNull(managerFromDb);
-    }
+  @Test
+  public void testFindManagerByInvalidRoleID() {
+    Manager managerFromDb = managerRepository.findByRoleID("nonexistent-id");
+    assertNull(managerFromDb);
+  }
 
-    @Test
-    public void testDeleteManager() {
-        // Create and save person
-        Person person = new Person("mgr_person_2", "manager2@example.com", "password");
-        personRepository.save(person);
+  @Test
+  public void testDeleteManager() {
+    // Create and save person
+    Person person = new Person("mgr_person_2", "manager2@example.com", "password");
+    personRepository.save(person);
 
-        // Create and save manager
-        Manager manager = new Manager();
-        manager.setPerson(person);
-        managerRepository.save(manager);
+    // Create and save manager
+    Manager manager = new Manager();
+    manager.setPerson(person);
+    managerRepository.save(manager);
 
-        String roleID = manager.getRoleID();
+    String roleID = manager.getRoleID();
 
-        // Delete manager
-        managerRepository.delete(manager);
+    // Delete manager
+    managerRepository.delete(manager);
 
-        // Read manager
-        Manager managerFromDb = managerRepository.findByRoleID(roleID);
+    // Read manager
+    Manager managerFromDb = managerRepository.findByRoleID(roleID);
 
-        // Assertions
-        assertNull(managerFromDb);
-    }
+    // Assertions
+    assertNull(managerFromDb);
+  }
 }

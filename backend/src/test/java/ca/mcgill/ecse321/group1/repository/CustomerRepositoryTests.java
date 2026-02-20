@@ -15,98 +15,98 @@ import org.springframework.boot.test.context.SpringBootTest;
 @SpringBootTest
 public class CustomerRepositoryTests {
 
-    @Autowired private PersonRepository personRepository;
-    @Autowired private CustomerRepository customerRepository;
+  @Autowired private PersonRepository personRepository;
+  @Autowired private CustomerRepository customerRepository;
 
-    @BeforeEach
-    @AfterEach
-    public void clearDatabase() {
-        customerRepository.deleteAll();
-        personRepository.deleteAll();
-    }
+  @BeforeEach
+  @AfterEach
+  public void clearDatabase() {
+    customerRepository.deleteAll();
+    personRepository.deleteAll();
+  }
 
-    @Test
-    public void testPersistAndLoadCustomer() {
-        // Create and save person
-        Person person = new Person("customer_person_1", "customer@example.com", "password");
-        personRepository.save(person);
+  @Test
+  public void testPersistAndLoadCustomer() {
+    // Create and save person
+    Person person = new Person("customer_person_1", "customer@example.com", "password");
+    personRepository.save(person);
 
-        // Create and save customer
-        Customer customer = new Customer();
-        customer.setPerson(person);
-        customer.setAddress("123 Main St");
-        customer.setLoyaltyPoints(50);
-        customerRepository.save(customer);
+    // Create and save customer
+    Customer customer = new Customer();
+    customer.setPerson(person);
+    customer.setAddress("123 Main St");
+    customer.setLoyaltyPoints(50);
+    customerRepository.save(customer);
 
-        String roleID = customer.getRoleID();
+    String roleID = customer.getRoleID();
 
-        // Read customer
-        Customer customerFromDb = customerRepository.findByRoleID(roleID);
+    // Read customer
+    Customer customerFromDb = customerRepository.findByRoleID(roleID);
 
-        // Assertions
-        assertNotNull(customerFromDb);
-        assertNotNull(customerFromDb.getPerson());
-        assertEquals(roleID, customerFromDb.getRoleID());
-        assertEquals("123 Main St", customerFromDb.getAddress());
-        assertEquals(50, customerFromDb.getLoyaltyPoints());
-        assertEquals("customer@example.com", customerFromDb.getPerson().getEmail());
-    }
+    // Assertions
+    assertNotNull(customerFromDb);
+    assertNotNull(customerFromDb.getPerson());
+    assertEquals(roleID, customerFromDb.getRoleID());
+    assertEquals("123 Main St", customerFromDb.getAddress());
+    assertEquals(50, customerFromDb.getLoyaltyPoints());
+    assertEquals("customer@example.com", customerFromDb.getPerson().getEmail());
+  }
 
-    @Test
-    public void testFindCustomerByInvalidRoleID() {
-        Customer customerFromDb = customerRepository.findByRoleID("nonexistent-id");
-        assertNull(customerFromDb);
-    }
+  @Test
+  public void testFindCustomerByInvalidRoleID() {
+    Customer customerFromDb = customerRepository.findByRoleID("nonexistent-id");
+    assertNull(customerFromDb);
+  }
 
-    @Test
-    public void testUpdateCustomer() {
-        // Create and save person
-        Person person = new Person("customer_person_2", "update@example.com", "password");
-        personRepository.save(person);
+  @Test
+  public void testUpdateCustomer() {
+    // Create and save person
+    Person person = new Person("customer_person_2", "update@example.com", "password");
+    personRepository.save(person);
 
-        // Create and save customer
-        Customer customer = new Customer();
-        customer.setPerson(person);
-        customer.setAddress("456 Old Ave");
-        customer.setLoyaltyPoints(10);
-        customerRepository.save(customer);
+    // Create and save customer
+    Customer customer = new Customer();
+    customer.setPerson(person);
+    customer.setAddress("456 Old Ave");
+    customer.setLoyaltyPoints(10);
+    customerRepository.save(customer);
 
-        String roleID = customer.getRoleID();
+    String roleID = customer.getRoleID();
 
-        // Update customer
-        customer.setAddress("789 New Blvd");
-        customer.setLoyaltyPoints(100);
-        customerRepository.save(customer);
+    // Update customer
+    customer.setAddress("789 New Blvd");
+    customer.setLoyaltyPoints(100);
+    customerRepository.save(customer);
 
-        // Read customer
-        Customer customerFromDb = customerRepository.findByRoleID(roleID);
+    // Read customer
+    Customer customerFromDb = customerRepository.findByRoleID(roleID);
 
-        // Assertions
-        assertNotNull(customerFromDb);
-        assertEquals("789 New Blvd", customerFromDb.getAddress());
-        assertEquals(100, customerFromDb.getLoyaltyPoints());
-    }
+    // Assertions
+    assertNotNull(customerFromDb);
+    assertEquals("789 New Blvd", customerFromDb.getAddress());
+    assertEquals(100, customerFromDb.getLoyaltyPoints());
+  }
 
-    @Test
-    public void testDeleteCustomer() {
-        // Create and save person
-        Person person = new Person("customer_person_3", "delete@example.com", "password");
-        personRepository.save(person);
+  @Test
+  public void testDeleteCustomer() {
+    // Create and save person
+    Person person = new Person("customer_person_3", "delete@example.com", "password");
+    personRepository.save(person);
 
-        // Create and save customer
-        Customer customer = new Customer();
-        customer.setPerson(person);
-        customerRepository.save(customer);
+    // Create and save customer
+    Customer customer = new Customer();
+    customer.setPerson(person);
+    customerRepository.save(customer);
 
-        String roleID = customer.getRoleID();
+    String roleID = customer.getRoleID();
 
-        // Delete customer
-        customerRepository.delete(customer);
+    // Delete customer
+    customerRepository.delete(customer);
 
-        // Read customer
-        Customer customerFromDb = customerRepository.findByRoleID(roleID);
+    // Read customer
+    Customer customerFromDb = customerRepository.findByRoleID(roleID);
 
-        // Assertions
-        assertNull(customerFromDb);
-    }
+    // Assertions
+    assertNull(customerFromDb);
+  }
 }
