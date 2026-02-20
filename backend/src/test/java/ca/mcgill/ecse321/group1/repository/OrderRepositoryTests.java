@@ -41,7 +41,7 @@ public class OrderRepositoryTests {
         Order orderTestFromDb = orderRepository.findOrderById(id);
 
         // Assert correct response
-        assertNotNull(orderTest);
+        assertNotNull(orderTestFromDb);
         assertEquals(orderTestFromDb.getOrderStatus(), status);
         assertEquals(orderTestFromDb.getOrderDate(), orderDate);
         assertEquals(orderTestFromDb.getDeliveryDate(), deliveryDate);
