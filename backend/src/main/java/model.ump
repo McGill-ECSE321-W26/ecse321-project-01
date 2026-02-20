@@ -1,13 +1,15 @@
 namespace ca.mcgill.ecse321.group1.model;
 
 class Person {
-  unique email;
+  personID;
+  email;
   password;
   1 -- 0..2 PersonRole roles;
 }
 
 class PersonRole {
   abstract;
+  personRoleID;
 }
 
 class Manager {
@@ -28,7 +30,7 @@ class Customer {
 }
 
 class Address {
-  autounique id;
+  addressID;
   street;
   city;
   province;
@@ -36,12 +38,12 @@ class Address {
 }
 
 class Cart {
-  autounique id;
+  cartID;
   0..1 -- * ClothingItem items;
 }
 
 class Order {
-  autounique id;
+  orderID;
   enum OrderStatus {
     Preparing,
     Delivered,
@@ -54,12 +56,12 @@ class Order {
 }
 
 class ClothingItem {
-  autounique id;
+  clothingItemID;
   * -- 1 ClothingItemProperties properties;
 }
 
 class ClothingItemProperties {
-  autounique id;
+  clothingItemPropertiesID;
   enum Size {
     S,
     M,
@@ -73,6 +75,7 @@ class ClothingItemProperties {
 }
 
 class ClothingModel {
-  unqiue name;
+  clothingModelID;
+  name;
   float price;
 }
