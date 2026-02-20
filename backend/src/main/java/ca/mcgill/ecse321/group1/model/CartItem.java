@@ -1,0 +1,152 @@
+/*PLEASE DO NOT EDIT THIS CODE*/
+/*This code was generated using the UMPLE 1.35.0.7523.c616a4dce modeling language!*/
+
+package ca.mcgill.ecse321.group1.model;
+
+// line 50 "../../../../../model.ump"
+public class CartItem
+{
+
+  //------------------------
+  // MEMBER VARIABLES
+  //------------------------
+
+  //CartItem Attributes
+  private String clothingItemID;
+  private int quantity;
+
+  //CartItem Associations
+  private ClothingVariant variants;
+  private Order order;
+  private Cart cart;
+
+  //------------------------
+  // CONSTRUCTOR
+  //------------------------
+
+  public CartItem(String aClothingItemID, int aQuantity, ClothingVariant aVariants)
+  {
+    clothingItemID = aClothingItemID;
+    quantity = aQuantity;
+    if (!setVariants(aVariants))
+    {
+      throw new RuntimeException("Unable to create CartItem due to aVariants. See https://manual.umple.org?RE002ViolationofAssociationMultiplicity.html");
+    }
+  }
+
+  //------------------------
+  // INTERFACE
+  //------------------------
+
+  public boolean setClothingItemID(String aClothingItemID)
+  {
+    boolean wasSet = false;
+    clothingItemID = aClothingItemID;
+    wasSet = true;
+    return wasSet;
+  }
+
+  public boolean setQuantity(int aQuantity)
+  {
+    boolean wasSet = false;
+    quantity = aQuantity;
+    wasSet = true;
+    return wasSet;
+  }
+
+  public String getClothingItemID()
+  {
+    return clothingItemID;
+  }
+
+  public int getQuantity()
+  {
+    return quantity;
+  }
+  /* Code from template association_GetOne */
+  public ClothingVariant getVariants()
+  {
+    return variants;
+  }
+  /* Code from template association_GetOne */
+  public Order getOrder()
+  {
+    return order;
+  }
+
+  public boolean hasOrder()
+  {
+    boolean has = order != null;
+    return has;
+  }
+  /* Code from template association_GetOne */
+  public Cart getCart()
+  {
+    return cart;
+  }
+
+  public boolean hasCart()
+  {
+    boolean has = cart != null;
+    return has;
+  }
+  /* Code from template association_SetUnidirectionalOne */
+  public boolean setVariants(ClothingVariant aNewVariants)
+  {
+    boolean wasSet = false;
+    if (aNewVariants != null)
+    {
+      variants = aNewVariants;
+      wasSet = true;
+    }
+    return wasSet;
+  }
+  /* Code from template association_SetUnidirectionalOptionalOne */
+  public boolean setOrder(Order aNewOrder)
+  {
+    boolean wasSet = false;
+    order = aNewOrder;
+    wasSet = true;
+    return wasSet;
+  }
+  /* Code from template association_SetOptionalOneToMany */
+  public boolean setCart(Cart aCart)
+  {
+    boolean wasSet = false;
+    Cart existingCart = cart;
+    cart = aCart;
+    if (existingCart != null && !existingCart.equals(aCart))
+    {
+      existingCart.removeItem(this);
+    }
+    if (aCart != null)
+    {
+      aCart.addItem(this);
+    }
+    wasSet = true;
+    return wasSet;
+  }
+
+  public void delete()
+  {
+    variants = null;
+    order = null;
+    if (cart != null)
+    {
+      Cart placeholderCart = cart;
+      this.cart = null;
+      placeholderCart.removeItem(this);
+    }
+  }
+
+
+  public String toString()
+  {
+    return super.toString() + "["+
+            "clothingItemID" + ":" + getClothingItemID()+ "," +
+            "quantity" + ":" + getQuantity()+ "]" + System.getProperties().getProperty("line.separator") +
+            "  " + "variants = "+(getVariants()!=null?Integer.toHexString(System.identityHashCode(getVariants())):"null") + System.getProperties().getProperty("line.separator") +
+            "  " + "order = "+(getOrder()!=null?Integer.toHexString(System.identityHashCode(getOrder())):"null") + System.getProperties().getProperty("line.separator") +
+            "  " + "cart = "+(getCart()!=null?Integer.toHexString(System.identityHashCode(getCart())):"null");
+  }
+}

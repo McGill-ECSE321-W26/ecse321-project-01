@@ -14,10 +14,10 @@ public class Customer extends PersonRole
   //------------------------
 
   //Customer Attributes
+  private String address;
   private int loyaltyPoints;
 
   //Customer Associations
-  private List<Address> addresses;
   private Cart cart;
   private List<Order> orders;
 
@@ -25,31 +25,25 @@ public class Customer extends PersonRole
   // CONSTRUCTOR
   //------------------------
 
-  public Customer(String aPersonRoleID, Person aPerson, int aLoyaltyPoints, Cart aCart)
+  public Customer(String aPersonRoleID, Person aPerson, String aAddress, int aLoyaltyPoints)
   {
     super(aPersonRoleID, aPerson);
+    address = aAddress;
     loyaltyPoints = aLoyaltyPoints;
-    addresses = new ArrayList<Address>();
-    if (aCart == null || aCart.getCustomer() != null)
-    {
-      throw new RuntimeException("Unable to create Customer due to aCart. See https://manual.umple.org?RE002ViolationofAssociationMultiplicity.html");
-    }
-    cart = aCart;
-    orders = new ArrayList<Order>();
-  }
-
-  public Customer(String aPersonRoleID, Person aPerson, int aLoyaltyPoints, String aCartIDForCart)
-  {
-    super(aPersonRoleID, aPerson);
-    loyaltyPoints = aLoyaltyPoints;
-    addresses = new ArrayList<Address>();
-    cart = new Cart(aCartIDForCart, this);
     orders = new ArrayList<Order>();
   }
 
   //------------------------
   // INTERFACE
   //------------------------
+
+  public boolean setAddress(String aAddress)
+  {
+    boolean wasSet = false;
+    address = aAddress;
+    wasSet = true;
+    return wasSet;
+  }
 
   public boolean setLoyaltyPoints(int aLoyaltyPoints)
   {
@@ -59,44 +53,25 @@ public class Customer extends PersonRole
     return wasSet;
   }
 
+  public String getAddress()
+  {
+    return address;
+  }
+
   public int getLoyaltyPoints()
   {
     return loyaltyPoints;
-  }
-  /* Code from template association_GetMany */
-  public Address getAddress(int index)
-  {
-    Address aAddress = addresses.get(index);
-    return aAddress;
-  }
-
-  public List<Address> getAddresses()
-  {
-    List<Address> newAddresses = Collections.unmodifiableList(addresses);
-    return newAddresses;
-  }
-
-  public int numberOfAddresses()
-  {
-    int number = addresses.size();
-    return number;
-  }
-
-  public boolean hasAddresses()
-  {
-    boolean has = addresses.size() > 0;
-    return has;
-  }
-
-  public int indexOfAddress(Address aAddress)
-  {
-    int index = addresses.indexOf(aAddress);
-    return index;
   }
   /* Code from template association_GetOne */
   public Cart getCart()
   {
     return cart;
+  }
+
+  public boolean hasCart()
+  {
+    boolean has = cart != null;
+    return has;
   }
   /* Code from template association_GetMany */
   public Order getOrder(int index)
@@ -128,77 +103,32 @@ public class Customer extends PersonRole
     int index = orders.indexOf(aOrder);
     return index;
   }
-  /* Code from template association_MinimumNumberOfMethod */
-  public static int minimumNumberOfAddresses()
+  /* Code from template association_SetOptionalOneToOne */
+  public boolean setCart(Cart aNewCart)
   {
-    return 0;
-  }
-  /* Code from template association_AddManyToOne */
-  public Address addAddress(String aAddressID, String aStreet, String aCity, String aProvince, String aPostalCode)
-  {
-    return new Address(aAddressID, aStreet, aCity, aProvince, aPostalCode, this);
-  }
+    boolean wasSet = false;
+    if (cart != null && !cart.equals(aNewCart) && equals(cart.getCustomer()))
+    {
+      //Unable to setCart, as existing cart would become an orphan
+      return wasSet;
+    }
 
-  public boolean addAddress(Address aAddress)
-  {
-    boolean wasAdded = false;
-    if (addresses.contains(aAddress)) { return false; }
-    Customer existingCustomer = aAddress.getCustomer();
-    boolean isNewCustomer = existingCustomer != null && !this.equals(existingCustomer);
-    if (isNewCustomer)
-    {
-      aAddress.setCustomer(this);
-    }
-    else
-    {
-      addresses.add(aAddress);
-    }
-    wasAdded = true;
-    return wasAdded;
-  }
+    cart = aNewCart;
+    Customer anOldCustomer = aNewCart != null ? aNewCart.getCustomer() : null;
 
-  public boolean removeAddress(Address aAddress)
-  {
-    boolean wasRemoved = false;
-    //Unable to remove aAddress, as it must always have a customer
-    if (!this.equals(aAddress.getCustomer()))
+    if (!this.equals(anOldCustomer))
     {
-      addresses.remove(aAddress);
-      wasRemoved = true;
+      if (anOldCustomer != null)
+      {
+        anOldCustomer.cart = null;
+      }
+      if (cart != null)
+      {
+        cart.setCustomer(this);
+      }
     }
-    return wasRemoved;
-  }
-  /* Code from template association_AddIndexControlFunctions */
-  public boolean addAddressAt(Address aAddress, int index)
-  {  
-    boolean wasAdded = false;
-    if(addAddress(aAddress))
-    {
-      if(index < 0 ) { index = 0; }
-      if(index > numberOfAddresses()) { index = numberOfAddresses() - 1; }
-      addresses.remove(aAddress);
-      addresses.add(index, aAddress);
-      wasAdded = true;
-    }
-    return wasAdded;
-  }
-
-  public boolean addOrMoveAddressAt(Address aAddress, int index)
-  {
-    boolean wasAdded = false;
-    if(addresses.contains(aAddress))
-    {
-      if(index < 0 ) { index = 0; }
-      if(index > numberOfAddresses()) { index = numberOfAddresses() - 1; }
-      addresses.remove(aAddress);
-      addresses.add(index, aAddress);
-      wasAdded = true;
-    } 
-    else 
-    {
-      wasAdded = addAddressAt(aAddress, index);
-    }
-    return wasAdded;
+    wasSet = true;
+    return wasSet;
   }
   /* Code from template association_MinimumNumberOfMethod */
   public static int minimumNumberOfOrders()
@@ -206,9 +136,9 @@ public class Customer extends PersonRole
     return 0;
   }
   /* Code from template association_AddManyToOne */
-  public Order addOrder(String aOrderID, Order.OrderStatus aOrderStatus, Date aOrderDate, Date aDeliveryDate, Employee aEmployee)
+  public Order addOrder(String aOrderID, Order.OrderStatus aOrderStatus, Date aOrderDate, Date aDeliveryDate, String aAddress, Employee aEmployee)
   {
-    return new Order(aOrderID, aOrderStatus, aOrderDate, aDeliveryDate, aEmployee, this);
+    return new Order(aOrderID, aOrderStatus, aOrderDate, aDeliveryDate, aAddress, aEmployee, this);
   }
 
   public boolean addOrder(Order aOrder)
@@ -275,16 +205,12 @@ public class Customer extends PersonRole
 
   public void delete()
   {
-    for(int i=addresses.size(); i > 0; i--)
-    {
-      Address aAddress = addresses.get(i - 1);
-      aAddress.delete();
-    }
     Cart existingCart = cart;
     cart = null;
     if (existingCart != null)
     {
       existingCart.delete();
+      existingCart.setCustomer(null);
     }
     for(int i=orders.size(); i > 0; i--)
     {
@@ -298,6 +224,7 @@ public class Customer extends PersonRole
   public String toString()
   {
     return super.toString() + "["+
+            "address" + ":" + getAddress()+ "," +
             "loyaltyPoints" + ":" + getLoyaltyPoints()+ "]" + System.getProperties().getProperty("line.separator") +
             "  " + "cart = "+(getCart()!=null?Integer.toHexString(System.identityHashCode(getCart())):"null");
   }

@@ -4,7 +4,7 @@
 package ca.mcgill.ecse321.group1.model;
 import java.util.*;
 
-// line 40 "../../../../../model.ump"
+// line 32 "../../../../../model.ump"
 public class Cart
 {
 
@@ -16,7 +16,7 @@ public class Cart
   private String cartID;
 
   //Cart Associations
-  private List<ClothingItem> items;
+  private List<CartItem> items;
   private Customer customer;
 
   //------------------------
@@ -26,19 +26,12 @@ public class Cart
   public Cart(String aCartID, Customer aCustomer)
   {
     cartID = aCartID;
-    items = new ArrayList<ClothingItem>();
-    if (aCustomer == null || aCustomer.getCart() != null)
+    items = new ArrayList<CartItem>();
+    boolean didAddCustomer = setCustomer(aCustomer);
+    if (!didAddCustomer)
     {
-      throw new RuntimeException("Unable to create Cart due to aCustomer. See https://manual.umple.org?RE002ViolationofAssociationMultiplicity.html");
+      throw new RuntimeException("Unable to create cart due to customer. See https://manual.umple.org?RE002ViolationofAssociationMultiplicity.html");
     }
-    customer = aCustomer;
-  }
-
-  public Cart(String aCartID, String aPersonRoleIDForCustomer, Person aPersonForCustomer, int aLoyaltyPointsForCustomer)
-  {
-    cartID = aCartID;
-    items = new ArrayList<ClothingItem>();
-    customer = new Customer(aPersonRoleIDForCustomer, aPersonForCustomer, aLoyaltyPointsForCustomer, this);
   }
 
   //------------------------
@@ -58,15 +51,15 @@ public class Cart
     return cartID;
   }
   /* Code from template association_GetMany */
-  public ClothingItem getItem(int index)
+  public CartItem getItem(int index)
   {
-    ClothingItem aItem = items.get(index);
+    CartItem aItem = items.get(index);
     return aItem;
   }
 
-  public List<ClothingItem> getItems()
+  public List<CartItem> getItems()
   {
-    List<ClothingItem> newItems = Collections.unmodifiableList(items);
+    List<CartItem> newItems = Collections.unmodifiableList(items);
     return newItems;
   }
 
@@ -82,7 +75,7 @@ public class Cart
     return has;
   }
 
-  public int indexOfItem(ClothingItem aItem)
+  public int indexOfItem(CartItem aItem)
   {
     int index = items.indexOf(aItem);
     return index;
@@ -98,7 +91,7 @@ public class Cart
     return 0;
   }
   /* Code from template association_AddManyToOptionalOne */
-  public boolean addItem(ClothingItem aItem)
+  public boolean addItem(CartItem aItem)
   {
     boolean wasAdded = false;
     if (items.contains(aItem)) { return false; }
@@ -120,7 +113,7 @@ public class Cart
     return wasAdded;
   }
 
-  public boolean removeItem(ClothingItem aItem)
+  public boolean removeItem(CartItem aItem)
   {
     boolean wasRemoved = false;
     if (items.contains(aItem))
@@ -132,7 +125,7 @@ public class Cart
     return wasRemoved;
   }
   /* Code from template association_AddIndexControlFunctions */
-  public boolean addItemAt(ClothingItem aItem, int index)
+  public boolean addItemAt(CartItem aItem, int index)
   {  
     boolean wasAdded = false;
     if(addItem(aItem))
@@ -146,7 +139,7 @@ public class Cart
     return wasAdded;
   }
 
-  public boolean addOrMoveItemAt(ClothingItem aItem, int index)
+  public boolean addOrMoveItemAt(CartItem aItem, int index)
   {
     boolean wasAdded = false;
     if(items.contains(aItem))
@@ -163,6 +156,34 @@ public class Cart
     }
     return wasAdded;
   }
+  /* Code from template association_SetOneToOptionalOne */
+  public boolean setCustomer(Customer aNewCustomer)
+  {
+    boolean wasSet = false;
+    if (aNewCustomer == null)
+    {
+      //Unable to setCustomer to null, as cart must always be associated to a customer
+      return wasSet;
+    }
+    
+    Cart existingCart = aNewCustomer.getCart();
+    if (existingCart != null && !equals(existingCart))
+    {
+      //Unable to setCustomer, the current customer already has a cart, which would be orphaned if it were re-assigned
+      return wasSet;
+    }
+    
+    Customer anOldCustomer = customer;
+    customer = aNewCustomer;
+    customer.setCart(this);
+
+    if (anOldCustomer != null)
+    {
+      anOldCustomer.setCart(null);
+    }
+    wasSet = true;
+    return wasSet;
+  }
 
   public void delete()
   {
@@ -174,7 +195,7 @@ public class Cart
     customer = null;
     if (existingCustomer != null)
     {
-      existingCustomer.delete();
+      existingCustomer.setCart(null);
     }
   }
 

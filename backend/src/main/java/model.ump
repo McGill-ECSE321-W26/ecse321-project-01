@@ -23,23 +23,15 @@ class Employee {
 
 class Customer {
   isA PersonRole;
+  address;
   int loyaltyPoints;
-  1 -- * Address addresses;
-  1 <@>- 1 Cart;
+  1 <@>- 0..1 Cart;
   1 -- * Order orders;
-}
-
-class Address {
-  addressID;
-  street;
-  city;
-  province;
-  postalCode;
 }
 
 class Cart {
   cartID;
-  1 -- * CartItem items;
+  0..1 -- * CartItem items;
 }
 
 class Order {
@@ -52,13 +44,14 @@ class Order {
   OrderStatus orderStatus;
   Date orderDate;
   Date deliveryDate;
-  0..1 -- * CartItem items;
+  address;
 }
 
 class CartItem {
   clothingItemID;
   int quantity;
-  * -- 1 ClothingVariant variants;
+  * -> 1 ClothingVariant variants;
+  * -> 0..1 Order;
 }
 
 class ClothingVariant {
@@ -72,7 +65,7 @@ class ClothingVariant {
   Size size;
   color;
   int stockQuantity;
-  * -- 1 ClothingModel model;
+  * -> 1 ClothingModel model;
 }
 
 class ClothingModel {
