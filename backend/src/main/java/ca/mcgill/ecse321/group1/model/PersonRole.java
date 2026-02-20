@@ -1,0 +1,113 @@
+/*PLEASE DO NOT EDIT THIS CODE*/
+/*This code was generated using the UMPLE 1.35.0.7523.c616a4dce modeling language!*/
+
+package ca.mcgill.ecse321.group1.model;
+
+import jakarta.persistence.*;
+
+// line 10 "../../../../../model.ump"
+@Entity
+@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS) // 1 table per concrete class, no need to have all PersonRole in one table
+public abstract class PersonRole
+{
+
+  //------------------------
+  // MEMBER VARIABLES
+  //------------------------
+
+  //PersonRole Attributes
+  @Id
+  @GeneratedValue(strategy = GenerationType.AUTO)
+  private String roleID;
+
+  //PersonRole Associations
+  @ManyToOne
+  private Person person;
+
+  //------------------------
+  // CONSTRUCTOR
+  //------------------------
+
+  public PersonRole() {}
+
+  public PersonRole(String aRoleID, Person aPerson)
+  {
+    roleID = aRoleID;
+    boolean didAddPerson = setPerson(aPerson);
+    if (!didAddPerson)
+    {
+      throw new RuntimeException("Unable to create role due to person. See https://manual.umple.org?RE002ViolationofAssociationMultiplicity.html");
+    }
+  }
+
+  //------------------------
+  // INTERFACE
+  //------------------------
+
+  public boolean setRoleID(String aRoleID)
+  {
+    boolean wasSet = false;
+    roleID = aRoleID;
+    wasSet = true;
+    return wasSet;
+  }
+
+  public String getRoleID()
+  {
+    return roleID;
+  }
+  /* Code from template association_GetOne */
+  public Person getPerson()
+  {
+    return person;
+  }
+  /* Code from template association_SetOneToAtMostN */
+  public boolean setPerson(Person aPerson)
+  {
+    boolean wasSet = false;
+    //Must provide person to role
+    if (aPerson == null)
+    {
+      return wasSet;
+    }
+
+    //person already at maximum (2)
+    if (aPerson.numberOfRoles() >= Person.maximumNumberOfRoles())
+    {
+      return wasSet;
+    }
+    
+    Person existingPerson = person;
+    person = aPerson;
+    if (existingPerson != null && !existingPerson.equals(aPerson))
+    {
+      boolean didRemove = existingPerson.removeRole(this);
+      if (!didRemove)
+      {
+        person = existingPerson;
+        return wasSet;
+      }
+    }
+    person.addRole(this);
+    wasSet = true;
+    return wasSet;
+  }
+
+  public void delete()
+  {
+    Person placeholderPerson = person;
+    this.person = null;
+    if(placeholderPerson != null)
+    {
+      placeholderPerson.removeRole(this);
+    }
+  }
+
+
+  public String toString()
+  {
+    return super.toString() + "["+
+            "roleID" + ":" + getRoleID()+ "]" + System.getProperties().getProperty("line.separator") +
+            "  " + "person = "+(getPerson()!=null?Integer.toHexString(System.identityHashCode(getPerson())):"null");
+  }
+}

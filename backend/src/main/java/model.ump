@@ -9,7 +9,7 @@ class Person {
 
 class PersonRole {
   abstract;
-  personRoleID;
+  roleID;
 }
 
 class Manager {
@@ -23,23 +23,10 @@ class Employee {
 
 class Customer {
   isA PersonRole;
+  address;
   int loyaltyPoints;
-  1 -- * Address addresses;
-  1 <@>- 1 Cart;
   1 -- * Order orders;
-}
-
-class Address {
-  addressID;
-  street;
-  city;
-  province;
-  postalCode;
-}
-
-class Cart {
-  cartID;
-  0..1 -- * ClothingItem items;
+  0..1 -- * Item;
 }
 
 class Order {
@@ -52,16 +39,18 @@ class Order {
   OrderStatus orderStatus;
   Date orderDate;
   Date deliveryDate;
-  0..1 -- * ClothingItem items;
+  address;
 }
 
-class ClothingItem {
-  clothingItemID;
-  * -- 1 ClothingItemProperties properties;
+class Item {
+  itemID;
+  int quantity;
+  * -> 1 ClothingVariant variants;
+  * -- 0..1 Order;
 }
 
-class ClothingItemProperties {
-  clothingItemPropertiesID;
+class ClothingVariant {
+  clothingVariantID;
   enum Size {
     S,
     M,
@@ -70,7 +59,7 @@ class ClothingItemProperties {
   }
   Size size;
   color;
-  int inStock;
+  int stockQuantity;
   * -- 1 ClothingModel model;
 }
 
