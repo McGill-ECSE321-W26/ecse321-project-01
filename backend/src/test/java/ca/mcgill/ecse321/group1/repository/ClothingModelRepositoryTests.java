@@ -36,7 +36,7 @@ public class ClothingModelRepositoryTests {
         String id = clothingModelTest.getClothingModelID();
 
         // Read ClothingModel from database
-        ClothingModel clothingModelTestFromDb = clothingModelRepository.findClothingModelById(id);
+        ClothingModel clothingModelTestFromDb = clothingModelRepository.findClothingModelByClothingModelID(id);
 
         // Assert correct response
         assertNotNull(clothingModelTestFromDb);
@@ -47,7 +47,7 @@ public class ClothingModelRepositoryTests {
     @Test
     public void testFindClothingModelByInvalidId() {
         // Attempt to find a model with a non-existent ID
-        ClothingModel result = clothingModelRepository.findClothingModelById("nonexistent");
+        ClothingModel result = clothingModelRepository.findClothingModelByClothingModelID("nonexistent");
 
         // Assert nothing is returned
         assertNull(result);
@@ -67,7 +67,7 @@ public class ClothingModelRepositoryTests {
         clothingModelRepository.save(model);
 
         // Read back and assert updated values
-        ClothingModel updatedModel = clothingModelRepository.findClothingModelById(id);
+        ClothingModel updatedModel = clothingModelRepository.findClothingModelByClothingModelID(id);
         assertNotNull(updatedModel);
 
         assertEquals("Gucci Updated", updatedModel.getName());
@@ -87,7 +87,7 @@ public class ClothingModelRepositoryTests {
         clothingModelRepository.delete(model);
 
         // Assert it no longer exists
-        ClothingModel deletedModel = clothingModelRepository.findClothingModelById(id);
+        ClothingModel deletedModel = clothingModelRepository.findClothingModelByClothingModelID(id);
         assertNull(deletedModel);
     }
 
@@ -126,7 +126,7 @@ public class ClothingModelRepositoryTests {
         model = clothingModelRepository.save(model);
         String id = model.getClothingModelID();
 
-        ClothingModel fromDb = clothingModelRepository.findClothingModelById(id);
+        ClothingModel fromDb = clothingModelRepository.findClothingModelByClothingModelID(id);
 
         assertNotNull(fromDb);
         assertEquals("FreeBrand", fromDb.getName());
@@ -142,7 +142,7 @@ public class ClothingModelRepositoryTests {
         model = clothingModelRepository.save(model);
         String id = model.getClothingModelID();
 
-        ClothingModel fromDb = clothingModelRepository.findClothingModelById(id);
+        ClothingModel fromDb = clothingModelRepository.findClothingModelByClothingModelID(id);
 
         assertNotNull(fromDb);
         assertEquals("LuxuryBrand", fromDb.getName());

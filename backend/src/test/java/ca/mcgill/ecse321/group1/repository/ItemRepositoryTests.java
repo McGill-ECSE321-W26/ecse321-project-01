@@ -3,7 +3,6 @@ package ca.mcgill.ecse321.group1.repository;
 import ca.mcgill.ecse321.group1.model.Employee;
 import ca.mcgill.ecse321.group1.model.Item;
 import ca.mcgill.ecse321.group1.model.*;
-import org.antlr.v4.runtime.misc.LogManager;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -70,7 +69,7 @@ public class ItemRepositoryTests {
         String id = itemTest.getItemID();
 
         // Read item from database
-        Item itemTestFromDb = itemRepository.findByItemID(id);
+        Item itemTestFromDb = itemRepository.findItemByItemID(id);
 
         // Assert correct response
         assertNotNull(itemTestFromDb);
@@ -80,7 +79,7 @@ public class ItemRepositoryTests {
 
     @Test
     public void testFindItemByInvalidId() {
-        Item result = itemRepository.findByItemID("nonexistent-id");
+        Item result = itemRepository.findItemByItemID("nonexistent-id");
         assertNull(result);
     }
 
@@ -97,7 +96,7 @@ public class ItemRepositoryTests {
         itemRepository.save(item);
 
         // Read back and assert
-        Item updatedItem = itemRepository.findByItemID(id);
+        Item updatedItem = itemRepository.findItemByItemID(id);
         assertNotNull(updatedItem);
         assertEquals(99, updatedItem.getQuantity());
     }
@@ -113,7 +112,7 @@ public class ItemRepositoryTests {
         item = itemRepository.save(item);
         String id = item.getItemID();
 
-        Item fromDb = itemRepository.findByItemID(id);
+        Item fromDb = itemRepository.findItemByItemID(id);
         assertNotNull(fromDb);
         assertEquals(quantity, fromDb.getQuantity());
         assertEquals(price, fromDb.getPrice());
@@ -129,7 +128,7 @@ public class ItemRepositoryTests {
 
         itemRepository.delete(item);
 
-        Item deletedItem = itemRepository.findByItemID(id);
+        Item deletedItem = itemRepository.findItemByItemID(id);
         assertNull(deletedItem);
     }
 
@@ -165,7 +164,7 @@ public class ItemRepositoryTests {
         item = itemRepository.save(item);
         String id = item.getItemID();
 
-        Item fromDb = itemRepository.findByItemID(id);
+        Item fromDb = itemRepository.findItemByItemID(id);
         assertNotNull(fromDb);
         assertEquals(0, fromDb.getQuantity());
     }
@@ -204,7 +203,7 @@ public class ItemRepositoryTests {
         item = itemRepository.save(item);
         String id = item.getItemID();
 
-        Item fromDb = itemRepository.findByItemID(id);
+        Item fromDb = itemRepository.findItemByItemID(id);
         assertNotNull(fromDb);
         assertNotNull(fromDb.getClothingVariant());
         assertEquals(variant.getClothingVariantID(), fromDb.getClothingVariant().getClothingVariantID());
@@ -258,7 +257,7 @@ public class ItemRepositoryTests {
         String itemID = item.getItemID();
 
         // Read back and assert
-        Item fromDb = itemRepository.findByItemID(itemID);
+        Item fromDb = itemRepository.findItemByItemID(itemID);
         assertNotNull(fromDb);
         assertTrue(fromDb.hasOrder());
         assertEquals(orderID, fromDb.getOrder().getOrderID());
@@ -292,7 +291,7 @@ public class ItemRepositoryTests {
         String itemID = item.getItemID();
 
         // Read back and assert
-        Item fromDb = itemRepository.findByItemID(itemID);
+        Item fromDb = itemRepository.findItemByItemID(itemID);
         assertNotNull(fromDb);
         assertTrue(fromDb.hasCustomer());
         assertEquals(customerRoleID, fromDb.getCustomer().getRoleID());
@@ -309,7 +308,7 @@ public class ItemRepositoryTests {
         item = itemRepository.save(item);
         String id = item.getItemID();
 
-        Item fromDb = itemRepository.findByItemID(id);
+        Item fromDb = itemRepository.findItemByItemID(id);
         assertNotNull(fromDb);
         assertFalse(fromDb.hasOrder());
         assertFalse(fromDb.hasCustomer());
