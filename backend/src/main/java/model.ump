@@ -48,7 +48,7 @@ class Order {
 }
 
 class CartItem {
-  clothingItemID;
+  cartItemID;
   int quantity;
   * -> 1 ClothingVariant variants;
   * -> 0..1 Order;

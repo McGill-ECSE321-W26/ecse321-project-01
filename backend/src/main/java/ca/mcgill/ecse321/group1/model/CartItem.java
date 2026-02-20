@@ -15,7 +15,7 @@ public class CartItem
 
   //CartItem Attributes
   @Id
-  private String clothingItemID;
+  private String cartItemID;
   private int quantity;
 
   //CartItem Associations
@@ -32,9 +32,9 @@ public class CartItem
 
   public CartItem() {}
 
-  public CartItem(String aClothingItemID, int aQuantity, ClothingVariant aVariants)
+  public CartItem(String aCartItemID, int aQuantity, ClothingVariant aVariants)
   {
-    clothingItemID = aClothingItemID;
+    cartItemID = aCartItemID;
     quantity = aQuantity;
     if (!setVariants(aVariants))
     {
@@ -46,10 +46,10 @@ public class CartItem
   // INTERFACE
   //------------------------
 
-  public boolean setClothingItemID(String aClothingItemID)
+  public boolean setCartItemID(String aCartItemID)
   {
     boolean wasSet = false;
-    clothingItemID = aClothingItemID;
+    cartItemID = aCartItemID;
     wasSet = true;
     return wasSet;
   }
@@ -62,9 +62,9 @@ public class CartItem
     return wasSet;
   }
 
-  public String getClothingItemID()
+  public String getCartItemID()
   {
-    return clothingItemID;
+    return cartItemID;
   }
 
   public int getQuantity()
@@ -151,7 +151,7 @@ public class CartItem
   public String toString()
   {
     return super.toString() + "["+
-            "clothingItemID" + ":" + getClothingItemID()+ "," +
+            "cartItemID" + ":" + getCartItemID()+ "," +
             "quantity" + ":" + getQuantity()+ "]" + System.getProperties().getProperty("line.separator") +
             "  " + "variants = "+(getVariants()!=null?Integer.toHexString(System.identityHashCode(getVariants())):"null") + System.getProperties().getProperty("line.separator") +
             "  " + "order = "+(getOrder()!=null?Integer.toHexString(System.identityHashCode(getOrder())):"null") + System.getProperties().getProperty("line.separator") +
