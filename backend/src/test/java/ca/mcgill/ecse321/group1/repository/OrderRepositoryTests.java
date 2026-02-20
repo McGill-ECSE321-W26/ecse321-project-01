@@ -57,7 +57,7 @@ public class OrderRepositoryTests {
         String id = orderTest.getOrderID();
 
         // Read order from database
-        Order orderTestFromDb = orderRepository.findOrderById(id);
+        Order orderTestFromDb = orderRepository.findOrderByOrderID(id);
 
         // Assert correct response
         assertNotNull(orderTestFromDb);
@@ -70,7 +70,7 @@ public class OrderRepositoryTests {
 
     @Test
     public void testFindOrderByInvalidId() {
-        Order result = orderRepository.findOrderById("nonexistent-id-999");
+        Order result = orderRepository.findOrderByOrderID("nonexistent-id-999");
         assertNull(result);
     }
 
@@ -91,7 +91,7 @@ public class OrderRepositoryTests {
         order.setLoyaltySaving(25.00f);
         orderRepository.save(order);
 
-        Order updatedOrder = orderRepository.findOrderById(id);
+        Order updatedOrder = orderRepository.findOrderByOrderID(id);
         assertNotNull(updatedOrder);
         assertEquals(Order.OrderStatus.Delivered, updatedOrder.getOrderStatus());
         assertEquals("789 New Ave", updatedOrder.getAddress());
@@ -110,7 +110,7 @@ public class OrderRepositoryTests {
 
         orderRepository.delete(order);
 
-        Order deletedOrder = orderRepository.findOrderById(id);
+        Order deletedOrder = orderRepository.findOrderByOrderID(id);
         assertNull(deletedOrder);
     }
 
@@ -146,7 +146,7 @@ public class OrderRepositoryTests {
             order.setAddress("Test Address");
             order = orderRepository.save(order);
 
-            Order fromDb = orderRepository.findOrderById(order.getOrderID());
+            Order fromDb = orderRepository.findOrderByOrderID(order.getOrderID());
             assertNotNull(fromDb);
             assertEquals(status, fromDb.getOrderStatus());
         }
@@ -166,7 +166,7 @@ public class OrderRepositoryTests {
         order = orderRepository.save(order);
         String id = order.getOrderID();
 
-        Order fromDb = orderRepository.findOrderById(id);
+        Order fromDb = orderRepository.findOrderByOrderID(id);
         assertNotNull(fromDb);
         assertEquals(0f, fromDb.getLoyaltySaving());
     }
@@ -226,7 +226,7 @@ public class OrderRepositoryTests {
         String id = order.getOrderID();
 
         // Read back and assert
-        Order fromDb = orderRepository.findOrderById(id);
+        Order fromDb = orderRepository.findOrderByOrderID(id);
         assertNotNull(fromDb);
         assertNotNull(fromDb.getCustomer());
         assertNotNull(fromDb.getEmployee());
@@ -256,7 +256,7 @@ public class OrderRepositoryTests {
 
         //  the bidirectional association between order and items allows it to have an accurate numberOfItems value
         // when simply doing item.setOrder(order)
-        Order fromDb = orderRepository.findOrderById(order.getOrderID());
+        Order fromDb = orderRepository.findOrderByOrderID(order.getOrderID());
         assertNotNull(fromDb);
         assertTrue(fromDb.hasItems());
         assertEquals(2, fromDb.numberOfItems());

@@ -6,7 +6,7 @@ import org.springframework.data.repository.CrudRepository;
 
 public interface ClothingModelRepository extends CrudRepository<ClothingModel, Integer>{
 
-    ClothingModel findClothingModelById(String id);
+    ClothingModel findClothingModelByClothingModelID(String id);
 
 }
 
