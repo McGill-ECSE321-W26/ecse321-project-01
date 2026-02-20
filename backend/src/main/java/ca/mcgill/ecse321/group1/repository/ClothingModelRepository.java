@@ -3,11 +3,7 @@ package ca.mcgill.ecse321.group1.repository;
 import ca.mcgill.ecse321.group1.model.ClothingModel;
 import org.springframework.data.repository.CrudRepository;
 
+public interface ClothingModelRepository extends CrudRepository<ClothingModel, Integer> {
 
-public interface ClothingModelRepository extends CrudRepository<ClothingModel, Integer>{
-
-    ClothingModel findClothingModelByClothingModelID(String id);
-
+  ClothingModel findClothingModelByClothingModelID(String id);
 }
-
-
