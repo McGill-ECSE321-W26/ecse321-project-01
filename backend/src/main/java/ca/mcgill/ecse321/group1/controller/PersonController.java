@@ -2,7 +2,6 @@ package ca.mcgill.ecse321.group1.controller;
 
 import ca.mcgill.ecse321.group1.model.Person;
 import ca.mcgill.ecse321.group1.service.PersonService;
-import java.util.List;
 import org.springframework.web.bind.annotation.*;
 
 @RequestMapping("api/person")
@@ -16,7 +15,7 @@ public class PersonController {
   }
 
   @GetMapping
-  public List<Person> getPeople() {
+  public Iterable<Person> getPeople() {
     return personService.getPeople();
   }
 
