@@ -7,7 +7,7 @@ import jakarta.persistence.*;
 
 // line 10 "../../../../../model.ump"
 @Entity
-@Inheritance(strategy = InheritanceType.JOINED)
+@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS) // 1 table per concrete class, no need to have all PersonRole in one table
 public abstract class PersonRole
 {
 
