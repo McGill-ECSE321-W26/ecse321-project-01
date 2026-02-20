@@ -22,6 +22,7 @@ public class Order
 
   //Order Attributes
   @Id
+  @GeneratedValue(strategy = GenerationType.AUTO)
   private String orderID;
   private OrderStatus orderStatus;
   private Date orderDate;

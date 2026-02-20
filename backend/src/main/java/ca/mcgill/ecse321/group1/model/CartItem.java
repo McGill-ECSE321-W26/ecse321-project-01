@@ -15,6 +15,7 @@ public class CartItem
 
   //CartItem Attributes
   @Id
+  @GeneratedValue(strategy = GenerationType.AUTO)
   private String cartItemID;
   private int quantity;
 

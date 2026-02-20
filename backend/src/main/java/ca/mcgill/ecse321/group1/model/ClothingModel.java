@@ -15,6 +15,7 @@ public class ClothingModel
 
   //ClothingModel Attributes
   @Id
+  @GeneratedValue(strategy = GenerationType.AUTO)
   private String clothingModelID;
   private String name;
   private float price;

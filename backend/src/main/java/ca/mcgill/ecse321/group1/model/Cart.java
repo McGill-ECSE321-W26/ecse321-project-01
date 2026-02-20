@@ -16,6 +16,7 @@ public class Cart
 
   //Cart Attributes
   @Id
+  @GeneratedValue(strategy = GenerationType.AUTO)
   private String cartID;
 
   //Cart Associations

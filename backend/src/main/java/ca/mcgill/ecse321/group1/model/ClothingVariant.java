@@ -21,6 +21,7 @@ public class ClothingVariant
 
   //ClothingVariant Attributes
   @Id
+  @GeneratedValue(strategy = GenerationType.AUTO)
   private String clothingVariantID;
   private Size size;
   private String color;

@@ -16,6 +16,7 @@ public abstract class PersonRole
 
   //PersonRole Attributes
   @Id
+  @GeneratedValue(strategy = GenerationType.AUTO)
   private String personRoleID;
 
   //PersonRole Associations

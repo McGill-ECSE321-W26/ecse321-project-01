@@ -16,6 +16,7 @@ public class Person
 
   //Person Attributes
   @Id
+  @GeneratedValue(strategy = GenerationType.AUTO)
   private String personID;
   private String email;
   private String password;
