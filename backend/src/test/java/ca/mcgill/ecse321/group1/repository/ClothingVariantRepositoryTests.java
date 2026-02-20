@@ -40,9 +40,9 @@ public class ClothingVariantRepositoryTests {
 
     // Assert correct response
     assertNotNull(clothingVariantTestFromDb);
-    assertEquals(clothingVariantTestFromDb.getSize(), size);
-    assertEquals(clothingVariantTestFromDb.getColor(), color);
-    assertEquals(clothingVariantTestFromDb.getStockQuantity(), stockQuantity);
+    assertEquals(size, clothingVariantTestFromDb.getSize());
+    assertEquals(color, clothingVariantTestFromDb.getColor());
+    assertEquals(stockQuantity, clothingVariantTestFromDb.getStockQuantity());
   }
 
   @Test
@@ -60,7 +60,6 @@ public class ClothingVariantRepositoryTests {
     variant.setColor("Red");
     variant.setStockQuantity(10);
     variant = clothingVariantRepository.save(variant);
-    String id = variant.getClothingVariantID();
     // Update fields
     variant.setSize(ClothingVariant.Size.XL);
     variant.setColor("Blue");
@@ -68,6 +67,7 @@ public class ClothingVariantRepositoryTests {
     clothingVariantRepository.save(variant);
 
     // Read back and assert
+    String id = variant.getClothingVariantID();
     ClothingVariant updatedVariant =
         clothingVariantRepository.findClothingVariantByClothingVariantID(id);
     assertNotNull(updatedVariant);

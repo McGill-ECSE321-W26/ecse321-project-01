@@ -59,13 +59,13 @@ public class ClothingModelRepositoryTests {
     model.setName("Gucci");
     model.setPrice(12000f);
     model = clothingModelRepository.save(model);
-    String id = model.getClothingModelID();
     // Update fields
     model.setName("Gucci Updated");
     model.setPrice(9999f);
     clothingModelRepository.save(model);
 
     // Read back and assert updated values
+    String id = model.getClothingModelID();
     ClothingModel updatedModel = clothingModelRepository.findClothingModelByClothingModelID(id);
     assertNotNull(updatedModel);
 

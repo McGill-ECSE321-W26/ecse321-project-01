@@ -4,7 +4,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
+import ca.mcgill.ecse321.group1.model.Customer;
 import ca.mcgill.ecse321.group1.model.Person;
+import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,9 +16,11 @@ import org.springframework.boot.test.context.SpringBootTest;
 public class PersonRepositoryTests {
 
   @Autowired private PersonRepository personRepository;
+  @Autowired private CustomerRepository customerRepository;
 
   @AfterEach
   public void clearDatabase() {
+    customerRepository.deleteAll();
     personRepository.deleteAll();
   }
 
@@ -91,5 +95,32 @@ public class PersonRepositoryTests {
 
     // Assertions
     assertNull(personFromDb);
+  }
+
+  @Test
+  @Transactional
+  public void testPersonRolesReference() {
+    // Create and save person
+    String email = "roles_test@example.com";
+    Person person = new Person();
+    person.setEmail(email);
+    person.setPassword("testpassword");
+    personRepository.save(person);
+
+    // Create and save a customer linked to that person
+    Customer customer = new Customer();
+    customer.setPerson(person);
+    customer.setAddress("123 Test St");
+    customer.setLoyaltyPoints(0);
+    customerRepository.save(customer);
+
+    String expectedRoleID = customer.getRoleID();
+
+    // Reload person and verify the roles reference
+    Person personFromDb = personRepository.findPersonByEmail(email);
+
+    assertNotNull(personFromDb);
+    assertEquals(1, personFromDb.numberOfRoles());
+    assertEquals(expectedRoleID, personFromDb.getRole(0).getRoleID());
   }
 }
