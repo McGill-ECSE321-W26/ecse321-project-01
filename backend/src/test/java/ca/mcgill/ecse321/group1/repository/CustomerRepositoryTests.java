@@ -123,6 +123,7 @@ public class CustomerRepositoryTests {
   }
 
   @Test
+  @Transactional
   public void testCustomerOrdersReference() {
     // Create and save person and customer
     Person person = new Person();
@@ -155,6 +156,7 @@ public class CustomerRepositoryTests {
   }
 
   @Test
+  @Transactional
   public void testCustomerItemsReference() {
     // Create and save person and customer
     Person person = new Person();

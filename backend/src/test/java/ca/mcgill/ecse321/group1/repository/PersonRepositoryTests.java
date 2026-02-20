@@ -98,6 +98,7 @@ public class PersonRepositoryTests {
   }
 
   @Test
+  @Transactional
   public void testPersonRolesReference() {
     // Create and save person
     String email = "roles_test@example.com";

@@ -86,6 +86,7 @@ public class EmployeeRepositoryTests {
   }
 
   @Test
+  @Transactional
   public void testEmployeeOrdersReference() {
     // Create and save person and employee
     Person person = new Person();

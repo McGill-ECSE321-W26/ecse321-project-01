@@ -83,6 +83,7 @@ public class ManagerRepositoryTests {
   }
 
   @Test
+  @Transactional
   public void testManagerPersonReference() {
     // Create and save person and manager
     Person person = new Person();
