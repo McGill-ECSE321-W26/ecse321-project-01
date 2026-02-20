@@ -39,12 +39,14 @@ class Order {
   OrderStatus orderStatus;
   Date orderDate;
   Date deliveryDate;
+  float loyaltySaving;
   address;
 }
 
 class Item {
   itemID;
   int quantity;
+  float price;
   * -> 1 ClothingVariant variants;
   * -- 0..1 Order;
 }
