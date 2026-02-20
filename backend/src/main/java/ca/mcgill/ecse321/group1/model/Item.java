@@ -23,7 +23,7 @@ public class Item
 
   //Item Associations
   @ManyToOne
-  private ClothingVariant variants;
+  private ClothingVariant clothingVariant;
   @ManyToOne
   private Order order;
   @ManyToOne
@@ -35,14 +35,14 @@ public class Item
 
   public Item() {}
 
-  public Item(String aItemID, int aQuantity, float aPrice, ClothingVariant aVariants)
+  public Item(String aItemID, int aQuantity, float aPrice, ClothingVariant aClothingVariant)
   {
     itemID = aItemID;
     quantity = aQuantity;
     price = aPrice;
-    if (!setVariants(aVariants))
+    if (!setClothingVariant(aClothingVariant))
     {
-      throw new RuntimeException("Unable to create Item due to aVariants. See https://manual.umple.org?RE002ViolationofAssociationMultiplicity.html");
+      throw new RuntimeException("Unable to create Item due to aClothingVariant. See https://manual.umple.org?RE002ViolationofAssociationMultiplicity.html");
     }
   }
 
@@ -89,9 +89,9 @@ public class Item
     return price;
   }
   /* Code from template association_GetOne */
-  public ClothingVariant getVariants()
+  public ClothingVariant getClothingVariant()
   {
-    return variants;
+    return clothingVariant;
   }
   /* Code from template association_GetOne */
   public Order getOrder()
@@ -116,12 +116,12 @@ public class Item
     return has;
   }
   /* Code from template association_SetUnidirectionalOne */
-  public boolean setVariants(ClothingVariant aNewVariants)
+  public boolean setClothingVariant(ClothingVariant aNewClothingVariant)
   {
     boolean wasSet = false;
-    if (aNewVariants != null)
+    if (aNewClothingVariant != null)
     {
-      variants = aNewVariants;
+      clothingVariant = aNewClothingVariant;
       wasSet = true;
     }
     return wasSet;
@@ -163,7 +163,7 @@ public class Item
 
   public void delete()
   {
-    variants = null;
+    clothingVariant = null;
     if (order != null)
     {
       Order placeholderOrder = order;
@@ -185,7 +185,7 @@ public class Item
             "itemID" + ":" + getItemID()+ "," +
             "quantity" + ":" + getQuantity()+ "," +
             "price" + ":" + getPrice()+ "]" + System.getProperties().getProperty("line.separator") +
-            "  " + "variants = "+(getVariants()!=null?Integer.toHexString(System.identityHashCode(getVariants())):"null") + System.getProperties().getProperty("line.separator") +
+            "  " + "clothingVariant = "+(getClothingVariant()!=null?Integer.toHexString(System.identityHashCode(getClothingVariant())):"null") + System.getProperties().getProperty("line.separator") +
             "  " + "order = "+(getOrder()!=null?Integer.toHexString(System.identityHashCode(getOrder())):"null") + System.getProperties().getProperty("line.separator") +
             "  " + "customer = "+(getCustomer()!=null?Integer.toHexString(System.identityHashCode(getCustomer())):"null");
   }
