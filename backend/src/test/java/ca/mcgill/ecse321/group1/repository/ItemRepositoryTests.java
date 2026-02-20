@@ -214,10 +214,14 @@ public class ItemRepositoryTests {
     @Test
     public void testItemPersistsWithOrder() {
         // Person is required for both Customer and Employee (via PersonRole)
-        Person customerPerson = new Person("personTemp", "customer@example.com", "pass1");
+        Person customerPerson = new Person();
+        customerPerson.setEmail("customer@example.com");
+        customerPerson.setPassword("pass1");
         personRepository.save(customerPerson);
 
-        Person employeePerson = new Person("person-2", "employee@example.com", "pass2");
+        Person employeePerson = new Person();
+        employeePerson.setEmail("employee@example.com");
+        employeePerson.setPassword("pass2");
         personRepository.save(employeePerson);
 
         // Customer and Employee both require a Person
@@ -262,8 +266,9 @@ public class ItemRepositoryTests {
     @Test
     public void testItemPersistsWithCustomer() {
         // Person is required for Customer (via PersonRole)
-        //parameter: String aPersonID, String aEmail, String aPassword
-        Person person = new Person("person-3","shopper@example.com", "pass3");
+        Person person = new Person();
+        person.setEmail("shopper@example.com");
+        person.setPassword("pass3");
         personRepository.save(person);
 
         // Customer requires a Person

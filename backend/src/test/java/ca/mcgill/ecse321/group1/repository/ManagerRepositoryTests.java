@@ -28,7 +28,9 @@ public class ManagerRepositoryTests {
   @Test
   public void testPersistAndLoadManager() {
     // Create and save person
-    Person person = new Person("mgr_person_1", "manager@example.com", "mgrpassword");
+    Person person = new Person();
+    person.setEmail("manager@example.com");
+    person.setPassword("mgrpassword");
     personRepository.save(person);
 
     // Create and save manager
@@ -57,7 +59,9 @@ public class ManagerRepositoryTests {
   @Test
   public void testDeleteManager() {
     // Create and save person
-    Person person = new Person("mgr_person_2", "manager2@example.com", "password");
+    Person person = new Person();
+    person.setEmail("manager2@example.com");
+    person.setPassword("password");
     personRepository.save(person);
 
     // Create and save manager

@@ -28,7 +28,9 @@ public class CustomerRepositoryTests {
   @Test
   public void testPersistAndLoadCustomer() {
     // Create and save person
-    Person person = new Person("customer_person_1", "customer@example.com", "password");
+    Person person = new Person();
+    person.setEmail("customer@example.com");
+    person.setPassword("password");
     personRepository.save(person);
 
     // Create and save customer
@@ -61,7 +63,9 @@ public class CustomerRepositoryTests {
   @Test
   public void testUpdateCustomer() {
     // Create and save person
-    Person person = new Person("customer_person_2", "update@example.com", "password");
+    Person person = new Person();
+    person.setEmail("update@example.com");
+    person.setPassword("password");
     personRepository.save(person);
 
     // Create and save customer
@@ -90,7 +94,9 @@ public class CustomerRepositoryTests {
   @Test
   public void testDeleteCustomer() {
     // Create and save person
-    Person person = new Person("customer_person_3", "delete@example.com", "password");
+    Person person = new Person();
+    person.setEmail("delete@example.com");
+    person.setPassword("password");
     personRepository.save(person);
 
     // Create and save customer

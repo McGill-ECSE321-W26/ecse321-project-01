@@ -45,7 +45,9 @@ public class Order
   // CONSTRUCTOR
   //------------------------
 
-  public Order() {}
+  public Order() {
+    items = new ArrayList<Item>();
+  }
 
   public Order(String aOrderID, OrderStatus aOrderStatus, Date aOrderDate, Date aDeliveryDate, float aLoyaltySaving, String aAddress, Employee aEmployee, Customer aCustomer)
   {

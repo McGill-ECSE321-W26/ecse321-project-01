@@ -30,7 +30,9 @@ public class Person
   // CONSTRUCTOR
   //------------------------
 
-  public Person() {}
+  public Person() {
+    roles = new ArrayList<PersonRole>();
+  }
 
   public Person(String aPersonID, String aEmail, String aPassword)
   {
