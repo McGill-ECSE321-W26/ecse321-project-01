@@ -3,8 +3,10 @@
 
 package ca.mcgill.ecse321.group1.model;
 import java.util.*;
+import jakarta.persistence.*;
 
 // line 66 "../../../../../model.ump"
+@Entity
 public class ClothingModel
 {
 
@@ -13,16 +15,21 @@ public class ClothingModel
   //------------------------
 
   //ClothingModel Attributes
+  @Id
+  @GeneratedValue(strategy = GenerationType.AUTO)
   private String clothingModelID;
   private String name;
   private float price;
 
   //ClothingModel Associations
+  @OneToMany(mappedBy = "model", cascade = {CascadeType.ALL})
   private List<ClothingVariant> clothingVariants;
 
   //------------------------
   // CONSTRUCTOR
   //------------------------
+
+  public ClothingModel() {}
 
   public ClothingModel(String aClothingModelID, String aName, float aPrice)
   {

@@ -3,7 +3,10 @@
 
 package ca.mcgill.ecse321.group1.model;
 
+import jakarta.persistence.*;
+
 // line 45 "../../../../../model.ump"
+@Entity
 public class Item
 {
 
@@ -12,17 +15,24 @@ public class Item
   //------------------------
 
   //Item Attributes
+  @Id
+  @GeneratedValue(strategy = GenerationType.AUTO)
   private String itemID;
   private int quantity;
 
   //Item Associations
+  @ManyToOne
   private ClothingVariant variants;
+  @ManyToOne
   private Order order;
+  @ManyToOne
   private Customer customer;
 
   //------------------------
   // CONSTRUCTOR
   //------------------------
+
+  public Item() {}
 
   public Item(String aItemID, int aQuantity, ClothingVariant aVariants)
   {

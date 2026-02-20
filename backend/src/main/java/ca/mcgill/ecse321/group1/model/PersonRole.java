@@ -3,7 +3,11 @@
 
 package ca.mcgill.ecse321.group1.model;
 
+import jakarta.persistence.*;
+
 // line 10 "../../../../../model.ump"
+@Entity
+@Inheritance(strategy = InheritanceType.JOINED)
 public abstract class PersonRole
 {
 
@@ -12,14 +16,19 @@ public abstract class PersonRole
   //------------------------
 
   //PersonRole Attributes
+  @Id
+  @GeneratedValue(strategy = GenerationType.AUTO)
   private String roleID;
 
   //PersonRole Associations
+  @ManyToOne
   private Person person;
 
   //------------------------
   // CONSTRUCTOR
   //------------------------
+
+  public PersonRole() {}
 
   public PersonRole(String aRoleID, Person aPerson)
   {

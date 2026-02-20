@@ -4,8 +4,10 @@
 package ca.mcgill.ecse321.group1.model;
 import java.sql.Date;
 import java.util.*;
+import jakarta.persistence.*;
 
 // line 32 "../../../../../model.ump"
+@Entity
 public class Order
 {
 
@@ -20,20 +22,28 @@ public class Order
   //------------------------
 
   //Order Attributes
+  @Id
+  @GeneratedValue(strategy = GenerationType.AUTO)
   private String orderID;
+  @Enumerated(EnumType.STRING)
   private OrderStatus orderStatus;
   private Date orderDate;
   private Date deliveryDate;
   private String address;
 
   //Order Associations
+  @ManyToOne
   private Employee employee;
+  @ManyToOne
   private Customer customer;
+  @OneToMany(mappedBy = "order", cascade = {CascadeType.ALL})
   private List<Item> items;
 
   //------------------------
   // CONSTRUCTOR
   //------------------------
+
+  public Order() {}
 
   public Order(String aOrderID, OrderStatus aOrderStatus, Date aOrderDate, Date aDeliveryDate, String aAddress, Employee aEmployee, Customer aCustomer)
   {

@@ -4,8 +4,10 @@
 package ca.mcgill.ecse321.group1.model;
 import java.util.*;
 import java.sql.Date;
+import jakarta.persistence.*;
 
 // line 24 "../../../../../model.ump"
+@Entity
 public class Customer extends PersonRole
 {
 
@@ -18,12 +20,16 @@ public class Customer extends PersonRole
   private int loyaltyPoints;
 
   //Customer Associations
+  @OneToMany(mappedBy = "customer")
   private List<Order> orders;
+  @OneToMany(mappedBy = "customer")
   private List<Item> items;
 
   //------------------------
   // CONSTRUCTOR
   //------------------------
+
+  public Customer() {}
 
   public Customer(String aRoleID, Person aPerson, String aAddress, int aLoyaltyPoints)
   {

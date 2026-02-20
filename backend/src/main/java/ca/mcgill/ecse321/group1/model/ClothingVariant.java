@@ -3,7 +3,10 @@
 
 package ca.mcgill.ecse321.group1.model;
 
+import jakarta.persistence.*;
+
 // line 52 "../../../../../model.ump"
+@Entity
 public class ClothingVariant
 {
 
@@ -18,17 +21,23 @@ public class ClothingVariant
   //------------------------
 
   //ClothingVariant Attributes
+  @Id
+  @GeneratedValue(strategy = GenerationType.AUTO)
   private String clothingVariantID;
+  @Enumerated(EnumType.STRING)
   private Size size;
   private String color;
   private int stockQuantity;
 
   //ClothingVariant Associations
+  @ManyToOne
   private ClothingModel model;
 
   //------------------------
   // CONSTRUCTOR
   //------------------------
+
+  public ClothingVariant() {}
 
   public ClothingVariant(String aClothingVariantID, Size aSize, String aColor, int aStockQuantity, ClothingModel aModel)
   {

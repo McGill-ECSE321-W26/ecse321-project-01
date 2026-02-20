@@ -3,7 +3,10 @@
 
 package ca.mcgill.ecse321.group1.model;
 
+import jakarta.persistence.*;
+
 // line 15 "../../../../../model.ump"
+@Entity
 public class Manager extends PersonRole
 {
 
@@ -14,6 +17,8 @@ public class Manager extends PersonRole
   //------------------------
   // CONSTRUCTOR
   //------------------------
+
+  public Manager() {}
 
   public Manager(String aRoleID, Person aPerson)
   {
