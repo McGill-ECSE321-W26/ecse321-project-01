@@ -70,9 +70,9 @@ public class Employee extends PersonRole
     return 0;
   }
   /* Code from template association_AddManyToOne */
-  public Order addPreparingOrder(String aOrderID, Order.OrderStatus aOrderStatus, Date aOrderDate, Date aDeliveryDate, String aAddress, Customer aCustomer)
+  public Order addPreparingOrder(String aOrderID, Order.OrderStatus aOrderStatus, Date aOrderDate, Date aDeliveryDate, float aLoyaltySaving, String aAddress, Customer aCustomer)
   {
-    return new Order(aOrderID, aOrderStatus, aOrderDate, aDeliveryDate, aAddress, this, aCustomer);
+    return new Order(aOrderID, aOrderStatus, aOrderDate, aDeliveryDate, aLoyaltySaving, aAddress, this, aCustomer);
   }
 
   public boolean addPreparingOrder(Order aPreparingOrder)
