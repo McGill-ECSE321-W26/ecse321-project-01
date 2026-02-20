@@ -3,8 +3,10 @@
 
 package ca.mcgill.ecse321.group1.model;
 import java.util.*;
+import jakarta.persistence.*;
 
 // line 32 "../../../../../model.ump"
+@Entity
 public class Cart
 {
 
@@ -13,15 +15,20 @@ public class Cart
   //------------------------
 
   //Cart Attributes
+  @Id
   private String cartID;
 
   //Cart Associations
+  @OneToMany(mappedBy="cart", cascade=CascadeType.ALL)
   private List<CartItem> items;
+  @OneToOne(optional=false)
   private Customer customer;
 
   //------------------------
   // CONSTRUCTOR
   //------------------------
+
+  public Cart() {}
 
   public Cart(String aCartID, Customer aCustomer)
   {

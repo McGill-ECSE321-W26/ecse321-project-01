@@ -2,8 +2,10 @@
 /*This code was generated using the UMPLE 1.35.0.7523.c616a4dce modeling language!*/
 
 package ca.mcgill.ecse321.group1.model;
+import jakarta.persistence.*;
 
 // line 71 "../../../../../model.ump"
+@Entity
 public class ClothingModel
 {
 
@@ -12,6 +14,7 @@ public class ClothingModel
   //------------------------
 
   //ClothingModel Attributes
+  @Id
   private String clothingModelID;
   private String name;
   private float price;
@@ -19,6 +22,8 @@ public class ClothingModel
   //------------------------
   // CONSTRUCTOR
   //------------------------
+
+  public ClothingModel() {}
 
   public ClothingModel(String aClothingModelID, String aName, float aPrice)
   {

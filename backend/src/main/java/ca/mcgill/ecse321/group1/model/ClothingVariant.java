@@ -2,8 +2,10 @@
 /*This code was generated using the UMPLE 1.35.0.7523.c616a4dce modeling language!*/
 
 package ca.mcgill.ecse321.group1.model;
+import jakarta.persistence.*;
 
 // line 57 "../../../../../model.ump"
+@Entity
 public class ClothingVariant
 {
 
@@ -18,17 +20,21 @@ public class ClothingVariant
   //------------------------
 
   //ClothingVariant Attributes
+  @Id
   private String clothingVariantID;
   private Size size;
   private String color;
   private int stockQuantity;
 
   //ClothingVariant Associations
+  @ManyToOne
   private ClothingModel model;
 
   //------------------------
   // CONSTRUCTOR
   //------------------------
+
+  public ClothingVariant() {}
 
   public ClothingVariant(String aClothingVariantID, Size aSize, String aColor, int aStockQuantity, ClothingModel aModel)
   {

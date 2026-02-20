@@ -2,8 +2,11 @@
 /*This code was generated using the UMPLE 1.35.0.7523.c616a4dce modeling language!*/
 
 package ca.mcgill.ecse321.group1.model;
+import jakarta.persistence.*;
 
 // line 10 "../../../../../model.ump"
+@Entity
+@Inheritance(strategy=InheritanceType.TABLE_PER_CLASS) // No need to have abstract PersonRole mapped as table
 public abstract class PersonRole
 {
 
@@ -12,14 +15,18 @@ public abstract class PersonRole
   //------------------------
 
   //PersonRole Attributes
+  @Id
   private String personRoleID;
 
   //PersonRole Associations
+  @ManyToOne
   private Person person;
 
   //------------------------
   // CONSTRUCTOR
   //------------------------
+
+  public PersonRole() {}
 
   public PersonRole(String aPersonRoleID, Person aPerson)
   {

@@ -2,8 +2,10 @@
 /*This code was generated using the UMPLE 1.35.0.7523.c616a4dce modeling language!*/
 
 package ca.mcgill.ecse321.group1.model;
+import jakarta.persistence.*;
 
 // line 50 "../../../../../model.ump"
+@Entity
 public class CartItem
 {
 
@@ -12,17 +14,23 @@ public class CartItem
   //------------------------
 
   //CartItem Attributes
+  @Id
   private String clothingItemID;
   private int quantity;
 
   //CartItem Associations
+  @ManyToOne
   private ClothingVariant variants;
+  @ManyToOne
   private Order order;
+  @ManyToOne
   private Cart cart;
 
   //------------------------
   // CONSTRUCTOR
   //------------------------
+
+  public CartItem() {}
 
   public CartItem(String aClothingItemID, int aQuantity, ClothingVariant aVariants)
   {

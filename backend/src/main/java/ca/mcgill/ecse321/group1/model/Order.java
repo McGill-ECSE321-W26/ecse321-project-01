@@ -3,8 +3,10 @@
 
 package ca.mcgill.ecse321.group1.model;
 import java.sql.Date;
+import jakarta.persistence.*;
 
 // line 37 "../../../../../model.ump"
+@Entity
 public class Order
 {
 
@@ -19,6 +21,7 @@ public class Order
   //------------------------
 
   //Order Attributes
+  @Id
   private String orderID;
   private OrderStatus orderStatus;
   private Date orderDate;
@@ -26,12 +29,16 @@ public class Order
   private String address;
 
   //Order Associations
+  @ManyToOne
   private Employee employee;
+  @ManyToOne
   private Customer customer;
 
   //------------------------
   // CONSTRUCTOR
   //------------------------
+
+  public Order() {}
 
   public Order(String aOrderID, OrderStatus aOrderStatus, Date aOrderDate, Date aDeliveryDate, String aAddress, Employee aEmployee, Customer aCustomer)
   {
