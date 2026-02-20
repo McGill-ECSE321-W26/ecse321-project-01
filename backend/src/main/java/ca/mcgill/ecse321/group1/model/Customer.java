@@ -4,10 +4,8 @@
 package ca.mcgill.ecse321.group1.model;
 import java.util.*;
 import java.sql.Date;
-import jakarta.persistence.*;
 
 // line 24 "../../../../../model.ump"
-@Entity
 public class Customer extends PersonRole
 {
 
@@ -20,23 +18,20 @@ public class Customer extends PersonRole
   private int loyaltyPoints;
 
   //Customer Associations
-  @OneToOne(mappedBy="customer", cascade=CascadeType.ALL)
-  private Cart cart;
-  @OneToMany(mappedBy="customer")
   private List<Order> orders;
+  private List<Item> items;
 
   //------------------------
   // CONSTRUCTOR
   //------------------------
 
-  public Customer() {}
-
-  public Customer(String aPersonRoleID, Person aPerson, String aAddress, int aLoyaltyPoints)
+  public Customer(String aRoleID, Person aPerson, String aAddress, int aLoyaltyPoints)
   {
-    super(aPersonRoleID, aPerson);
+    super(aRoleID, aPerson);
     address = aAddress;
     loyaltyPoints = aLoyaltyPoints;
     orders = new ArrayList<Order>();
+    items = new ArrayList<Item>();
   }
 
   //------------------------
@@ -68,17 +63,6 @@ public class Customer extends PersonRole
   {
     return loyaltyPoints;
   }
-  /* Code from template association_GetOne */
-  public Cart getCart()
-  {
-    return cart;
-  }
-
-  public boolean hasCart()
-  {
-    boolean has = cart != null;
-    return has;
-  }
   /* Code from template association_GetMany */
   public Order getOrder(int index)
   {
@@ -109,32 +93,35 @@ public class Customer extends PersonRole
     int index = orders.indexOf(aOrder);
     return index;
   }
-  /* Code from template association_SetOptionalOneToOne */
-  public boolean setCart(Cart aNewCart)
+  /* Code from template association_GetMany */
+  public Item getItem(int index)
   {
-    boolean wasSet = false;
-    if (cart != null && !cart.equals(aNewCart) && equals(cart.getCustomer()))
-    {
-      //Unable to setCart, as existing cart would become an orphan
-      return wasSet;
-    }
+    Item aItem = items.get(index);
+    return aItem;
+  }
 
-    cart = aNewCart;
-    Customer anOldCustomer = aNewCart != null ? aNewCart.getCustomer() : null;
+  public List<Item> getItems()
+  {
+    List<Item> newItems = Collections.unmodifiableList(items);
+    return newItems;
+  }
 
-    if (!this.equals(anOldCustomer))
-    {
-      if (anOldCustomer != null)
-      {
-        anOldCustomer.cart = null;
-      }
-      if (cart != null)
-      {
-        cart.setCustomer(this);
-      }
-    }
-    wasSet = true;
-    return wasSet;
+  public int numberOfItems()
+  {
+    int number = items.size();
+    return number;
+  }
+
+  public boolean hasItems()
+  {
+    boolean has = items.size() > 0;
+    return has;
+  }
+
+  public int indexOfItem(Item aItem)
+  {
+    int index = items.indexOf(aItem);
+    return index;
   }
   /* Code from template association_MinimumNumberOfMethod */
   public static int minimumNumberOfOrders()
@@ -208,20 +195,88 @@ public class Customer extends PersonRole
     }
     return wasAdded;
   }
+  /* Code from template association_MinimumNumberOfMethod */
+  public static int minimumNumberOfItems()
+  {
+    return 0;
+  }
+  /* Code from template association_AddManyToOptionalOne */
+  public boolean addItem(Item aItem)
+  {
+    boolean wasAdded = false;
+    if (items.contains(aItem)) { return false; }
+    Customer existingCustomer = aItem.getCustomer();
+    if (existingCustomer == null)
+    {
+      aItem.setCustomer(this);
+    }
+    else if (!this.equals(existingCustomer))
+    {
+      existingCustomer.removeItem(aItem);
+      addItem(aItem);
+    }
+    else
+    {
+      items.add(aItem);
+    }
+    wasAdded = true;
+    return wasAdded;
+  }
+
+  public boolean removeItem(Item aItem)
+  {
+    boolean wasRemoved = false;
+    if (items.contains(aItem))
+    {
+      items.remove(aItem);
+      aItem.setCustomer(null);
+      wasRemoved = true;
+    }
+    return wasRemoved;
+  }
+  /* Code from template association_AddIndexControlFunctions */
+  public boolean addItemAt(Item aItem, int index)
+  {  
+    boolean wasAdded = false;
+    if(addItem(aItem))
+    {
+      if(index < 0 ) { index = 0; }
+      if(index > numberOfItems()) { index = numberOfItems() - 1; }
+      items.remove(aItem);
+      items.add(index, aItem);
+      wasAdded = true;
+    }
+    return wasAdded;
+  }
+
+  public boolean addOrMoveItemAt(Item aItem, int index)
+  {
+    boolean wasAdded = false;
+    if(items.contains(aItem))
+    {
+      if(index < 0 ) { index = 0; }
+      if(index > numberOfItems()) { index = numberOfItems() - 1; }
+      items.remove(aItem);
+      items.add(index, aItem);
+      wasAdded = true;
+    } 
+    else 
+    {
+      wasAdded = addItemAt(aItem, index);
+    }
+    return wasAdded;
+  }
 
   public void delete()
   {
-    Cart existingCart = cart;
-    cart = null;
-    if (existingCart != null)
-    {
-      existingCart.delete();
-      existingCart.setCustomer(null);
-    }
     for(int i=orders.size(); i > 0; i--)
     {
       Order aOrder = orders.get(i - 1);
       aOrder.delete();
+    }
+    while( !items.isEmpty() )
+    {
+      items.get(0).setCustomer(null);
     }
     super.delete();
   }
@@ -231,7 +286,6 @@ public class Customer extends PersonRole
   {
     return super.toString() + "["+
             "address" + ":" + getAddress()+ "," +
-            "loyaltyPoints" + ":" + getLoyaltyPoints()+ "]" + System.getProperties().getProperty("line.separator") +
-            "  " + "cart = "+(getCart()!=null?Integer.toHexString(System.identityHashCode(getCart())):"null");
+            "loyaltyPoints" + ":" + getLoyaltyPoints()+ "]";
   }
 }

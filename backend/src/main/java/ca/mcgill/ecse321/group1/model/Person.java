@@ -3,10 +3,8 @@
 
 package ca.mcgill.ecse321.group1.model;
 import java.util.*;
-import jakarta.persistence.*;
 
 // line 3 "../../../../../model.ump"
-@Entity
 public class Person
 {
 
@@ -15,21 +13,16 @@ public class Person
   //------------------------
 
   //Person Attributes
-  @Id
-  @GeneratedValue(strategy = GenerationType.AUTO)
   private String personID;
   private String email;
   private String password;
 
   //Person Associations
-  @OneToMany(mappedBy="person", cascade=CascadeType.ALL)
   private List<PersonRole> roles;
 
   //------------------------
   // CONSTRUCTOR
   //------------------------
-
-  public Person() {}
 
   public Person(String aPersonID, String aEmail, String aPassword)
   {

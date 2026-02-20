@@ -4,10 +4,8 @@
 package ca.mcgill.ecse321.group1.model;
 import java.util.*;
 import java.sql.Date;
-import jakarta.persistence.*;
 
 // line 19 "../../../../../model.ump"
-@Entity
 public class Employee extends PersonRole
 {
 
@@ -16,18 +14,15 @@ public class Employee extends PersonRole
   //------------------------
 
   //Employee Associations
-  @OneToMany(mappedBy="employee")
   private List<Order> preparingOrders;
 
   //------------------------
   // CONSTRUCTOR
   //------------------------
 
-  public Employee() {}
-
-  public Employee(String aPersonRoleID, Person aPerson)
+  public Employee(String aRoleID, Person aPerson)
   {
-    super(aPersonRoleID, aPerson);
+    super(aRoleID, aPerson);
     preparingOrders = new ArrayList<Order>();
   }
 

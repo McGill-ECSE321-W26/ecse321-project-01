@@ -2,44 +2,35 @@
 /*This code was generated using the UMPLE 1.35.0.7523.c616a4dce modeling language!*/
 
 package ca.mcgill.ecse321.group1.model;
-import jakarta.persistence.*;
 
-// line 50 "../../../../../model.ump"
-@Entity
-public class CartItem
+// line 45 "../../../../../model.ump"
+public class Item
 {
 
   //------------------------
   // MEMBER VARIABLES
   //------------------------
 
-  //CartItem Attributes
-  @Id
-  @GeneratedValue(strategy = GenerationType.AUTO)
-  private String cartItemID;
+  //Item Attributes
+  private String itemID;
   private int quantity;
 
-  //CartItem Associations
-  @ManyToOne
+  //Item Associations
   private ClothingVariant variants;
-  @ManyToOne
   private Order order;
-  @ManyToOne
-  private Cart cart;
+  private Customer customer;
 
   //------------------------
   // CONSTRUCTOR
   //------------------------
 
-  public CartItem() {}
-
-  public CartItem(String aCartItemID, int aQuantity, ClothingVariant aVariants)
+  public Item(String aItemID, int aQuantity, ClothingVariant aVariants)
   {
-    cartItemID = aCartItemID;
+    itemID = aItemID;
     quantity = aQuantity;
     if (!setVariants(aVariants))
     {
-      throw new RuntimeException("Unable to create CartItem due to aVariants. See https://manual.umple.org?RE002ViolationofAssociationMultiplicity.html");
+      throw new RuntimeException("Unable to create Item due to aVariants. See https://manual.umple.org?RE002ViolationofAssociationMultiplicity.html");
     }
   }
 
@@ -47,10 +38,10 @@ public class CartItem
   // INTERFACE
   //------------------------
 
-  public boolean setCartItemID(String aCartItemID)
+  public boolean setItemID(String aItemID)
   {
     boolean wasSet = false;
-    cartItemID = aCartItemID;
+    itemID = aItemID;
     wasSet = true;
     return wasSet;
   }
@@ -63,9 +54,9 @@ public class CartItem
     return wasSet;
   }
 
-  public String getCartItemID()
+  public String getItemID()
   {
-    return cartItemID;
+    return itemID;
   }
 
   public int getQuantity()
@@ -89,14 +80,14 @@ public class CartItem
     return has;
   }
   /* Code from template association_GetOne */
-  public Cart getCart()
+  public Customer getCustomer()
   {
-    return cart;
+    return customer;
   }
 
-  public boolean hasCart()
+  public boolean hasCustomer()
   {
-    boolean has = cart != null;
+    boolean has = customer != null;
     return has;
   }
   /* Code from template association_SetUnidirectionalOne */
@@ -110,27 +101,36 @@ public class CartItem
     }
     return wasSet;
   }
-  /* Code from template association_SetUnidirectionalOptionalOne */
-  public boolean setOrder(Order aNewOrder)
+  /* Code from template association_SetOptionalOneToMany */
+  public boolean setOrder(Order aOrder)
   {
     boolean wasSet = false;
-    order = aNewOrder;
+    Order existingOrder = order;
+    order = aOrder;
+    if (existingOrder != null && !existingOrder.equals(aOrder))
+    {
+      existingOrder.removeItem(this);
+    }
+    if (aOrder != null)
+    {
+      aOrder.addItem(this);
+    }
     wasSet = true;
     return wasSet;
   }
   /* Code from template association_SetOptionalOneToMany */
-  public boolean setCart(Cart aCart)
+  public boolean setCustomer(Customer aCustomer)
   {
     boolean wasSet = false;
-    Cart existingCart = cart;
-    cart = aCart;
-    if (existingCart != null && !existingCart.equals(aCart))
+    Customer existingCustomer = customer;
+    customer = aCustomer;
+    if (existingCustomer != null && !existingCustomer.equals(aCustomer))
     {
-      existingCart.removeItem(this);
+      existingCustomer.removeItem(this);
     }
-    if (aCart != null)
+    if (aCustomer != null)
     {
-      aCart.addItem(this);
+      aCustomer.addItem(this);
     }
     wasSet = true;
     return wasSet;
@@ -139,12 +139,17 @@ public class CartItem
   public void delete()
   {
     variants = null;
-    order = null;
-    if (cart != null)
+    if (order != null)
     {
-      Cart placeholderCart = cart;
-      this.cart = null;
-      placeholderCart.removeItem(this);
+      Order placeholderOrder = order;
+      this.order = null;
+      placeholderOrder.removeItem(this);
+    }
+    if (customer != null)
+    {
+      Customer placeholderCustomer = customer;
+      this.customer = null;
+      placeholderCustomer.removeItem(this);
     }
   }
 
@@ -152,10 +157,10 @@ public class CartItem
   public String toString()
   {
     return super.toString() + "["+
-            "cartItemID" + ":" + getCartItemID()+ "," +
+            "itemID" + ":" + getItemID()+ "," +
             "quantity" + ":" + getQuantity()+ "]" + System.getProperties().getProperty("line.separator") +
             "  " + "variants = "+(getVariants()!=null?Integer.toHexString(System.identityHashCode(getVariants())):"null") + System.getProperties().getProperty("line.separator") +
             "  " + "order = "+(getOrder()!=null?Integer.toHexString(System.identityHashCode(getOrder())):"null") + System.getProperties().getProperty("line.separator") +
-            "  " + "cart = "+(getCart()!=null?Integer.toHexString(System.identityHashCode(getCart())):"null");
+            "  " + "customer = "+(getCustomer()!=null?Integer.toHexString(System.identityHashCode(getCustomer())):"null");
   }
 }

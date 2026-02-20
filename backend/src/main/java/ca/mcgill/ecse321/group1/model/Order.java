@@ -3,10 +3,9 @@
 
 package ca.mcgill.ecse321.group1.model;
 import java.sql.Date;
-import jakarta.persistence.*;
+import java.util.*;
 
-// line 37 "../../../../../model.ump"
-@Entity
+// line 32 "../../../../../model.ump"
 public class Order
 {
 
@@ -21,8 +20,6 @@ public class Order
   //------------------------
 
   //Order Attributes
-  @Id
-  @GeneratedValue(strategy = GenerationType.AUTO)
   private String orderID;
   private OrderStatus orderStatus;
   private Date orderDate;
@@ -30,16 +27,13 @@ public class Order
   private String address;
 
   //Order Associations
-  @ManyToOne
   private Employee employee;
-  @ManyToOne
   private Customer customer;
+  private List<Item> items;
 
   //------------------------
   // CONSTRUCTOR
   //------------------------
-
-  public Order() {}
 
   public Order(String aOrderID, OrderStatus aOrderStatus, Date aOrderDate, Date aDeliveryDate, String aAddress, Employee aEmployee, Customer aCustomer)
   {
@@ -58,6 +52,7 @@ public class Order
     {
       throw new RuntimeException("Unable to create order due to customer. See https://manual.umple.org?RE002ViolationofAssociationMultiplicity.html");
     }
+    items = new ArrayList<Item>();
   }
 
   //------------------------
@@ -138,6 +133,36 @@ public class Order
   {
     return customer;
   }
+  /* Code from template association_GetMany */
+  public Item getItem(int index)
+  {
+    Item aItem = items.get(index);
+    return aItem;
+  }
+
+  public List<Item> getItems()
+  {
+    List<Item> newItems = Collections.unmodifiableList(items);
+    return newItems;
+  }
+
+  public int numberOfItems()
+  {
+    int number = items.size();
+    return number;
+  }
+
+  public boolean hasItems()
+  {
+    boolean has = items.size() > 0;
+    return has;
+  }
+
+  public int indexOfItem(Item aItem)
+  {
+    int index = items.indexOf(aItem);
+    return index;
+  }
   /* Code from template association_SetOneToMany */
   public boolean setEmployee(Employee aEmployee)
   {
@@ -176,6 +201,77 @@ public class Order
     wasSet = true;
     return wasSet;
   }
+  /* Code from template association_MinimumNumberOfMethod */
+  public static int minimumNumberOfItems()
+  {
+    return 0;
+  }
+  /* Code from template association_AddManyToOptionalOne */
+  public boolean addItem(Item aItem)
+  {
+    boolean wasAdded = false;
+    if (items.contains(aItem)) { return false; }
+    Order existingOrder = aItem.getOrder();
+    if (existingOrder == null)
+    {
+      aItem.setOrder(this);
+    }
+    else if (!this.equals(existingOrder))
+    {
+      existingOrder.removeItem(aItem);
+      addItem(aItem);
+    }
+    else
+    {
+      items.add(aItem);
+    }
+    wasAdded = true;
+    return wasAdded;
+  }
+
+  public boolean removeItem(Item aItem)
+  {
+    boolean wasRemoved = false;
+    if (items.contains(aItem))
+    {
+      items.remove(aItem);
+      aItem.setOrder(null);
+      wasRemoved = true;
+    }
+    return wasRemoved;
+  }
+  /* Code from template association_AddIndexControlFunctions */
+  public boolean addItemAt(Item aItem, int index)
+  {  
+    boolean wasAdded = false;
+    if(addItem(aItem))
+    {
+      if(index < 0 ) { index = 0; }
+      if(index > numberOfItems()) { index = numberOfItems() - 1; }
+      items.remove(aItem);
+      items.add(index, aItem);
+      wasAdded = true;
+    }
+    return wasAdded;
+  }
+
+  public boolean addOrMoveItemAt(Item aItem, int index)
+  {
+    boolean wasAdded = false;
+    if(items.contains(aItem))
+    {
+      if(index < 0 ) { index = 0; }
+      if(index > numberOfItems()) { index = numberOfItems() - 1; }
+      items.remove(aItem);
+      items.add(index, aItem);
+      wasAdded = true;
+    } 
+    else 
+    {
+      wasAdded = addItemAt(aItem, index);
+    }
+    return wasAdded;
+  }
 
   public void delete()
   {
@@ -190,6 +286,10 @@ public class Order
     if(placeholderCustomer != null)
     {
       placeholderCustomer.removeOrder(this);
+    }
+    while( !items.isEmpty() )
+    {
+      items.get(0).setOrder(null);
     }
   }
 

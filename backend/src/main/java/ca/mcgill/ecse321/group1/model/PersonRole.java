@@ -2,11 +2,8 @@
 /*This code was generated using the UMPLE 1.35.0.7523.c616a4dce modeling language!*/
 
 package ca.mcgill.ecse321.group1.model;
-import jakarta.persistence.*;
 
 // line 10 "../../../../../model.ump"
-@Entity
-@Inheritance(strategy=InheritanceType.TABLE_PER_CLASS) // No need to have abstract PersonRole mapped as table
 public abstract class PersonRole
 {
 
@@ -15,23 +12,18 @@ public abstract class PersonRole
   //------------------------
 
   //PersonRole Attributes
-  @Id
-  @GeneratedValue(strategy = GenerationType.AUTO)
-  private String personRoleID;
+  private String roleID;
 
   //PersonRole Associations
-  @ManyToOne
   private Person person;
 
   //------------------------
   // CONSTRUCTOR
   //------------------------
 
-  public PersonRole() {}
-
-  public PersonRole(String aPersonRoleID, Person aPerson)
+  public PersonRole(String aRoleID, Person aPerson)
   {
-    personRoleID = aPersonRoleID;
+    roleID = aRoleID;
     boolean didAddPerson = setPerson(aPerson);
     if (!didAddPerson)
     {
@@ -43,17 +35,17 @@ public abstract class PersonRole
   // INTERFACE
   //------------------------
 
-  public boolean setPersonRoleID(String aPersonRoleID)
+  public boolean setRoleID(String aRoleID)
   {
     boolean wasSet = false;
-    personRoleID = aPersonRoleID;
+    roleID = aRoleID;
     wasSet = true;
     return wasSet;
   }
 
-  public String getPersonRoleID()
+  public String getRoleID()
   {
-    return personRoleID;
+    return roleID;
   }
   /* Code from template association_GetOne */
   public Person getPerson()
@@ -106,7 +98,7 @@ public abstract class PersonRole
   public String toString()
   {
     return super.toString() + "["+
-            "personRoleID" + ":" + getPersonRoleID()+ "]" + System.getProperties().getProperty("line.separator") +
+            "roleID" + ":" + getRoleID()+ "]" + System.getProperties().getProperty("line.separator") +
             "  " + "person = "+(getPerson()!=null?Integer.toHexString(System.identityHashCode(getPerson())):"null");
   }
 }
