@@ -9,7 +9,7 @@ class Person {
 
 class PersonRole {
   abstract;
-  personRoleID;
+  roleID;
 }
 
 class Manager {
@@ -25,13 +25,8 @@ class Customer {
   isA PersonRole;
   address;
   int loyaltyPoints;
-  1 <@>- 0..1 Cart;
   1 -- * Order orders;
-}
-
-class Cart {
-  cartID;
-  0..1 -- * CartItem items;
+  0..1 -- * Item;
 }
 
 class Order {
@@ -47,11 +42,11 @@ class Order {
   address;
 }
 
-class CartItem {
-  cartItemID;
+class Item {
+  itemID;
   int quantity;
   * -> 1 ClothingVariant variants;
-  * -> 0..1 Order;
+  * -- 0..1 Order;
 }
 
 class ClothingVariant {
@@ -65,7 +60,7 @@ class ClothingVariant {
   Size size;
   color;
   int stockQuantity;
-  * -> 1 ClothingModel model;
+  * -- 1 ClothingModel model;
 }
 
 class ClothingModel {
