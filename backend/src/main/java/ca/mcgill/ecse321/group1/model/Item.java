@@ -33,6 +33,8 @@ public class Item
   // CONSTRUCTOR
   //------------------------
 
+  public Item() {}
+
   public Item(String aItemID, int aQuantity, float aPrice, ClothingVariant aVariants)
   {
     itemID = aItemID;
