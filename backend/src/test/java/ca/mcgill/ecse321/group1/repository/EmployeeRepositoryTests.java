@@ -28,7 +28,9 @@ public class EmployeeRepositoryTests {
   @Test
   public void testPersistAndLoadEmployee() {
     // Create and save person
-    Person person = new Person("emp_person_1", "emp@example.com", "emppassword");
+    Person person = new Person();
+    person.setEmail("emp@example.com");
+    person.setPassword("emppassword");
     personRepository.save(person);
 
     // Create and save employee
@@ -57,7 +59,9 @@ public class EmployeeRepositoryTests {
   @Test
   public void testDeleteEmployee() {
     // Create and save person
-    Person person = new Person("emp_person_2", "emp2@example.com", "password");
+    Person person = new Person();
+    person.setEmail("emp2@example.com");
+    person.setPassword("password");
     personRepository.save(person);
 
     // Create and save employee

@@ -73,8 +73,8 @@ public class ItemRepositoryTests {
 
         // Assert correct response
         assertNotNull(itemTestFromDb);
-        assertEquals(itemTestFromDb.getQuantity(), quantity);
         assertEquals(price, itemTestFromDb.getPrice());
+        assertEquals(itemTestFromDb.getQuantity(), quantity);
     }
 
     @Test
@@ -215,13 +215,11 @@ public class ItemRepositoryTests {
     public void testItemPersistsWithOrder() {
         // Person is required for both Customer and Employee (via PersonRole)
         Person customerPerson = new Person();
-        customerPerson.setPersonID("personTemp");
         customerPerson.setEmail("customer@example.com");
         customerPerson.setPassword("pass1");
         personRepository.save(customerPerson);
 
         Person employeePerson = new Person();
-        employeePerson.setPersonID("person-2");
         employeePerson.setEmail("employee@example.com");
         employeePerson.setPassword("pass2");
         personRepository.save(employeePerson);
@@ -269,7 +267,6 @@ public class ItemRepositoryTests {
     public void testItemPersistsWithCustomer() {
         // Person is required for Customer (via PersonRole)
         Person person = new Person();
-        person.setPersonID("person-3");
         person.setEmail("shopper@example.com");
         person.setPassword("pass3");
         personRepository.save(person);

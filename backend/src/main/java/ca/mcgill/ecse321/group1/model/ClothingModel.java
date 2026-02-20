@@ -29,7 +29,9 @@ public class ClothingModel
   // CONSTRUCTOR
   //------------------------
 
-  public ClothingModel() {}
+  public ClothingModel() {
+    clothingVariants = new ArrayList<ClothingVariant>();
+  }
 
   public ClothingModel(String aClothingModelID, String aName, float aPrice)
   {

@@ -189,14 +189,12 @@ public class OrderRepositoryTests {
     public void testOrderPersistsWithCustomerAndEmployee() {
         // Create and save Person for Customer
         Person customerPerson = new Person();
-        customerPerson.setPersonID("person-1");
         customerPerson.setEmail("customer@example.com");
         customerPerson.setPassword("password");
         personRepository.save(customerPerson);
 
         // Create and save Person for Employee
         Person employeePerson = new Person();
-        employeePerson.setPersonID("person-2");
         employeePerson.setEmail("employee@example.com");
         employeePerson.setPassword("password");
         personRepository.save(employeePerson);

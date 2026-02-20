@@ -71,7 +71,7 @@ public class ClothingModelRepositoryTests {
         assertNotNull(updatedModel);
 
         assertEquals("Gucci Updated", updatedModel.getName());
-        assertEquals(999f, updatedModel.getPrice());
+        assertEquals(9999f, updatedModel.getPrice());
     }
 
     @Test

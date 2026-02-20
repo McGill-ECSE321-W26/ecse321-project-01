@@ -23,7 +23,9 @@ public class Employee extends PersonRole
   // CONSTRUCTOR
   //------------------------
 
-  public Employee() {}
+  public Employee() {
+    preparingOrders = new ArrayList<Order>();
+  }
 
   public Employee(String aRoleID, Person aPerson)
   {
