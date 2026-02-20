@@ -27,11 +27,9 @@ public class PersonRepositoryTests {
   @Test
   public void testPersistAndLoadPerson() {
     // Create person
-    String personID = "David";
     String email = "david@example.com";
     String password = "davidpassword";
     Person person = new Person();
-    person.setPersonID(personID);
     person.setEmail(email);
     person.setPassword(password);
 
@@ -43,7 +41,7 @@ public class PersonRepositoryTests {
 
     // Assertions
     assertNotNull(personFromDb);
-    assertEquals(personID, personFromDb.getPersonID());
+    assertEquals(person.getPersonID(), personFromDb.getPersonID());
     assertEquals(email, personFromDb.getEmail());
     assertEquals(password, personFromDb.getPassword());
   }
@@ -58,11 +56,9 @@ public class PersonRepositoryTests {
   @Test
   public void testUpdatePerson() {
     // Create and save person
-    String personID = "Santiago";
     String email = "santiago@example.com";
     String password = "santiagopassword";
     Person person = new Person(); // Using default constructor and setters
-    person.setPersonID(personID);
     person.setEmail(email);
     person.setPassword(password);
     personRepository.save(person);
@@ -84,10 +80,11 @@ public class PersonRepositoryTests {
   @Test
   public void testDeletePerson() {
     // Create and save person
-    String personID = "Maria";
     String email = "maria@example.com";
     String password = "mariapassword";
-    Person person = new Person(personID, email, password); // Using parameterized constructor
+    Person person = new Person(); // Using parameterized constructor
+    person.setEmail(email);
+    person.setPassword(password);
     personRepository.save(person);
 
     // Delete person
@@ -101,7 +98,6 @@ public class PersonRepositoryTests {
   }
 
   @Test
-  @Transactional
   public void testPersonRolesReference() {
     // Create and save person
     String email = "roles_test@example.com";

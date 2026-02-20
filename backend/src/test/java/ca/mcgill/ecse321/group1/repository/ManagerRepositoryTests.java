@@ -11,6 +11,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.transaction.annotation.Transactional;
 
 @SpringBootTest
 public class ManagerRepositoryTests {
@@ -28,7 +29,9 @@ public class ManagerRepositoryTests {
   @Test
   public void testPersistAndLoadManager() {
     // Create and save person
-    Person person = new Person("mgr_person_1", "manager@example.com", "mgrpassword");
+    Person person = new Person();
+    person.setEmail("manager@example.com");
+    person.setPassword("mgrpassword");
     personRepository.save(person);
 
     // Create and save manager
@@ -57,7 +60,9 @@ public class ManagerRepositoryTests {
   @Test
   public void testDeleteManager() {
     // Create and save person
-    Person person = new Person("mgr_person_2", "manager2@example.com", "password");
+    Person person = new Person();
+    person.setEmail("manager2@example.com");
+    person.setPassword("password");
     personRepository.save(person);
 
     // Create and save manager
@@ -75,5 +80,29 @@ public class ManagerRepositoryTests {
 
     // Assertions
     assertNull(managerFromDb);
+  }
+
+  @Test
+  public void testManagerPersonReference() {
+    // Create and save person and manager
+    Person person = new Person();
+    person.setEmail("manager@example.com");
+    person.setPassword("password");
+    personRepository.save(person);
+
+    String expectedPersonID = person.getPersonID();
+
+    Manager manager = new Manager();
+    manager.setPerson(person);
+    managerRepository.save(manager);
+
+    String roleID = manager.getRoleID();
+
+    // Reload manager and verify the person reference
+    Manager managerFromDb = managerRepository.findByRoleID(roleID);
+
+    assertNotNull(managerFromDb);
+    assertNotNull(managerFromDb.getPerson());
+    assertEquals(expectedPersonID, managerFromDb.getPerson().getPersonID());
   }
 }

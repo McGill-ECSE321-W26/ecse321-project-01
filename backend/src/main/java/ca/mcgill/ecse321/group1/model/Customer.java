@@ -29,7 +29,10 @@ public class Customer extends PersonRole
   // CONSTRUCTOR
   //------------------------
 
-  public Customer() {}
+  public Customer() {
+    orders = new ArrayList<Order>();
+    items = new ArrayList<Item>();
+  }
 
   public Customer(String aRoleID, Person aPerson, String aAddress, int aLoyaltyPoints)
   {

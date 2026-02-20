@@ -1,271 +1,307 @@
 package ca.mcgill.ecse321.group1.repository;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
-import ca.mcgill.ecse321.group1.model.ClothingVariant;
-import ca.mcgill.ecse321.group1.model.Customer;
+import ca.mcgill.ecse321.group1.model.*;
 import ca.mcgill.ecse321.group1.model.Employee;
 import ca.mcgill.ecse321.group1.model.Item;
-import ca.mcgill.ecse321.group1.model.Order;
-import ca.mcgill.ecse321.group1.model.Person;
 import java.sql.Date;
 import java.util.List;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
 public class ItemRepositoryTests {
+  @Autowired private ItemRepository itemRepository;
 
-    @Autowired private ItemRepository itemRepository;
-    @Autowired private ClothingVariantRepository clothingVariantRepository;
-    @Autowired private OrderRepository orderRepository;
-    @Autowired private CustomerRepository customerRepository;
-    @Autowired private EmployeeRepository employeeRepository;
-    @Autowired private PersonRepository personRepository;
+  // used to test interactions between item class and many-to-one association with clothing variant
+  @Autowired private ClothingVariantRepository clothingVariantRepository;
 
-    @BeforeEach
-    @AfterEach
-    public void clearDatabase() {
-        // Delete in FK-dependency order: items first, then orders, then roles, then persons
-        itemRepository.deleteAll();
-        orderRepository.deleteAll();
-        customerRepository.deleteAll();
-        employeeRepository.deleteAll();
-        personRepository.deleteAll();
-        clothingVariantRepository.deleteAll();
-    }
+  // used to test interactions between item class association with order
+  @Autowired private OrderRepository orderRepository;
 
-    @Test
-    public void testPersistAndLoadItem() {
-        int quantity = 5;
-        float price = 10.99f;
+  // used to test interactions with customer
+  @Autowired private CustomerRepository customerRepository;
 
-        Item item = new Item();
-        item.setQuantity(quantity);
-        item.setPrice(price);
-        item = itemRepository.save(item);
-        String id = item.getItemID();
+  // used to test interactions with employee
+  @Autowired private EmployeeRepository employeeRepository;
 
-        Item fromDb = itemRepository.findByItemID(id);
-        assertNotNull(fromDb);
-        assertEquals(quantity, fromDb.getQuantity());
-        assertEquals(price, fromDb.getPrice());
-    }
+  // used to test interactions with person
+  @Autowired private PersonRepository personRepository;
 
-    @Test
-    public void testFindItemByInvalidID() {
-        Item itemFromDb = itemRepository.findByItemID("nonexistent-id");
-        assertNull(itemFromDb);
-    }
+  // used to test interactions with clothing model
+  @Autowired private ClothingModelRepository clothingModelRepository;
 
-    @Test
-    public void testUpdateItem() {
-        Item item = new Item();
-        item.setQuantity(1);
-        itemRepository.save(item);
-        String itemID = item.getItemID();
+  @AfterEach
+  public void clearDatabase() {
+    itemRepository.deleteAll();
+    orderRepository.deleteAll();
+    customerRepository.deleteAll();
+    employeeRepository.deleteAll();
+    personRepository.deleteAll();
+    clothingVariantRepository.deleteAll();
+    clothingModelRepository.deleteAll();
+  }
 
-        item.setQuantity(5);
-        itemRepository.save(item);
+  @Test
+  public void testPersistAndLoadItem() {
+    // Create person
 
-        Item itemFromDb = itemRepository.findByItemID(itemID);
-        assertNotNull(itemFromDb);
-        assertEquals(5, itemFromDb.getQuantity());
-    }
+    int quantity = 20;
+    float price = 199.99f;
+    Item itemTest = new Item();
+    itemTest.setQuantity(quantity);
+    itemTest.setPrice(price);
 
-    @Test
-    public void testDeleteItem() {
-        Item item = new Item();
-        item.setQuantity(3);
-        item.setPrice(29.99f);
-        item = itemRepository.save(item);
-        String id = item.getItemID();
+    // Save Item
+    itemTest = itemRepository.save(itemTest);
+    String id = itemTest.getItemID();
 
-        itemRepository.delete(item);
+    // Read item from database
+    Item itemTestFromDb = itemRepository.findItemByItemID(id);
 
-        Item deletedItem = itemRepository.findByItemID(id);
-        assertNull(deletedItem);
-    }
+    // Assert correct response
+    assertNotNull(itemTestFromDb);
+    assertEquals(price, itemTestFromDb.getPrice());
+    assertEquals(itemTestFromDb.getQuantity(), quantity);
+  }
 
-    @Test
-    public void testFindAllItems() {
-        Item item1 = new Item();
-        item1.setQuantity(1);
-        item1.setPrice(94.99f);
+  @Test
+  public void testFindItemByInvalidId() {
+    Item result = itemRepository.findItemByItemID("nonexistent-id");
+    assertNull(result);
+  }
 
-        Item item2 = new Item();
-        item2.setQuantity(2);
-        item2.setPrice(1.99f);
+  @Test
+  public void testUpdateItemQuantity() {
+    // Create and save
+    Item item = new Item();
+    item.setQuantity(5);
+    item.setPrice(199.99f);
+    item = itemRepository.save(item);
+    String id = item.getItemID();
+    // Update quantity
+    item.setQuantity(99);
+    itemRepository.save(item);
 
-        Item item3 = new Item();
-        item3.setQuantity(3);
-        item3.setPrice(10.99f);
+    // Read back and assert
+    Item updatedItem = itemRepository.findItemByItemID(id);
+    assertNotNull(updatedItem);
+    assertEquals(99, updatedItem.getQuantity());
+  }
 
-        itemRepository.save(item1);
-        itemRepository.save(item2);
-        itemRepository.save(item3);
+  @Test
+  public void testPersistItemWithPrice() {
+    float price = 49.99f;
+    int quantity = 3;
 
-        List<Item> allItems = (List<Item>) itemRepository.findAll();
-        assertNotNull(allItems);
-        assertEquals(3, allItems.size());
-    }
+    Item item = new Item();
+    item.setQuantity(quantity);
+    item.setPrice(price);
+    item = itemRepository.save(item);
+    String id = item.getItemID();
 
-    @Test
-    public void testPersistItemWithZeroQuantity() {
-        // Edge case: quantity of 0 should remain in DB unless explicitly removed from the inventory list.
-        Item item = new Item();
-        item.setQuantity(0);
-        item.setPrice(54.99f);
-        item = itemRepository.save(item);
-        String id = item.getItemID();
+    Item fromDb = itemRepository.findItemByItemID(id);
+    assertNotNull(fromDb);
+    assertEquals(quantity, fromDb.getQuantity());
+    assertEquals(price, fromDb.getPrice());
+  }
 
-        Item fromDb = itemRepository.findByItemID(id);
-        assertNotNull(fromDb);
-        assertEquals(0, fromDb.getQuantity());
-    }
+  @Test
+  public void testDeleteItem() {
+    Item item = new Item();
+    item.setQuantity(3);
+    item.setPrice(29.99f);
+    item = itemRepository.save(item);
+    String id = item.getItemID();
 
-    @Test
-    public void testAutoGeneratedIdIsUnique() {
-        Item item1 = new Item();
-        item1.setQuantity(10);
-        item1.setPrice(999.99f);
+    itemRepository.delete(item);
 
-        Item item2 = new Item();
-        item2.setQuantity(20);
-        item2.setPrice(899.99f);
+    Item deletedItem = itemRepository.findItemByItemID(id);
+    assertNull(deletedItem);
+  }
 
-        item1 = itemRepository.save(item1);
-        item2 = itemRepository.save(item2);
+  @Test
+  public void testFindAllItems() {
+    Item item1 = new Item();
+    item1.setQuantity(1);
+    item1.setPrice(94.99f);
 
-        assertNotNull(item1.getItemID());
-        assertNotNull(item2.getItemID());
-        assertNotEquals(item1.getItemID(), item2.getItemID());
-    }
+    Item item2 = new Item();
+    item2.setQuantity(2);
+    item2.setPrice(1.99f);
 
-    @Test
-    public void testItemPersistsWithClothingVariant() {
-        ClothingVariant variant = new ClothingVariant();
-        variant.setSize(ClothingVariant.Size.M);
-        variant.setColor("Black");
-        variant.setStockQuantity(10);
-        variant = clothingVariantRepository.save(variant);
+    Item item3 = new Item();
+    item3.setQuantity(3);
+    item3.setPrice(10.99f);
 
-        Item item = new Item();
-        item.setQuantity(4);
-        item.setPrice(9.99f);
-        item.setClothingVariant(variant);
-        item = itemRepository.save(item);
-        String id = item.getItemID();
+    itemRepository.save(item1);
+    itemRepository.save(item2);
+    itemRepository.save(item3);
 
-        Item fromDb = itemRepository.findByItemID(id);
-        assertNotNull(fromDb);
-        assertNotNull(fromDb.getClothingVariant());
-        assertEquals(variant.getClothingVariantID(), fromDb.getClothingVariant().getClothingVariantID());
-        assertEquals("Black", fromDb.getClothingVariant().getColor());
-        assertEquals(ClothingVariant.Size.M, fromDb.getClothingVariant().getSize());
-    }
+    List<Item> allItems = (List<Item>) itemRepository.findAll();
+    assertNotNull(allItems);
+    assertEquals(3, allItems.size());
+  }
 
-    @Test
-    public void testItemPersistsWithOrder() {
-        // Person is required for both Customer and Employee (via PersonRole)
-        Person customerPerson = new Person("personTemp", "customer@example.com", "pass1");
-        personRepository.save(customerPerson);
+  @Test
+  public void testPersistItemWithZeroQuantity() {
+    // Edge case: quantity of 0 should remain in DB unless explicitly removed from the inventory
+    // list.
+    Item item = new Item();
+    item.setQuantity(0);
+    item.setPrice(54.99f);
+    item = itemRepository.save(item);
+    String id = item.getItemID();
 
-        Person employeePerson = new Person("person-2", "employee@example.com", "pass2");
-        personRepository.save(employeePerson);
+    Item fromDb = itemRepository.findItemByItemID(id);
+    assertNotNull(fromDb);
+    assertEquals(0, fromDb.getQuantity());
+  }
 
-        // Customer and Employee both require a Person
-        Customer customer = new Customer();
-        customer.setAddress("123 Main St");
-        customer.setLoyaltyPoints(0);
-        customer.setPerson(customerPerson);
-        customerRepository.save(customer);
+  @Test
+  public void testAutoGeneratedIdIsUnique() {
+    Item item1 = new Item();
+    item1.setQuantity(10);
+    item1.setPrice(999.99f);
 
-        Employee employee = new Employee();
-        employee.setPerson(employeePerson);
-        employeeRepository.save(employee);
+    Item item2 = new Item();
+    item2.setQuantity(20);
+    item2.setPrice(899.99f);
 
-        // Order requires both a Customer and an Employee
-        Order order = new Order();
-        order.setOrderStatus(Order.OrderStatus.Preparing);
-        order.setOrderDate(Date.valueOf("2024-01-01"));
-        order.setDeliveryDate(Date.valueOf("2024-01-10"));
-        order.setAddress("123 Main St");
-        order.setCustomer(customer);
-        order.setEmployee(employee);
-        order = orderRepository.save(order);
-        String orderID = order.getOrderID();
+    item1 = itemRepository.save(item1);
+    item2 = itemRepository.save(item2);
 
-        // Link order to item
-        Item item = new Item();
-        item.setQuantity(2);
-        item.setPrice(39.99f);
-        item.setOrder(order);
-        item = itemRepository.save(item);
-        String itemID = item.getItemID();
+    assertNotNull(item1.getItemID());
+    assertNotNull(item2.getItemID());
+    assertNotEquals(item1.getItemID(), item2.getItemID());
+  }
 
-        // Read back and assert
-        Item fromDb = itemRepository.findByItemID(itemID);
-        assertNotNull(fromDb);
-        assertTrue(fromDb.hasOrder());
-        assertEquals(orderID, fromDb.getOrder().getOrderID());
-        assertEquals(Order.OrderStatus.Preparing, fromDb.getOrder().getOrderStatus());
-        assertEquals("123 Main St", fromDb.getOrder().getAddress());
-    }
+  @Test
+  public void testItemPersistsWithClothingVariant() {
+    ClothingVariant variant = new ClothingVariant();
+    variant.setSize(ClothingVariant.Size.M);
+    variant.setColor("Black");
+    variant.setStockQuantity(10);
+    variant = clothingVariantRepository.save(variant); // required before linking
 
-    @Test
-    public void testItemPersistsWithCustomer() {
-        // Person is required for Customer (via PersonRole)
-        Person person = new Person("person-213", "shopper@example.com", "pass3");
-        personRepository.save(person);
+    Item item = new Item();
+    item.setQuantity(4);
+    item.setPrice(9.99f);
+    item.setClothingVariant(variant);
+    item = itemRepository.save(item);
+    String id = item.getItemID();
 
-        // Customer requires a Person
-        Customer customer = new Customer();
-        customer.setAddress("456 Elm St");
-        customer.setLoyaltyPoints(100);
-        customer.setPerson(person);
-        customer = customerRepository.save(customer);
-        String customerRoleID = customer.getRoleID();
+    Item fromDb = itemRepository.findItemByItemID(id);
+    assertNotNull(fromDb);
+    assertNotNull(fromDb.getClothingVariant());
+    assertEquals(
+        variant.getClothingVariantID(), fromDb.getClothingVariant().getClothingVariantID());
+    assertEquals("Black", fromDb.getClothingVariant().getColor());
+    assertEquals(ClothingVariant.Size.M, fromDb.getClothingVariant().getSize());
+  }
 
-        // Link customer to item
-        Item item = new Item();
-        item.setQuantity(6);
-        item.setPrice(59.99f);
-        item.setCustomer(customer);
-        item = itemRepository.save(item);
-        String itemID = item.getItemID();
+  @Test
+  public void testItemPersistsWithOrder() {
+    // Person is required for both Customer and Employee (via PersonRole)
+    Person customerPerson = new Person();
+    customerPerson.setEmail("customer@example.com");
+    customerPerson.setPassword("pass1");
+    personRepository.save(customerPerson);
 
-        // Read back and assert
-        Item fromDb = itemRepository.findByItemID(itemID);
-        assertNotNull(fromDb);
-        assertTrue(fromDb.hasCustomer());
-        assertEquals(customerRoleID, fromDb.getCustomer().getRoleID());
-        assertEquals("456 Elm St", fromDb.getCustomer().getAddress());
-        assertEquals(100, fromDb.getCustomer().getLoyaltyPoints());
-    }
+    Person employeePerson = new Person();
+    employeePerson.setEmail("employee@example.com");
+    employeePerson.setPassword("pass2");
+    personRepository.save(employeePerson);
 
-    @Test
-    public void testItemWithNoOrderOrCustomer() {
-        // Optional associations should default to null
-        Item item = new Item();
-        item.setQuantity(1);
-        item.setPrice(79.99f);
-        item = itemRepository.save(item);
-        String id = item.getItemID();
+    // Customer and Employee both require a Person
+    Customer customer = new Customer();
+    customer.setAddress("123 Main St");
+    customer.setLoyaltyPoints(0);
+    customer.setPerson(customerPerson);
+    customerRepository.save(customer);
 
-        Item fromDb = itemRepository.findByItemID(id);
-        assertNotNull(fromDb);
-        assertFalse(fromDb.hasOrder());
-        assertFalse(fromDb.hasCustomer());
-        assertNull(fromDb.getOrder());
-        assertNull(fromDb.getCustomer());
-    }
+    Employee employee = new Employee();
+    employee.setPerson(employeePerson);
+    employeeRepository.save(employee);
+
+    // Order requires both a Customer and an Employee
+    Order order = new Order();
+    order.setOrderStatus(Order.OrderStatus.Preparing);
+    order.setOrderDate(Date.valueOf("2024-01-01"));
+    order.setDeliveryDate(Date.valueOf("2024-01-10"));
+    order.setAddress("123 Main St");
+    order.setCustomer(customer);
+    order.setEmployee(employee);
+    order = orderRepository.save(order);
+
+    // Link order to item
+    Item item = new Item();
+    item.setQuantity(2);
+    item.setPrice(39.99f);
+    item.setOrder(order);
+    item = itemRepository.save(item);
+    String itemID = item.getItemID();
+
+    // Read back and assert
+    Item fromDb = itemRepository.findItemByItemID(itemID);
+    String orderID = order.getOrderID();
+    assertNotNull(fromDb);
+    assertTrue(fromDb.hasOrder());
+    assertEquals(orderID, fromDb.getOrder().getOrderID());
+    assertEquals(Order.OrderStatus.Preparing, fromDb.getOrder().getOrderStatus());
+    assertEquals("123 Main St", fromDb.getOrder().getAddress());
+  }
+
+  @Test
+  public void testItemPersistsWithCustomer() {
+    // Person is required for Customer (via PersonRole)
+    Person person = new Person();
+    person.setEmail("shopper@example.com");
+    person.setPassword("pass3");
+    personRepository.save(person);
+
+    // Customer requires a Person
+    Customer customer = new Customer();
+    customer.setAddress("456 Elm St");
+    customer.setLoyaltyPoints(100);
+    customer.setPerson(person);
+    customer = customerRepository.save(customer);
+
+    // Link customer to item
+    Item item = new Item();
+    item.setQuantity(6);
+    item.setPrice(59.99f);
+    item.setCustomer(customer);
+    item = itemRepository.save(item);
+    String itemID = item.getItemID();
+
+    // Read back and assert
+    Item fromDb = itemRepository.findItemByItemID(itemID);
+    String customerRoleID = customer.getRoleID();
+    assertNotNull(fromDb);
+    assertTrue(fromDb.hasCustomer());
+    assertEquals(customerRoleID, fromDb.getCustomer().getRoleID());
+    assertEquals("456 Elm St", fromDb.getCustomer().getAddress());
+    assertEquals(100, fromDb.getCustomer().getLoyaltyPoints());
+  }
+
+  @Test
+  public void testItemWithNoOrderOrCustomer() {
+    // Optional associations should default to null
+    Item item = new Item();
+    item.setQuantity(1);
+    item.setPrice(79.99f);
+    item = itemRepository.save(item);
+    String id = item.getItemID();
+
+    Item fromDb = itemRepository.findItemByItemID(id);
+    assertNotNull(fromDb);
+    assertFalse(fromDb.hasOrder());
+    assertFalse(fromDb.hasCustomer());
+    assertNull(fromDb.getOrder());
+    assertNull(fromDb.getCustomer());
+  }
 }

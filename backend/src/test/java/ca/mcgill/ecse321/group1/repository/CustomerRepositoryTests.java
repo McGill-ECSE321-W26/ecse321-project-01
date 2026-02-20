@@ -5,7 +5,10 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
 import ca.mcgill.ecse321.group1.model.Customer;
+import ca.mcgill.ecse321.group1.model.Item;
+import ca.mcgill.ecse321.group1.model.Order;
 import ca.mcgill.ecse321.group1.model.Person;
+import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -17,10 +20,14 @@ public class CustomerRepositoryTests {
 
   @Autowired private PersonRepository personRepository;
   @Autowired private CustomerRepository customerRepository;
+  @Autowired private OrderRepository orderRepository;
+  @Autowired private ItemRepository itemRepository;
 
   @BeforeEach
   @AfterEach
   public void clearDatabase() {
+    itemRepository.deleteAll();
+    orderRepository.deleteAll();
     customerRepository.deleteAll();
     personRepository.deleteAll();
   }
@@ -28,7 +35,9 @@ public class CustomerRepositoryTests {
   @Test
   public void testPersistAndLoadCustomer() {
     // Create and save person
-    Person person = new Person("customer_person_1", "customer@example.com", "password");
+    Person person = new Person();
+    person.setEmail("customer@example.com");
+    person.setPassword("password");
     personRepository.save(person);
 
     // Create and save customer
@@ -61,7 +70,9 @@ public class CustomerRepositoryTests {
   @Test
   public void testUpdateCustomer() {
     // Create and save person
-    Person person = new Person("customer_person_2", "update@example.com", "password");
+    Person person = new Person();
+    person.setEmail("update@example.com");
+    person.setPassword("password");
     personRepository.save(person);
 
     // Create and save customer
@@ -71,14 +82,13 @@ public class CustomerRepositoryTests {
     customer.setLoyaltyPoints(10);
     customerRepository.save(customer);
 
-    String roleID = customer.getRoleID();
-
     // Update customer
     customer.setAddress("789 New Blvd");
     customer.setLoyaltyPoints(100);
     customerRepository.save(customer);
 
     // Read customer
+    String roleID = customer.getRoleID();
     Customer customerFromDb = customerRepository.findByRoleID(roleID);
 
     // Assertions
@@ -90,7 +100,9 @@ public class CustomerRepositoryTests {
   @Test
   public void testDeleteCustomer() {
     // Create and save person
-    Person person = new Person("customer_person_3", "delete@example.com", "password");
+    Person person = new Person();
+    person.setEmail("delete@example.com");
+    person.setPassword("password");
     personRepository.save(person);
 
     // Create and save customer
@@ -108,5 +120,69 @@ public class CustomerRepositoryTests {
 
     // Assertions
     assertNull(customerFromDb);
+  }
+
+  @Test
+  public void testCustomerOrdersReference() {
+    // Create and save person and customer
+    Person person = new Person();
+    person.setEmail("orders_ref@example.com");
+    person.setPassword("password");
+    personRepository.save(person);
+
+    Customer customer = new Customer();
+    customer.setPerson(person);
+    customer.setAddress("1 Order Lane");
+    customer.setLoyaltyPoints(0);
+    customerRepository.save(customer);
+
+    // Create and save an order linked to the customer
+    Order order = new Order();
+    order.setOrderStatus(Order.OrderStatus.Preparing);
+    order.setAddress("1 Order Lane");
+    order.setCustomer(customer);
+    orderRepository.save(order);
+
+    String expectedOrderID = order.getOrderID();
+    String roleID = customer.getRoleID();
+
+    // Reload customer and verify the orders reference
+    Customer customerFromDb = customerRepository.findByRoleID(roleID);
+
+    assertNotNull(customerFromDb);
+    assertEquals(1, customerFromDb.numberOfOrders());
+    assertEquals(expectedOrderID, customerFromDb.getOrder(0).getOrderID());
+  }
+
+  @Test
+  public void testCustomerItemsReference() {
+    // Create and save person and customer
+    Person person = new Person();
+    person.setEmail("items_ref@example.com");
+    person.setPassword("password");
+    personRepository.save(person);
+
+    Customer customer = new Customer();
+    customer.setPerson(person);
+    customer.setAddress("2 Item Blvd");
+    customer.setLoyaltyPoints(0);
+    customerRepository.save(customer);
+
+    // Create and save an item linked to the customer
+    Item item = new Item();
+    item.setQuantity(3);
+    item.setPrice(19.99f);
+    item.setCustomer(customer);
+    itemRepository.save(item);
+
+    String expectedItemID = item.getItemID();
+    String roleID = customer.getRoleID();
+
+    // Reload customer and verify the items reference
+    Customer customerFromDb = customerRepository.findByRoleID(roleID);
+
+    assertNotNull(customerFromDb);
+    assertEquals(1, customerFromDb.numberOfItems());
+    assertEquals(expectedItemID, customerFromDb.getItem(0).getItemID());
   }
 }

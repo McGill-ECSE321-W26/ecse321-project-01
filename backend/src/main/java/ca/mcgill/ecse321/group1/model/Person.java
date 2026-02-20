@@ -16,6 +16,7 @@ public class Person
 
   //Person Attributes
   @Id
+  @GeneratedValue(strategy=GenerationType.AUTO)
   private String personID;
   @Column(unique = true)
   private String email;
@@ -29,7 +30,9 @@ public class Person
   // CONSTRUCTOR
   //------------------------
 
-  public Person() {}
+  public Person() {
+    roles = new ArrayList<PersonRole>();
+  }
 
   public Person(String aPersonID, String aEmail, String aPassword)
   {
