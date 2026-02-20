@@ -16,7 +16,7 @@ public class PersonController {
   }
 
   @GetMapping
-  public List<Person> getPeople() {
+  public Iterable<Person> getPeople() {
     return personService.getPeople();
   }
 

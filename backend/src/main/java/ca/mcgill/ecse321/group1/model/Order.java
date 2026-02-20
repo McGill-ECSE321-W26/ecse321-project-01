@@ -8,6 +8,7 @@ import jakarta.persistence.*;
 
 // line 32 "../../../../../model.ump"
 @Entity
+@Table(name="orders")
 public class Order
 {
 
