@@ -135,9 +135,9 @@ public class Customer extends PersonRole
     return 0;
   }
   /* Code from template association_AddManyToOne */
-  public Order addOrder(String aOrderID, Order.OrderStatus aOrderStatus, Date aOrderDate, Date aDeliveryDate, String aAddress, Employee aEmployee)
+  public Order addOrder(String aOrderID, Order.OrderStatus aOrderStatus, Date aOrderDate, Date aDeliveryDate, float aLoyaltySaving, String aAddress, Employee aEmployee)
   {
-    return new Order(aOrderID, aOrderStatus, aOrderDate, aDeliveryDate, aAddress, aEmployee, this);
+    return new Order(aOrderID, aOrderStatus, aOrderDate, aDeliveryDate, aLoyaltySaving, aAddress, aEmployee, this);
   }
 
   public boolean addOrder(Order aOrder)

@@ -5,7 +5,7 @@ package ca.mcgill.ecse321.group1.model;
 
 import jakarta.persistence.*;
 
-// line 45 "../../../../../model.ump"
+// line 46 "../../../../../model.ump"
 @Entity
 public class Item
 {
@@ -19,10 +19,11 @@ public class Item
   @GeneratedValue(strategy = GenerationType.AUTO)
   private String itemID;
   private int quantity;
+  private float price;
 
   //Item Associations
   @ManyToOne
-  private ClothingVariant variants;
+  private ClothingVariant clothingVariant;
   @ManyToOne
   private Order order;
   @ManyToOne
@@ -34,13 +35,14 @@ public class Item
 
   public Item() {}
 
-  public Item(String aItemID, int aQuantity, ClothingVariant aVariants)
+  public Item(String aItemID, int aQuantity, float aPrice, ClothingVariant aClothingVariant)
   {
     itemID = aItemID;
     quantity = aQuantity;
-    if (!setVariants(aVariants))
+    price = aPrice;
+    if (!setClothingVariant(aClothingVariant))
     {
-      throw new RuntimeException("Unable to create Item due to aVariants. See https://manual.umple.org?RE002ViolationofAssociationMultiplicity.html");
+      throw new RuntimeException("Unable to create Item due to aClothingVariant. See https://manual.umple.org?RE002ViolationofAssociationMultiplicity.html");
     }
   }
 
@@ -64,6 +66,14 @@ public class Item
     return wasSet;
   }
 
+  public boolean setPrice(float aPrice)
+  {
+    boolean wasSet = false;
+    price = aPrice;
+    wasSet = true;
+    return wasSet;
+  }
+
   public String getItemID()
   {
     return itemID;
@@ -73,10 +83,15 @@ public class Item
   {
     return quantity;
   }
-  /* Code from template association_GetOne */
-  public ClothingVariant getVariants()
+
+  public float getPrice()
   {
-    return variants;
+    return price;
+  }
+  /* Code from template association_GetOne */
+  public ClothingVariant getClothingVariant()
+  {
+    return clothingVariant;
   }
   /* Code from template association_GetOne */
   public Order getOrder()
@@ -101,12 +116,12 @@ public class Item
     return has;
   }
   /* Code from template association_SetUnidirectionalOne */
-  public boolean setVariants(ClothingVariant aNewVariants)
+  public boolean setClothingVariant(ClothingVariant aNewClothingVariant)
   {
     boolean wasSet = false;
-    if (aNewVariants != null)
+    if (aNewClothingVariant != null)
     {
-      variants = aNewVariants;
+      clothingVariant = aNewClothingVariant;
       wasSet = true;
     }
     return wasSet;
@@ -148,7 +163,7 @@ public class Item
 
   public void delete()
   {
-    variants = null;
+    clothingVariant = null;
     if (order != null)
     {
       Order placeholderOrder = order;
@@ -168,8 +183,9 @@ public class Item
   {
     return super.toString() + "["+
             "itemID" + ":" + getItemID()+ "," +
-            "quantity" + ":" + getQuantity()+ "]" + System.getProperties().getProperty("line.separator") +
-            "  " + "variants = "+(getVariants()!=null?Integer.toHexString(System.identityHashCode(getVariants())):"null") + System.getProperties().getProperty("line.separator") +
+            "quantity" + ":" + getQuantity()+ "," +
+            "price" + ":" + getPrice()+ "]" + System.getProperties().getProperty("line.separator") +
+            "  " + "clothingVariant = "+(getClothingVariant()!=null?Integer.toHexString(System.identityHashCode(getClothingVariant())):"null") + System.getProperties().getProperty("line.separator") +
             "  " + "order = "+(getOrder()!=null?Integer.toHexString(System.identityHashCode(getOrder())):"null") + System.getProperties().getProperty("line.separator") +
             "  " + "customer = "+(getCustomer()!=null?Integer.toHexString(System.identityHashCode(getCustomer())):"null");
   }

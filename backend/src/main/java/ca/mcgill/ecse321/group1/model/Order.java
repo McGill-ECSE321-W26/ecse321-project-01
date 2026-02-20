@@ -30,6 +30,7 @@ public class Order
   private OrderStatus orderStatus;
   private Date orderDate;
   private Date deliveryDate;
+  private float loyaltySaving;
   private String address;
 
   //Order Associations
@@ -37,7 +38,7 @@ public class Order
   private Employee employee;
   @ManyToOne
   private Customer customer;
-  @OneToMany(mappedBy = "order", cascade = {CascadeType.ALL})
+  @OneToMany(mappedBy = "order", cascade = {CascadeType.ALL}, fetch = FetchType.EAGER)
   private List<Item> items;
 
   //------------------------
@@ -46,12 +47,13 @@ public class Order
 
   public Order() {}
 
-  public Order(String aOrderID, OrderStatus aOrderStatus, Date aOrderDate, Date aDeliveryDate, String aAddress, Employee aEmployee, Customer aCustomer)
+  public Order(String aOrderID, OrderStatus aOrderStatus, Date aOrderDate, Date aDeliveryDate, float aLoyaltySaving, String aAddress, Employee aEmployee, Customer aCustomer)
   {
     orderID = aOrderID;
     orderStatus = aOrderStatus;
     orderDate = aOrderDate;
     deliveryDate = aDeliveryDate;
+    loyaltySaving = aLoyaltySaving;
     address = aAddress;
     boolean didAddEmployee = setEmployee(aEmployee);
     if (!didAddEmployee)
@@ -102,6 +104,14 @@ public class Order
     return wasSet;
   }
 
+  public boolean setLoyaltySaving(float aLoyaltySaving)
+  {
+    boolean wasSet = false;
+    loyaltySaving = aLoyaltySaving;
+    wasSet = true;
+    return wasSet;
+  }
+
   public boolean setAddress(String aAddress)
   {
     boolean wasSet = false;
@@ -128,6 +138,11 @@ public class Order
   public Date getDeliveryDate()
   {
     return deliveryDate;
+  }
+
+  public float getLoyaltySaving()
+  {
+    return loyaltySaving;
   }
 
   public String getAddress()
@@ -309,6 +324,7 @@ public class Order
   {
     return super.toString() + "["+
             "orderID" + ":" + getOrderID()+ "," +
+            "loyaltySaving" + ":" + getLoyaltySaving()+ "," +
             "address" + ":" + getAddress()+ "]" + System.getProperties().getProperty("line.separator") +
             "  " + "orderStatus" + "=" + (getOrderStatus() != null ? !getOrderStatus().equals(this)  ? getOrderStatus().toString().replaceAll("  ","    ") : "this" : "null") + System.getProperties().getProperty("line.separator") +
             "  " + "orderDate" + "=" + (getOrderDate() != null ? !getOrderDate().equals(this)  ? getOrderDate().toString().replaceAll("  ","    ") : "this" : "null") + System.getProperties().getProperty("line.separator") +
