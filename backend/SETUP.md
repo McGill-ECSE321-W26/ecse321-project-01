@@ -10,8 +10,8 @@ Before you can build and run this project, ensure you have the following softwar
 ## Database setup
 
 Make sure Docker Engine is running before this step. The database connection is opened through containerized
-PostgreSQL database. To create the Docker image and run the container for the first time, from the root of this
-directory, run
+PostgreSQL database. To create the Docker image and run the container for the first time, from the root of the 
+Spring Boot project directory (`backend`), run
 
 ```shell
 docker compose up -d
