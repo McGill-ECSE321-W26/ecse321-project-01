@@ -91,7 +91,6 @@ public class ManagerRepositoryTests {
     person.setPassword("password");
     personRepository.save(person);
 
-
     Manager manager = new Manager();
     manager.setPerson(person);
     managerRepository.save(manager);
