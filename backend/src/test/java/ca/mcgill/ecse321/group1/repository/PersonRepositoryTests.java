@@ -87,13 +87,15 @@ public class PersonRepositoryTests {
     person.setPassword(password);
     personRepository.save(person);
 
+    // Check successful insertion
+    Person personFromDb = personRepository.findPersonByEmail(email);
+    assertNotNull(personFromDb);
+
     // Delete
     personRepository.delete(person);
 
-    // Read
-    Person personFromDb = personRepository.findPersonByEmail(email);
-
-    // Assertions
+    // Check successful deletion
+    personFromDb = personRepository.findPersonByEmail(email);
     assertNull(personFromDb);
   }
 
