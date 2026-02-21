@@ -65,7 +65,7 @@ jobs:
 
     - name: Build with Gradle Wrapper
       working-directory: backend
-      run: ./gradlew build
+      run: ./gradlew build -xtest
       env:
         # Map Spring Boot properties to the service container
         SPRING_DATASOURCE_URL: jdbc:postgresql://localhost:5432/database

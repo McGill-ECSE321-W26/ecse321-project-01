@@ -181,12 +181,15 @@ public class ItemRepositoryTests {
 
   @Test
   public void testItemPersistsWithClothingVariant() {
+    // create a clothing variant instance
     ClothingVariant variant = new ClothingVariant();
     variant.setSize(ClothingVariant.Size.M);
     variant.setColor("Black");
     variant.setStockQuantity(10);
-    variant = clothingVariantRepository.save(variant); // required before linking
+    // add the instance to the clothing variant repo
+    variant = clothingVariantRepository.save(variant);
 
+    // create a new item and add the existing variant to it as an attribute
     Item item = new Item();
     item.setQuantity(4);
     item.setPrice(9.99f);
@@ -194,6 +197,7 @@ public class ItemRepositoryTests {
     item = itemRepository.save(item);
     String id = item.getItemID();
 
+    // retrieve the item from the db to ensure data is still correct via assertions
     Item fromDb = itemRepository.findItemByItemID(id);
     assertNotNull(fromDb);
     assertNotNull(fromDb.getClothingVariant());
@@ -236,7 +240,6 @@ public class ItemRepositoryTests {
     order.setCustomer(customer);
     order.setEmployee(employee);
     order = orderRepository.save(order);
-    String orderID = order.getOrderID();
 
     // Link order to item
     Item item = new Item();
@@ -248,6 +251,7 @@ public class ItemRepositoryTests {
 
     // Read back and assert
     Item fromDb = itemRepository.findItemByItemID(itemID);
+    String orderID = order.getOrderID();
     assertNotNull(fromDb);
     assertTrue(fromDb.hasOrder());
     assertEquals(orderID, fromDb.getOrder().getOrderID());
@@ -269,7 +273,6 @@ public class ItemRepositoryTests {
     customer.setLoyaltyPoints(100);
     customer.setPerson(person);
     customer = customerRepository.save(customer);
-    String customerRoleID = customer.getRoleID();
 
     // Link customer to item
     Item item = new Item();
@@ -281,6 +284,7 @@ public class ItemRepositoryTests {
 
     // Read back and assert
     Item fromDb = itemRepository.findItemByItemID(itemID);
+    String customerRoleID = customer.getRoleID();
     assertNotNull(fromDb);
     assertTrue(fromDb.hasCustomer());
     assertEquals(customerRoleID, fromDb.getCustomer().getRoleID());

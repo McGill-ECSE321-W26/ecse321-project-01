@@ -78,7 +78,6 @@ public class OrderRepositoryTests {
     order.setAddress("123 Main St");
     order.setLoyaltySaving(0f);
     order = orderRepository.save(order);
-    String id = order.getOrderID();
 
     // Update fields
     order.setOrderStatus(Order.OrderStatus.Delivered);
@@ -86,6 +85,7 @@ public class OrderRepositoryTests {
     order.setLoyaltySaving(25.00f);
     orderRepository.save(order);
 
+    String id = order.getOrderID();
     Order updatedOrder = orderRepository.findOrderByOrderID(id);
     assertNotNull(updatedOrder);
     assertEquals(Order.OrderStatus.Delivered, updatedOrder.getOrderStatus());
@@ -239,20 +239,33 @@ public class OrderRepositoryTests {
     item1.setQuantity(2);
     item1.setPrice(20f);
     item1.setOrder(order);
-    itemRepository.save(item1);
+    // reassign item1 to be from the item repo db
+    item1 = itemRepository.save(item1);
 
     Item item2 = new Item();
     item2.setQuantity(5);
     item2.setPrice(50f);
     item2.setOrder(order);
-    itemRepository.save(item2);
+    // reassign item2 to be from the item repo db
+    item2 = itemRepository.save(item2);
 
-    //  the bidirectional association between order and items allows it to have an accurate
-    // numberOfItems value
-    // when simply doing item.setOrder(order)
+    // The bidirectional association between order and items allows it to have an accurate
+    // numberOfItems value when simply doing item.setOrder(order).
     Order fromDb = orderRepository.findOrderByOrderID(order.getOrderID());
     assertNotNull(fromDb);
     assertTrue(fromDb.hasItems());
     assertEquals(2, fromDb.numberOfItems());
+
+    // this checks if the items referenced when creating the order are still the same in the item
+    // repo.
+    Item item1FromDb = itemRepository.findItemByItemID(item1.getItemID());
+    assertNotNull(item1FromDb);
+    assertEquals(2, item1FromDb.getQuantity());
+    assertEquals(20f, item1FromDb.getPrice());
+
+    Item item2FromDb = itemRepository.findItemByItemID(item2.getItemID());
+    assertNotNull(item2FromDb);
+    assertEquals(5, item2FromDb.getQuantity());
+    assertEquals(50f, item2FromDb.getPrice());
   }
 }

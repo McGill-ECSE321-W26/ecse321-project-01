@@ -6,11 +6,11 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 
 import ca.mcgill.ecse321.group1.model.Customer;
 import ca.mcgill.ecse321.group1.model.Person;
+import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.transaction.annotation.Transactional;
 
 @SpringBootTest
 public class PersonRepositoryTests {
@@ -99,27 +99,27 @@ public class PersonRepositoryTests {
 
   @Test
   @Transactional
-  public void testPersistAndLoadPersonWithRole() {
-    // Create
-    String email = "roletest@example.com";
-    String password = "roletestpassword";
+  public void testPersonRolesReference() {
+    // Create and save person
+    String email = "roles_test@example.com";
     Person person = new Person();
     person.setEmail(email);
-    person.setPassword(password);
+    person.setPassword("testpassword");
     personRepository.save(person);
 
-    // Create and save a Customer role (PersonRole) linked to the person
+    // Create and save a customer linked to that person
     Customer customer = new Customer();
     customer.setPerson(person);
+    customer.setAddress("123 Test St");
+    customer.setLoyaltyPoints(0);
     customerRepository.save(customer);
 
-    // Read person back from DB
+    // Reload person and verify the roles reference
     Person personFromDb = personRepository.findPersonByEmail(email);
 
-    // Assertions object and reference
-    String roleID = customer.getRoleID();
+    String expectedRoleID = customer.getRoleID();
     assertNotNull(personFromDb);
-    assertEquals(1, personFromDb.getRoles().size());
-    assertEquals(roleID, personFromDb.getRoles().getFirst().getRoleID());
+    assertEquals(1, personFromDb.numberOfRoles());
+    assertEquals(expectedRoleID, personFromDb.getRoles().getFirst().getRoleID());
   }
 }
