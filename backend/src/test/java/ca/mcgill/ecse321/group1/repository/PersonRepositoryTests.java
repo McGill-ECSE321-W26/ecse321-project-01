@@ -55,7 +55,7 @@ public class PersonRepositoryTests {
 
   @Test
   public void testUpdatePerson() {
-    // Create and save person
+    // Create and save
     String email = "santiago@example.com";
     String password = "santiagopassword";
     Person person = new Person(); // Using default constructor and setters
@@ -63,7 +63,7 @@ public class PersonRepositoryTests {
     person.setPassword(password);
     personRepository.save(person);
 
-    // Update person
+    // Update
     String newEmail = "santiago_updated@example.com";
     person.setEmail(newEmail);
     personRepository.save(person);
@@ -79,7 +79,7 @@ public class PersonRepositoryTests {
 
   @Test
   public void testDeletePerson() {
-    // Create and save person
+    // Create
     String email = "maria@example.com";
     String password = "mariapassword";
     Person person = new Person(); // Using parameterized constructor
@@ -87,13 +87,15 @@ public class PersonRepositoryTests {
     person.setPassword(password);
     personRepository.save(person);
 
-    // Delete person
+    // Check successful insertion
+    Person personFromDb = personRepository.findPersonByEmail(email);
+    assertNotNull(personFromDb);
+
+    // Delete
     personRepository.delete(person);
 
-    // Read person
-    Person personFromDb = personRepository.findPersonByEmail(email);
-
-    // Assertions
+    // Check successful deletion
+    personFromDb = personRepository.findPersonByEmail(email);
     assertNull(personFromDb);
   }
 
@@ -114,13 +116,12 @@ public class PersonRepositoryTests {
     customer.setLoyaltyPoints(0);
     customerRepository.save(customer);
 
-    String expectedRoleID = customer.getRoleID();
-
     // Reload person and verify the roles reference
     Person personFromDb = personRepository.findPersonByEmail(email);
 
+    String expectedRoleID = customer.getRoleID();
     assertNotNull(personFromDb);
     assertEquals(1, personFromDb.numberOfRoles());
-    assertEquals(expectedRoleID, personFromDb.getRole(0).getRoleID());
+    assertEquals(expectedRoleID, personFromDb.getRoles().getFirst().getRoleID());
   }
 }
