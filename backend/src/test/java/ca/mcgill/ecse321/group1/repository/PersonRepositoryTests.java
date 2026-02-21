@@ -4,19 +4,23 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
+import ca.mcgill.ecse321.group1.model.Customer;
 import ca.mcgill.ecse321.group1.model.Person;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.transaction.annotation.Transactional;
 
 @SpringBootTest
 public class PersonRepositoryTests {
 
   @Autowired private PersonRepository personRepository;
+  @Autowired private CustomerRepository customerRepository;
 
   @AfterEach
   public void clearDatabase() {
+    customerRepository.deleteAll();
     personRepository.deleteAll();
   }
 
@@ -51,7 +55,7 @@ public class PersonRepositoryTests {
 
   @Test
   public void testUpdatePerson() {
-    // Create and save person
+    // Create and save
     String email = "santiago@example.com";
     String password = "santiagopassword";
     Person person = new Person(); // Using default constructor and setters
@@ -59,7 +63,7 @@ public class PersonRepositoryTests {
     person.setPassword(password);
     personRepository.save(person);
 
-    // Update person
+    // Update
     String newEmail = "santiago_updated@example.com";
     person.setEmail(newEmail);
     personRepository.save(person);
@@ -75,7 +79,7 @@ public class PersonRepositoryTests {
 
   @Test
   public void testDeletePerson() {
-    // Create and save person
+    // Create
     String email = "maria@example.com";
     String password = "mariapassword";
     Person person = new Person(); // Using parameterized constructor
@@ -83,13 +87,39 @@ public class PersonRepositoryTests {
     person.setPassword(password);
     personRepository.save(person);
 
-    // Delete person
+    // Delete
     personRepository.delete(person);
 
-    // Read person
+    // Read
     Person personFromDb = personRepository.findPersonByEmail(email);
 
     // Assertions
     assertNull(personFromDb);
+  }
+
+  @Test
+  @Transactional
+  public void testPersistAndLoadPersonWithRole() {
+    // Create
+    String email = "roletest@example.com";
+    String password = "roletestpassword";
+    Person person = new Person();
+    person.setEmail(email);
+    person.setPassword(password);
+    personRepository.save(person);
+
+    // Create and save a Customer role (PersonRole) linked to the person
+    Customer customer = new Customer();
+    customer.setPerson(person);
+    customerRepository.save(customer);
+
+    // Read person back from DB
+    Person personFromDb = personRepository.findPersonByEmail(email);
+
+    // Assertions object and reference
+    String roleID = customer.getRoleID();
+    assertNotNull(personFromDb);
+    assertEquals(1, personFromDb.getRoles().size());
+    assertEquals(roleID, personFromDb.getRoles().getFirst().getRoleID());
   }
 }
