@@ -91,7 +91,6 @@ public class ManagerRepositoryTests {
     person.setPassword("password");
     personRepository.save(person);
 
-    String expectedPersonID = person.getPersonID();
 
     Manager manager = new Manager();
     manager.setPerson(person);
@@ -102,6 +101,7 @@ public class ManagerRepositoryTests {
     // Reload manager and verify the person reference
     Manager managerFromDb = managerRepository.findByRoleID(roleID);
 
+    String expectedPersonID = person.getPersonID();
     assertNotNull(managerFromDb);
     assertNotNull(managerFromDb.getPerson());
     assertEquals(expectedPersonID, managerFromDb.getPerson().getPersonID());
