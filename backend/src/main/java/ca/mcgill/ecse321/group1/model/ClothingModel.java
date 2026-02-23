@@ -22,7 +22,7 @@ public class ClothingModel
   private float price;
 
   //ClothingModel Associations
-  @OneToMany(mappedBy = "model", cascade = {CascadeType.ALL})
+  @OneToMany(mappedBy = "model", cascade = {CascadeType.ALL}, orphanRemoval = true)
   private List<ClothingVariant> clothingVariants;
 
   //------------------------
