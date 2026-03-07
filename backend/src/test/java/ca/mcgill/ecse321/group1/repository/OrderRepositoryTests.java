@@ -24,11 +24,11 @@ public class OrderRepositoryTests {
 
   @AfterEach
   public void clearDatabase() {
+    itemRepository.deleteAll();
     orderRepository.deleteAll();
     customerRepository.deleteAll();
     employeeRepository.deleteAll();
     personRepository.deleteAll();
-    itemRepository.deleteAll();
   }
 
   @Test

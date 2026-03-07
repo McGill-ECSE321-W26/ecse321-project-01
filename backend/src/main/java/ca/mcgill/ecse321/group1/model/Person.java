@@ -23,7 +23,7 @@ public class Person
   private String password;
 
   //Person Associations
-  @OneToMany(mappedBy = "person", cascade = {CascadeType.ALL})
+  @OneToMany(mappedBy = "person", cascade = {CascadeType.ALL}, orphanRemoval = true)
   private List<PersonRole> roles;
 
   //------------------------
