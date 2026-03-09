@@ -67,7 +67,9 @@ For all details regarding this deliverable, please refer to the [Deliverable 1 W
 The report for this deliverable can also be found in the Wiki, right [here](https://github.com/McGill-ECSE321-W26/ecse321-project-01/wiki/Deliverable-1-Project-Management-and-Report).
 
 ## Project Deliverable 2 (12%)
-This project deliverable has not started yet.
+For all details regarding this deliverable, please refer to the [Deliverable 2 Wiki Page](https://github.com/McGill-ECSE321-W26/ecse321-project-01/wiki/Project-Deliverable-2).
+
+The report for this deliverable can also be found in the Wiki, right [here](https://github.com/McGill-ECSE321-W26/ecse321-project-01/wiki/Deliverable-2-Project-Management-and-Report).
 
 ## Project Deliverable 3 (12%)
 This project deliverable has not started yet.
