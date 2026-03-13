@@ -166,7 +166,12 @@ public class OrderService {
   }
 
   public Order getOrderByID(String orderID) {
-    return orderRepository.findOrderByOrderID(orderID);
+    Order order = orderRepository.findOrderByOrderID(orderID);
+    if (order == null) {
+      throw new RuntimeException("There is no order with id " + orderID + ".");
+    }
+
+    return order;
   }
 
   public List<Order> getOrdersByCustomerID(String customerID) {
