@@ -21,6 +21,7 @@ public class OrderService {
   private final CustomerRepository customerRepository;
   private final ItemRepository itemRepository;
   private final EmployeeRepository employeeRepository;
+  static float loyaltyModifier = 0.2f;
 
   public OrderService(
       OrderRepository orderRepository,
@@ -34,11 +35,17 @@ public class OrderService {
   }
 
   @Transactional
-  public Order createOrder(String customerID, Date deliveryDate) {
+  public Order createOrder(String customerID, Date deliveryDate, int usedLoyaltyPoints) {
     Customer customer = customerRepository.findByRoleID(customerID);
     if (customer == null) {
       throw new RuntimeException("There is no customer with id " + customerID + ".");
     }
+
+    Iterable<Item> items = itemRepository.findItemsByCustomer(customer);
+    if (items == null) {
+      throw new RuntimeException("There are no items in the cart of customer " + customerID + ".");
+    }
+
     if (deliveryDate == null) {
       throw new RuntimeException("Delivery Date is null.");
     }
@@ -51,13 +58,22 @@ public class OrderService {
     order.setCustomer(customer);
     order.setDeliveryDate(deliveryDate);
     order.setAddress(customer.getAddress());
-    // Add loyalty saving later
 
-    Iterable<Item> items = itemRepository.findItemsByCustomer(customer);
+    float total = 0.0f;
+    float itemPrice;
+
     for (Item item : items) {
       order.addItem(item);
+      itemPrice = item.getClothingVariant().getModel().getPrice();
+      total += itemPrice;
+      item.setPrice(itemPrice);
       customer.removeItem(item);
     }
+
+    // Compute loyalty points gained and loyalty savings
+    order.setLoyaltySaving((float) usedLoyaltyPoints * loyaltyModifier);
+    int gainedLoyaltyPoints = (int) (total * loyaltyModifier);
+    customer.setLoyaltyPoints(customer.getLoyaltyPoints() + gainedLoyaltyPoints - usedLoyaltyPoints);
 
     return orderRepository.save(order);
   }
@@ -120,6 +136,11 @@ public class OrderService {
 
   public Order getOrderByID(String orderID) {
     return orderRepository.findOrderByOrderID(orderID);
+  }
+
+  @Transactional
+  public Order updateOrderAddress(String orderID) {
+    return null;
   }
 
   public Iterable<Order> getOrdersByCustomerID(String customerID) {
