@@ -25,7 +25,7 @@ public class OrderController {
     return new OrderDTO(order);
   }
 
-  @PostMapping("{orderID}/assign-employee")
+  @PutMapping("{orderID}/assign-employee")
   public OrderDTO assignOrderToEmployee(
       @PathVariable String orderID, @RequestBody AssignOrderToEmployeeDTO dto) {
     Order order = orderService.assignOrderToEmployee(orderID, dto.getEmployeeID());
