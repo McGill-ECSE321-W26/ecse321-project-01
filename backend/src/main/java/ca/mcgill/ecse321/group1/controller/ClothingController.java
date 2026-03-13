@@ -1,0 +1,74 @@
+package ca.mcgill.ecse321.group1.controller;
+
+import ca.mcgill.ecse321.group1.dto.ClothingModelCreateRequestDto;
+import ca.mcgill.ecse321.group1.dto.ClothingModelResponseDto;
+import ca.mcgill.ecse321.group1.dto.ClothingVariantCreateRequestDto;
+import ca.mcgill.ecse321.group1.dto.ClothingVariantResponseDto;
+import ca.mcgill.ecse321.group1.service.ClothingService;
+import java.util.List;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.*;
+
+@RestController
+@RequestMapping("/api/clothing")
+public class ClothingController {
+
+  private final ClothingService clothingService;
+
+  public ClothingController(ClothingService clothingService) {
+    this.clothingService = clothingService;
+  }
+
+  @GetMapping
+  public List<ClothingModelResponseDto> getAllClothingModels() {
+    return clothingService.getAllClothingModels().stream()
+        .map(ClothingModelResponseDto::new)
+        .toList();
+  }
+
+  @GetMapping("/{modelId}")
+  public ClothingModelResponseDto getClothingModel(@PathVariable String modelId) {
+    return new ClothingModelResponseDto(clothingService.getClothingModel(modelId));
+  }
+
+  @PostMapping
+  @ResponseStatus(HttpStatus.CREATED)
+  public ClothingModelResponseDto createClothingModel(
+      @RequestBody ClothingModelCreateRequestDto request) {
+    return new ClothingModelResponseDto(
+        clothingService.createClothingModel(request.getName(), request.getPrice()));
+  }
+
+  @DeleteMapping("/{modelId}")
+  @ResponseStatus(HttpStatus.NO_CONTENT)
+  public void deleteClothingModel(@PathVariable String modelId) {
+    clothingService.deleteClothingModel(modelId);
+  }
+
+  @GetMapping("/{modelId}/variants")
+  public List<ClothingVariantResponseDto> getVariantsByModel(@PathVariable String modelId) {
+    return clothingService.getVariantsByModel(modelId).stream()
+        .map(ClothingVariantResponseDto::new)
+        .toList();
+  }
+
+  @GetMapping("/variants/{variantId}")
+  public ClothingVariantResponseDto getVariant(@PathVariable String variantId) {
+    return new ClothingVariantResponseDto(clothingService.getVariant(variantId));
+  }
+
+  @PostMapping("/{modelId}/variants")
+  @ResponseStatus(HttpStatus.CREATED)
+  public ClothingVariantResponseDto addVariant(
+      @PathVariable String modelId, @RequestBody ClothingVariantCreateRequestDto request) {
+    return new ClothingVariantResponseDto(
+        clothingService.addVariant(
+            modelId, request.getSize(), request.getColor(), request.getStockQuantity()));
+  }
+
+  @DeleteMapping("/variants/{variantId}")
+  @ResponseStatus(HttpStatus.NO_CONTENT)
+  public void deleteVariant(@PathVariable String variantId) {
+    clothingService.deleteVariant(variantId);
+  }
+}
