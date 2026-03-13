@@ -14,7 +14,8 @@ public class ClothingModelResponseDto {
     this.clothingModelID = model.getClothingModelID();
     this.name = model.getName();
     this.price = model.getPrice();
-    this.totalStockQuantity = model.getClothingVariants().stream().mapToInt(ClothingVariant::getStockQuantity).sum();
+    this.totalStockQuantity =
+        model.getClothingVariants().stream().mapToInt(ClothingVariant::getStockQuantity).sum();
   }
 
   public String getClothingModelID() {

@@ -93,6 +93,16 @@ public class ClothingService {
       throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Stock quantity must be >= 0");
     }
 
+    // No 2 variants of the same model can have the same color/size combination
+    if (model.getClothingVariants().stream()
+        .anyMatch(variant -> variant.getSize() == size && variant.getColor().equals(color))) {
+      throw new ResponseStatusException(
+          HttpStatus.CONFLICT,
+          String.format(
+              "A variant with size %s and color %s already exists for this clothing model",
+              size, color));
+    }
+
     // Leave ID field as null so CRUD repository can fill with UUID
     ClothingVariant variant = new ClothingVariant(null, size, color, stockQuantity, model);
     return clothingVariantRepository.save(variant);
