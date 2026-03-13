@@ -8,6 +8,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.transaction.annotation.Transactional;
 
 @SpringBootTest
 public class ClothingModelRepositoryTests {
@@ -33,20 +34,18 @@ public class ClothingModelRepositoryTests {
     String id = clothingModelTest.getClothingModelID();
 
     // Read ClothingModel from database
-    ClothingModel clothingModelTestFromDb =
-        clothingModelRepository.findClothingModelByClothingModelID(id);
+    ClothingModel clothingModelTestFromDb = clothingModelRepository.findByClothingModelID(id);
 
     // Assert correct response
     assertNotNull(clothingModelTestFromDb);
-    assertEquals(clothingModelTestFromDb.getName(), name);
-    assertEquals(clothingModelTestFromDb.getPrice(), price);
+    assertEquals(name, clothingModelTestFromDb.getName());
+    assertEquals(price, clothingModelTestFromDb.getPrice());
   }
 
   @Test
   public void testFindClothingModelByInvalidId() {
     // Attempt to find a model with a non-existent ID
-    ClothingModel result =
-        clothingModelRepository.findClothingModelByClothingModelID("nonexistent");
+    ClothingModel result = clothingModelRepository.findByClothingModelID("nonexistent");
 
     // Assert nothing is returned
     assertNull(result);
@@ -66,7 +65,7 @@ public class ClothingModelRepositoryTests {
 
     // Read back and assert updated values
     String id = model.getClothingModelID();
-    ClothingModel updatedModel = clothingModelRepository.findClothingModelByClothingModelID(id);
+    ClothingModel updatedModel = clothingModelRepository.findByClothingModelID(id);
     assertNotNull(updatedModel);
 
     assertEquals("Gucci Updated", updatedModel.getName());
@@ -86,7 +85,7 @@ public class ClothingModelRepositoryTests {
     clothingModelRepository.delete(model);
 
     // Assert it no longer exists
-    ClothingModel deletedModel = clothingModelRepository.findClothingModelByClothingModelID(id);
+    ClothingModel deletedModel = clothingModelRepository.findByClothingModelID(id);
     assertNull(deletedModel);
   }
 
@@ -125,7 +124,7 @@ public class ClothingModelRepositoryTests {
     model = clothingModelRepository.save(model);
     String id = model.getClothingModelID();
 
-    ClothingModel fromDb = clothingModelRepository.findClothingModelByClothingModelID(id);
+    ClothingModel fromDb = clothingModelRepository.findByClothingModelID(id);
 
     assertNotNull(fromDb);
     assertEquals("FreeBrand", fromDb.getName());
@@ -141,11 +140,37 @@ public class ClothingModelRepositoryTests {
     model = clothingModelRepository.save(model);
     String id = model.getClothingModelID();
 
-    ClothingModel fromDb = clothingModelRepository.findClothingModelByClothingModelID(id);
+    ClothingModel fromDb = clothingModelRepository.findByClothingModelID(id);
 
     assertNotNull(fromDb);
     assertEquals("LuxuryBrand", fromDb.getName());
     assertEquals(Float.MAX_VALUE, fromDb.getPrice());
+  }
+
+  @Test
+  @Transactional
+  public void testDeleteByClothingModelID() {
+    // Create and save
+    ClothingModel model = new ClothingModel();
+    model.setName("Balenciaga");
+    model.setPrice(1200f);
+    model = clothingModelRepository.save(model);
+    String id = model.getClothingModelID();
+
+    // Delete by ID and assert count returned is 1
+    int deleted = clothingModelRepository.deleteByClothingModelID(id);
+    assertEquals(1, deleted);
+
+    // Assert it no longer exists
+    assertNull(clothingModelRepository.findByClothingModelID(id));
+  }
+
+  @Test
+  @Transactional
+  public void testDeleteClothingModelByNonExistentID() {
+    // Deleting a non-existent ID should return 0
+    int deleted = clothingModelRepository.deleteByClothingModelID("nonexistent");
+    assertEquals(0, deleted);
   }
 
   @Test
