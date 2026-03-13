@@ -150,27 +150,26 @@ public class ClothingModelRepositoryTests {
   @Test
   @Transactional
   public void testDeleteByClothingModelID() {
-    // Create and save
     ClothingModel model = new ClothingModel();
     model.setName("Balenciaga");
-    model.setPrice(1200f);
+    model.setPrice(1400f);
     model = clothingModelRepository.save(model);
     String id = model.getClothingModelID();
 
-    // Delete by ID and assert count returned is 1
-    int deleted = clothingModelRepository.deleteByClothingModelID(id);
-    assertEquals(1, deleted);
+    // Delete by ID and assert delete count is 1
+    int deleteCount = clothingModelRepository.deleteByClothingModelID(id);
+    assertEquals(1, deleteCount);
 
-    // Assert it no longer exists
+    // Assert no exist
     assertNull(clothingModelRepository.findByClothingModelID(id));
   }
 
   @Test
   @Transactional
   public void testDeleteClothingModelByNonExistentID() {
-    // Deleting a non-existent ID should return 0
-    int deleted = clothingModelRepository.deleteByClothingModelID("nonexistent");
-    assertEquals(0, deleted);
+    // Deleting a non-existent ID should return 0 deleted items
+    int deleteCount = clothingModelRepository.deleteByClothingModelID("NonexistentID");
+    assertEquals(0, deleteCount);
   }
 
   @Test
