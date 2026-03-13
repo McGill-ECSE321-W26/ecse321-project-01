@@ -130,17 +130,18 @@ public class OrderService {
     return orderRepository.save(order);
   }
 
+  @Transactional
+  public Order updateOrderAddress(String orderID) {
+    // TODO: Update order address
+    return null;
+  }
+
   public Iterable<Order> getOrders() {
     return orderRepository.findAll();
   }
 
   public Order getOrderByID(String orderID) {
     return orderRepository.findOrderByOrderID(orderID);
-  }
-
-  @Transactional
-  public Order updateOrderAddress(String orderID) {
-    return null;
   }
 
   public Iterable<Order> getOrdersByCustomerID(String customerID) {

@@ -1,6 +1,5 @@
 package ca.mcgill.ecse321.group1.controller;
 
-import ca.mcgill.ecse321.group1.model.Customer;
 import ca.mcgill.ecse321.group1.model.Order;
 import ca.mcgill.ecse321.group1.service.OrderService;
 import org.springframework.web.bind.annotation.*;
@@ -13,6 +12,8 @@ public class OrderController {
   public OrderController(OrderService orderService) {
     this.orderService = orderService;
   }
+
+  // TODO: Post mappings and functions
 
   @GetMapping("")
   public Iterable<Order> getOrders() {
