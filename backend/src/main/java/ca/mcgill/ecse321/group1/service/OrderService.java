@@ -2,6 +2,7 @@ package ca.mcgill.ecse321.group1.service;
 
 import java.sql.Date;
 import java.time.LocalDate;
+import java.util.List;
 
 import ca.mcgill.ecse321.group1.model.Customer;
 import ca.mcgill.ecse321.group1.model.Employee;
@@ -21,7 +22,7 @@ public class OrderService {
   private final CustomerRepository customerRepository;
   private final ItemRepository itemRepository;
   private final EmployeeRepository employeeRepository;
-  static float loyaltyModifier = 0.2f;
+  static float loyaltyModifier = 0.2f; // Modifier between loyalty points and money
 
   public OrderService(
       OrderRepository orderRepository,
@@ -35,7 +36,7 @@ public class OrderService {
   }
 
   @Transactional
-  public Order createOrder(String customerID, Date deliveryDate, int usedLoyaltyPoints) {
+  public Order createOrder(String customerID, String deliveryDate, int usedLoyaltyPoints) {
     Customer customer = customerRepository.findByRoleID(customerID);
     if (customer == null) {
       throw new RuntimeException("There is no customer with id " + customerID + ".");
@@ -49,14 +50,20 @@ public class OrderService {
     if (deliveryDate == null) {
       throw new RuntimeException("Delivery Date is null.");
     }
+    Date delivery;
+    try {
+      delivery = Date.valueOf(deliveryDate);
+    } catch (Exception e) {
+      throw new RuntimeException("Delivery date is not valid.");
+    }
 
-    if (deliveryDate.toLocalDate().isBefore(LocalDate.now().plusDays(1))) {
+    if (delivery.toLocalDate().isBefore(LocalDate.now().plusDays(1))) {
       throw new RuntimeException("Delivery Date must be at least 24 hours after the order date.");
     }
 
     Order order = new Order();
     order.setCustomer(customer);
-    order.setDeliveryDate(deliveryDate);
+    order.setDeliveryDate(delivery);
     order.setAddress(customer.getAddress());
 
     float total = 0.0f;
@@ -73,7 +80,8 @@ public class OrderService {
     // Compute loyalty points gained and loyalty savings
     order.setLoyaltySaving((float) usedLoyaltyPoints * loyaltyModifier);
     int gainedLoyaltyPoints = (int) (total * loyaltyModifier);
-    customer.setLoyaltyPoints(customer.getLoyaltyPoints() + gainedLoyaltyPoints - usedLoyaltyPoints);
+    customer.setLoyaltyPoints(
+        customer.getLoyaltyPoints() + gainedLoyaltyPoints - usedLoyaltyPoints);
 
     return orderRepository.save(order);
   }
@@ -95,7 +103,7 @@ public class OrderService {
   }
 
   @Transactional
-  public Order updateOrderDeliveryDate(String orderID, Date deliveryDate) {
+  public Order updateOrderDeliveryDate(String orderID, String deliveryDate) {
     Order order = orderRepository.findOrderByOrderID(orderID);
     if (order == null) {
       throw new RuntimeException("There is no order with id " + orderID + ".");
@@ -104,11 +112,18 @@ public class OrderService {
     if (deliveryDate == null) {
       throw new RuntimeException("Delivery Date is null.");
     }
-    if (deliveryDate.toLocalDate().isBefore(LocalDate.now().plusDays(1))) {
+    Date delivery;
+    try {
+      delivery = Date.valueOf(deliveryDate);
+    } catch (Exception e) {
+      throw new RuntimeException("Delivery date is not valid.");
+    }
+
+    if (delivery.toLocalDate().isBefore(LocalDate.now().plusDays(1))) {
       throw new RuntimeException("Delivery Date must be at least 24 hours after the order date.");
     }
 
-    order.setDeliveryDate(deliveryDate);
+    order.setDeliveryDate(delivery);
     return orderRepository.save(order);
   }
 
@@ -132,11 +147,21 @@ public class OrderService {
 
   @Transactional
   public Order updateOrderAddress(String orderID) {
-    // TODO: Update order address
-    return null;
+    Order order = orderRepository.findOrderByOrderID(orderID);
+    if (order == null) {
+      throw new RuntimeException("There is no order with id " + orderID + ".");
+    }
+
+    Customer customer = order.getCustomer();
+    if (customer == null) {
+      throw new RuntimeException("There is no customer for the order id " + orderID + ".");
+    }
+
+    order.setAddress(customer.getAddress());
+    return orderRepository.save(order);
   }
 
-  public Iterable<Order> getOrders() {
+  public List<Order> getOrders() {
     return orderRepository.findAll();
   }
 
@@ -144,7 +169,7 @@ public class OrderService {
     return orderRepository.findOrderByOrderID(orderID);
   }
 
-  public Iterable<Order> getOrdersByCustomerID(String customerID) {
+  public List<Order> getOrdersByCustomerID(String customerID) {
     Customer customer = customerRepository.findByRoleID(customerID);
     if (customer == null) {
       throw new RuntimeException("There is no customer with id " + customerID + ".");
@@ -153,11 +178,11 @@ public class OrderService {
     return orderRepository.findByCustomer(customer);
   }
 
-  public Iterable<Order> getOrdersByOrderStatus(String orderStatus) {
+  public List<Order> getOrdersByOrderStatus(String orderStatus) {
     Order.OrderStatus orderStatusEnum;
     try {
       orderStatusEnum = Order.OrderStatus.valueOf(orderStatus);
-    } catch (IllegalArgumentException e) {
+    } catch (Exception e) {
       throw new RuntimeException("Invalid order status " + orderStatus);
     }
 
