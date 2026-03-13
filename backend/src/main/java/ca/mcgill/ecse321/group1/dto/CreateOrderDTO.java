@@ -1,8 +1,10 @@
 package ca.mcgill.ecse321.group1.dto;
 
+import java.sql.Date;
+
 public class CreateOrderDTO {
   private String customerID;
-  private String deliveryDate;
+  private Date deliveryDate;
   private int usedLoyaltyPoints;
 
   public String getCustomerID() {
@@ -13,11 +15,11 @@ public class CreateOrderDTO {
     this.customerID = customerID;
   }
 
-  public String getDeliveryDate() {
+  public Date getDeliveryDate() {
     return deliveryDate;
   }
 
-  public void setDeliveryDate(String deliveryDate) {
+  public void setDeliveryDate(Date deliveryDate) {
     this.deliveryDate = deliveryDate;
   }
 
