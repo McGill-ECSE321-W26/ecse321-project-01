@@ -59,10 +59,10 @@ public class ClothingController {
 
   @PostMapping("/{modelId}/variants")
   @ResponseStatus(HttpStatus.CREATED)
-  public ClothingVariantResponseDto addVariant(
+  public ClothingVariantResponseDto addVariantToModel(
       @PathVariable String modelId, @RequestBody ClothingVariantCreateRequestDto request) {
     return new ClothingVariantResponseDto(
-        clothingService.addVariant(
+        clothingService.createVariant(
             modelId, request.getSize(), request.getColor(), request.getStockQuantity()));
   }
 

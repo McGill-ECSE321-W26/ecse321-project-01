@@ -79,7 +79,7 @@ public class ClothingService {
   }
 
   @Transactional
-  public ClothingVariant addVariant(
+  public ClothingVariant createVariant(
       String modelId, ClothingVariant.Size size, String color, int stockQuantity)
       throws ResponseStatusException {
     ClothingModel model = getClothingModel(modelId);
