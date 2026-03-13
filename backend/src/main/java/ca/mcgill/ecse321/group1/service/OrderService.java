@@ -38,7 +38,7 @@ public class OrderService {
   }
 
   @Transactional
-  public Order createOrder(String customerID, String deliveryDate, int usedLoyaltyPoints) {
+  public Order createOrder(String customerID, Date deliveryDate, int usedLoyaltyPoints) {
     Customer customer = customerRepository.findByRoleID(customerID);
     if (customer == null) {
       throw new NotFoundException("There is no customer with id " + customerID + ".");
@@ -53,21 +53,15 @@ public class OrderService {
     if (deliveryDate == null) {
       throw new InvalidInputException("Delivery Date is null.");
     }
-    Date delivery;
-    try {
-      delivery = Date.valueOf(deliveryDate);
-    } catch (Exception e) {
-      throw new InvalidInputException("Delivery date is not valid.");
-    }
 
-    if (delivery.toLocalDate().isBefore(LocalDate.now().plusDays(1))) {
+    if (deliveryDate.toLocalDate().isBefore(LocalDate.now().plusDays(1))) {
       throw new InvalidInputException(
           "Delivery Date must be at least 24 hours after the order date.");
     }
 
     Order order = new Order();
     order.setCustomer(customer);
-    order.setDeliveryDate(delivery);
+    order.setDeliveryDate(deliveryDate);
     order.setAddress(customer.getAddress());
 
     float total = 0.0f;
@@ -108,7 +102,7 @@ public class OrderService {
   }
 
   @Transactional
-  public Order updateOrderDeliveryDate(String orderID, String deliveryDate) {
+  public Order updateOrderDeliveryDate(String orderID, Date deliveryDate) {
     Order order = orderRepository.findOrderByOrderID(orderID);
     if (order == null) {
       throw new NotFoundException("There is no order with id " + orderID + ".");
@@ -117,19 +111,13 @@ public class OrderService {
     if (deliveryDate == null) {
       throw new InvalidInputException("Delivery Date is null.");
     }
-    Date delivery;
-    try {
-      delivery = Date.valueOf(deliveryDate);
-    } catch (Exception e) {
-      throw new InvalidInputException("Delivery date is not valid.");
-    }
 
-    if (delivery.toLocalDate().isBefore(LocalDate.now().plusDays(1))) {
+    if (deliveryDate.toLocalDate().isBefore(LocalDate.now().plusDays(1))) {
       throw new InvalidInputException(
           "Delivery Date must be at least 24 hours after the order date.");
     }
 
-    order.setDeliveryDate(delivery);
+    order.setDeliveryDate(deliveryDate);
     return orderRepository.save(order);
   }
 

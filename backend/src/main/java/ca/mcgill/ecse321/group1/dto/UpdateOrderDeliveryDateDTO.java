@@ -1,13 +1,15 @@
 package ca.mcgill.ecse321.group1.dto;
 
-public class UpdateOrderDeliveryDateDTO {
-  private String deliveryDate;
+import java.sql.Date;
 
-  public String getDeliveryDate() {
+public class UpdateOrderDeliveryDateDTO {
+  private Date deliveryDate;
+
+  public Date getDeliveryDate() {
     return deliveryDate;
   }
 
-  public void setDeliveryDate(String deliveryDate) {
+  public void setDeliveryDate(Date deliveryDate) {
     this.deliveryDate = deliveryDate;
   }
 }
