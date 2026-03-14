@@ -70,6 +70,11 @@ public class PersonController {
     return new PersonResponseDto(personService.getPersonById(id));
   }
 
+  @GetMapping("email/{email}")
+  public PersonResponseDto getPersonByEmail(@PathVariable String email) {
+    return new PersonResponseDto(personService.getPersonByEmail(email));
+  }
+
   @PutMapping("{id}/password")
   public PersonResponseDto updatePassword(
       @PathVariable String id, @RequestBody UpdatePasswordDto dto) {
