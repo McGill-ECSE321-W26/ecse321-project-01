@@ -47,6 +47,7 @@ public class OrderServiceTests {
     clothingVariant.setModel(clothingModel);
     Item item = new Item();
     item.setClothingVariant(clothingVariant);
+    item.setQuantity(1);
     return item;
   }
 
@@ -89,7 +90,9 @@ public class OrderServiceTests {
     assertEquals(deliveryDate, order.getDeliveryDate());
     assertEquals(
         (float) usedLoyaltyPoints * OrderService.loyaltyModifier, order.getLoyaltySaving());
-    assertEquals(25, customer.getLoyaltyPoints());
+    int loyaltyPointsFinal =
+        (int) (initialLoyaltyPoints - usedLoyaltyPoints + OrderService.loyaltyModifier * itemPrice);
+    assertEquals(loyaltyPointsFinal, customer.getLoyaltyPoints());
     verify(orderRepository, times(1)).save(any(Order.class));
   }
 
