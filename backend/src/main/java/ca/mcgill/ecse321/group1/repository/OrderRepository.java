@@ -6,7 +6,7 @@ import org.springframework.data.repository.ListCrudRepository;
 
 import java.util.List;
 
-public interface OrderRepository extends ListCrudRepository<Order, Integer> {
+public interface OrderRepository extends ListCrudRepository<Order, String> {
   Order findOrderByOrderID(String id);
 
   List<Order> findByCustomer(Customer customer);
