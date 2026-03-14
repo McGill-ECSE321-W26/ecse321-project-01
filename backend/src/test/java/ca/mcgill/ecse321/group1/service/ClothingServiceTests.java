@@ -10,14 +10,18 @@ import static org.mockito.Mockito.when;
 
 import ca.mcgill.ecse321.group1.model.ClothingModel;
 import ca.mcgill.ecse321.group1.model.ClothingVariant;
+import ca.mcgill.ecse321.group1.model.Item;
 import ca.mcgill.ecse321.group1.repository.ClothingModelRepository;
 import ca.mcgill.ecse321.group1.repository.ClothingVariantRepository;
 import java.util.List;
+
+import ca.mcgill.ecse321.group1.repository.ItemRepository;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -26,6 +30,9 @@ import org.springframework.web.server.ResponseStatusException;
 public class ClothingServiceTests {
     @Mock ClothingModelRepository clothingModelRepository;
     @Mock ClothingVariantRepository clothingVariantRepository;
+    @Autowired
+    @Mock
+    ItemRepository itemRepository;
     @InjectMocks ClothingService clothingService;
 
     // ===== getAllClothingModels =====
@@ -137,6 +144,9 @@ public class ClothingServiceTests {
         String newName = "Winter Coat";
         float newPrice = 129.99f;
         ClothingModel model = new ClothingModel(id, "Summer Jacket", 79.99f);
+        ClothingVariant variant = new ClothingVariant(id,ClothingVariant.Size.M, "blue", 5, model);
+        Item item = new Item(id,1,1f, variant);
+        when(itemRepository.findByClothingVariant_Model_ClothingModelIDAndOrderIsNull(id)).thenReturn(List.of(item));
         when(clothingModelRepository.findByClothingModelID(id)).thenReturn(model);
         when(clothingModelRepository.save(any(ClothingModel.class))).thenAnswer(i -> i.getArgument(0));
 
@@ -147,6 +157,8 @@ public class ClothingServiceTests {
         assertNotNull(res);
         assertEquals(newName, res.getName());
         assertEquals(newPrice, res.getPrice());
+        // HOW DO I EVEN ASSERT FOR ITEM PRICE??
+        verify(itemRepository, times(1)).save(any(Item.class));
         verify(clothingModelRepository, times(1)).save(any(ClothingModel.class));
     }
 
