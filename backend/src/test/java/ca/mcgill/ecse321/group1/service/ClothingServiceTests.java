@@ -103,8 +103,6 @@ public class ClothingServiceTests {
     public void testCreateClothingModelWithInvalidName() {
         //Arrange
         float price = 79.99f;
-        String modelId = "badModel";
-        when( clothingModelRepository.findByClothingModelID(modelId) ).thenReturn(null);
         //ACT & ASSERT
         ResponseStatusException e =
                 assertThrows(ResponseStatusException.class, () -> clothingService.createClothingModel(null, price));
@@ -113,7 +111,6 @@ public class ClothingServiceTests {
 
     @Test
     public void testCreateClothingModelWithBlankName() {
-        when( clothingModelRepository.findByClothingModelID("  ")).thenReturn(null);
         ResponseStatusException e = assertThrows(ResponseStatusException.class,
                 ()-> clothingService.createClothingModel("  ", 100f));
         assertEquals("400 BAD_REQUEST \"Name must not be blank\"", e.getMessage());
@@ -124,13 +121,111 @@ public class ClothingServiceTests {
         //Arrange
         float  price = -1f;
         String name =  "Summer Jacket";
-        String modelId = "badModel";
-        when( clothingModelRepository.findByClothingModelID(modelId) ).thenReturn(null);
 
         ResponseStatusException e =
                 assertThrows(ResponseStatusException.class, () -> clothingService.createClothingModel(name, price));
         assertEquals("400 BAD_REQUEST \"Price must be greater than 0\"", e.getMessage());
     }
+    // ===== updateClothingModel =====
+
+    @Test
+    public void testUpdateValidClothingModel() {
+        // Arrange
+        String id = "1";
+        String newName = "Winter Coat";
+        float newPrice = 129.99f;
+        ClothingModel model = new ClothingModel(id, "Summer Jacket", 79.99f);
+        when(clothingModelRepository.findByClothingModelID(id)).thenReturn(model);
+        when(clothingModelRepository.save(any(ClothingModel.class))).thenAnswer(i -> i.getArgument(0));
+
+        // Act
+        ClothingModel res = clothingService.updateClothingModel(id, newName, newPrice);
+
+        // Assert
+        assertNotNull(res);
+        assertEquals(newName, res.getName());
+        assertEquals(newPrice, res.getPrice());
+        verify(clothingModelRepository, times(1)).save(any(ClothingModel.class));
+    }
+
+    @Test
+    public void testUpdateClothingModelWithValidNameOnly() {
+        //Arrange
+        String id = "1";
+        String newName = "Summer Jacket";
+        float price = 79.99f;
+        ClothingModel model = new ClothingModel(id, "WinterCoat", price);
+        when(clothingModelRepository.findByClothingModelID(id)).thenReturn(model);
+        when(clothingModelRepository.save(any(ClothingModel.class))).thenAnswer(i -> i.getArgument(0));
+
+        //Act
+        ClothingModel res = clothingService.updateClothingModel(id, newName, 0f);
+        assertNotNull(res);
+        assertEquals(newName, res.getName());
+        assertEquals(price, res.getPrice());
+        verify(clothingModelRepository, times(1)).save(any(ClothingModel.class));
+    }
+
+    @Test
+    public void testUpdateClothingModelWithNewPriceOnly() {
+        //Arrange
+        String id = "1";
+        String name= "Summer Jacket";
+        float oldPrice = 79.99f;
+        float newPrice = 129.99f;
+        ClothingModel model = new ClothingModel(id, name, oldPrice );
+        
+        when(clothingModelRepository.findByClothingModelID(id)).thenReturn(model);
+        when(clothingModelRepository.save(any(ClothingModel.class))).thenAnswer(i -> i.getArgument(0));
+        
+        //Act
+        ClothingModel res = clothingService.updateClothingModel(id, null, newPrice);
+        
+        //Assert
+        assertNotNull(res);
+        assertEquals(name, res.getName());
+        assertEquals(newPrice, res.getPrice());
+        verify(clothingModelRepository, times(1)).save(any(ClothingModel.class));
+    }
+
+    @Test
+    public void testUpdateClothingModelWithInvalidId() {
+        // Arrange
+        String id = "badId";
+        when(clothingModelRepository.findByClothingModelID(id)).thenReturn(null);
+
+        // Act & Assert
+        ResponseStatusException e = assertThrows(ResponseStatusException.class,
+                () -> clothingService.updateClothingModel(id, "New Name", 99.99f));
+        assertEquals("404 NOT_FOUND \"Clothing model with ID " + id + " not found\"", e.getMessage());
+    }
+
+    @Test
+    public void testUpdateClothingModelWithBlankName() {
+        // Arrange
+        String id = "1";
+        ClothingModel model = new ClothingModel(id, "Summer Jacket", 79.99f);
+        when(clothingModelRepository.findByClothingModelID(id)).thenReturn(model);
+
+        // Act & Assert
+        ResponseStatusException e = assertThrows(ResponseStatusException.class,
+                () -> clothingService.updateClothingModel(id, "  ", 79.99f));
+        assertEquals("400 BAD_REQUEST \"Name must not be blank\"", e.getMessage());
+    }
+
+    @Test
+    public void testUpdateClothingModelWithInvalidPrice() {
+        // Arrange
+        String id = "1";
+        ClothingModel model = new ClothingModel(id, "Summer Jacket", 79.99f);
+        when(clothingModelRepository.findByClothingModelID(id)).thenReturn(model);
+
+        // Act & Assert
+        ResponseStatusException e = assertThrows(ResponseStatusException.class,
+                () -> clothingService.updateClothingModel(id, "Summer Jacket", -1f));
+        assertEquals("400 BAD_REQUEST \"Price must be greater than 0\"", e.getMessage());
+    }
+
     // ===== deleteClothingModel =====
 
     @Test
@@ -335,4 +430,92 @@ public class ClothingServiceTests {
     }
 
     // ===== updateVariant =====
+
+    @Test
+    public void testUpdateValidVariant() {
+        // Arrange
+        String variantId = "variant1";
+        ClothingModel model = new ClothingModel("model1", "Summer Jacket", 79.99f);
+        ClothingVariant variant = new ClothingVariant(variantId, ClothingVariant.Size.M, "Red", 10, model);
+        when(clothingVariantRepository.findByClothingVariantID(variantId)).thenReturn(variant);
+        when(clothingVariantRepository.save(any(ClothingVariant.class))).thenAnswer(i -> i.getArgument(0));
+
+        // Act
+        ClothingVariant result = clothingService.updateVariant(variantId, "L", "Blue", 5);
+
+        // Assert
+        assertNotNull(result);
+        assertEquals(ClothingVariant.Size.L, result.getSize());
+        assertEquals("Blue", result.getColor());
+        assertEquals(5, result.getStockQuantity());
+        verify(clothingVariantRepository, times(1)).save(any(ClothingVariant.class));
+    }
+
+    @Test
+    public void testUpdateVariantWithInvalidId() {
+        // Arrange
+        String variantId = "badVariant";
+        when(clothingVariantRepository.findByClothingVariantID(variantId)).thenReturn(null);
+
+        // Act & Assert
+        ResponseStatusException e = assertThrows(ResponseStatusException.class,
+                () -> clothingService.updateVariant(variantId, "M", "Red", 5));
+        assertEquals("404 NOT_FOUND \"Clothing variant with ID " + variantId + " not found\"", e.getMessage());
+    }
+
+    @Test
+    public void testUpdateVariantWithNullSize() {
+        // Arrange
+        String variantId = "variant1";
+        ClothingModel model = new ClothingModel("model1", "Summer Jacket", 79.99f);
+        ClothingVariant variant = new ClothingVariant(variantId, ClothingVariant.Size.M, "Red", 10, model);
+        when(clothingVariantRepository.findByClothingVariantID(variantId)).thenReturn(variant);
+
+        // Act & Assert
+        ResponseStatusException e = assertThrows(ResponseStatusException.class,
+                () -> clothingService.updateVariant(variantId, null, "Red", 5));
+        assertEquals("400 BAD_REQUEST \"Size must be specified\"", e.getMessage());
+    }
+    
+    @Test
+    public void testUpdateVariantWithInvalidSize() {
+        //Arrange
+        String variantId = "badVariant";
+        ClothingModel model = new ClothingModel("model1", "Summer Jacket", 79.99f);
+        ClothingVariant variant = new ClothingVariant(variantId, ClothingVariant.Size.M, "Red", 10, model);
+        when(clothingVariantRepository.findByClothingVariantID(variantId)).thenReturn(variant);
+        
+        //Act & Assert
+        ResponseStatusException e = assertThrows(ResponseStatusException.class,
+                ()-> clothingService.updateVariant(variantId, "R", "Blue", 5));
+        assertEquals("400 BAD_REQUEST \"Invalid Size\"", e.getMessage());
+    }
+
+    @Test
+    public void testUpdateVariantWithBlankColor() {
+        // Arrange
+        String variantId = "variant1";
+        ClothingModel model = new ClothingModel("model1", "Summer Jacket", 79.99f);
+        ClothingVariant variant = new ClothingVariant(variantId, ClothingVariant.Size.M, "Red", 10, model);
+        when(clothingVariantRepository.findByClothingVariantID(variantId)).thenReturn(variant);
+
+        // Act & Assert
+        ResponseStatusException e = assertThrows(ResponseStatusException.class,
+                () -> clothingService.updateVariant(variantId, "M", "  ", 5));
+        assertEquals("400 BAD_REQUEST \"Color must not be blank\"", e.getMessage());
+    }
+
+    @Test
+    public void testUpdateVariantWithNegativeStock() {
+        // Arrange
+        String variantId = "variant1";
+        ClothingModel model = new ClothingModel("model1", "Summer Jacket", 79.99f);
+        ClothingVariant variant = new ClothingVariant(variantId, ClothingVariant.Size.M, "Red", 10, model);
+        when(clothingVariantRepository.findByClothingVariantID(variantId)).thenReturn(variant);
+
+        // Act & Assert
+        ResponseStatusException e = assertThrows(ResponseStatusException.class,
+                () -> clothingService.updateVariant(variantId, "M", "Red", -1));
+        assertEquals("400 BAD_REQUEST \"Stock quantity must be >= 0\"", e.getMessage());
+    }
 }

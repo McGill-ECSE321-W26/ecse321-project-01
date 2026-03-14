@@ -54,6 +54,12 @@ public class ClothingService {
   }
 
   @Transactional
+  //Maybe add default value like null or 0, if value not change
+  public ClothingModel updateClothingModel(String modelId, String name, float price){
+      return null;
+  }
+
+  @Transactional
   public void deleteClothingModel(String modelId) throws ResponseStatusException {
     int deletedCount = clothingModelRepository.deleteByClothingModelID(modelId);
     if (deletedCount == 0) {
@@ -106,6 +112,11 @@ public class ClothingService {
     // Leave ID field as null so CRUD repository can fill with UUID
     ClothingVariant variant = new ClothingVariant(null, size, color, stockQuantity, model);
     return clothingVariantRepository.save(variant);
+  }
+
+  @Transactional
+  public ClothingVariant updateVariant(String variantId, String size, String color, int stockQuantity) {
+      return null;
   }
 
   @Transactional
