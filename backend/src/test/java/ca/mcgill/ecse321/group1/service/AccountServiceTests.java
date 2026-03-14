@@ -37,7 +37,6 @@ public class AccountServiceTests {
 
 
 
-    @SuppressWarnings("null")
     @Test
     public void testCreateValidEmployee() {
         String accountID = "account1";
