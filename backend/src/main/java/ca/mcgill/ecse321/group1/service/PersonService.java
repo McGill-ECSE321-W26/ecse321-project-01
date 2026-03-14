@@ -239,4 +239,12 @@ public class PersonService {
 
     personRepository.delete(person);
   }
+
+  public Person getPersonByEmail(String email) {
+    Person person = personRepository.findPersonByEmail(email);
+    if (person == null) {
+      throw new NotFoundException("There is no person with email " + email + ".");
+    }
+    return person;
+  }
 }
