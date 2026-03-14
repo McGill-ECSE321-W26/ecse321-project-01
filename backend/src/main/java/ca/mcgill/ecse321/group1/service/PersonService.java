@@ -1,17 +1,18 @@
 package ca.mcgill.ecse321.group1.service;
 
-import ca.mcgill.ecse321.group1.model.Person;
-import ca.mcgill.ecse321.group1.repository.PersonRepository;
+import ca.mcgill.ecse321.group1.exception.InvalidInputException;
+import ca.mcgill.ecse321.group1.exception.NotFoundException;
 import ca.mcgill.ecse321.group1.model.Customer;
 import ca.mcgill.ecse321.group1.model.Employee;
+import ca.mcgill.ecse321.group1.model.Manager;
+import ca.mcgill.ecse321.group1.model.Person;
+import ca.mcgill.ecse321.group1.model.PersonRole;
 import ca.mcgill.ecse321.group1.repository.CustomerRepository;
 import ca.mcgill.ecse321.group1.repository.EmployeeRepository;
-import org.springframework.stereotype.Service;
-import ca.mcgill.ecse321.group1.exception.NotFoundException;
-import ca.mcgill.ecse321.group1.exception.InvalidInputException;
+import ca.mcgill.ecse321.group1.repository.PersonRepository;
 import jakarta.transaction.Transactional;
-import ca.mcgill.ecse321.group1.model.PersonRole;
-import ca.mcgill.ecse321.group1.model.Manager;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.stereotype.Service;
 
 @Service
 public class PersonService {
@@ -19,11 +20,16 @@ public class PersonService {
   private final PersonRepository personRepository;
   private final CustomerRepository customerRepository;
   private final EmployeeRepository employeeRepository;
+  private final BCryptPasswordEncoder passwordEncoder;
 
-  public PersonService(PersonRepository personRepository, CustomerRepository customerRepository, EmployeeRepository employeeRepository) {
+  public PersonService(
+      PersonRepository personRepository,
+      CustomerRepository customerRepository,
+      EmployeeRepository employeeRepository) {
     this.personRepository = personRepository;
     this.customerRepository = customerRepository;
     this.employeeRepository = employeeRepository;
+    this.passwordEncoder = new BCryptPasswordEncoder();
   }
 
   // Should map to Transfer Objects
@@ -34,7 +40,7 @@ public class PersonService {
   public Person getPersonById(String id) {
 
     Person person = personRepository.findPersonByPersonID(id);
-    if(person == null){
+    if (person == null) {
       throw new NotFoundException("There is no person with ID " + id + ".");
     }
     return person;
@@ -61,7 +67,7 @@ public class PersonService {
       throw new InvalidInputException("Address cannot be empty.");
     }
 
-    Person person = new Person(id, email, password);
+    Person person = new Person(id, email, passwordEncoder.encode(password));
     person = personRepository.save(person);
 
     Customer customer = new Customer();
@@ -72,7 +78,6 @@ public class PersonService {
 
     return personRepository.findPersonByPersonID(id);
   }
-
 
   @Transactional
   public Person createEmployee(String id, String email, String password) {
@@ -92,7 +97,7 @@ public class PersonService {
       throw new InvalidInputException("Email " + email + " is already in use.");
     }
 
-    Person person = new Person(id, email, password);
+    Person person = new Person(id, email, passwordEncoder.encode(password));
     person = personRepository.save(person);
 
     Employee employee = new Employee();
@@ -102,19 +107,16 @@ public class PersonService {
     return personRepository.findPersonByPersonID(id);
   }
 
-
-
   public Person logIn(String email, String password, String role) {
     Person person = personRepository.findPersonByEmail(email);
     if (person == null) {
       throw new NotFoundException("There is no person with email " + email + ".");
     }
-    if (!person.getPassword().equals(password)) {
+    if (!passwordEncoder.matches(password, person.getPassword())) {
       throw new InvalidInputException("Wrong password.");
     }
-    boolean hasRole = person.getRoles()
-            .stream()
-            .anyMatch(r -> r.getClass().getSimpleName().equals(role));
+    boolean hasRole =
+        person.getRoles().stream().anyMatch(r -> r.getClass().getSimpleName().equals(role));
     if (!hasRole) {
       throw new InvalidInputException("Person does not have role " + role + ".");
     }
@@ -127,14 +129,14 @@ public class PersonService {
     if (person == null) {
       throw new NotFoundException("There is no person with ID " + id + ".");
     }
-    if (!person.getPassword().equals(oldPassword)) {
+    if (!passwordEncoder.matches(oldPassword, person.getPassword())) {
       throw new InvalidInputException("Old password is incorrect.");
     }
     if (newPassword == null || newPassword.length() < 8) {
       throw new InvalidInputException("New password must be at least 8 characters.");
     }
 
-    person.setPassword(newPassword);
+    person.setPassword(passwordEncoder.encode(newPassword));
     return personRepository.save(person);
   }
 
@@ -184,7 +186,6 @@ public class PersonService {
 
     return personRepository.findPersonByPersonID(id);
   }
-
 
   @Transactional
   public Person addEmployeeRoleToCustomer(String id) {
@@ -238,6 +239,4 @@ public class PersonService {
 
     personRepository.delete(person);
   }
-
 }
-
