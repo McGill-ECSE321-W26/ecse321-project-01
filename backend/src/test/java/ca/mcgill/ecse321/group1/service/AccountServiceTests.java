@@ -19,6 +19,7 @@ import ca.mcgill.ecse321.group1.model.Employee;
 import ca.mcgill.ecse321.group1.model.Manager;
 import ca.mcgill.ecse321.group1.model.Person;
 import ca.mcgill.ecse321.group1.repository.PersonRepository;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 
 @SpringBootTest
@@ -31,6 +32,8 @@ public class AccountServiceTests {
     private EmployeeRepository employeeRepo;
     @InjectMocks
     private PersonService service;
+
+    private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
 
 
@@ -139,24 +142,44 @@ public class AccountServiceTests {
     }
 
     @Test
+    public void testGetPersonByValidEmail() {
+        String email = "bob@mail.com";
+        Person bob = new Person("id1", email, "password123");
+        when(repo.findPersonByEmail(email)).thenReturn(bob);
+
+        Person result = service.getPersonByEmail(email);
+
+        assertNotNull(result);
+        assertEquals(bob.getPersonID(), result.getPersonID());
+        assertEquals(bob.getEmail(), result.getEmail());
+    }
+
+    @Test
+    public void testGetPersonByInvalidEmail() {
+        when(repo.findPersonByEmail(any())).thenReturn(null);
+
+        Exception e = assertThrows(Exception.class,
+                () -> service.getPersonByEmail("ghost@mail.com"));
+        assertEquals("There is no person with email ghost@mail.com.", e.getMessage());
+    }
+
+    @Test
     public void testValidLogIn() {
-        // Set up
+        //Arrange
         String email = "charlie@mail.mcgill.ca";
         String password = "12345678";
 
-        Person charlie = new Person("validID", email, password);
+        //Act
+        Person charlie = new Person("validID", email, passwordEncoder.encode(password));
         Customer customerRole = new Customer();
         charlie.addRole(customerRole);
-
-        // Act
         when(repo.findPersonByEmail(email)).thenReturn(charlie);
+
         Person person = service.logIn(email, password, "Customer");
 
-        // Assert
         assertNotNull(person);
         assertEquals(charlie.getPersonID(), person.getPersonID());
         assertEquals(charlie.getEmail(), person.getEmail());
-        assertEquals(charlie.getPassword(), person.getPassword());
     }
 
     @Test
@@ -164,7 +187,7 @@ public class AccountServiceTests {
         // Arrange
         String email = "bob@mail.com";
         String password = "password123";
-        Person bob = new Person("id1", email, password);
+        Person bob = new Person("id1", email,  passwordEncoder.encode(password));
         Employee employeeRole = new Employee();
         bob.addRole(employeeRole);
         when(repo.findPersonByEmail(email)).thenReturn(bob);
@@ -176,7 +199,6 @@ public class AccountServiceTests {
         assertNotNull(result);
         assertEquals(bob.getPersonID(), result.getPersonID());
         assertEquals(bob.getEmail(), result.getEmail());
-        assertEquals(bob.getPassword(), result.getPassword());
     }
 
     @Test
@@ -184,7 +206,7 @@ public class AccountServiceTests {
         // Arrange
         String email = "bob@mail.com";
         String password = "password123";
-        Person bob = new Person("id1", email, password);
+        Person bob = new Person("id1", email,  passwordEncoder.encode(password));
         Manager managerRole = new Manager();
         bob.addRole(managerRole);
         when(repo.findPersonByEmail(email)).thenReturn(bob);
@@ -196,7 +218,6 @@ public class AccountServiceTests {
         assertNotNull(result);
         assertEquals(bob.getPersonID(), result.getPersonID());
         assertEquals(bob.getEmail(), result.getEmail());
-        assertEquals(bob.getPassword(), result.getPassword());
     }
 
     @Test
@@ -215,16 +236,13 @@ public class AccountServiceTests {
     public void testLogInWrongPassword() {
         String email = "charlie@mail.mcgill.ca";
         String correctPassword = "correctPassword";
-        String wrongPassword = "wrongPassword";
-
-        Person charlie = new Person("validID", email, correctPassword);
+        Person charlie = new Person("validID", email, passwordEncoder.encode(correctPassword));
         Customer customerRole = new Customer();
         charlie.addRole(customerRole);
-
         when(repo.findPersonByEmail(email)).thenReturn(charlie);
 
         Exception e = assertThrows(Exception.class,
-                () -> service.logIn(email, wrongPassword, "Customer"));
+                () -> service.logIn(email, "wrongPassword", "Customer"));
         assertEquals("Wrong password.", e.getMessage());
     }
 
@@ -232,7 +250,7 @@ public class AccountServiceTests {
     @Test
     public void testLogInInvalidRole() {
         // bob is only a Customer, tries to log in as Manager
-        Person bob = new Person("id1", "bob@mail.com", "password123");
+        Person bob = new Person("id1", "bob@mail.com", passwordEncoder.encode("password123"));
         Customer customerRole = new Customer();
         bob.addRole(customerRole);
         when(repo.findPersonByEmail("bob@mail.com")).thenReturn(bob);
@@ -245,7 +263,7 @@ public class AccountServiceTests {
     @Test
     public void testLogInRoleStringInvalid() {
         // completely garbage role string
-        Person bob = new Person("id1", "bob@mail.com", "password123");
+        Person bob = new Person("id1", "bob@mail.com", passwordEncoder.encode("password123"));
         when(repo.findPersonByEmail("bob@mail.com")).thenReturn(bob);
 
         Exception e = assertThrows(Exception.class,
@@ -258,7 +276,8 @@ public class AccountServiceTests {
 
     @Test
     public void testValidUpdatePassword() {
-        Person bob = new Person("id1", "bob@mail.com", "password123");
+        String oldPassword = "password123";
+        Person bob = new Person("id1", "bob@mail.com", passwordEncoder.encode(oldPassword));
         when(repo.findPersonByPersonID("id1")).thenReturn(bob);
         // mock save to return bob AFTER password is changed
         when(repo.save(any(Person.class))).thenAnswer(i -> i.getArgument(0));
@@ -266,12 +285,12 @@ public class AccountServiceTests {
         Person result = service.updatePassword("id1", "password123", "newPassword123");
 
         assertNotNull(result);
-        assertEquals("newPassword123", result.getPassword());
+        assertTrue(passwordEncoder.matches("newPassword123", result.getPassword()));
     }
 
     @Test
     public void testInvalidUpdatePasswordOldPassword() {
-        Person bob = new Person("id1", "bob@mail.com", "password123");
+        Person bob = new Person("id1", "bob@mail.com", passwordEncoder.encode("password123"));
         when(repo.findPersonByPersonID("id1")).thenReturn(bob);
 
         Exception e = assertThrows(Exception.class,
@@ -281,7 +300,7 @@ public class AccountServiceTests {
 
     @Test
     public void testInvalidUpdatePasswordLength() {
-        Person bob = new Person("id1", "bob@mail.com", "password123");
+        Person bob = new Person("id1", "bob@mail.com", passwordEncoder.encode("password123"));
         when(repo.findPersonByPersonID("id1")).thenReturn(bob);
 
         Exception e = assertThrows(Exception.class,
