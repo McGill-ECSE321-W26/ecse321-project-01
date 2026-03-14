@@ -179,7 +179,6 @@ public class OrderServiceTests {
     String customerId = "customer1";
     String address = "123 Main St";
     int initialLoyaltyPoints = 10;
-    int usedLoyaltyPoints = 5;
     float itemPrice = 100.0f;
 
     Customer customer = new Customer();
@@ -391,13 +390,11 @@ public class OrderServiceTests {
     when(orderRepository.findAll()).thenReturn(List.of(order1, order2));
 
     // Act
-    Iterable<Order> orders = orderService.getOrders();
+    List<Order> orders = orderService.getOrders();
 
     // Assert
     assertNotNull(orders);
-    int count = 0;
-    for (Order o : orders) count++;
-    assertEquals(2, count);
+    assertEquals(2, orders.size());
   }
 
   // ===== getOrderByID =====
