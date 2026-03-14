@@ -74,11 +74,11 @@ public class ClothingController {
             modelId, request.getSize(), request.getColor(), request.getStockQuantity()));
   }
 
-  @PutMapping("/variants/{variantId}")
-  public ClothingVariantResponseDto updateVariant(
+  @PatchMapping("/variants/{variantId}")
+  public ClothingVariantResponseDto updateVariantStock(
       @PathVariable String variantId, @RequestBody ClothingVariantUpdateRequestDto request) {
     return new ClothingVariantResponseDto(
-        clothingService.updateVariant(variantId, request.getStockQuantity()));
+        clothingService.updateVariantStock(variantId, request.getStockQuantity()));
   }
 
   @DeleteMapping("/variants/{variantId}")

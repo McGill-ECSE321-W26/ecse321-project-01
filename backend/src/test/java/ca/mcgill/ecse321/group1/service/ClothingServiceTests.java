@@ -451,7 +451,7 @@ public class ClothingServiceTests {
                 .thenAnswer(i -> i.getArgument(0));
 
         // Act
-        ClothingVariant result = clothingService.updateVariant(variantId, 5);
+        ClothingVariant result = clothingService.updateVariantStock(variantId, 5);
 
         // Assert
         assertNotNull(result);
@@ -460,7 +460,7 @@ public class ClothingServiceTests {
     }
 
     @Test
-    public void testUpdateVariantWithInvalidId() {
+    public void testUpdateVariantStockWithInvalidId() {
         // Arrange
         String variantId = "badVariant";
         when(clothingVariantRepository.findByClothingVariantID(variantId)).thenReturn(null);
@@ -469,13 +469,13 @@ public class ClothingServiceTests {
         ResponseStatusException e =
                 assertThrows(
                         ResponseStatusException.class,
-                        () -> clothingService.updateVariant(variantId, 5));
+                        () -> clothingService.updateVariantStock(variantId, 5));
         assertEquals(
                 "404 NOT_FOUND \"Clothing variant with ID " + variantId + " not found\"", e.getMessage());
     }
 
     @Test
-    public void testUpdateVariantWithNegativeStock() {
+    public void testUpdateVariantStockWithNegativeStock() {
         // Arrange
         String variantId = "variant1";
         ClothingModel model = new ClothingModel("model1", "Summer Jacket", 79.99f);
@@ -487,7 +487,7 @@ public class ClothingServiceTests {
         ResponseStatusException e =
                 assertThrows(
                         ResponseStatusException.class,
-                        () -> clothingService.updateVariant(variantId, -1));
+                        () -> clothingService.updateVariantStock(variantId, -1));
         assertEquals("400 BAD_REQUEST \"Stock quantity must be >= 0\"", e.getMessage());
     }
 }

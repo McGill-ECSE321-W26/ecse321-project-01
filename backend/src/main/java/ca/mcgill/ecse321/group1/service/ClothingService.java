@@ -152,7 +152,7 @@ public class ClothingService {
   }
 
   @Transactional
-  public ClothingVariant updateVariant(String variantId, int stockQuantity)
+  public ClothingVariant updateVariantStock(String variantId, int stockQuantity)
       throws ResponseStatusException {
     ClothingVariant variant = getVariant(variantId);
     if (stockQuantity < 0) {
