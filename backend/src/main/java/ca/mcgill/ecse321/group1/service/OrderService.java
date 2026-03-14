@@ -1,0 +1,183 @@
+package ca.mcgill.ecse321.group1.service;
+
+import ca.mcgill.ecse321.group1.exception.InvalidInputException;
+import ca.mcgill.ecse321.group1.exception.NotFoundException;
+import ca.mcgill.ecse321.group1.model.Customer;
+import ca.mcgill.ecse321.group1.model.Employee;
+import ca.mcgill.ecse321.group1.model.Item;
+import ca.mcgill.ecse321.group1.model.Order;
+import ca.mcgill.ecse321.group1.repository.CustomerRepository;
+import ca.mcgill.ecse321.group1.repository.EmployeeRepository;
+import ca.mcgill.ecse321.group1.repository.ItemRepository;
+import ca.mcgill.ecse321.group1.repository.OrderRepository;
+import jakarta.transaction.Transactional;
+import java.sql.Date;
+import java.time.LocalDate;
+import java.util.List;
+import org.springframework.stereotype.Service;
+
+@Service
+public class OrderService {
+  private final OrderRepository orderRepository;
+  private final CustomerRepository customerRepository;
+  private final ItemRepository itemRepository;
+  private final EmployeeRepository employeeRepository;
+  static float loyaltyModifier = 0.2f; // Modifier between loyalty points and money
+
+  public OrderService(
+      OrderRepository orderRepository,
+      ItemRepository itemRepository,
+      CustomerRepository customerRepository,
+      EmployeeRepository employeeRepository) {
+    this.orderRepository = orderRepository;
+    this.itemRepository = itemRepository;
+    this.customerRepository = customerRepository;
+    this.employeeRepository = employeeRepository;
+  }
+
+  @Transactional
+  public Order createOrder(String customerID, Date deliveryDate, int usedLoyaltyPoints) {
+    Customer customer = customerRepository.findByRoleID(customerID);
+    if (customer == null) {
+      throw new NotFoundException("There is no customer with id " + customerID + ".");
+    }
+
+    Iterable<Item> items = itemRepository.findItemsByCustomer(customer);
+    if (items == null) {
+      throw new InvalidInputException(
+          "There are no items in the cart of customer " + customerID + ".");
+    }
+
+    if (deliveryDate == null) {
+      throw new InvalidInputException("Delivery Date is null.");
+    }
+
+    if (deliveryDate.toLocalDate().isBefore(LocalDate.now().plusDays(1))) {
+      throw new InvalidInputException(
+          "Delivery Date must be at least 24 hours after the order date.");
+    }
+
+    // Check that there are enough loyalty points in the customer's account
+    if (usedLoyaltyPoints < 0) {
+      throw new InvalidInputException("Loyalty points must be positive.");
+    }
+    if (customer.getLoyaltyPoints() < usedLoyaltyPoints) {
+      throw new InvalidInputException(
+          "The customer does not have enough loyalty points to complete the purchase.");
+    }
+
+    Order order = new Order();
+    order.setCustomer(customer);
+    order.setOrderDate(Date.valueOf(LocalDate.now())); // Transform from util to SQL date
+    order.setDeliveryDate(deliveryDate);
+    order.setAddress(customer.getAddress());
+    order.setOrderStatus(Order.OrderStatus.Preparing);
+
+    float total = 0.0f;
+    float itemPrice;
+
+    for (Item item : items) {
+      order.addItem(item);
+      itemPrice = item.getClothingVariant().getModel().getPrice();
+      total += itemPrice;
+      item.setPrice(itemPrice);
+      customer.removeItem(item);
+    }
+
+    // Compute loyalty points gained and loyalty savings
+    order.setLoyaltySaving((float) usedLoyaltyPoints * loyaltyModifier);
+    int gainedLoyaltyPoints = (int) (total * loyaltyModifier);
+    customer.setLoyaltyPoints(
+        customer.getLoyaltyPoints() + gainedLoyaltyPoints - usedLoyaltyPoints);
+
+    customerRepository.save(customer); // Save new loyalty points value to customer
+    return orderRepository.save(order);
+  }
+
+  @Transactional
+  public Order assignOrderToEmployee(String orderID, String employeeID) {
+    Employee employee = employeeRepository.findByRoleID(employeeID);
+    if (employee == null) {
+      throw new NotFoundException("There is no employee with id " + employeeID + ".");
+    }
+
+    Order order = orderRepository.findOrderByOrderID(orderID);
+    if (order == null) {
+      throw new NotFoundException("There is no order with id " + orderID + ".");
+    }
+
+    order.setEmployee(employee);
+    return orderRepository.save(order);
+  }
+
+  @Transactional
+  public Order updateOrderDeliveryDate(String orderID, Date deliveryDate) {
+    Order order = orderRepository.findOrderByOrderID(orderID);
+    if (order == null) {
+      throw new NotFoundException("There is no order with id " + orderID + ".");
+    }
+
+    if (deliveryDate == null) {
+      throw new InvalidInputException("Delivery Date is null.");
+    }
+
+    if (deliveryDate.toLocalDate().isBefore(LocalDate.now().plusDays(1))) {
+      throw new InvalidInputException(
+          "Delivery Date must be at least 24 hours after the order date.");
+    }
+
+    order.setDeliveryDate(deliveryDate);
+    return orderRepository.save(order);
+  }
+
+  @Transactional
+  public Order updateOrderStatus(String orderID, String orderStatus) {
+    Order order = orderRepository.findOrderByOrderID(orderID);
+    if (order == null) {
+      throw new NotFoundException("There is no order with id " + orderID + ".");
+    }
+
+    Order.OrderStatus orderStatusEnum;
+    try {
+      orderStatusEnum = Order.OrderStatus.valueOf(orderStatus);
+    } catch (Exception e) {
+      throw new InvalidInputException("Invalid order status " + orderStatus);
+    }
+
+    order.setOrderStatus(orderStatusEnum);
+    return orderRepository.save(order);
+  }
+
+  public List<Order> getOrders() {
+    return orderRepository.findAll();
+  }
+
+  public Order getOrderByID(String orderID) {
+    Order order = orderRepository.findOrderByOrderID(orderID);
+    if (order == null) {
+      throw new NotFoundException("There is no order with id " + orderID + ".");
+    }
+
+    return order;
+  }
+
+  public List<Order> getOrdersByCustomerID(String customerID) {
+    Customer customer = customerRepository.findByRoleID(customerID);
+    if (customer == null) {
+      throw new NotFoundException("There is no customer with id " + customerID + ".");
+    }
+
+    return orderRepository.findByCustomer(customer);
+  }
+
+  public List<Order> getOrdersByOrderStatus(String orderStatus) {
+    Order.OrderStatus orderStatusEnum;
+    try {
+      orderStatusEnum = Order.OrderStatus.valueOf(orderStatus);
+    } catch (Exception e) {
+      throw new InvalidInputException("Invalid order status " + orderStatus);
+    }
+
+    return orderRepository.findByOrderStatus(orderStatusEnum);
+  }
+}
