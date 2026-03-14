@@ -66,6 +66,7 @@ public class OrderService {
           "The customer does not have enough loyalty points to complete the purchase.");
     }
 
+    // Set all basic attributes of the order
     Order order = new Order();
     order.setCustomer(customer);
     order.setOrderDate(Date.valueOf(LocalDate.now())); // Transform from util to SQL date
@@ -76,21 +77,33 @@ public class OrderService {
     float total = 0.0f;
     float itemPrice;
 
+    // Set item attributes for the order
     for (Item item : items) {
       order.addItem(item);
+
+      // Item price contains price of single item
       itemPrice = item.getClothingVariant().getModel().getPrice();
-      total += itemPrice;
       item.setPrice(itemPrice);
+
+      // Add price of single item times the item quantity
+      total += item.getQuantity() * itemPrice;
+
+      // Remove item from customer cart
       customer.removeItem(item);
     }
 
-    // Compute loyalty points gained and loyalty savings
+    // Compute use loyalty points to money saved
     order.setLoyaltySaving((float) usedLoyaltyPoints * loyaltyModifier);
+
+    // Compute gained loyalty points for money gained
     int gainedLoyaltyPoints = (int) (total * loyaltyModifier);
+
+    // Set new value for loyalty points
     customer.setLoyaltyPoints(
         customer.getLoyaltyPoints() + gainedLoyaltyPoints - usedLoyaltyPoints);
 
-    customerRepository.save(customer); // Save new loyalty points value to customer
+    // Save new loyalty points value to customer
+    customerRepository.save(customer);
     return orderRepository.save(order);
   }
 
@@ -104,6 +117,11 @@ public class OrderService {
     Order order = orderRepository.findOrderByOrderID(orderID);
     if (order == null) {
       throw new NotFoundException("There is no order with id " + orderID + ".");
+    }
+
+    // Check that the employee is not the same person as the customer
+    if (employee.getPerson().getPersonID().equals(order.getCustomer().getPerson().getPersonID())) {
+      throw new InvalidInputException("The employee cannot be assigned to their own order.");
     }
 
     order.setEmployee(employee);
@@ -141,7 +159,7 @@ public class OrderService {
     try {
       orderStatusEnum = Order.OrderStatus.valueOf(orderStatus);
     } catch (Exception e) {
-      throw new InvalidInputException("Invalid order status " + orderStatus);
+      throw new InvalidInputException("Invalid order status " + orderStatus + ".");
     }
 
     order.setOrderStatus(orderStatusEnum);
@@ -175,7 +193,7 @@ public class OrderService {
     try {
       orderStatusEnum = Order.OrderStatus.valueOf(orderStatus);
     } catch (Exception e) {
-      throw new InvalidInputException("Invalid order status " + orderStatus);
+      throw new InvalidInputException("Invalid order status " + orderStatus + ".");
     }
 
 

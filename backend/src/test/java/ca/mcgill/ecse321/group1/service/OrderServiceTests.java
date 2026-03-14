@@ -10,12 +10,7 @@ import static org.mockito.Mockito.when;
 
 import ca.mcgill.ecse321.group1.exception.InvalidInputException;
 import ca.mcgill.ecse321.group1.exception.NotFoundException;
-import ca.mcgill.ecse321.group1.model.ClothingModel;
-import ca.mcgill.ecse321.group1.model.ClothingVariant;
-import ca.mcgill.ecse321.group1.model.Customer;
-import ca.mcgill.ecse321.group1.model.Employee;
-import ca.mcgill.ecse321.group1.model.Item;
-import ca.mcgill.ecse321.group1.model.Order;
+import ca.mcgill.ecse321.group1.model.*;
 import ca.mcgill.ecse321.group1.repository.CustomerRepository;
 import ca.mcgill.ecse321.group1.repository.EmployeeRepository;
 import ca.mcgill.ecse321.group1.repository.ItemRepository;
@@ -52,6 +47,7 @@ public class OrderServiceTests {
     clothingVariant.setModel(clothingModel);
     Item item = new Item();
     item.setClothingVariant(clothingVariant);
+    item.setQuantity(1);
     return item;
   }
 
@@ -94,7 +90,9 @@ public class OrderServiceTests {
     assertEquals(deliveryDate, order.getDeliveryDate());
     assertEquals(
         (float) usedLoyaltyPoints * OrderService.loyaltyModifier, order.getLoyaltySaving());
-    assertEquals(25, customer.getLoyaltyPoints());
+    int loyaltyPointsFinal =
+        (int) (initialLoyaltyPoints - usedLoyaltyPoints + OrderService.loyaltyModifier * itemPrice);
+    assertEquals(loyaltyPointsFinal, customer.getLoyaltyPoints());
     verify(orderRepository, times(1)).save(any(Order.class));
   }
 
@@ -207,13 +205,24 @@ public class OrderServiceTests {
   @Test
   public void testAssignOrderToValidEmployee() {
     // Arrange
+    String person1Id = "person1";
+    String person2Id = "person2";
     String orderId = "order1";
     String employeeId = "emp1";
 
+    // Use different persons between customer and employee
+    Person person1 = new Person();
+    person1.setPersonID(person1Id);
+    Person person2 = new Person();
+    person2.setPersonID(person2Id);
+    Customer customer = new Customer();
+    customer.setPerson(person1);
     Order order = new Order();
     order.setOrderID(orderId);
+    order.setCustomer(customer);
     Employee employee = new Employee();
     employee.setRoleID(employeeId);
+    employee.setPerson(person2);
 
     when(employeeRepository.findByRoleID(employeeId)).thenReturn(employee);
     when(orderRepository.findOrderByOrderID(orderId)).thenReturn(order);
@@ -226,6 +235,36 @@ public class OrderServiceTests {
     assertNotNull(result);
     assertEquals(employee, result.getEmployee());
     verify(orderRepository, times(1)).save(order);
+  }
+
+  @Test
+  public void testAssignOrderToInvalidEmployee() {
+    // Arrange
+    String person1Id = "person1";
+    String orderId = "order1";
+    String employeeId = "emp1";
+
+    // Reuse same person for both customer and employee
+    Person person1 = new Person();
+    person1.setPersonID(person1Id);
+    Customer customer = new Customer();
+    customer.setPerson(person1);
+    Order order = new Order();
+    order.setOrderID(orderId);
+    order.setCustomer(customer);
+    Employee employee = new Employee();
+    employee.setRoleID(employeeId);
+    employee.setPerson(person1);
+
+    when(employeeRepository.findByRoleID(employeeId)).thenReturn(employee);
+    when(orderRepository.findOrderByOrderID(orderId)).thenReturn(order);
+
+    // Act & Assert
+    InvalidInputException e =
+        assertThrows(
+            InvalidInputException.class,
+            () -> orderService.assignOrderToEmployee(orderId, employeeId));
+    assertEquals("The employee cannot be assigned to their own order.", e.getMessage());
   }
 
   @Test
@@ -377,7 +416,7 @@ public class OrderServiceTests {
         assertThrows(
             InvalidInputException.class,
             () -> orderService.updateOrderStatus(orderId, invalidStatus));
-    assertEquals("Invalid order status " + invalidStatus, e.getMessage());
+    assertEquals("Invalid order status " + invalidStatus + ".", e.getMessage());
   }
 
   // ===== getOrders =====
@@ -486,6 +525,6 @@ public class OrderServiceTests {
     InvalidInputException e =
         assertThrows(
             InvalidInputException.class, () -> orderService.getOrdersByOrderStatus(invalidStatus));
-    assertEquals("Invalid order status " + invalidStatus, e.getMessage());
+    assertEquals("Invalid order status " + invalidStatus + ".", e.getMessage());
   }
 }
