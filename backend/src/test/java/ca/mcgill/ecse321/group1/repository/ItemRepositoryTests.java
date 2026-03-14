@@ -387,7 +387,7 @@ public class ItemRepositoryTests {
     // Item linked to an order (not in cart)
     Item orderedItem = new Item();
     orderedItem.setQuantity(1);
-    orderedItem.setPrice(49.99f);
+    orderedItem.setPrice(52.99f);
     orderedItem.setClothingVariant(variant);
     orderedItem.setOrder(order);
     itemRepository.save(orderedItem);
@@ -397,6 +397,7 @@ public class ItemRepositoryTests {
     cartItem.setQuantity(1);
     cartItem.setPrice(49.99f);
     cartItem.setClothingVariant(variant);
+    cartItem.setCustomer(customer);
     itemRepository.save(cartItem);
 
     List<Item> result =
@@ -404,6 +405,7 @@ public class ItemRepositoryTests {
 
     assertEquals(1, result.size());
     assertEquals(cartItem.getItemID(), result.getFirst().getItemID());
+    assertEquals(49.99f, cartItem.getPrice());
   }
 
   @Test
