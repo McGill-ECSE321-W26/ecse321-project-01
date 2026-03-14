@@ -9,4 +9,6 @@ public interface ItemRepository extends ListCrudRepository<Item, String> {
   Item findItemByItemID(String itemID);
 
   List<Item> findItemsByCustomer(Customer customer);
+
+  int deleteByItemID(String itemID);
 }
