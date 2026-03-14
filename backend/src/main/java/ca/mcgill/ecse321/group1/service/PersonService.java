@@ -27,7 +27,7 @@ public class PersonService {
     return person;
   }
 
-  public void insertPerson(String ID, String email, String password) {
+  public Person insertPerson(String ID, String email, String password) {
     if (ID == null || ID.isBlank()) {
       throw new IllegalArgumentException("Account ID cannot be empty.");
     }
@@ -44,9 +44,10 @@ public class PersonService {
 
     Person p = new Person(ID, email, password);
     personRepository.save(p);
+    return p;
   }
 
-  public Person login(String email, String password) {\
+  public Person login(String email, String password) {
     Person person = personRepository.findPersonByEmail(email);
     if (person == null) {
       throw new IllegalArgumentException("There is no person with email " + email + ".");

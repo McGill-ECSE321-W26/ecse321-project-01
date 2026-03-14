@@ -25,7 +25,12 @@ public class PersonController {
   }
 
   @PostMapping
-  public void addPerson(@RequestBody Person person) {
-    personService.insertPerson(person);
+  public PersonDto addPerson(@RequestBody PersonDto request) {
+    Person p = personService.insertPerson(
+            request.getId(),
+            request.getEmail(),
+            request.getPassword()
+    );
+    return new PersonDto(p); // never leaks password back
   }
 }
