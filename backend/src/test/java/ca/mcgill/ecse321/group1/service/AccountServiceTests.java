@@ -8,30 +8,18 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import java.sql.Date;
-import java.time.LocalDate;
-import java.util.List;
 
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.invocation.InvocationOnMock;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import ca.mcgill.ecse321.group1.model.ClothingModel;
-import ca.mcgill.ecse321.group1.model.ClothingVariant;
 import ca.mcgill.ecse321.group1.model.Customer;
 import ca.mcgill.ecse321.group1.model.Employee;
-import ca.mcgill.ecse321.group1.model.Item;
-import ca.mcgill.ecse321.group1.model.Order;
-import ca.mcgill.ecse321.group1.repository.CustomerRepository;
-import ca.mcgill.ecse321.group1.repository.EmployeeRepository;
-import ca.mcgill.ecse321.group1.repository.ItemRepository;
-import ca.mcgill.ecse321.group1.repository.OrderRepository;
-
+import ca.mcgill.ecse321.group1.model.Manager;
 import ca.mcgill.ecse321.group1.model.Person;
 import ca.mcgill.ecse321.group1.repository.PersonRepository;
-import org.springframework.stereotype.Service;
+
 
 @SpringBootTest
 public class AccountServiceTests {
@@ -61,7 +49,8 @@ public class AccountServiceTests {
         verify(repo, times(1)).save(any(Person.class));
     }
 
-    public void testCreateValidPersonByInvalidEmail() {
+    @Test
+    public void testCreatePersonInvalidEmail() {
         // Arrange
         String accountID = "account1";
         String email = "bobmcgill.ca";
@@ -70,10 +59,11 @@ public class AccountServiceTests {
         // Act + Assert
         // should have email validation in the insertPerson method in service
         Exception e = assertThrows(Exception.class, () -> service.insertPerson(accountID, email, password));
-        assertEquals("Invalid email Address.", e.getMessage());
+        assertEquals("Invalid email address.", e.getMessage());
     }
 
-    public void testCreateValidPersonByInvalidPassword() {
+    @Test
+    public void testCreatePersonInvalidPassword() {
         // Arrange
         String accountID = "account1";
         String email = "bob@mail.mcgill.ca";
@@ -82,7 +72,7 @@ public class AccountServiceTests {
         // Act + Assert
         // should have email validation in the insertPerson method in service
         Exception e = assertThrows(Exception.class, () -> service.insertPerson(accountID, email, password));
-        assertEquals("Password must be at least 8 characters long.", e.getMessage());
+        assertEquals("Password must be at least 8 characters.", e.getMessage());
     }
 
     @Test
@@ -118,67 +108,119 @@ public class AccountServiceTests {
     @Test
     public void testValidLogIn() {
         // Set up
-        String ID = "validID";
-        // Default is to return null, so you could omit this
-        when(repo.findPersonByPersonID(ID)).thenReturn(null);
+        String email = "charlie@mail.mcgill.ca";
+        String password = "12345678";
+
+        Person charlie = new Person("validID", email, password);
+        Customer customerRole = new Customer();
+        charlie.addRole(customerRole);
 
         // Act
+        when(repo.findPersonByEmail(email)).thenReturn(charlie);
+        Person person = service.logIn(email, password, "Customer");
+
         // Assert
-        Exception e = assertThrows(Exception.class, () -> service.getPersonById(ID));
-        assertEquals("There is no person with ID " + ID + ".", e.getMessage());
+        assertNotNull(person);
+        assertEquals(charlie.getPersonID(), person.getPersonID());
+        assertEquals(charlie.getEmail(), person.getEmail());
+        assertEquals(charlie.getPassword(), person.getPassword());
     }
 
     @Test
-    public void testLogInInvalidEmail() {
-        // Set up
-        String ID = "validID";
-        // Default is to return null, so you could omit this
-        when(repo.findPersonByPersonID(ID)).thenReturn(null);
+    public void testLogInValidEmployee() {
+        // Arrange
+        String email = "bob@mail.com";
+        String password = "password123";
+        Person bob = new Person("id1", email, password);
+        Employee employeeRole = new Employee();
+        bob.addRole(employeeRole);
+        when(repo.findPersonByEmail(email)).thenReturn(bob);
 
         // Act
+        Person result = service.logIn(email, password, "Employee");
+
         // Assert
-        Exception e = assertThrows(Exception.class, () -> service.getPersonById(ID));
-        assertEquals("There is no person with ID " + ID + ".", e.getMessage());
+        assertNotNull(result);
+        assertEquals(bob.getPersonID(), result.getPersonID());
+        assertEquals(bob.getEmail(), result.getEmail());
+        assertEquals(bob.getPassword(), result.getPassword());
     }
 
     @Test
-    public void testLogInInvalidPassword() {
-        // Set up
-        String ID = "validID";
-        // Default is to return null, so you could omit this
-        when(repo.findPersonByPersonID(ID)).thenReturn(null);
+    public void testLogInValidManager() {
+        // Arrange
+        String email = "bob@mail.com";
+        String password = "password123";
+        Person bob = new Person("id1", email, password);
+        Manager managerRole = new Manager();
+        bob.addRole(managerRole);
+        when(repo.findPersonByEmail(email)).thenReturn(bob);
 
         // Act
+        Person result = service.logIn(email, password, "Manager");
+
         // Assert
-        Exception e = assertThrows(Exception.class, () -> service.getPersonById(ID));
-        assertEquals("There is no person with ID " + ID + ".", e.getMessage());
+        assertNotNull(result);
+        assertEquals(bob.getPersonID(), result.getPersonID());
+        assertEquals(bob.getEmail(), result.getEmail());
+        assertEquals(bob.getPassword(), result.getPassword());
     }
 
     @Test
-    public void testValidLogOut() {
+    public void testLogInEmailNotFound() {
         // Set up
-        String ID = "validID";
-        // Default is to return null, so you could omit this
-        when(repo.findPersonByPersonID(ID)).thenReturn(null);
+        String email = "bob@mail.mcgill.ca";
+        String password = "12345678";
 
         // Act
         // Assert
-        Exception e = assertThrows(Exception.class, () -> service.getPersonById(ID));
-        assertEquals("There is no person with ID " + ID + ".", e.getMessage());
+        Exception e = assertThrows(Exception.class, () -> service.logIn(email, password, "Customer"));
+        assertEquals("There is no person with email " + email + ".", e.getMessage());
     }
 
     @Test
-    public void testValidSwitchAccount() {
-        // Set up
-        String ID = "validID";
-        // Default is to return null, so you could omit this
-        when(repo.findPersonByPersonID(ID)).thenReturn(null);
+    public void testLogInWrongPassword() {
+        String email = "charlie@mail.mcgill.ca";
+        String correctPassword = "correctPassword";
+        String wrongPassword = "wrongPassword";
 
-        // Act
-        // Assert
-        Exception e = assertThrows(Exception.class, () -> service.getPersonById(ID));
-        assertEquals("There is no person with ID " + ID + ".", e.getMessage());
+        Person charlie = new Person("validID", email, correctPassword);
+        Customer customerRole = new Customer();
+        charlie.addRole(customerRole);
+
+        when(repo.findPersonByEmail(email)).thenReturn(charlie);
+
+        Exception e = assertThrows(Exception.class,
+                () -> service.logIn(email, wrongPassword, "Customer"));
+        assertEquals("Wrong password.", e.getMessage());
     }
+
+
+    @Test
+    public void testLogInInvalidRole() {
+        // bob is only a Customer, tries to log in as Manager
+        Person bob = new Person("id1", "bob@mail.com", "password123");
+        Customer customerRole = new Customer();
+        bob.addRole(customerRole);
+        when(repo.findPersonByEmail("bob@mail.com")).thenReturn(bob);
+
+        Exception e = assertThrows(Exception.class,
+                () -> service.logIn("bob@mail.com", "password123", "Manager"));
+        assertEquals("Person does not have role Manager.", e.getMessage());
+    }
+
+    @Test
+    public void testLogInRoleStringInvalid() {
+        // completely garbage role string
+        Person bob = new Person("id1", "bob@mail.com", "password123");
+        when(repo.findPersonByEmail("bob@mail.com")).thenReturn(bob);
+
+        Exception e = assertThrows(Exception.class,
+                () -> service.logIn("bob@mail.com", "password123", "Astronaut"));
+        assertEquals("Person does not have role Astronaut.", e.getMessage());
+    }
+
+
 }
 
 

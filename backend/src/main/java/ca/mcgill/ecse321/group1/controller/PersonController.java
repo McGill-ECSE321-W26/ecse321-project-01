@@ -4,6 +4,9 @@ import ca.mcgill.ecse321.group1.model.Person;
 import ca.mcgill.ecse321.group1.service.PersonService;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @RequestMapping("api/person")
 @RestController
 public class PersonController {
@@ -15,22 +18,36 @@ public class PersonController {
   }
 
   @GetMapping
-  public Iterable<Person> getPeople() {
-    return personService.getPeople();
+  public Iterable<PersonResponseDto> getPeople() {
+    List<PersonResponseDto> dtos = new ArrayList<>();
+    for (Person p : personService.getPeople()) {
+      dtos.add(new PersonResponseDto(p));
+    }
+    return dtos;
   }
 
-  @GetMapping("{username}")
-  public Person getPersonByUsername(@PathVariable String username) {
-    return personService.getPersonById(username);
+  @GetMapping("{id}")
+  public PersonResponseDto getPersonById(@PathVariable String id) {
+    return new PersonResponseDto(personService.getPersonById(id));
   }
 
   @PostMapping
-  public PersonDto addPerson(@RequestBody PersonDto request) {
+  public PersonResponseDto addPerson(@RequestBody PersonRequestDto request) {
     Person p = personService.insertPerson(
             request.getId(),
             request.getEmail(),
             request.getPassword()
     );
-    return new PersonDto(p); // never leaks password back
+    return new PersonResponseDto(p);
+  }
+
+  @PostMapping("/login")
+  public PersonResponseDto logIn(@RequestBody PersonRequestDto request) {
+    Person p = personService.logIn(
+            request.getEmail(),
+            request.getPassword(),
+            request.getRole()
+    );
+    return new PersonResponseDto(p);
   }
 }
