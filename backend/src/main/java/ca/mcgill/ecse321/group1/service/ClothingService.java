@@ -54,9 +54,9 @@ public class ClothingService {
   }
 
   @Transactional
-  //Maybe add default value like null or 0, if value not change
-  public ClothingModel updateClothingModel(String modelId, String name, float price){
-      return null;
+  // Maybe add default value like null or 0, if value not change
+  public ClothingModel updateClothingModel(String modelId, String name, float price) {
+    return null;
   }
 
   @Transactional
@@ -115,8 +115,9 @@ public class ClothingService {
   }
 
   @Transactional
-  public ClothingVariant updateVariant(String variantId, String size, String color, int stockQuantity) {
-      return null;
+  public ClothingVariant updateVariant(
+      String variantId, String size, String color, int stockQuantity) {
+    return null;
   }
 
   @Transactional
