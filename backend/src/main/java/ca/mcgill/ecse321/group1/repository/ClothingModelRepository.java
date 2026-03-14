@@ -7,5 +7,7 @@ public interface ClothingModelRepository extends ListCrudRepository<ClothingMode
 
   ClothingModel findByClothingModelID(String clothingModelID);
 
+  ClothingModel findByName(String name);
+
   int deleteByClothingModelID(String clothingModelID);
 }

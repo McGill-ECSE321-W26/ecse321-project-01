@@ -18,6 +18,7 @@ public class ClothingModel
   @Id
   @GeneratedValue(strategy = GenerationType.AUTO)
   private String clothingModelID;
+  @Column(unique = true)
   private String name;
   private float price;
 

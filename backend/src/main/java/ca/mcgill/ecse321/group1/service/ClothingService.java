@@ -52,6 +52,10 @@ public class ClothingService {
     if (price <= 0) {
       throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Price must be > 0");
     }
+    if (clothingModelRepository.findByName(name) != null) {
+      throw new ResponseStatusException(
+          HttpStatus.CONFLICT, String.format("A clothing model with name '%s' already exists", name));
+    }
 
     // Leave ID field as null so CRUD repository can fill with UUID
     ClothingModel model = new ClothingModel(null, name, price);
@@ -66,6 +70,15 @@ public class ClothingService {
     }
     if (price <= 0) {
       throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Price must be > 0");
+    }
+
+    if (!name.equals(model.getName())) {
+      ClothingModel existingWithName = clothingModelRepository.findByName(name);
+      // Enforce name uniqueness
+      if (existingWithName != null && !existingWithName.getClothingModelID().equals(modelId)) {
+        throw new ResponseStatusException(
+                HttpStatus.CONFLICT, String.format("A clothing model with name '%s' already exists", name));
+      }
     }
 
     model.setName(name);
