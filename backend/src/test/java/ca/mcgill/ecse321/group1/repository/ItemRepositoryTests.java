@@ -308,4 +308,140 @@ public class ItemRepositoryTests {
     assertNull(fromDb.getOrder());
     assertNull(fromDb.getCustomer());
   }
+
+  @Test
+  public void testFindCartItemsByModelId_returnsCartItems() {
+    // Create model and variant
+    ClothingModel model = new ClothingModel(null, "Test Jacket", 99.99f);
+    clothingModelRepository.save(model);
+    String modelId = model.getClothingModelID();
+
+    ClothingVariant variant = new ClothingVariant(null, ClothingVariant.Size.M, "Blue", 10, model);
+    clothingVariantRepository.save(variant);
+
+    // Items in the cart (no order)
+    Item cartItem1 = new Item();
+    cartItem1.setQuantity(1);
+    cartItem1.setPrice(99.99f);
+    cartItem1.setClothingVariant(variant);
+    itemRepository.save(cartItem1);
+    String cartItem1Id = cartItem1.getItemID();
+
+    // Items in the cart (no order)
+    Item cartItem2 = new Item();
+    cartItem2.setQuantity(2);
+    cartItem2.setPrice(99.99f);
+    cartItem2.setClothingVariant(variant);
+    itemRepository.save(cartItem2);
+    String cartItem2Id = cartItem2.getItemID();
+
+    List<Item> result =
+        itemRepository.findByClothingVariant_Model_ClothingModelIDAndOrderIsNull(modelId);
+
+    assertNotNull(result);
+    assertEquals(2, result.size());
+    assertTrue(result.stream().anyMatch(i -> i.getItemID().equals(cartItem1Id)));
+    assertTrue(result.stream().anyMatch(i -> i.getItemID().equals(cartItem2Id)));
+  }
+
+  @Test
+  public void testFindCartItemsByModelId_excludesOrderedItems() {
+    // Create model and variant
+    ClothingModel model = new ClothingModel(null, "Test Shirt", 49.99f);
+    clothingModelRepository.save(model);
+    String modelId = model.getClothingModelID();
+
+    ClothingVariant variant = new ClothingVariant(null, ClothingVariant.Size.S, "Red", 5, model);
+    clothingVariantRepository.save(variant);
+
+    // Set up an order
+    Person customerPerson = new Person();
+    customerPerson.setEmail("test_customer@example.com");
+    customerPerson.setPassword("password1");
+    personRepository.save(customerPerson);
+
+    Person employeePerson = new Person();
+    employeePerson.setEmail("test_employee@example.com");
+    employeePerson.setPassword("password2");
+    personRepository.save(employeePerson);
+
+    Customer customer = new Customer();
+    customer.setAddress("1 Test Ave");
+    customer.setLoyaltyPoints(0);
+    customer.setPerson(customerPerson);
+    customerRepository.save(customer);
+
+    Employee employee = new Employee();
+    employee.setPerson(employeePerson);
+    employeeRepository.save(employee);
+
+    Order order = new Order();
+    order.setOrderStatus(Order.OrderStatus.Preparing);
+    order.setOrderDate(Date.valueOf("2020-06-01"));
+    order.setDeliveryDate(Date.valueOf("2020-06-11"));
+    order.setAddress("1 Test Ave");
+    order.setCustomer(customer);
+    order.setEmployee(employee);
+    order = orderRepository.save(order);
+
+    // Item linked to an order (not in cart)
+    Item orderedItem = new Item();
+    orderedItem.setQuantity(1);
+    orderedItem.setPrice(49.99f);
+    orderedItem.setClothingVariant(variant);
+    orderedItem.setOrder(order);
+    itemRepository.save(orderedItem);
+
+    // Item in the cart (no order)
+    Item cartItem = new Item();
+    cartItem.setQuantity(1);
+    cartItem.setPrice(49.99f);
+    cartItem.setClothingVariant(variant);
+    itemRepository.save(cartItem);
+
+    List<Item> result =
+        itemRepository.findByClothingVariant_Model_ClothingModelIDAndOrderIsNull(modelId);
+
+    assertEquals(1, result.size());
+    assertEquals(cartItem.getItemID(), result.getFirst().getItemID());
+  }
+
+  @Test
+  public void testFindCartItemsByModelId_excludesDifferentModel() {
+    // Create two models, each with a variant and a cart item
+    ClothingModel model1 = new ClothingModel(null, "Pants", 79.99f);
+    model1 = clothingModelRepository.save(model1);
+    String model1Id = model1.getClothingModelID();
+
+    ClothingModel model2 = new ClothingModel(null, "Hat", 29.99f);
+    model2 = clothingModelRepository.save(model2);
+
+    ClothingVariant variant1 =
+        new ClothingVariant(null, ClothingVariant.Size.L, "Black", 8, model1);
+    variant1 = clothingVariantRepository.save(variant1);
+
+    ClothingVariant variant2 =
+        new ClothingVariant(null, ClothingVariant.Size.M, "White", 3, model2);
+    variant2 = clothingVariantRepository.save(variant2);
+
+    // Cart item for model1
+    Item item1 = new Item();
+    item1.setQuantity(1);
+    item1.setPrice(79.99f);
+    item1.setClothingVariant(variant1);
+    item1 = itemRepository.save(item1);
+
+    // Cart item for model2 (should not appear in results for model1)
+    Item item2 = new Item();
+    item2.setQuantity(1);
+    item2.setPrice(29.99f);
+    item2.setClothingVariant(variant2);
+    itemRepository.save(item2);
+
+    List<Item> result =
+        itemRepository.findByClothingVariant_Model_ClothingModelIDAndOrderIsNull(model1Id);
+
+    assertEquals(1, result.size());
+    assertEquals(item1.getItemID(), result.getFirst().getItemID());
+  }
 }

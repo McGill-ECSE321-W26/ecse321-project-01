@@ -2,8 +2,10 @@ package ca.mcgill.ecse321.group1.service;
 
 import ca.mcgill.ecse321.group1.model.ClothingModel;
 import ca.mcgill.ecse321.group1.model.ClothingVariant;
+import ca.mcgill.ecse321.group1.model.Item;
 import ca.mcgill.ecse321.group1.repository.ClothingModelRepository;
 import ca.mcgill.ecse321.group1.repository.ClothingVariantRepository;
+import ca.mcgill.ecse321.group1.repository.ItemRepository;
 import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -15,12 +17,15 @@ public class ClothingService {
 
   private final ClothingModelRepository clothingModelRepository;
   private final ClothingVariantRepository clothingVariantRepository;
+  private final ItemRepository itemRepository;
 
   public ClothingService(
       ClothingModelRepository clothingModelRepository,
-      ClothingVariantRepository clothingVariantRepository) {
+      ClothingVariantRepository clothingVariantRepository,
+      ItemRepository itemRepository) {
     this.clothingModelRepository = clothingModelRepository;
     this.clothingVariantRepository = clothingVariantRepository;
+    this.itemRepository = itemRepository;
   }
 
   @Transactional(readOnly = true)
@@ -65,7 +70,15 @@ public class ClothingService {
 
     model.setName(name);
     model.setPrice(price);
-    return clothingModelRepository.save(model);
+    clothingModelRepository.save(model);
+
+    // Update price of items linked to this model that are in a cart
+    List<Item> cartItems =
+        itemRepository.findByClothingVariant_Model_ClothingModelIDAndOrderIsNull(modelId);
+    cartItems.forEach(item -> item.setPrice(price));
+    itemRepository.saveAll(cartItems);
+
+    return model;
   }
 
   @Transactional
