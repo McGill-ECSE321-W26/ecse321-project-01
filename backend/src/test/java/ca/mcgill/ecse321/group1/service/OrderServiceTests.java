@@ -259,7 +259,8 @@ public class OrderServiceTests {
     // Act & Assert
     InvalidInputException e =
         assertThrows(
-            InvalidInputException.class, () -> orderService.assignOrderToEmployee(orderId, employeeId));
+            InvalidInputException.class,
+            () -> orderService.assignOrderToEmployee(orderId, employeeId));
     assertEquals("The employee cannot be assigned to their own order.", e.getMessage());
   }
 
