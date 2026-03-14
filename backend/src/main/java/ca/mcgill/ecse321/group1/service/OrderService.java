@@ -59,10 +59,21 @@ public class OrderService {
           "Delivery Date must be at least 24 hours after the order date.");
     }
 
+    // Check that there are enough loyalty points in the customer's account
+    if (usedLoyaltyPoints < 0) {
+      throw new InvalidInputException("Loyalty points must be positive.");
+    }
+    if (customer.getLoyaltyPoints() < usedLoyaltyPoints) {
+      throw new InvalidInputException(
+          "The customer does not have enough loyalty points to complete the purchase.");
+    }
+
     Order order = new Order();
     order.setCustomer(customer);
+    order.setOrderDate(Date.valueOf(LocalDate.now())); // Transform from util to SQL date
     order.setDeliveryDate(deliveryDate);
     order.setAddress(customer.getAddress());
+    order.setOrderStatus(Order.OrderStatus.Preparing);
 
     float total = 0.0f;
     float itemPrice;
@@ -131,27 +142,11 @@ public class OrderService {
     Order.OrderStatus orderStatusEnum;
     try {
       orderStatusEnum = Order.OrderStatus.valueOf(orderStatus);
-    } catch (InvalidInputException e) {
+    } catch (Exception e) {
       throw new InvalidInputException("Invalid order status " + orderStatus);
     }
 
     order.setOrderStatus(orderStatusEnum);
-    return orderRepository.save(order);
-  }
-
-  @Transactional
-  public Order updateOrderAddress(String orderID) {
-    Order order = orderRepository.findOrderByOrderID(orderID);
-    if (order == null) {
-      throw new NotFoundException("There is no order with id " + orderID + ".");
-    }
-
-    Customer customer = order.getCustomer();
-    if (customer == null) {
-      throw new NotFoundException("There is no customer for the order id " + orderID + ".");
-    }
-
-    order.setAddress(customer.getAddress());
     return orderRepository.save(order);
   }
 

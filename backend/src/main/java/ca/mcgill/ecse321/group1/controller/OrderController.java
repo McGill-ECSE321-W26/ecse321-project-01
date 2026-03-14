@@ -46,12 +46,6 @@ public class OrderController {
     return new OrderDTO(order);
   }
 
-  @PutMapping("{orderID}/address")
-  public OrderDTO updateOrderAddress(@PathVariable String orderID) {
-    Order order = orderService.updateOrderAddress(orderID);
-    return new OrderDTO(order);
-  }
-
   @GetMapping("")
   public List<OrderDTO> getOrders() {
     List<Order> orders = orderService.getOrders();

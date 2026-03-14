@@ -423,12 +423,12 @@ public class OrderServiceTests {
         when(orderRepository.findByCustomer(customer)).thenReturn(List.of(order, order2));
 
         // Act
-        Iterable<Order> orders = orderService.getOrdersByCustomerID(customerId);
+        List<Order> orders = orderService.getOrdersByCustomerID(customerId);
 
         // Assert
         assertNotNull(orders);
-        assertEquals(order, orders.iterator().next());
-        assertEquals(order2, orders.iterator().next());
+        assertEquals(order, orders.getFirst());
+        assertEquals(order2, orders.getLast());
     }
 
     @Test
@@ -453,12 +453,12 @@ public class OrderServiceTests {
         when(orderRepository.findByOrderStatus(Order.OrderStatus.Preparing)).thenReturn(List.of(order, order2));
 
         // Act
-        Iterable<Order> orders = orderService.getOrdersByOrderStatus("Preparing");
+        List<Order> orders = orderService.getOrdersByOrderStatus("Preparing");
 
         // Assert
         assertNotNull(orders);
-        assertEquals(order, orders.iterator().next());
-        assertEquals(order2, orders.iterator().next());
+        assertEquals(order, orders.getFirst());
+        assertEquals(order2, orders.getLast());
     }
 
     @Test
