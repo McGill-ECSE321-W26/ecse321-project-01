@@ -69,15 +69,18 @@ public class ClothingService {
     }
 
     model.setName(name);
-    model.setPrice(price);
+
+    // Only execute if there is a price change
+    if (price != model.getPrice()) {
+      model.setPrice(price);
+      // Update price of items linked to this model that are in a cart
+      List<Item> cartItems =
+          itemRepository.findByClothingVariant_Model_ClothingModelIDAndOrderIsNull(modelId);
+      cartItems.forEach(item -> item.setPrice(price));
+      itemRepository.saveAll(cartItems);
+    }
+
     clothingModelRepository.save(model);
-
-    // Update price of items linked to this model that are in a cart
-    List<Item> cartItems =
-        itemRepository.findByClothingVariant_Model_ClothingModelIDAndOrderIsNull(modelId);
-    cartItems.forEach(item -> item.setPrice(price));
-    itemRepository.saveAll(cartItems);
-
     return model;
   }
 
