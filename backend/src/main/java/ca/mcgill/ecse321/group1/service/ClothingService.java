@@ -79,9 +79,8 @@ public class ClothingService {
         throw new ResponseStatusException(
                 HttpStatus.CONFLICT, String.format("A clothing model with name '%s' already exists", name));
       }
+      model.setName(name);
     }
-
-    model.setName(name);
 
     // Only execute if there is a price change
     if (price != model.getPrice()) {
