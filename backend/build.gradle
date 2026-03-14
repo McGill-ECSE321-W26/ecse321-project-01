@@ -8,6 +8,7 @@ plugins {
     id 'checkstyle'
     id("com.diffplug.spotless") version "8.2.1"
     id 'com.github.spotbugs' version "6.4.8"
+    id 'jacoco'
 }
 
 group = 'ca.mcgill.ecse321'
@@ -69,3 +70,26 @@ tasks.withType(com.github.spotbugs.snom.SpotBugsTask) {
     }
 }
 
+tasks.named('test') {
+    useJUnitPlatform()
+    testLogging {
+        exceptionFormat "full"
+        events "passed", "failed"
+    }
+    finalizedBy jacocoTestReport
+}
+
+tasks.named('jacocoTestReport') {
+    dependsOn test // tests are required to run before generating the report
+}
+
+tasks.named('jacocoTestCoverageVerification') {
+    violationRules {
+        rule {
+            limit {
+                minimum = 0.6
+            }
+        }
+    }
+    dependsOn test // tests are required to run before checking code coverage.
+}
