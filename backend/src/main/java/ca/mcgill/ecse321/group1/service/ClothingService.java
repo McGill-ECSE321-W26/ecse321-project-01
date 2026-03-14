@@ -45,11 +45,26 @@ public class ClothingService {
       throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Name must not be blank");
     }
     if (price <= 0) {
-      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Price must be greater than 0");
+      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Price must be > 0");
     }
 
     // Leave ID field as null so CRUD repository can fill with UUID
     ClothingModel model = new ClothingModel(null, name, price);
+    return clothingModelRepository.save(model);
+  }
+
+  @Transactional
+  public ClothingModel updateClothingModel(String modelId, String name, float price) {
+    ClothingModel model = getClothingModel(modelId);
+    if (name == null || name.isBlank()) {
+      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Name must not be blank");
+    }
+    if (price <= 0) {
+      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Price must be > 0");
+    }
+
+    model.setName(name);
+    model.setPrice(price);
     return clothingModelRepository.save(model);
   }
 
@@ -105,6 +120,18 @@ public class ClothingService {
 
     // Leave ID field as null so CRUD repository can fill with UUID
     ClothingVariant variant = new ClothingVariant(null, size, color, stockQuantity, model);
+    return clothingVariantRepository.save(variant);
+  }
+
+  @Transactional
+  public ClothingVariant updateVariant(String variantId, int stockQuantity)
+      throws ResponseStatusException {
+    ClothingVariant variant = getVariant(variantId);
+    if (stockQuantity < 0) {
+      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Stock quantity must be >= 0");
+    }
+
+    variant.setStockQuantity(stockQuantity);
     return clothingVariantRepository.save(variant);
   }
 

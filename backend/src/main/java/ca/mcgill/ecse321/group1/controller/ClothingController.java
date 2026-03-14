@@ -4,6 +4,7 @@ import ca.mcgill.ecse321.group1.dto.ClothingModelCreateRequestDto;
 import ca.mcgill.ecse321.group1.dto.ClothingModelResponseDto;
 import ca.mcgill.ecse321.group1.dto.ClothingVariantCreateRequestDto;
 import ca.mcgill.ecse321.group1.dto.ClothingVariantResponseDto;
+import ca.mcgill.ecse321.group1.dto.ClothingVariantUpdateRequestDto;
 import ca.mcgill.ecse321.group1.service.ClothingService;
 import java.util.List;
 import org.springframework.http.HttpStatus;
@@ -39,6 +40,13 @@ public class ClothingController {
         clothingService.createClothingModel(request.getName(), request.getPrice()));
   }
 
+  @PutMapping("/{modelId}")
+  public ClothingModelResponseDto updateClothingModel(
+      @PathVariable String modelId, @RequestBody ClothingModelCreateRequestDto request) {
+    return new ClothingModelResponseDto(
+        clothingService.updateClothingModel(modelId, request.getName(), request.getPrice()));
+  }
+
   @DeleteMapping("/{modelId}")
   @ResponseStatus(HttpStatus.NO_CONTENT)
   public void deleteClothingModel(@PathVariable String modelId) {
@@ -64,6 +72,13 @@ public class ClothingController {
     return new ClothingVariantResponseDto(
         clothingService.createVariant(
             modelId, request.getSize(), request.getColor(), request.getStockQuantity()));
+  }
+
+  @PutMapping("/variants/{variantId}")
+  public ClothingVariantResponseDto updateVariant(
+      @PathVariable String variantId, @RequestBody ClothingVariantUpdateRequestDto request) {
+    return new ClothingVariantResponseDto(
+        clothingService.updateVariant(variantId, request.getStockQuantity()));
   }
 
   @DeleteMapping("/variants/{variantId}")
