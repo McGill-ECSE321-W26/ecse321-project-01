@@ -106,6 +106,11 @@ public class OrderService {
       throw new NotFoundException("There is no order with id " + orderID + ".");
     }
 
+    // Check that the employee is not the same person as the customer
+    if (employee.getPerson().getPersonID().equals(order.getCustomer().getPerson().getPersonID())) {
+      throw new InvalidInputException("The employee cannot be assigned to their own order.");
+    }
+
     order.setEmployee(employee);
     return orderRepository.save(order);
   }
@@ -141,7 +146,7 @@ public class OrderService {
     try {
       orderStatusEnum = Order.OrderStatus.valueOf(orderStatus);
     } catch (Exception e) {
-      throw new InvalidInputException("Invalid order status " + orderStatus);
+      throw new InvalidInputException("Invalid order status " + orderStatus + ".");
     }
 
     order.setOrderStatus(orderStatusEnum);
@@ -175,7 +180,7 @@ public class OrderService {
     try {
       orderStatusEnum = Order.OrderStatus.valueOf(orderStatus);
     } catch (Exception e) {
-      throw new InvalidInputException("Invalid order status " + orderStatus);
+      throw new InvalidInputException("Invalid order status " + orderStatus + ".");
     }
 
     return orderRepository.findByOrderStatus(orderStatusEnum);
