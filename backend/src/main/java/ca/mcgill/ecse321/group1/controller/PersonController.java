@@ -3,6 +3,8 @@ package ca.mcgill.ecse321.group1.controller;
 import ca.mcgill.ecse321.group1.model.Person;
 import ca.mcgill.ecse321.group1.service.PersonService;
 import org.springframework.web.bind.annotation.*;
+import ca.mcgill.ecse321.group1.dto.PersonRequestDto;
+import ca.mcgill.ecse321.group1.dto.PersonResponseDto;
 
 import java.util.ArrayList;
 import java.util.List;

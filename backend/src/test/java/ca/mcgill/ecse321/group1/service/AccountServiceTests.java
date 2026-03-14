@@ -1,14 +1,14 @@
 package ca.mcgill.ecse321.group1.service;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 
+import ca.mcgill.ecse321.group1.repository.CustomerRepository;
+import ca.mcgill.ecse321.group1.repository.EmployeeRepository;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -25,28 +25,59 @@ import ca.mcgill.ecse321.group1.repository.PersonRepository;
 public class AccountServiceTests {
     @Mock
     private PersonRepository repo;
+    @Mock
+    private CustomerRepository customerRepo;
+    @Mock
+    private EmployeeRepository employeeRepo;
     @InjectMocks
     private PersonService service;
 
     @SuppressWarnings("null")
     @Test
-    public void testCreateValidPerson() {
-        // Arrange
+    public void testCreateValidEmployee() {
         String accountID = "account1";
         String email = "bob@mail.mcgill.ca";
         String password = "12345678";
         Person accountTest = new Person(accountID, email, password);
+
         when(repo.save(any(Person.class))).thenReturn(accountTest);
+        when(repo.findPersonByPersonID(accountID)).thenReturn(accountTest); // final fetch at end of createEmployee
 
-        // Act
-        Person createdPerson = service.insertPerson(accountID, email, password);
+        Person createdPerson = service.createEmployee(accountID, email, password);
 
-        // Assert
         assertNotNull(createdPerson);
         assertEquals(accountID, createdPerson.getPersonID());
         assertEquals(email, createdPerson.getEmail());
-        assertEquals(password, createdPerson.getPassword());
-        verify(repo, times(1)).save(any(Person.class));
+    }
+
+    @Test
+    public void testCreateValidCustomer() {
+        String accountID = "account1";
+        String email = "bob@mail.mcgill.ca";
+        String password = "12345678";
+        String address = "123 Main St";
+        Person accountTest = new Person(accountID, email, password);
+
+        when(repo.save(any(Person.class))).thenReturn(accountTest);
+        when(repo.findPersonByPersonID(accountID)).thenReturn(accountTest); // final fetch
+
+        Person createdPerson = service.createCustomer(accountID, email, password, address);
+
+        assertNotNull(createdPerson);
+        assertEquals(accountID, createdPerson.getPersonID());
+        assertEquals(email, createdPerson.getEmail());
+    }
+
+    @Test
+    public void testCreateCustomerInvalidAddress() {
+        String accountID = "account1";
+        String email = "bob@mail.mcgill.ca";
+        String password = "12345678";
+        String address = "";  // blank address
+
+        Exception e = assertThrows(Exception.class,
+                () -> service.createCustomer(accountID, email, password, address));
+        assertEquals("Address cannot be empty.", e.getMessage());
     }
 
     @Test
@@ -58,7 +89,7 @@ public class AccountServiceTests {
 
         // Act + Assert
         // should have email validation in the insertPerson method in service
-        Exception e = assertThrows(Exception.class, () -> service.insertPerson(accountID, email, password));
+        Exception e = assertThrows(Exception.class, () -> service.createEmployee(accountID, email, password));
         assertEquals("Invalid email address.", e.getMessage());
     }
 
@@ -71,7 +102,7 @@ public class AccountServiceTests {
 
         // Act + Assert
         // should have email validation in the insertPerson method in service
-        Exception e = assertThrows(Exception.class, () -> service.insertPerson(accountID, email, password));
+        Exception e = assertThrows(Exception.class, () -> service.createEmployee(accountID, email, password));
         assertEquals("Password must be at least 8 characters.", e.getMessage());
     }
 
@@ -221,28 +252,158 @@ public class AccountServiceTests {
     }
 
 
+
+
+    @Test
+    public void testValidUpdatePassword() {
+        Person bob = new Person("id1", "bob@mail.com", "password123");
+        when(repo.findPersonByPersonID("id1")).thenReturn(bob);
+        // mock save to return bob AFTER password is changed
+        when(repo.save(any(Person.class))).thenAnswer(i -> i.getArgument(0));
+
+        Person result = service.updatePassword("id1", "password123", "newPassword123");
+
+        assertNotNull(result);
+        assertEquals("newPassword123", result.getPassword());
+    }
+
+    @Test
+    public void testInvalidUpdatePasswordOldPassword() {
+        Person bob = new Person("id1", "bob@mail.com", "password123");
+        when(repo.findPersonByPersonID("id1")).thenReturn(bob);
+
+        Exception e = assertThrows(Exception.class,
+                () -> service.updatePassword("id1", "wrongOldPassword", "newPassword123"));
+        assertEquals("Old password is incorrect.", e.getMessage());
+    }
+
+    @Test
+    public void testInvalidUpdatePasswordLength() {
+        Person bob = new Person("id1", "bob@mail.com", "password123");
+        when(repo.findPersonByPersonID("id1")).thenReturn(bob);
+
+        Exception e = assertThrows(Exception.class,
+                () -> service.updatePassword("id1", "password123", "short"));
+        assertEquals("New password must be at least 8 characters.", e.getMessage());
+    }
+
+    @Test
+    public void testValidUpdateCustomerAddress() {
+        Customer customer = new Customer();
+        customer.setAddress("123 Old St");
+        when(customerRepo.findByRoleID("roleId1")).thenReturn(customer);
+        when(customerRepo.save(any(Customer.class))).thenReturn(customer);
+
+        Customer result = service.updateCustomerAddress("roleId1", "456 New Ave");
+
+        assertNotNull(result);
+        assertEquals("456 New Ave", result.getAddress());
+    }
+
+    @Test
+    public void testInvalidUpdateCustomerAddressEmpty() {
+        Customer customer = new Customer();
+        customer.setAddress("123 Old St");
+        when(customerRepo.findByRoleID("roleId1")).thenReturn(customer);
+
+        Exception e = assertThrows(Exception.class,
+                () -> service.updateCustomerAddress("roleId1", ""));
+        assertEquals("Address cannot be empty.", e.getMessage());
+    }
+
+    @Test
+    public void testValidAddCustomerRoleToEmployee() {
+        Person bob = new Person("id1", "bob@mail.com", "password123");
+        Employee employeeRole = new Employee();
+        bob.addRole(employeeRole);
+        when(repo.findPersonByPersonID("id1")).thenReturn(bob); // final fetch
+        when(customerRepo.save(any(Customer.class))).thenReturn(new Customer());
+
+        Person result = service.addCustomerRoleToEmployee("id1", "123 Main St");
+
+        assertNotNull(result);
+    }
+
+    @Test
+    public void testInvalidAddCustomerRoleToEmployeeAlreadyExists() {
+        Person bob = new Person("id1", "bob@mail.com", "password123");
+        Employee employeeRole = new Employee();
+        Customer customerRole = new Customer();
+        bob.addRole(employeeRole);
+        bob.addRole(customerRole);  // already has customer role
+        when(repo.findPersonByPersonID("id1")).thenReturn(bob);
+
+        Exception e = assertThrows(Exception.class,
+                () -> service.addCustomerRoleToEmployee("id1", "123 Main St"));
+        assertEquals("This person already has a customer role.", e.getMessage());
+    }
+
+    @Test
+    public void testValidAddEmployeeRoleToCustomer() {
+        Person bob = new Person("id1", "bob@mail.com", "password123");
+        Customer customerRole = new Customer();
+        bob.addRole(customerRole);
+        when(repo.findPersonByPersonID("id1")).thenReturn(bob);
+        when(employeeRepo.save(any(Employee.class))).thenReturn(new Employee());
+
+        Person result = service.addEmployeeRoleToCustomer("id1");
+
+        assertNotNull(result);
+    }
+
+    @Test
+    public void testInvalidAddEmployeeRoleToCustomerAlreadyExists() {
+        Person bob = new Person("id1", "bob@mail.com", "password123");
+        Customer customerRole = new Customer();
+        Employee employeeRole = new Employee();
+        bob.addRole(customerRole);
+        bob.addRole(employeeRole);  // already has employee role
+        when(repo.findPersonByPersonID("id1")).thenReturn(bob);
+
+        Exception e = assertThrows(Exception.class,
+                () -> service.addEmployeeRoleToCustomer("id1"));
+        assertEquals("This person already has an employee role.", e.getMessage());
+    }
+
+    @Test
+    public void testValidDeleteSelfAccount() {
+        Person bob = new Person("id1", "bob@mail.com", "password123");
+        when(repo.findPersonByPersonID("id1")).thenReturn(bob);
+
+        // just verify it doesn't throw and delete is called
+        assertDoesNotThrow(() -> service.deleteSelfAccount("id1"));
+        verify(repo, times(1)).delete(bob);
+    }
+
+    @Test
+    public void testValidManagerDeleteAccount() {
+        // just a regular person with no manager role
+        Person bob = new Person("id1", "bob@mail.com", "password123");
+        when(repo.findPersonByPersonID("id1")).thenReturn(bob);
+
+        assertDoesNotThrow(() -> service.deleteAccount("id1"));
+        verify(repo, times(1)).delete(bob);
+    }
+
+    @Test
+    public void testInvalidManagerDeleteAccountNotFound() {
+        // no when() needed, repo returns null by default
+
+        Exception e = assertThrows(Exception.class,
+                () -> service.deleteAccount("nonExistentId"));
+        assertEquals("There is no person with ID nonExistentId.", e.getMessage());
+    }
+
+    @Test
+    public void testInvalidManagerDeleteSelfAccount() {
+        Person manager = new Person("managerId", "manager@mail.com", "password123");
+        Manager managerRole = new Manager();
+        manager.addRole(managerRole);
+        when(repo.findPersonByPersonID("managerId")).thenReturn(manager);
+
+        Exception e = assertThrows(Exception.class,
+                () -> service.deleteAccount("managerId"));
+        assertEquals("The manager cannot delete their own account.", e.getMessage());
+    }
+
 }
-
-
-/*
-* Testing Account:
-
-* Will be made:
-createAccount -- test create, test invalid pass, test invalid email
-getAccountByID valid and invalid --
-getAccounts
-*
-*
-* TOKEN ? COOKIES ?
-logIn, test invalid email, test invalid password, test valid login
-logOut test valid logout
-*
-*
-getCartByAccountID (is this needed ?)
-
-switchAccount (different account types or accounts)
-updateAccountPassword (optional ?)
-updateAccountName (optional ?)
-
-*
-* */

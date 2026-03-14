@@ -1,4 +1,4 @@
-package ca.mcgill.ecse321.group1.controller;
+package ca.mcgill.ecse321.group1.dto;
 
 
 import ca.mcgill.ecse321.group1.model.Person;
