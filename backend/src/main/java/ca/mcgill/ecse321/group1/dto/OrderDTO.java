@@ -2,7 +2,6 @@ package ca.mcgill.ecse321.group1.dto;
 
 import ca.mcgill.ecse321.group1.model.Item;
 import ca.mcgill.ecse321.group1.model.Order;
-
 import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;

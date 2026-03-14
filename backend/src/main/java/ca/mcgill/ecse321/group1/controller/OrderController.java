@@ -3,10 +3,9 @@ package ca.mcgill.ecse321.group1.controller;
 import ca.mcgill.ecse321.group1.dto.*;
 import ca.mcgill.ecse321.group1.model.Order;
 import ca.mcgill.ecse321.group1.service.OrderService;
-import org.springframework.web.bind.annotation.*;
-
 import java.util.ArrayList;
 import java.util.List;
+import org.springframework.web.bind.annotation.*;
 
 @RequestMapping("api/order")
 @RestController

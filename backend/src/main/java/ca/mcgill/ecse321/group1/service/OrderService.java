@@ -1,9 +1,5 @@
 package ca.mcgill.ecse321.group1.service;
 
-import java.sql.Date;
-import java.time.LocalDate;
-import java.util.List;
-
 import ca.mcgill.ecse321.group1.exception.InvalidInputException;
 import ca.mcgill.ecse321.group1.exception.NotFoundException;
 import ca.mcgill.ecse321.group1.model.Customer;
@@ -14,8 +10,10 @@ import ca.mcgill.ecse321.group1.repository.CustomerRepository;
 import ca.mcgill.ecse321.group1.repository.EmployeeRepository;
 import ca.mcgill.ecse321.group1.repository.ItemRepository;
 import ca.mcgill.ecse321.group1.repository.OrderRepository;
-
 import jakarta.transaction.Transactional;
+import java.sql.Date;
+import java.time.LocalDate;
+import java.util.List;
 import org.springframework.stereotype.Service;
 
 @Service
