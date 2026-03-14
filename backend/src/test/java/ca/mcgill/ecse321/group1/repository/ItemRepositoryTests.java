@@ -382,7 +382,7 @@ public class ItemRepositoryTests {
     order.setAddress("1 Test Ave");
     order.setCustomer(customer);
     order.setEmployee(employee);
-    order = orderRepository.save(order);
+    orderRepository.save(order);
 
     // Item linked to an order (not in cart)
     Item orderedItem = new Item();
@@ -410,11 +410,11 @@ public class ItemRepositoryTests {
   public void testFindCartItemsByModelId_excludesDifferentModel() {
     // Create two models, each with a variant and a cart item
     ClothingModel model1 = new ClothingModel(null, "Pants", 79.99f);
-    model1 = clothingModelRepository.save(model1);
+    clothingModelRepository.save(model1);
     String model1Id = model1.getClothingModelID();
 
     ClothingModel model2 = new ClothingModel(null, "Hat", 29.99f);
-    model2 = clothingModelRepository.save(model2);
+    clothingModelRepository.save(model2);
 
     ClothingVariant variant1 =
         new ClothingVariant(null, ClothingVariant.Size.L, "Black", 8, model1);
@@ -429,7 +429,7 @@ public class ItemRepositoryTests {
     item1.setQuantity(1);
     item1.setPrice(79.99f);
     item1.setClothingVariant(variant1);
-    item1 = itemRepository.save(item1);
+    itemRepository.save(item1);
 
     // Cart item for model2 (should not appear in results for model1)
     Item item2 = new Item();
