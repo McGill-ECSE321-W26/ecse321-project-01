@@ -12,10 +12,14 @@ import java.sql.Date;
 import java.time.LocalDate;
 import java.util.List;
 
+import ca.mcgill.ecse321.group1.exception.InvalidInputException;
+import ca.mcgill.ecse321.group1.exception.NotFoundException;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.invocation.InvocationOnMock;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import ca.mcgill.ecse321.group1.model.ClothingModel;
@@ -30,6 +34,7 @@ import ca.mcgill.ecse321.group1.repository.ItemRepository;
 import ca.mcgill.ecse321.group1.repository.OrderRepository;
 
 @SpringBootTest
+@MockitoSettings(strictness = Strictness.STRICT_STUBS)
 public class OrderServiceTests {
     @Mock
     private OrderRepository orderRepository;
@@ -76,6 +81,8 @@ public class OrderServiceTests {
         Item item = buildItemWithPrice(itemPrice);
         item.setCustomer(customer); // populates customer.items via bi-directional link
 
+        Order.OrderStatus status = Order.OrderStatus.Preparing;
+        Date orderDate = Date.valueOf(LocalDate.now());
         Date deliveryDate = Date.valueOf(LocalDate.now().plusDays(2));
 
         when(customerRepository.findByRoleID(customerId)).thenReturn(customer);
@@ -87,7 +94,9 @@ public class OrderServiceTests {
 
         // Assert
         assertNotNull(order);
+        assertEquals(status, order.getOrderStatus());
         assertEquals(address, order.getAddress());
+        assertEquals(orderDate, order.getOrderDate());
         assertEquals(deliveryDate, order.getDeliveryDate());
         assertEquals((float) usedLoyaltyPoints * OrderService.loyaltyModifier, order.getLoyaltySaving());
         assertEquals(25, customer.getLoyaltyPoints());
@@ -102,7 +111,7 @@ public class OrderServiceTests {
 
         // Act & Assert
         //WAITING FOR EXCEPTION
-        RuntimeException e = assertThrows(RuntimeException.class,
+        NotFoundException e = assertThrows(NotFoundException.class,
                 () -> orderService.createOrder(customerId, Date.valueOf(LocalDate.now().plusDays(2)), 0));
         assertEquals("There is no customer with id " + customerId + ".", e.getMessage());
     }
@@ -118,7 +127,7 @@ public class OrderServiceTests {
         when(itemRepository.findItemsByCustomer(customer)).thenReturn(null);
 
         // Act & Assert
-        RuntimeException e = assertThrows(RuntimeException.class,
+        InvalidInputException e = assertThrows(InvalidInputException.class,
                 () -> orderService.createOrder(customerId, Date.valueOf(LocalDate.now().plusDays(2)), 0));
         assertEquals("There are no items in the cart of customer " + customerId + ".", e.getMessage());
     }
@@ -136,7 +145,7 @@ public class OrderServiceTests {
         when(itemRepository.findItemsByCustomer(customer)).thenReturn(List.of(item));
 
         // Act & Assert
-        RuntimeException e = assertThrows(RuntimeException.class,
+        InvalidInputException e = assertThrows(InvalidInputException.class,
                 () -> orderService.createOrder(customerId, null, 0));
         assertEquals("Delivery Date is null.", e.getMessage());
     }
@@ -156,9 +165,37 @@ public class OrderServiceTests {
         when(itemRepository.findItemsByCustomer(customer)).thenReturn(List.of(item));
 
         // Act & Assert
-        RuntimeException e = assertThrows(RuntimeException.class,
+        InvalidInputException e = assertThrows(InvalidInputException.class,
                 () -> orderService.createOrder(customerId, tooSoon, 0));
         assertEquals("Delivery Date must be at least 24 hours after the order date.", e.getMessage());
+    }
+
+    @Test
+    public void testCreateOrderWithInvalidLoyaltyPoints() {
+        //Arrange
+        String customerId = "customer1";
+        String address = "123 Main St";
+        int initialLoyaltyPoints = 10;
+        int usedLoyaltyPoints = 5;
+        float itemPrice = 100.0f;
+
+        Customer customer = new Customer();
+        customer.setRoleID(customerId);
+        customer.setAddress(address);
+        customer.setLoyaltyPoints(initialLoyaltyPoints);
+
+        Item item = buildItemWithPrice(itemPrice);
+        item.setCustomer(customer); // populates customer.items via bi-directional link
+
+        Date deliveryDate = Date.valueOf(LocalDate.now().plusDays(2));
+
+        when(customerRepository.findByRoleID(customerId)).thenReturn(customer);
+        when(itemRepository.findItemsByCustomer(customer)).thenReturn(List.of(item));
+
+        //Act & Assert
+        InvalidInputException e = assertThrows(InvalidInputException.class,
+                () -> orderService.createOrder(customerId, deliveryDate, -1));
+        assertEquals("Loyalty points must be positive.", e.getMessage());
     }
 
     // ===== assignOrderToEmployee =====
@@ -170,6 +207,7 @@ public class OrderServiceTests {
         String employeeId = "emp1";
 
         Order order = new Order();
+        order.setOrderID(orderId);
         Employee employee = new Employee();
         employee.setRoleID(employeeId);
 
@@ -194,7 +232,7 @@ public class OrderServiceTests {
         when(employeeRepository.findByRoleID(employeeId)).thenReturn(null);
 
         // Act & Assert
-        RuntimeException e = assertThrows(RuntimeException.class,
+        NotFoundException e = assertThrows(NotFoundException.class,
                 () -> orderService.assignOrderToEmployee(orderId, employeeId));
         assertEquals("There is no employee with id " + employeeId + ".", e.getMessage());
     }
@@ -211,7 +249,7 @@ public class OrderServiceTests {
         when(orderRepository.findOrderByOrderID(orderId)).thenReturn(null);
 
         // Act & Assert
-        RuntimeException e = assertThrows(RuntimeException.class,
+        NotFoundException e = assertThrows(NotFoundException.class,
                 () -> orderService.assignOrderToEmployee(orderId, employeeId));
         assertEquals("There is no order with id " + orderId + ".", e.getMessage());
     }
@@ -223,6 +261,7 @@ public class OrderServiceTests {
         // Arrange
         String orderId = "order1";
         Order order = new Order();
+        order.setOrderID(orderId);
         Date newDate = Date.valueOf(LocalDate.now().plusDays(3));
 
         when(orderRepository.findOrderByOrderID(orderId)).thenReturn(order);
@@ -244,7 +283,7 @@ public class OrderServiceTests {
         when(orderRepository.findOrderByOrderID(orderId)).thenReturn(null);
 
         // Act & Assert
-        RuntimeException e = assertThrows(RuntimeException.class,
+        NotFoundException e = assertThrows(NotFoundException.class,
                 () -> orderService.updateOrderDeliveryDate(orderId, Date.valueOf(LocalDate.now().plusDays(2))));
         assertEquals("There is no order with id " + orderId + ".", e.getMessage());
     }
@@ -257,7 +296,7 @@ public class OrderServiceTests {
         when(orderRepository.findOrderByOrderID(orderId)).thenReturn(order);
 
         // Act & Assert
-        RuntimeException e = assertThrows(RuntimeException.class,
+        InvalidInputException e = assertThrows(InvalidInputException.class,
                 () -> orderService.updateOrderDeliveryDate(orderId, null));
         assertEquals("Delivery Date is null.", e.getMessage());
     }
@@ -272,7 +311,7 @@ public class OrderServiceTests {
         when(orderRepository.findOrderByOrderID(orderId)).thenReturn(order);
 
         // Act & Assert
-        RuntimeException e = assertThrows(RuntimeException.class,
+        InvalidInputException e = assertThrows(InvalidInputException.class,
                 () -> orderService.updateOrderDeliveryDate(orderId, tooSoon));
         assertEquals("Delivery Date must be at least 24 hours after the order date.", e.getMessage());
     }
@@ -284,6 +323,9 @@ public class OrderServiceTests {
         // Arrange
         String orderId = "order1";
         Order order = new Order();
+        Order.OrderStatus status = Order.OrderStatus.Preparing;
+        order.setOrderID(orderId);
+        order.setOrderStatus(status);
         when(orderRepository.findOrderByOrderID(orderId)).thenReturn(order);
         when(orderRepository.save(any(Order.class))).thenAnswer(i -> i.getArgument(0));
 
@@ -303,7 +345,7 @@ public class OrderServiceTests {
         when(orderRepository.findOrderByOrderID(orderId)).thenReturn(null);
 
         // Act & Assert
-        RuntimeException e = assertThrows(RuntimeException.class,
+        NotFoundException e = assertThrows(NotFoundException.class,
                 () -> orderService.updateOrderStatus(orderId, "Delivered"));
         assertEquals("There is no order with id " + orderId + ".", e.getMessage());
     }
@@ -317,7 +359,7 @@ public class OrderServiceTests {
         when(orderRepository.findOrderByOrderID(orderId)).thenReturn(order);
 
         // Act & Assert
-        RuntimeException e = assertThrows(RuntimeException.class,
+        InvalidInputException e = assertThrows(InvalidInputException.class,
                 () -> orderService.updateOrderStatus(orderId, invalidStatus));
         assertEquals("Invalid order status " + invalidStatus, e.getMessage());
     }
@@ -358,6 +400,14 @@ public class OrderServiceTests {
         assertEquals(order, result);
     }
 
+    @Test
+    public void testGetOrderByInvalidID() {
+        String orderId = "badOrder";
+        when(orderRepository.findOrderByOrderID(orderId)).thenReturn(null);
+        NotFoundException e = assertThrows(NotFoundException.class,
+                () -> orderService.getOrderByID(orderId));
+        assertEquals("There is no order with id " + orderId + ".", e.getMessage());
+    }
     // ===== getOrdersByCustomerID =====
 
     @Test
@@ -367,9 +417,10 @@ public class OrderServiceTests {
         Customer customer = new Customer();
         customer.setRoleID(customerId);
         Order order = new Order();
+        Order order2 = new Order();
 
         when(customerRepository.findByRoleID(customerId)).thenReturn(customer);
-        when(orderRepository.findByCustomer(customer)).thenReturn(List.of(order));
+        when(orderRepository.findByCustomer(customer)).thenReturn(List.of(order, order2));
 
         // Act
         Iterable<Order> orders = orderService.getOrdersByCustomerID(customerId);
@@ -377,6 +428,7 @@ public class OrderServiceTests {
         // Assert
         assertNotNull(orders);
         assertEquals(order, orders.iterator().next());
+        assertEquals(order2, orders.iterator().next());
     }
 
     @Test
@@ -386,7 +438,7 @@ public class OrderServiceTests {
         when(customerRepository.findByRoleID(customerId)).thenReturn(null);
 
         // Act & Assert
-        RuntimeException e = assertThrows(RuntimeException.class,
+        NotFoundException e = assertThrows(NotFoundException.class,
                 () -> orderService.getOrdersByCustomerID(customerId));
         assertEquals("There is no customer with id " + customerId + ".", e.getMessage());
     }
@@ -397,7 +449,8 @@ public class OrderServiceTests {
     public void testGetOrdersByValidStatus() {
         // Arrange
         Order order = new Order();
-        when(orderRepository.findByOrderStatus(Order.OrderStatus.Preparing)).thenReturn(List.of(order));
+        Order order2 = new Order();
+        when(orderRepository.findByOrderStatus(Order.OrderStatus.Preparing)).thenReturn(List.of(order, order2));
 
         // Act
         Iterable<Order> orders = orderService.getOrdersByOrderStatus("Preparing");
@@ -405,6 +458,7 @@ public class OrderServiceTests {
         // Assert
         assertNotNull(orders);
         assertEquals(order, orders.iterator().next());
+        assertEquals(order2, orders.iterator().next());
     }
 
     @Test
@@ -413,7 +467,7 @@ public class OrderServiceTests {
         String invalidStatus = "Unknown";
 
         // Act & Assert
-        RuntimeException e = assertThrows(RuntimeException.class,
+        InvalidInputException e = assertThrows(InvalidInputException.class,
                 () -> orderService.getOrdersByOrderStatus(invalidStatus));
         assertEquals("Invalid order status " + invalidStatus, e.getMessage());
     }
