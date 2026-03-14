@@ -185,6 +185,34 @@ public class PersonService {
     return personRepository.findPersonByPersonID(id);
   }
 
+
+  @Transactional
+  public Person addEmployeeRoleToCustomer(String id) {
+    Person person = personRepository.findPersonByPersonID(id);
+    if (person == null) {
+      throw new NotFoundException("There is no person with ID " + id + ".");
+    }
+
+    boolean hasCustomer = false;
+    for (PersonRole role : person.getRoles()) {
+      if (role instanceof Employee) {
+        throw new InvalidInputException("This person already has an employee role.");
+      }
+      if (role instanceof Customer) {
+        hasCustomer = true;
+      }
+    }
+    if (!hasCustomer) {
+      throw new InvalidInputException("This person is not a customer.");
+    }
+
+    Employee employee = new Employee();
+    employee.setPerson(person);
+    employeeRepository.save(employee);
+
+    return personRepository.findPersonByPersonID(id);
+  }
+
   @Transactional
   public void deleteSelfAccount(String id) {
     Person person = personRepository.findPersonByPersonID(id);
