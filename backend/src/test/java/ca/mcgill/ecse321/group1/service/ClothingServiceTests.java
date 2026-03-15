@@ -171,7 +171,6 @@ public class ClothingServiceTests {
     assertNotNull(res);
     assertEquals(newName, res.getName());
     assertEquals(newPrice, res.getPrice());
-    // HOW DO I EVEN ASSERT FOR ITEM PRICE??
     verify(itemRepository, times(1)).saveAll(any());
     verify(clothingModelRepository, times(1)).save(any(ClothingModel.class));
   }

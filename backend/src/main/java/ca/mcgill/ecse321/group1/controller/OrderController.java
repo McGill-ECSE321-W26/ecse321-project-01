@@ -19,7 +19,7 @@ public class OrderController {
     this.orderService = orderService;
   }
 
-  @PostMapping()
+  @PostMapping
   @ResponseStatus(HttpStatus.CREATED)
   public OrderResponseDto createOrder(@RequestBody CreateOrderRequestDto dto) {
     Order order =
@@ -37,7 +37,7 @@ public class OrderController {
     return new OrderResponseDto(order);
   }
 
-  @GetMapping()
+  @GetMapping
   public List<OrderResponseDto> getOrders(
       @RequestParam(required = false) String customerID,
       @RequestParam(required = false) String orderStatus) {
