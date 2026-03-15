@@ -8,7 +8,8 @@ import org.springframework.data.repository.ListCrudRepository;
 public interface ItemRepository extends ListCrudRepository<Item, String> {
   Item findItemByItemID(String itemID);
 
-  List<Item> findItemsByCustomer(Customer customer);
+  // Find Items linked to a specific model that are not in a cart
+  List<Item> findByClothingVariant_Model_ClothingModelIDAndOrderIsNull(String modelId);
 
-  int deleteByItemID(String itemID);
+  List<Item> findItemsByCustomer(Customer customer);
 }
