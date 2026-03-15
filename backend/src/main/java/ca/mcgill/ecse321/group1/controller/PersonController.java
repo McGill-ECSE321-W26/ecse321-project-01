@@ -14,7 +14,7 @@ import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
-@RequestMapping("/api/person")
+@RequestMapping("/api/persons")
 @RestController
 public class PersonController {
 
@@ -24,7 +24,7 @@ public class PersonController {
     this.personService = personService;
   }
 
-  @PostMapping("/customer")
+  @PostMapping("/customers")
   @ResponseStatus(HttpStatus.CREATED)
   public PersonResponseDto createCustomer(@RequestBody CreateCustomerDto dto) {
     Person p =
@@ -33,14 +33,14 @@ public class PersonController {
     return new PersonResponseDto(p);
   }
 
-  @PostMapping("/employee")
+  @PostMapping("/employees")
   @ResponseStatus(HttpStatus.CREATED)
   public PersonResponseDto createEmployee(@RequestBody CreateEmployeeDto dto) {
     Person p = personService.createEmployee(dto.getId(), dto.getEmail(), dto.getPassword());
     return new PersonResponseDto(p);
   }
 
-  @PostMapping("/{id}/add-customer-role")
+  @PostMapping("/{id}/roles/customer")
   @ResponseStatus(HttpStatus.CREATED)
   public PersonResponseDto addCustomerRoleToEmployee(
       @PathVariable String id, @RequestBody AddressDto dto) {
@@ -48,21 +48,24 @@ public class PersonController {
     return new PersonResponseDto(p);
   }
 
-  @PostMapping("/{id}/add-employee-role")
+  @PostMapping("/{id}/roles/employee")
   @ResponseStatus(HttpStatus.CREATED)
   public PersonResponseDto addEmployeeRoleToCustomer(@PathVariable String id) {
     Person p = personService.addEmployeeRoleToCustomer(id);
     return new PersonResponseDto(p);
   }
 
-  @PostMapping("/login")
+  @PostMapping("/sessions")
   public PersonResponseDto logIn(@RequestBody LoginDto dto) {
     Person p = personService.logIn(dto.getEmail(), dto.getPassword(), dto.getRole());
     return new PersonResponseDto(p);
   }
 
   @GetMapping
-  public List<PersonResponseDto> getPeople() {
+  public List<PersonResponseDto> getPeople(@RequestParam(required = false) String email) {
+    if (email != null) {
+      return List.of(new PersonResponseDto(personService.getPersonByEmail(email)));
+    }
     List<PersonResponseDto> dtos = new ArrayList<>();
     for (Person p : personService.getPeople()) {
       dtos.add(new PersonResponseDto(p));
@@ -75,11 +78,6 @@ public class PersonController {
     return new PersonResponseDto(personService.getPersonById(id));
   }
 
-  @GetMapping("/email")
-  public PersonResponseDto getPersonByEmail(@RequestParam String email) {
-    return new PersonResponseDto(personService.getPersonByEmail(email));
-  }
-
   @PatchMapping("/{id}/password")
   public PersonResponseDto updatePassword(
       @PathVariable String id, @RequestBody UpdatePasswordDto dto) {
@@ -87,7 +85,7 @@ public class PersonController {
     return new PersonResponseDto(p);
   }
 
-  @PatchMapping("/customer/{customerRoleId}/address")
+  @PatchMapping("/customers/{customerRoleId}/address")
   public PersonResponseDto updateCustomerAddress(
       @PathVariable String customerRoleId, @RequestBody AddressDto dto) {
     Customer c = personService.updateCustomerAddress(customerRoleId, dto.getAddress());
@@ -98,11 +96,5 @@ public class PersonController {
   @ResponseStatus(HttpStatus.NO_CONTENT)
   public void deleteAccount(@PathVariable String id) {
     personService.deleteAccount(id);
-  }
-
-  @DeleteMapping("/{id}/self")
-  @ResponseStatus(HttpStatus.NO_CONTENT)
-  public void deleteSelfAccount(@PathVariable String id) {
-    personService.deleteSelfAccount(id);
   }
 }
