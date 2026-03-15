@@ -76,7 +76,7 @@ public class CartService {
           HttpStatus.BAD_REQUEST,
           "The quantity "
               + quantity
-              + "is higher than the available stock for this clothing piece ("
+              + " is higher than the available stock for this clothing piece ("
               + clothingVariant.getStockQuantity()
               + ").");
     }

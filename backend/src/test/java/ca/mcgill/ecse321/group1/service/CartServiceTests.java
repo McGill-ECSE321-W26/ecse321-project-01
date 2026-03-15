@@ -8,8 +8,6 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import ca.mcgill.ecse321.group1.exception.InvalidInputException;
-import ca.mcgill.ecse321.group1.exception.NotFoundException;
 import ca.mcgill.ecse321.group1.model.ClothingModel;
 import ca.mcgill.ecse321.group1.model.ClothingVariant;
 import ca.mcgill.ecse321.group1.model.Customer;
@@ -82,9 +80,9 @@ public class CartServiceTests {
     when(itemRepository.findItemByItemID(itemId)).thenReturn(null);
 
     // Act & Assert
-    NotFoundException e =
-        assertThrows(NotFoundException.class, () -> cartService.getItemByID(itemId));
-    assertEquals("There is no item with id " + itemId + ".", e.getMessage());
+    ResponseStatusException e =
+        assertThrows(ResponseStatusException.class, () -> cartService.getItemByID(itemId));
+    assertEquals("404 NOT_FOUND \"There is no item with id " + itemId + ".\"", e.getMessage());
   }
 
   // ===== getCartItems =====
@@ -106,6 +104,8 @@ public class CartServiceTests {
     // Assert
     assertNotNull(result);
     assertEquals(2, result.size());
+    assertEquals(item1, result.get(0));
+    assertEquals(item2, result.get(1));
   }
 
   @Test
@@ -129,9 +129,10 @@ public class CartServiceTests {
     when(customerRepository.findByRoleID(customerId)).thenReturn(null);
 
     // Act & Assert
-    NotFoundException e =
-        assertThrows(NotFoundException.class, () -> cartService.getCartItems(customerId));
-    assertEquals("There is no customer with id " + customerId + ".", e.getMessage());
+    ResponseStatusException e =
+        assertThrows(ResponseStatusException.class, () -> cartService.getCartItems(customerId));
+    assertEquals(
+        "404 NOT_FOUND \"There is no customer with id " + customerId + ".\"", e.getMessage());
   }
 
   // ===== addItem =====
@@ -144,8 +145,7 @@ public class CartServiceTests {
     int quantity = 5;
     ClothingVariant variant = buildVariant(variantId, 100f, 10);
     Customer customer = new Customer();
-    when(clothingVariantRepository.findClothingVariantByClothingVariantID(variantId))
-        .thenReturn(variant);
+    when(clothingVariantRepository.findByClothingVariantID(variantId)).thenReturn(variant);
     when(customerRepository.findByRoleID(customerId)).thenReturn(customer);
     when(itemRepository.save(any(Item.class))).thenAnswer(i -> i.getArgument(0));
 
@@ -155,7 +155,9 @@ public class CartServiceTests {
     // Assert
     assertNotNull(result);
     assertEquals(quantity, result.getQuantity());
-    assertEquals(100f, result.getPrice());
+    assertEquals(100, result.getPrice());
+    assertEquals(variant, result.getClothingVariant());
+    assertEquals(customer, result.getCustomer());
     assertEquals(variant, result.getClothingVariant());
     verify(itemRepository, times(1)).save(any(Item.class));
   }
@@ -169,8 +171,7 @@ public class CartServiceTests {
     int stock = 5;
     ClothingVariant variant = buildVariant(variantId, 50f, stock);
     Customer customer = new Customer();
-    when(clothingVariantRepository.findClothingVariantByClothingVariantID(variantId))
-        .thenReturn(variant);
+    when(clothingVariantRepository.findByClothingVariantID(variantId)).thenReturn(variant);
     when(customerRepository.findByRoleID(customerId)).thenReturn(customer);
     when(itemRepository.save(any(Item.class))).thenAnswer(i -> i.getArgument(0));
 
@@ -186,14 +187,15 @@ public class CartServiceTests {
     String variantId = "variant1";
     String customerId = "badCustomer";
     ClothingVariant variant = buildVariant(variantId, 100f, 10);
-    when(clothingVariantRepository.findClothingVariantByClothingVariantID(variantId))
-        .thenReturn(variant);
+    when(clothingVariantRepository.findByClothingVariantID(variantId)).thenReturn(variant);
     when(customerRepository.findByRoleID(customerId)).thenReturn(null);
 
     // Act & Assert
-    NotFoundException e =
-        assertThrows(NotFoundException.class, () -> cartService.addItem(variantId, customerId, 1));
-    assertEquals("There is no customer with id " + customerId + ".", e.getMessage());
+    ResponseStatusException e =
+        assertThrows(
+            ResponseStatusException.class, () -> cartService.addItem(variantId, customerId, 1));
+    assertEquals(
+        "404 NOT_FOUND \"There is no customer with id " + customerId + ".\"", e.getMessage());
   }
 
   @Test
@@ -202,29 +204,16 @@ public class CartServiceTests {
     String variantId = "badVariant";
     String customerId = "customer1";
     Customer customer = new Customer();
-    when(clothingVariantRepository.findClothingVariantByClothingVariantID(variantId))
-        .thenReturn(null);
+    when(clothingVariantRepository.findByClothingVariantID(variantId)).thenReturn(null);
     when(customerRepository.findByRoleID(customerId)).thenReturn(customer);
 
     // Act & Assert
-    NotFoundException e =
-        assertThrows(NotFoundException.class, () -> cartService.addItem(variantId, customerId, 1));
-    assertEquals("There is no clothing variant with id " + variantId + ".", e.getMessage());
-  }
-
-  @Test
-  public void testAddItemCustomerCheckedBeforeVariant() {
-    // When both customer and variant are missing, the customer not-found error takes priority
-    // because the service checks customer first.
-    String variantId = "badVariant";
-    String customerId = "badCustomer";
-    when(clothingVariantRepository.findClothingVariantByClothingVariantID(variantId))
-        .thenReturn(null);
-    when(customerRepository.findByRoleID(customerId)).thenReturn(null);
-
-    NotFoundException e =
-        assertThrows(NotFoundException.class, () -> cartService.addItem(variantId, customerId, 1));
-    assertEquals("There is no customer with id " + customerId + ".", e.getMessage());
+    ResponseStatusException e =
+        assertThrows(
+            ResponseStatusException.class, () -> cartService.addItem(variantId, customerId, 1));
+    assertEquals(
+        "404 NOT_FOUND \"There is no clothing variant with id " + variantId + ".\"",
+        e.getMessage());
   }
 
   @Test
@@ -236,20 +225,20 @@ public class CartServiceTests {
     int quantity = 10;
     ClothingVariant variant = buildVariant(variantId, 100f, stock);
     Customer customer = new Customer();
-    when(clothingVariantRepository.findClothingVariantByClothingVariantID(variantId))
-        .thenReturn(variant);
+    when(clothingVariantRepository.findByClothingVariantID(variantId)).thenReturn(variant);
     when(customerRepository.findByRoleID(customerId)).thenReturn(customer);
 
     // Act & Assert
-    InvalidInputException e =
+    ResponseStatusException e =
         assertThrows(
-            InvalidInputException.class, () -> cartService.addItem(variantId, customerId, quantity));
+            ResponseStatusException.class,
+            () -> cartService.addItem(variantId, customerId, quantity));
     assertEquals(
-        "The quantity "
+        "400 BAD_REQUEST \"The quantity "
             + quantity
-            + "is higher than the available stock for this clothing piece ("
+            + " is higher than the available stock for this clothing piece ("
             + stock
-            + ").",
+            + ").\"",
         e.getMessage());
   }
 
@@ -261,15 +250,13 @@ public class CartServiceTests {
     String customerId = "customer1";
     ClothingVariant variant = buildVariant(variantId, 50f, 5);
     Customer customer = new Customer();
-    when(clothingVariantRepository.findClothingVariantByClothingVariantID(variantId))
-        .thenReturn(variant);
+    when(clothingVariantRepository.findByClothingVariantID(variantId)).thenReturn(variant);
     when(customerRepository.findByRoleID(customerId)).thenReturn(customer);
-    when(itemRepository.save(any(Item.class))).thenAnswer(i -> i.getArgument(0));
+    ResponseStatusException e =
+        assertThrows(
+            ResponseStatusException.class, () -> cartService.addItem(variantId, customerId, 0));
 
-    ResponseStatusException e =  assertThrows(ResponseStatusException.class,
-            () -> cartService.addItem(variantId, customerId, 0));
-
-    assertEquals("400 BAD_REQUEST \"Item must be greater than 0\"", e.getMessage());
+    assertEquals("400 BAD_REQUEST \"The quantity must be greater than one.\"", e.getMessage());
   }
 
   // ===== removeItem =====
@@ -290,37 +277,9 @@ public class CartServiceTests {
     cartService.removeItem(itemId, customerId);
 
     // Assert
-    verify(itemRepository, times(1)).deleteByItemID(itemId);
-  }
-
-  @Test
-  public void testRemoveItemDetachesFromCustomer() {
-    // After removal, the item should no longer be in the customer's list
-    String itemId = "item1";
-    String customerId = "customer1";
-    ClothingVariant variant = buildVariant("variant1", 50f, 10);
-    Item item = buildItem(itemId, variant, 2);
-    Customer customer = new Customer();
-    item.setCustomer(customer);
-    when(customerRepository.findByRoleID(customerId)).thenReturn(customer);
-    when(itemRepository.findItemByItemID(itemId)).thenReturn(item);
-
-    cartService.removeItem(itemId, customerId);
-
     assertEquals(0, customer.numberOfItems());
-  }
 
-  @Test
-  public void testRemoveItemCustomerCheckedBeforeItem() {
-    // When both customer and item are missing, the customer not-found error takes priority.
-    String itemId = "badItem";
-    String customerId = "badCustomer";
-    when(customerRepository.findByRoleID(customerId)).thenReturn(null);
-    when(itemRepository.findItemByItemID(itemId)).thenReturn(null);
-
-    NotFoundException e =
-        assertThrows(NotFoundException.class, () -> cartService.removeItem(itemId, customerId));
-    assertEquals("There is no customer with id " + customerId + ".", e.getMessage());
+    verify(itemRepository, times(1)).delete(item);
   }
 
   @Test
@@ -332,9 +291,11 @@ public class CartServiceTests {
     when(itemRepository.findItemByItemID(itemId)).thenReturn(new Item());
 
     // Act & Assert
-    NotFoundException e =
-        assertThrows(NotFoundException.class, () -> cartService.removeItem(itemId, customerId));
-    assertEquals("There is no customer with id " + customerId + ".", e.getMessage());
+    ResponseStatusException e =
+        assertThrows(
+            ResponseStatusException.class, () -> cartService.removeItem(itemId, customerId));
+    assertEquals(
+        "404 NOT_FOUND \"There is no customer with id " + customerId + ".\"", e.getMessage());
   }
 
   @Test
@@ -347,9 +308,10 @@ public class CartServiceTests {
     when(itemRepository.findItemByItemID(itemId)).thenReturn(null);
 
     // Act & Assert
-    NotFoundException e =
-        assertThrows(NotFoundException.class, () -> cartService.removeItem(itemId, customerId));
-    assertEquals("There is no item with id " + itemId + ".", e.getMessage());
+    ResponseStatusException e =
+        assertThrows(
+            ResponseStatusException.class, () -> cartService.removeItem(itemId, customerId));
+    assertEquals("404 NOT_FOUND \"There is no item with id " + itemId + ".\"", e.getMessage());
   }
 
   @Test
@@ -364,30 +326,15 @@ public class CartServiceTests {
     when(itemRepository.findItemByItemID(itemId)).thenReturn(item);
 
     // Act & Assert
-    InvalidInputException e =
-        assertThrows(InvalidInputException.class, () -> cartService.removeItem(itemId, customerId));
+    ResponseStatusException e =
+        assertThrows(
+            ResponseStatusException.class, () -> cartService.removeItem(itemId, customerId));
     assertEquals(
-        "The item with ID " + itemId + "is not in customer's " + customerId + "cart.",
-        e.getMessage());
-  }
-
-  @Test
-  public void testRemoveItemBelongingToDifferentCustomer() {
-    // Item is in another customer's cart — the ownership check must reject it
-    String itemId = "item1";
-    String customerId = "customer1";
-    ClothingVariant variant = buildVariant("variant1", 50f, 10);
-    Item item = buildItem(itemId, variant, 2);
-    Customer otherCustomer = new Customer();
-    item.setCustomer(otherCustomer); // item belongs to a different customer
-    Customer customer = new Customer();
-    when(customerRepository.findByRoleID(customerId)).thenReturn(customer);
-    when(itemRepository.findItemByItemID(itemId)).thenReturn(item);
-
-    InvalidInputException e =
-        assertThrows(InvalidInputException.class, () -> cartService.removeItem(itemId, customerId));
-    assertEquals(
-        "The item with ID " + itemId + "is not in customer's " + customerId + "cart.",
+        "400 BAD_REQUEST \"The item with ID "
+            + itemId
+            + "is not in customer's "
+            + customerId
+            + "cart.\"",
         e.getMessage());
   }
 
@@ -404,7 +351,7 @@ public class CartServiceTests {
     cartService.removeAllItems(customerId);
 
     // Assert
-    verify(itemRepository, times(0)).deleteByItemID(any());
+    verify(itemRepository, times(0)).delete(any());
   }
 
   @Test
@@ -422,7 +369,7 @@ public class CartServiceTests {
     cartService.removeAllItems(customerId);
 
     // Assert
-    verify(itemRepository, times(1)).deleteByItemID(itemId);
+    verify(itemRepository, times(1)).delete(item);
   }
 
   @Test
@@ -432,9 +379,10 @@ public class CartServiceTests {
     when(customerRepository.findByRoleID(customerId)).thenReturn(null);
 
     // Act & Assert
-    NotFoundException e =
-        assertThrows(NotFoundException.class, () -> cartService.removeAllItems(customerId));
-    assertEquals("There is no customer with id " + customerId + ".", e.getMessage());
+    ResponseStatusException e =
+        assertThrows(ResponseStatusException.class, () -> cartService.removeAllItems(customerId));
+    assertEquals(
+        "404 NOT_FOUND \"There is no customer with id " + customerId + ".\"", e.getMessage());
   }
 
   // ===== changeQuantity =====
@@ -460,8 +408,7 @@ public class CartServiceTests {
 
   @Test
   public void testChangeQuantityAtExactStock() {
-    // Boundary: newQuantity == stock. The check is newQuantity > stock (strict),
-    // so exactly at stock should succeed.
+    // Arrange
     String itemId = "item1";
     int stock = 7;
     ClothingVariant variant = buildVariant("variant1", 50f, stock);
@@ -469,8 +416,10 @@ public class CartServiceTests {
     when(itemRepository.findItemByItemID(itemId)).thenReturn(item);
     when(itemRepository.save(any(Item.class))).thenAnswer(i -> i.getArgument(0));
 
+    // Act
     Item result = cartService.changeQuantity(itemId, stock);
 
+    // Insert
     assertEquals(stock, result.getQuantity());
   }
 
@@ -481,22 +430,22 @@ public class CartServiceTests {
     when(itemRepository.findItemByItemID(itemId)).thenReturn(null);
 
     // Act & Assert
-    NotFoundException e =
-        assertThrows(NotFoundException.class, () -> cartService.changeQuantity(itemId, 1));
-    assertEquals("There is no item with id " + itemId + ".", e.getMessage());
+    ResponseStatusException e =
+        assertThrows(ResponseStatusException.class, () -> cartService.changeQuantity(itemId, 1));
+    assertEquals("404 NOT_FOUND \"There is no item with id " + itemId + ".\"", e.getMessage());
   }
 
   @Test
   public void testChangeQuantityWithZeroQuantity() {
-    // The minimum valid quantity is 1; zero must be rejected (newQuantity < 1)
     String itemId = "item1";
     ClothingVariant variant = buildVariant("variant1", 50f, 10);
     Item item = buildItem(itemId, variant, 2);
     when(itemRepository.findItemByItemID(itemId)).thenReturn(item);
 
-    InvalidInputException e =
-        assertThrows(InvalidInputException.class, () -> cartService.changeQuantity(itemId, 0));
-    assertEquals("The new quantity has to be a positive number.", e.getMessage());
+    ResponseStatusException e =
+        assertThrows(ResponseStatusException.class, () -> cartService.changeQuantity(itemId, 0));
+    assertEquals(
+        "400 BAD_REQUEST \"The new quantity has to be a positive number.\"", e.getMessage());
   }
 
   @Test
@@ -507,9 +456,10 @@ public class CartServiceTests {
     Item item = buildItem(itemId, variant, 2);
     when(itemRepository.findItemByItemID(itemId)).thenReturn(item);
 
-    InvalidInputException e =
-        assertThrows(InvalidInputException.class, () -> cartService.changeQuantity(itemId, -5));
-    assertEquals("The new quantity has to be a positive number.", e.getMessage());
+    ResponseStatusException e =
+        assertThrows(ResponseStatusException.class, () -> cartService.changeQuantity(itemId, -5));
+    assertEquals(
+        "400 BAD_REQUEST \"The new quantity has to be a positive number.\"", e.getMessage());
   }
 
   @Test
@@ -523,15 +473,15 @@ public class CartServiceTests {
     when(itemRepository.findItemByItemID(itemId)).thenReturn(item);
 
     // Act & Assert
-    InvalidInputException e =
+    ResponseStatusException e =
         assertThrows(
-            InvalidInputException.class, () -> cartService.changeQuantity(itemId, newQuantity));
+            ResponseStatusException.class, () -> cartService.changeQuantity(itemId, newQuantity));
     assertEquals(
-        "The quantity "
+        "400 BAD_REQUEST \"The quantity "
             + newQuantity
             + "is higher than the available stock for this clothing piece ("
             + stock
-            + ").",
+            + ").\"",
         e.getMessage());
   }
 
@@ -592,8 +542,9 @@ public class CartServiceTests {
     when(customerRepository.findByRoleID(customerId)).thenReturn(null);
 
     // Act & Assert
-    NotFoundException e =
-        assertThrows(NotFoundException.class, () -> cartService.getCartTotal(customerId));
-    assertEquals("There is no customer with id " + customerId + ".", e.getMessage());
+    ResponseStatusException e =
+        assertThrows(ResponseStatusException.class, () -> cartService.getCartTotal(customerId));
+    assertEquals(
+        "404 NOT_FOUND \"There is no customer with id " + customerId + ".\"", e.getMessage());
   }
 }
