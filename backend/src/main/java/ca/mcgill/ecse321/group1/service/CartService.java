@@ -123,9 +123,6 @@ public class CartService {
           HttpStatus.NOT_FOUND, "There is no customer with id " + customerID + ".");
     }
 
-    // did not work
-    //itemRepository.deleteByRoleID(customerID);
-
     List<Item> items = customer.getItems();
     for (Item item : items) {
       itemRepository.delete(item);
