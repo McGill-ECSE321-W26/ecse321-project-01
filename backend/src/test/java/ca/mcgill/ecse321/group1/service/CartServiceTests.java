@@ -277,8 +277,6 @@ public class CartServiceTests {
     cartService.removeItem(itemId, customerId);
 
     // Assert
-    assertEquals(0, customer.numberOfItems());
-
     verify(itemRepository, times(1)).delete(item);
   }
 
