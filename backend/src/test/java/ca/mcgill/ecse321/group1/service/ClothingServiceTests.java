@@ -20,7 +20,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -464,8 +463,7 @@ public class ClothingServiceTests {
     // Act & Assert
     ResponseStatusException e =
         assertThrows(
-            ResponseStatusException.class,
-            () -> clothingService.deleteVariant(modelId, variantId));
+            ResponseStatusException.class, () -> clothingService.deleteVariant(modelId, variantId));
     assertEquals(
         "404 NOT_FOUND \"Clothing variant with ID "
             + variantId

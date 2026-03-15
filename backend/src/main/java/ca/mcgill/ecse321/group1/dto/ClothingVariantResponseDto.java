@@ -10,8 +10,7 @@ public class ClothingVariantResponseDto {
   private int stockQuantity;
   private String modelId;
 
-  public ClothingVariantResponseDto() {
-  }
+  public ClothingVariantResponseDto() {}
 
   public ClothingVariantResponseDto(ClothingVariant variant) {
     this.clothingVariantID = variant.getClothingVariantID();

@@ -174,7 +174,8 @@ public class ClothingService {
     if (deletedCount == 0) {
       throw new ResponseStatusException(
           HttpStatus.NOT_FOUND,
-          String.format("Clothing variant with ID %s not found under model %s", variantId, modelId));
+          String.format(
+              "Clothing variant with ID %s not found under model %s", variantId, modelId));
     }
   }
 }

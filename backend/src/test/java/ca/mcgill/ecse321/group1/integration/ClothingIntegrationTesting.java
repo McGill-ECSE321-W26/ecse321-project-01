@@ -70,7 +70,6 @@ public class ClothingIntegrationTesting {
     modelRepository.deleteAll();
   }
 
-
   @Test
   @Order(1)
   public void testCreateValidClothingModel() {
@@ -148,7 +147,6 @@ public class ClothingIntegrationTesting {
     assertNotNull(response);
     assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
   }
-
 
   @Test
   @Order(5)
@@ -256,7 +254,6 @@ public class ClothingIntegrationTesting {
     assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
   }
 
-
   @Test
   @Order(10)
   public void testDeleteVariant() {
@@ -292,11 +289,9 @@ public class ClothingIntegrationTesting {
     String url = "/api/clothing/" + INVALID_MODEL_ID;
 
     // Act
-    ResponseEntity<String> response =
-        client.delete().uri(url).retrieve().toEntity(String.class);
+    ResponseEntity<String> response = client.delete().uri(url).retrieve().toEntity(String.class);
 
     // Assert
     assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
   }
 }
-

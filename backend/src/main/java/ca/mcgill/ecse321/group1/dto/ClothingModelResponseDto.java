@@ -10,8 +10,7 @@ public class ClothingModelResponseDto {
   private float price;
   private int totalStockQuantity;
 
-  public ClothingModelResponseDto() {
-  }
+  public ClothingModelResponseDto() {}
 
   public ClothingModelResponseDto(ClothingModel model) {
     this.clothingModelID = model.getClothingModelID();
