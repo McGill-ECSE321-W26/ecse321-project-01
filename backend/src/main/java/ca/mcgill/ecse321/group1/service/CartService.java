@@ -30,6 +30,17 @@ public class CartService {
     }
 
     @Transactional
+    public Item getItemByID(String itemID) {
+        Item item = itemRepository.findItemByItemID(itemID);
+
+        if (item == null) {
+            throw new NotFoundException("There is no item with id " + itemID + ".");
+        }
+
+        return item;
+    }
+
+    @Transactional
     public List<Item> getCartItems(String customerID) {
         Customer customer = customerRepository.findByRoleID(customerID);
         if (customer == null) {
@@ -89,8 +100,26 @@ public class CartService {
     }
 
     @Transactional
-    public boolean changeQuantity(String itemID, int newQuantity) {
-        boolean success = false;
+    public void removeAllItems(String customerID) {
+        Customer customer = customerRepository.findByRoleID(customerID);
+
+        if (customer == null) {
+            throw new NotFoundException("There is no customer with id " + customerID + ".");
+        }
+
+        List<Item> items = customer.getItems();
+
+        if (items != null) {
+            for (Item item : items) {
+                customer.removeItem(item);
+                itemRepository.deleteByItemID(item.getItemID());
+                item.delete();
+            }
+        }
+    }
+
+    @Transactional
+    public Item changeQuantity(String itemID, int newQuantity) {
         Item item = itemRepository.findItemByItemID(itemID);
 
         if (item == null) {
@@ -108,8 +137,7 @@ public class CartService {
 
         item.setQuantity(newQuantity);
         itemRepository.save(item); // save new quantity in DB
-        success = true;
-        return success;
+        return item;
     }
 
     @Transactional
