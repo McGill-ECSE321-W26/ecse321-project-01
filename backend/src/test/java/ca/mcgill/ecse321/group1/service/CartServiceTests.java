@@ -1,0 +1,599 @@
+package ca.mcgill.ecse321.group1.service;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import ca.mcgill.ecse321.group1.exception.InvalidInputException;
+import ca.mcgill.ecse321.group1.exception.NotFoundException;
+import ca.mcgill.ecse321.group1.model.ClothingModel;
+import ca.mcgill.ecse321.group1.model.ClothingVariant;
+import ca.mcgill.ecse321.group1.model.Customer;
+import ca.mcgill.ecse321.group1.model.Item;
+import ca.mcgill.ecse321.group1.repository.ClothingVariantRepository;
+import ca.mcgill.ecse321.group1.repository.CustomerRepository;
+import ca.mcgill.ecse321.group1.repository.ItemRepository;
+import java.util.List;
+import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.web.server.ResponseStatusException;
+
+@SpringBootTest
+@MockitoSettings(strictness = Strictness.STRICT_STUBS)
+public class CartServiceTests {
+
+  @Mock private CustomerRepository customerRepository;
+  @Mock private ItemRepository itemRepository;
+  @Mock private ClothingVariantRepository clothingVariantRepository;
+  @InjectMocks private CartService cartService;
+
+  // ===== Helpers =====
+
+  private ClothingVariant buildVariant(String variantId, float price, int stock) {
+    ClothingModel model = new ClothingModel();
+    model.setPrice(price);
+    ClothingVariant variant = new ClothingVariant();
+    variant.setClothingVariantID(variantId);
+    variant.setStockQuantity(stock);
+    variant.setModel(model);
+    return variant;
+  }
+
+  private Item buildItem(String itemId, ClothingVariant variant, int quantity) {
+    Item item = new Item();
+    item.setItemID(itemId);
+    item.setClothingVariant(variant);
+    item.setQuantity(quantity);
+    item.setPrice(variant.getModel().getPrice());
+    return item;
+  }
+
+  // ===== getItemByID =====
+
+  @Test
+  public void testGetItemByID() {
+    // Arrange
+    String itemId = "item1";
+    ClothingVariant variant = buildVariant("variant1", 50f, 10);
+    Item item = buildItem(itemId, variant, 2);
+    when(itemRepository.findItemByItemID(itemId)).thenReturn(item);
+
+    // Act
+    Item result = cartService.getItemByID(itemId);
+
+    // Assert
+    assertNotNull(result);
+    assertEquals(itemId, result.getItemID());
+    assertEquals(2, result.getQuantity());
+  }
+
+  @Test
+  public void testGetItemByInvalidID() {
+    // Arrange
+    String itemId = "badItem";
+    when(itemRepository.findItemByItemID(itemId)).thenReturn(null);
+
+    // Act & Assert
+    NotFoundException e =
+        assertThrows(NotFoundException.class, () -> cartService.getItemByID(itemId));
+    assertEquals("There is no item with id " + itemId + ".", e.getMessage());
+  }
+
+  // ===== getCartItems =====
+
+  @Test
+  public void testGetCartItems() {
+    // Arrange
+    String customerId = "customer1";
+    Customer customer = new Customer();
+    ClothingVariant variant = buildVariant("variant1", 50f, 10);
+    Item item1 = buildItem("item1", variant, 1);
+    Item item2 = buildItem("item2", variant, 3);
+    when(customerRepository.findByRoleID(customerId)).thenReturn(customer);
+    when(itemRepository.findItemsByCustomer(customer)).thenReturn(List.of(item1, item2));
+
+    // Act
+    List<Item> result = cartService.getCartItems(customerId);
+
+    // Assert
+    assertNotNull(result);
+    assertEquals(2, result.size());
+  }
+
+  @Test
+  public void testGetCartItemsEmptyCart() {
+    // Customer exists but has no items — result must be an empty list, not null
+    String customerId = "customer1";
+    Customer customer = new Customer();
+    when(customerRepository.findByRoleID(customerId)).thenReturn(customer);
+    when(itemRepository.findItemsByCustomer(customer)).thenReturn(List.of());
+
+    List<Item> result = cartService.getCartItems(customerId);
+
+    assertNotNull(result);
+    assertEquals(0, result.size());
+  }
+
+  @Test
+  public void testGetCartItemsWithInvalidCustomer() {
+    // Arrange
+    String customerId = "badCustomer";
+    when(customerRepository.findByRoleID(customerId)).thenReturn(null);
+
+    // Act & Assert
+    NotFoundException e =
+        assertThrows(NotFoundException.class, () -> cartService.getCartItems(customerId));
+    assertEquals("There is no customer with id " + customerId + ".", e.getMessage());
+  }
+
+  // ===== addItem =====
+
+  @Test
+  public void testAddItem() {
+    // Arrange
+    String variantId = "variant1";
+    String customerId = "customer1";
+    int quantity = 5;
+    ClothingVariant variant = buildVariant(variantId, 100f, 10);
+    Customer customer = new Customer();
+    when(clothingVariantRepository.findClothingVariantByClothingVariantID(variantId))
+        .thenReturn(variant);
+    when(customerRepository.findByRoleID(customerId)).thenReturn(customer);
+    when(itemRepository.save(any(Item.class))).thenAnswer(i -> i.getArgument(0));
+
+    // Act
+    Item result = cartService.addItem(variantId, customerId, quantity);
+
+    // Assert
+    assertNotNull(result);
+    assertEquals(quantity, result.getQuantity());
+    assertEquals(100f, result.getPrice());
+    assertEquals(variant, result.getClothingVariant());
+    verify(itemRepository, times(1)).save(any(Item.class));
+  }
+
+  @Test
+  public void testAddItemAtExactStockQuantity() {
+    // Boundary: quantity == stock. The check is quantity > stock (strict),
+    // so exactly at stock should succeed, not throw.
+    String variantId = "variant1";
+    String customerId = "customer1";
+    int stock = 5;
+    ClothingVariant variant = buildVariant(variantId, 50f, stock);
+    Customer customer = new Customer();
+    when(clothingVariantRepository.findClothingVariantByClothingVariantID(variantId))
+        .thenReturn(variant);
+    when(customerRepository.findByRoleID(customerId)).thenReturn(customer);
+    when(itemRepository.save(any(Item.class))).thenAnswer(i -> i.getArgument(0));
+
+    Item result = cartService.addItem(variantId, customerId, stock);
+
+    assertNotNull(result);
+    assertEquals(stock, result.getQuantity());
+  }
+
+  @Test
+  public void testAddItemWithInvalidCustomer() {
+    // Arrange
+    String variantId = "variant1";
+    String customerId = "badCustomer";
+    ClothingVariant variant = buildVariant(variantId, 100f, 10);
+    when(clothingVariantRepository.findClothingVariantByClothingVariantID(variantId))
+        .thenReturn(variant);
+    when(customerRepository.findByRoleID(customerId)).thenReturn(null);
+
+    // Act & Assert
+    NotFoundException e =
+        assertThrows(NotFoundException.class, () -> cartService.addItem(variantId, customerId, 1));
+    assertEquals("There is no customer with id " + customerId + ".", e.getMessage());
+  }
+
+  @Test
+  public void testAddItemWithInvalidVariant() {
+    // Arrange
+    String variantId = "badVariant";
+    String customerId = "customer1";
+    Customer customer = new Customer();
+    when(clothingVariantRepository.findClothingVariantByClothingVariantID(variantId))
+        .thenReturn(null);
+    when(customerRepository.findByRoleID(customerId)).thenReturn(customer);
+
+    // Act & Assert
+    NotFoundException e =
+        assertThrows(NotFoundException.class, () -> cartService.addItem(variantId, customerId, 1));
+    assertEquals("There is no clothing variant with id " + variantId + ".", e.getMessage());
+  }
+
+  @Test
+  public void testAddItemCustomerCheckedBeforeVariant() {
+    // When both customer and variant are missing, the customer not-found error takes priority
+    // because the service checks customer first.
+    String variantId = "badVariant";
+    String customerId = "badCustomer";
+    when(clothingVariantRepository.findClothingVariantByClothingVariantID(variantId))
+        .thenReturn(null);
+    when(customerRepository.findByRoleID(customerId)).thenReturn(null);
+
+    NotFoundException e =
+        assertThrows(NotFoundException.class, () -> cartService.addItem(variantId, customerId, 1));
+    assertEquals("There is no customer with id " + customerId + ".", e.getMessage());
+  }
+
+  @Test
+  public void testAddItemWithExcessiveQuantity() {
+    // Arrange
+    String variantId = "variant1";
+    String customerId = "customer1";
+    int stock = 3;
+    int quantity = 10;
+    ClothingVariant variant = buildVariant(variantId, 100f, stock);
+    Customer customer = new Customer();
+    when(clothingVariantRepository.findClothingVariantByClothingVariantID(variantId))
+        .thenReturn(variant);
+    when(customerRepository.findByRoleID(customerId)).thenReturn(customer);
+
+    // Act & Assert
+    InvalidInputException e =
+        assertThrows(
+            InvalidInputException.class, () -> cartService.addItem(variantId, customerId, quantity));
+    assertEquals(
+        "The quantity "
+            + quantity
+            + "is higher than the available stock for this clothing piece ("
+            + stock
+            + ").",
+        e.getMessage());
+  }
+
+  @Test
+  public void testAddItemWithZeroQuantity() {
+    // 0 is not > stock, so the service allows adding an item with quantity=0.
+    // This test documents that behavior — it reveals a missing validation in the service.
+    String variantId = "variant1";
+    String customerId = "customer1";
+    ClothingVariant variant = buildVariant(variantId, 50f, 5);
+    Customer customer = new Customer();
+    when(clothingVariantRepository.findClothingVariantByClothingVariantID(variantId))
+        .thenReturn(variant);
+    when(customerRepository.findByRoleID(customerId)).thenReturn(customer);
+    when(itemRepository.save(any(Item.class))).thenAnswer(i -> i.getArgument(0));
+
+    ResponseStatusException e =  assertThrows(ResponseStatusException.class,
+            () -> cartService.addItem(variantId, customerId, 0));
+
+    assertEquals("400 BAD_REQUEST \"Item must be greater than 0\"", e.getMessage());
+  }
+
+  // ===== removeItem =====
+
+  @Test
+  public void testRemoveItem() {
+    // Arrange
+    String itemId = "item1";
+    String customerId = "customer1";
+    ClothingVariant variant = buildVariant("variant1", 50f, 10);
+    Item item = buildItem(itemId, variant, 2);
+    Customer customer = new Customer();
+    item.setCustomer(customer); // adds item to customer.items
+    when(customerRepository.findByRoleID(customerId)).thenReturn(customer);
+    when(itemRepository.findItemByItemID(itemId)).thenReturn(item);
+
+    // Act
+    cartService.removeItem(itemId, customerId);
+
+    // Assert
+    verify(itemRepository, times(1)).deleteByItemID(itemId);
+  }
+
+  @Test
+  public void testRemoveItemDetachesFromCustomer() {
+    // After removal, the item should no longer be in the customer's list
+    String itemId = "item1";
+    String customerId = "customer1";
+    ClothingVariant variant = buildVariant("variant1", 50f, 10);
+    Item item = buildItem(itemId, variant, 2);
+    Customer customer = new Customer();
+    item.setCustomer(customer);
+    when(customerRepository.findByRoleID(customerId)).thenReturn(customer);
+    when(itemRepository.findItemByItemID(itemId)).thenReturn(item);
+
+    cartService.removeItem(itemId, customerId);
+
+    assertEquals(0, customer.numberOfItems());
+  }
+
+  @Test
+  public void testRemoveItemCustomerCheckedBeforeItem() {
+    // When both customer and item are missing, the customer not-found error takes priority.
+    String itemId = "badItem";
+    String customerId = "badCustomer";
+    when(customerRepository.findByRoleID(customerId)).thenReturn(null);
+    when(itemRepository.findItemByItemID(itemId)).thenReturn(null);
+
+    NotFoundException e =
+        assertThrows(NotFoundException.class, () -> cartService.removeItem(itemId, customerId));
+    assertEquals("There is no customer with id " + customerId + ".", e.getMessage());
+  }
+
+  @Test
+  public void testRemoveItemWithInvalidCustomer() {
+    // Arrange
+    String itemId = "item1";
+    String customerId = "badCustomer";
+    when(customerRepository.findByRoleID(customerId)).thenReturn(null);
+    when(itemRepository.findItemByItemID(itemId)).thenReturn(new Item());
+
+    // Act & Assert
+    NotFoundException e =
+        assertThrows(NotFoundException.class, () -> cartService.removeItem(itemId, customerId));
+    assertEquals("There is no customer with id " + customerId + ".", e.getMessage());
+  }
+
+  @Test
+  public void testRemoveItemWithInvalidItem() {
+    // Arrange
+    String itemId = "badItem";
+    String customerId = "customer1";
+    Customer customer = new Customer();
+    when(customerRepository.findByRoleID(customerId)).thenReturn(customer);
+    when(itemRepository.findItemByItemID(itemId)).thenReturn(null);
+
+    // Act & Assert
+    NotFoundException e =
+        assertThrows(NotFoundException.class, () -> cartService.removeItem(itemId, customerId));
+    assertEquals("There is no item with id " + itemId + ".", e.getMessage());
+  }
+
+  @Test
+  public void testRemoveItemNotInCart() {
+    // Item exists and customer exists, but item belongs to a different customer
+    String itemId = "item1";
+    String customerId = "customer1";
+    ClothingVariant variant = buildVariant("variant1", 50f, 10);
+    Item item = buildItem(itemId, variant, 2); // not added to this customer
+    Customer customer = new Customer();
+    when(customerRepository.findByRoleID(customerId)).thenReturn(customer);
+    when(itemRepository.findItemByItemID(itemId)).thenReturn(item);
+
+    // Act & Assert
+    InvalidInputException e =
+        assertThrows(InvalidInputException.class, () -> cartService.removeItem(itemId, customerId));
+    assertEquals(
+        "The item with ID " + itemId + "is not in customer's " + customerId + "cart.",
+        e.getMessage());
+  }
+
+  @Test
+  public void testRemoveItemBelongingToDifferentCustomer() {
+    // Item is in another customer's cart — the ownership check must reject it
+    String itemId = "item1";
+    String customerId = "customer1";
+    ClothingVariant variant = buildVariant("variant1", 50f, 10);
+    Item item = buildItem(itemId, variant, 2);
+    Customer otherCustomer = new Customer();
+    item.setCustomer(otherCustomer); // item belongs to a different customer
+    Customer customer = new Customer();
+    when(customerRepository.findByRoleID(customerId)).thenReturn(customer);
+    when(itemRepository.findItemByItemID(itemId)).thenReturn(item);
+
+    InvalidInputException e =
+        assertThrows(InvalidInputException.class, () -> cartService.removeItem(itemId, customerId));
+    assertEquals(
+        "The item with ID " + itemId + "is not in customer's " + customerId + "cart.",
+        e.getMessage());
+  }
+
+  // ===== removeAllItems =====
+
+  @Test
+  public void testRemoveAllItemsEmptyCart() {
+    // Arrange
+    String customerId = "customer1";
+    Customer customer = new Customer();
+    when(customerRepository.findByRoleID(customerId)).thenReturn(customer);
+
+    // Act
+    cartService.removeAllItems(customerId);
+
+    // Assert
+    verify(itemRepository, times(0)).deleteByItemID(any());
+  }
+
+  @Test
+  public void testRemoveAllItemsWithOneItem() {
+    // Arrange
+    String customerId = "customer1";
+    String itemId = "item1";
+    ClothingVariant variant = buildVariant("variant1", 50f, 10);
+    Item item = buildItem(itemId, variant, 2);
+    Customer customer = new Customer();
+    item.setCustomer(customer);
+    when(customerRepository.findByRoleID(customerId)).thenReturn(customer);
+
+    // Act
+    cartService.removeAllItems(customerId);
+
+    // Assert
+    verify(itemRepository, times(1)).deleteByItemID(itemId);
+  }
+
+  @Test
+  public void testRemoveAllItemsWithInvalidCustomer() {
+    // Arrange
+    String customerId = "badCustomer";
+    when(customerRepository.findByRoleID(customerId)).thenReturn(null);
+
+    // Act & Assert
+    NotFoundException e =
+        assertThrows(NotFoundException.class, () -> cartService.removeAllItems(customerId));
+    assertEquals("There is no customer with id " + customerId + ".", e.getMessage());
+  }
+
+  // ===== changeQuantity =====
+
+  @Test
+  public void testChangeQuantity() {
+    // Arrange
+    String itemId = "item1";
+    int newQuantity = 3;
+    ClothingVariant variant = buildVariant("variant1", 50f, 10);
+    Item item = buildItem(itemId, variant, 1);
+    when(itemRepository.findItemByItemID(itemId)).thenReturn(item);
+    when(itemRepository.save(any(Item.class))).thenAnswer(i -> i.getArgument(0));
+
+    // Act
+    Item result = cartService.changeQuantity(itemId, newQuantity);
+
+    // Assert
+    assertNotNull(result);
+    assertEquals(newQuantity, result.getQuantity());
+    verify(itemRepository, times(1)).save(any(Item.class));
+  }
+
+  @Test
+  public void testChangeQuantityAtExactStock() {
+    // Boundary: newQuantity == stock. The check is newQuantity > stock (strict),
+    // so exactly at stock should succeed.
+    String itemId = "item1";
+    int stock = 7;
+    ClothingVariant variant = buildVariant("variant1", 50f, stock);
+    Item item = buildItem(itemId, variant, 1);
+    when(itemRepository.findItemByItemID(itemId)).thenReturn(item);
+    when(itemRepository.save(any(Item.class))).thenAnswer(i -> i.getArgument(0));
+
+    Item result = cartService.changeQuantity(itemId, stock);
+
+    assertEquals(stock, result.getQuantity());
+  }
+
+  @Test
+  public void testChangeQuantityWithInvalidItem() {
+    // Arrange
+    String itemId = "badItem";
+    when(itemRepository.findItemByItemID(itemId)).thenReturn(null);
+
+    // Act & Assert
+    NotFoundException e =
+        assertThrows(NotFoundException.class, () -> cartService.changeQuantity(itemId, 1));
+    assertEquals("There is no item with id " + itemId + ".", e.getMessage());
+  }
+
+  @Test
+  public void testChangeQuantityWithZeroQuantity() {
+    // The minimum valid quantity is 1; zero must be rejected (newQuantity < 1)
+    String itemId = "item1";
+    ClothingVariant variant = buildVariant("variant1", 50f, 10);
+    Item item = buildItem(itemId, variant, 2);
+    when(itemRepository.findItemByItemID(itemId)).thenReturn(item);
+
+    InvalidInputException e =
+        assertThrows(InvalidInputException.class, () -> cartService.changeQuantity(itemId, 0));
+    assertEquals("The new quantity has to be a positive number.", e.getMessage());
+  }
+
+  @Test
+  public void testChangeQuantityWithNegativeQuantity() {
+    // Negative quantities must also be rejected by the newQuantity < 1 check
+    String itemId = "item1";
+    ClothingVariant variant = buildVariant("variant1", 50f, 10);
+    Item item = buildItem(itemId, variant, 2);
+    when(itemRepository.findItemByItemID(itemId)).thenReturn(item);
+
+    InvalidInputException e =
+        assertThrows(InvalidInputException.class, () -> cartService.changeQuantity(itemId, -5));
+    assertEquals("The new quantity has to be a positive number.", e.getMessage());
+  }
+
+  @Test
+  public void testChangeQuantityExceedingStock() {
+    // Arrange
+    String itemId = "item1";
+    int stock = 5;
+    int newQuantity = 10;
+    ClothingVariant variant = buildVariant("variant1", 50f, stock);
+    Item item = buildItem(itemId, variant, 2);
+    when(itemRepository.findItemByItemID(itemId)).thenReturn(item);
+
+    // Act & Assert
+    InvalidInputException e =
+        assertThrows(
+            InvalidInputException.class, () -> cartService.changeQuantity(itemId, newQuantity));
+    assertEquals(
+        "The quantity "
+            + newQuantity
+            + "is higher than the available stock for this clothing piece ("
+            + stock
+            + ").",
+        e.getMessage());
+  }
+
+  // ===== getCartTotal =====
+
+  @Test
+  public void testGetCartTotal() {
+    // Total = sum of (price * quantity) per item
+    String customerId = "customer1";
+    Customer customer = new Customer();
+    ClothingVariant variant = buildVariant("variant1", 50f, 10);
+    Item item1 = buildItem("item1", variant, 2); // 50 * 2 = 100
+    Item item2 = buildItem("item2", variant, 3); // 50 * 3 = 150
+    when(customerRepository.findByRoleID(customerId)).thenReturn(customer);
+    when(itemRepository.findItemsByCustomer(customer)).thenReturn(List.of(item1, item2));
+
+    float total = cartService.getCartTotal(customerId);
+
+    assertEquals(250f, total);
+  }
+
+  @Test
+  public void testGetCartTotalWithDifferentPricesAndQuantities() {
+    // Each item has a distinct price and quantity — ensures price*quantity is computed per item
+    String customerId = "customer1";
+    Customer customer = new Customer();
+    ClothingVariant variant1 = buildVariant("variant1", 30f, 10);
+    ClothingVariant variant2 = buildVariant("variant2", 70f, 10);
+    Item item1 = buildItem("item1", variant1, 4); // 30 * 4 = 120
+    Item item2 = buildItem("item2", variant2, 1); // 70 * 1 = 70
+    when(customerRepository.findByRoleID(customerId)).thenReturn(customer);
+    when(itemRepository.findItemsByCustomer(customer)).thenReturn(List.of(item1, item2));
+
+    float total = cartService.getCartTotal(customerId);
+
+    assertEquals(190f, total);
+  }
+
+  @Test
+  public void testGetCartTotalEmptyCart() {
+    // Arrange
+    String customerId = "customer1";
+    Customer customer = new Customer();
+    when(customerRepository.findByRoleID(customerId)).thenReturn(customer);
+    when(itemRepository.findItemsByCustomer(customer)).thenReturn(List.of());
+
+    // Act
+    float total = cartService.getCartTotal(customerId);
+
+    // Assert
+    assertEquals(0f, total);
+  }
+
+  @Test
+  public void testGetCartTotalWithInvalidCustomer() {
+    // Arrange
+    String customerId = "badCustomer";
+    when(customerRepository.findByRoleID(customerId)).thenReturn(null);
+
+    // Act & Assert
+    NotFoundException e =
+        assertThrows(NotFoundException.class, () -> cartService.getCartTotal(customerId));
+    assertEquals("There is no customer with id " + customerId + ".", e.getMessage());
+  }
+}
