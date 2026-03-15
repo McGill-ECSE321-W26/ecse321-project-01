@@ -156,32 +156,27 @@ public class OrderService {
   }
 
   @Transactional
-  public Order assignOrderToEmployee(String orderID, String employeeID) {
-    Employee employee = findEmployee(employeeID);
+  public Order updateOrder(String orderID, String employeeID, Date deliveryDate, String orderStatus) {
     Order order = findOrder(orderID);
-    validateEmployeeNotCustomer(employee, order);
 
-    order.setEmployee(employee);
-    return orderRepository.save(order);
-  }
+    if (employeeID != null) {
+      Employee employee = findEmployee(employeeID);
+      validateEmployeeNotCustomer(employee, order);
+      order.setEmployee(employee);
+    }
 
-  @Transactional
-  public Order updateOrderDeliveryDate(String orderID, Date deliveryDate) {
-    Order order = findOrder(orderID);
-    validateDeliveryDate(deliveryDate);
-    validateCurrentDeliveryDateNotWithin24Hours(order);
+    if (deliveryDate != null) {
+      validateDeliveryDate(deliveryDate);
+      validateCurrentDeliveryDateNotWithin24Hours(order);
+      order.setDeliveryDate(deliveryDate);
+    }
 
-    order.setDeliveryDate(deliveryDate);
-    return orderRepository.save(order);
-  }
+    if (orderStatus != null) {
+      Order.OrderStatus newStatus = parseOrderStatus(orderStatus);
+      validateCancellation(order, newStatus);
+      order.setOrderStatus(newStatus);
+    }
 
-  @Transactional
-  public Order updateOrderStatus(String orderID, String orderStatus) {
-    Order order = findOrder(orderID);
-    Order.OrderStatus newStatus = parseOrderStatus(orderStatus);
-    validateCancellation(order, newStatus);
-
-    order.setOrderStatus(newStatus);
     return orderRepository.save(order);
   }
 

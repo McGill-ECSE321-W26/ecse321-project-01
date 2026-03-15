@@ -198,7 +198,7 @@ public class OrderServiceTests {
     assertEquals("Loyalty points must be positive.", e.getReason());
   }
 
-  // ===== assignOrderToEmployee =====
+  // ===== updateOrder (assign employee) =====
 
   @Test
   public void testAssignOrderToValidEmployee() {
@@ -208,7 +208,6 @@ public class OrderServiceTests {
     String orderId = "order1";
     String employeeId = "emp1";
 
-    // Use different persons between customer and employee
     Person person1 = new Person();
     person1.setPersonID(person1Id);
     Person person2 = new Person();
@@ -227,7 +226,7 @@ public class OrderServiceTests {
     when(orderRepository.save(any(Order.class))).thenAnswer(i -> i.getArgument(0));
 
     // Act
-    Order result = orderService.assignOrderToEmployee(orderId, employeeId);
+    Order result = orderService.updateOrder(orderId, employeeId, null, null);
 
     // Assert
     assertNotNull(result);
@@ -242,7 +241,6 @@ public class OrderServiceTests {
     String orderId = "order1";
     String employeeId = "emp1";
 
-    // Reuse same person for both customer and employee
     Person person1 = new Person();
     person1.setPersonID(person1Id);
     Customer customer = new Customer();
@@ -254,14 +252,14 @@ public class OrderServiceTests {
     employee.setRoleID(employeeId);
     employee.setPerson(person1);
 
-    when(employeeRepository.findByRoleID(employeeId)).thenReturn(employee);
     when(orderRepository.findOrderByOrderID(orderId)).thenReturn(order);
+    when(employeeRepository.findByRoleID(employeeId)).thenReturn(employee);
 
     // Act & Assert
     ResponseStatusException e =
         assertThrows(
             ResponseStatusException.class,
-            () -> orderService.assignOrderToEmployee(orderId, employeeId));
+            () -> orderService.updateOrder(orderId, employeeId, null, null));
     assertEquals("The employee cannot be assigned to their own order.", e.getReason());
   }
 
@@ -270,36 +268,33 @@ public class OrderServiceTests {
     // Arrange
     String orderId = "order1";
     String employeeId = "badEmp";
+    Order order = new Order();
+    when(orderRepository.findOrderByOrderID(orderId)).thenReturn(order);
     when(employeeRepository.findByRoleID(employeeId)).thenReturn(null);
 
     // Act & Assert
     ResponseStatusException e =
         assertThrows(
             ResponseStatusException.class,
-            () -> orderService.assignOrderToEmployee(orderId, employeeId));
+            () -> orderService.updateOrder(orderId, employeeId, null, null));
     assertEquals("There is no employee with id " + employeeId + ".", e.getReason());
   }
 
   @Test
-  public void testAssignOrderWithInvalidOrderId() {
+  public void testUpdateOrderWithInvalidOrderId() {
     // Arrange
     String orderId = "badOrder";
-    String employeeId = "emp1";
-    Employee employee = new Employee();
-    employee.setRoleID(employeeId);
-
-    when(employeeRepository.findByRoleID(employeeId)).thenReturn(employee);
     when(orderRepository.findOrderByOrderID(orderId)).thenReturn(null);
 
     // Act & Assert
     ResponseStatusException e =
         assertThrows(
             ResponseStatusException.class,
-            () -> orderService.assignOrderToEmployee(orderId, employeeId));
+            () -> orderService.updateOrder(orderId, "emp1", null, null));
     assertEquals("There is no order with id " + orderId + ".", e.getReason());
   }
 
-  // ===== updateOrderDeliveryDate =====
+  // ===== updateOrder (delivery date) =====
 
   @Test
   public void testUpdateOrderDeliveryDateValid() {
@@ -314,7 +309,7 @@ public class OrderServiceTests {
     when(orderRepository.save(any(Order.class))).thenAnswer(i -> i.getArgument(0));
 
     // Act
-    Order result = orderService.updateOrderDeliveryDate(orderId, newDate);
+    Order result = orderService.updateOrder(orderId, null, newDate, null);
 
     // Assert
     assertNotNull(result);
@@ -333,24 +328,9 @@ public class OrderServiceTests {
         assertThrows(
             ResponseStatusException.class,
             () ->
-                orderService.updateOrderDeliveryDate(
-                    orderId, Date.valueOf(LocalDate.now().plusDays(2))));
+                orderService.updateOrder(
+                    orderId, null, Date.valueOf(LocalDate.now().plusDays(2)), null));
     assertEquals("There is no order with id " + orderId + ".", e.getReason());
-  }
-
-  @Test
-  public void testUpdateOrderDeliveryDateWithNullDate() {
-    // Arrange
-    String orderId = "order1";
-    Order order = new Order();
-    when(orderRepository.findOrderByOrderID(orderId)).thenReturn(order);
-
-    // Act & Assert
-    ResponseStatusException e =
-        assertThrows(
-            ResponseStatusException.class,
-            () -> orderService.updateOrderDeliveryDate(orderId, null));
-    assertEquals("Delivery Date is null.", e.getReason());
   }
 
   @Test
@@ -367,7 +347,7 @@ public class OrderServiceTests {
     ResponseStatusException e =
         assertThrows(
             ResponseStatusException.class,
-            () -> orderService.updateOrderDeliveryDate(orderId, tooSoon));
+            () -> orderService.updateOrder(orderId, null, tooSoon, null));
     assertEquals("Delivery Date must be at least 24 hours after the order date.", e.getReason());
   }
 
@@ -386,27 +366,26 @@ public class OrderServiceTests {
     ResponseStatusException e =
         assertThrows(
             ResponseStatusException.class,
-            () -> orderService.updateOrderDeliveryDate(orderId, newDate));
+            () -> orderService.updateOrder(orderId, null, newDate, null));
     assertEquals(
         "Delivery Date cannot be changed within 24 hours of the current delivery date.",
         e.getReason());
   }
 
-  // ===== updateOrderStatus =====
+  // ===== updateOrder (status) =====
 
   @Test
   public void testUpdateOrderStatusValid() {
     // Arrange
     String orderId = "order1";
     Order order = new Order();
-    Order.OrderStatus status = Order.OrderStatus.Preparing;
     order.setOrderID(orderId);
-    order.setOrderStatus(status);
+    order.setOrderStatus(Order.OrderStatus.Preparing);
     when(orderRepository.findOrderByOrderID(orderId)).thenReturn(order);
     when(orderRepository.save(any(Order.class))).thenAnswer(i -> i.getArgument(0));
 
     // Act
-    Order result = orderService.updateOrderStatus(orderId, "Delivered");
+    Order result = orderService.updateOrder(orderId, null, null, "Delivered");
 
     // Assert
     assertNotNull(result);
@@ -424,7 +403,7 @@ public class OrderServiceTests {
     ResponseStatusException e =
         assertThrows(
             ResponseStatusException.class,
-            () -> orderService.updateOrderStatus(orderId, "Delivered"));
+            () -> orderService.updateOrder(orderId, null, null, "Delivered"));
     assertEquals("There is no order with id " + orderId + ".", e.getReason());
   }
 
@@ -440,7 +419,7 @@ public class OrderServiceTests {
     ResponseStatusException e =
         assertThrows(
             ResponseStatusException.class,
-            () -> orderService.updateOrderStatus(orderId, invalidStatus));
+            () -> orderService.updateOrder(orderId, null, null, invalidStatus));
     assertEquals("Invalid order status " + invalidStatus + ".", e.getReason());
   }
 
@@ -457,7 +436,7 @@ public class OrderServiceTests {
     when(orderRepository.save(any(Order.class))).thenAnswer(i -> i.getArgument(0));
 
     // Act
-    Order result = orderService.updateOrderStatus(orderId, "Cancelled");
+    Order result = orderService.updateOrder(orderId, null, null, "Cancelled");
 
     // Assert
     assertNotNull(result);
@@ -480,7 +459,7 @@ public class OrderServiceTests {
     ResponseStatusException e =
         assertThrows(
             ResponseStatusException.class,
-            () -> orderService.updateOrderStatus(orderId, "Cancelled"));
+            () -> orderService.updateOrder(orderId, null, null, "Cancelled"));
     assertEquals("Cannot cancel an order that has already been delivered.", e.getReason());
   }
 
@@ -499,7 +478,7 @@ public class OrderServiceTests {
     ResponseStatusException e =
         assertThrows(
             ResponseStatusException.class,
-            () -> orderService.updateOrderStatus(orderId, "Cancelled"));
+            () -> orderService.updateOrder(orderId, null, null, "Cancelled"));
     assertEquals("Cannot cancel an order within 24 hours of its delivery date.", e.getReason());
   }
 
