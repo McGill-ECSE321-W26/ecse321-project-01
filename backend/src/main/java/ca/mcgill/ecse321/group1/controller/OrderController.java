@@ -2,7 +2,7 @@ package ca.mcgill.ecse321.group1.controller;
 
 import ca.mcgill.ecse321.group1.dto.CreateOrderRequestDto;
 import ca.mcgill.ecse321.group1.dto.OrderResponseDto;
-import ca.mcgill.ecse321.group1.dto.UpdateOrderRequestDto;
+import ca.mcgill.ecse321.group1.dto.OrderRequestUpdateDto;
 import ca.mcgill.ecse321.group1.model.Order;
 import ca.mcgill.ecse321.group1.service.OrderService;
 import java.util.ArrayList;
@@ -30,7 +30,7 @@ public class OrderController {
 
   @PatchMapping("/{orderID}")
   public OrderResponseDto updateOrder(
-      @PathVariable String orderID, @RequestBody UpdateOrderRequestDto dto) {
+      @PathVariable String orderID, @RequestBody OrderRequestUpdateDto dto) {
     Order order =
         orderService.updateOrder(
             orderID, dto.getEmployeeID(), dto.getDeliveryDate(), dto.getOrderStatus());

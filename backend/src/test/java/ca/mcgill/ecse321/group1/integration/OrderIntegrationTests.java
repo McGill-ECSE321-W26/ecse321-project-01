@@ -416,7 +416,7 @@ public class OrderIntegrationTests {
   @Order(14)
   public void testAssignInvalidOrderToEmployee() {
     // Arrange
-    UpdateOrderRequestDto dto = new UpdateOrderRequestDto();
+    OrderRequestUpdateDto dto = new OrderRequestUpdateDto();
     dto.setEmployeeID(testEmployee.getRoleID());
 
     // Act
@@ -438,7 +438,7 @@ public class OrderIntegrationTests {
   @Order(15)
   public void testAssignOrderToInvalidEmployee() {
     // Arrange
-    UpdateOrderRequestDto dto = new UpdateOrderRequestDto();
+    OrderRequestUpdateDto dto = new OrderRequestUpdateDto();
     dto.setEmployeeID(INVALID_ID);
 
     // Act
@@ -460,7 +460,7 @@ public class OrderIntegrationTests {
   @Order(16)
   public void testAssignOrderToValidEmployee() {
     // Arrange
-    UpdateOrderRequestDto dto = new UpdateOrderRequestDto();
+    OrderRequestUpdateDto dto = new OrderRequestUpdateDto();
     dto.setEmployeeID(testEmployee.getRoleID());
 
     // Act
@@ -488,7 +488,7 @@ public class OrderIntegrationTests {
   @Order(17)
   public void testUpdateOrderInvalidDeliveryDate() {
     // Arrange – delivery date is today, which is not at least 24 h ahead
-    UpdateOrderRequestDto dto = new UpdateOrderRequestDto();
+    OrderRequestUpdateDto dto = new OrderRequestUpdateDto();
     dto.setDeliveryDate(INVALID_DELIVERY_DATE);
 
     // Act
@@ -511,7 +511,7 @@ public class OrderIntegrationTests {
   public void testUpdateOrderValidDeliveryDate() {
     // Arrange
     Date newDeliveryDate = Date.valueOf(LocalDate.now().plusDays(5));
-    UpdateOrderRequestDto dto = new UpdateOrderRequestDto();
+    OrderRequestUpdateDto dto = new OrderRequestUpdateDto();
     dto.setDeliveryDate(newDeliveryDate);
 
     // Act
@@ -539,7 +539,7 @@ public class OrderIntegrationTests {
   @Order(19)
   public void testUpdateInvalidOrderStatus() {
     // Arrange
-    UpdateOrderRequestDto dto = new UpdateOrderRequestDto();
+    OrderRequestUpdateDto dto = new OrderRequestUpdateDto();
     dto.setOrderStatus(INVALID_STATUS);
 
     // Act
@@ -561,7 +561,7 @@ public class OrderIntegrationTests {
   @Order(20)
   public void testUpdateValidOrderStatus() {
     // Arrange
-    UpdateOrderRequestDto dto = new UpdateOrderRequestDto();
+    OrderRequestUpdateDto dto = new OrderRequestUpdateDto();
     dto.setOrderStatus("Delivered");
 
     // Act
@@ -587,7 +587,7 @@ public class OrderIntegrationTests {
   @Order(21)
   public void testCancelDeliveredOrder() {
     // Arrange – order is now "Delivered" after test 20
-    UpdateOrderRequestDto dto = new UpdateOrderRequestDto();
+    OrderRequestUpdateDto dto = new OrderRequestUpdateDto();
     dto.setOrderStatus("Cancelled");
 
     // Act
