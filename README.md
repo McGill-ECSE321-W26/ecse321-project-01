@@ -46,20 +46,27 @@ The goals of the project are as follows:
 ## Project contribution overview
 Following is a table containing an overview of our contributions (in hours) for each deliverable. For information on the roles of every team member, please refer to the [Team Introduction Table](#team-members) up top.
 
-| Deliverable / Task                 | Santiago | Dragos | Bassam | Ethan | David | Jason | Minh  | Total |
-| ---------------------------------- | :------: | :----: | :----: | :---: | :---: | :---: | :---: | :---: |
-| **Deliverable 1**                  |   ---    |  ---   |  ---   |  ---  |  ---  |  ---  |  ---  |  ---  |
-| Requirements                       |    2     |   2    |   3    |   2   |   2   |   2   |   2   |  15   |
-| UML Domain Model                   |   0.5    |   2    |   2    |   2   |   1   |   1   |   1   |  9.5  |
-| Persistence Layer                  |          |   1    |        |   1   |   1   |       |   1   |   4   |
-| Testing of Persistence Layer       |          |        |        |       |   1   |   2   |   2   |   5   |
-| Build System                       |          |        |        |   2   |       |       |       |   2   |
-| Project Management + Documentation |    4     |   1    |   1    |   1   |   1   |   1   |   1   |  10   |
-| Team Contract + Success Spectrum   |    2     |  0.5   |  0.5   |  0.5  |  0.5  |  0.5  |  0.5  |   5   |
-| **Deliverable 1 Totals**           |   8.5    |  6.5   |  6.5   |  8.5  |  6.5  |  6.5  |  7.5  | 50.5  |
-| **Deliverable 2**                  |   ---    |  ---   |  ---   |  ---  |  ---  |  ---  |  ---  |  ---  |
-| **Deliverable 3**                  |   ---    |  ---   |  ---   |  ---  |  ---  |  ---  |  ---  |  ---  |
-| **Grand Total**                    |          |        |        |       |       |       |       |       |
+| Deliverable / Task                                  | Santiago | Dragos | Bassam | Ethan | David | Jason | Minh  | Total |
+| --------------------------------------------------- | :------: | :----: | :----: | :---: | :---: | :---: | :---: | :---: |
+| **Deliverable 1**                                   |   ---    |  ---   |  ---   |  ---  |  ---  |  ---  |  ---  |  ---  |
+| Requirements                                        |    2     |   2    |   3    |   2   |   2   |   2   |   2   |  15   |
+| UML Domain Model                                    |   0.5    |   2    |   2    |   2   |   1   |   1   |   1   |  9.5  |
+| Persistence Layer                                   |          |   1    |        |   1   |   1   |       |   1   |   4   |
+| Testing of Persistence Layer                        |          |        |        |       |   1   |   2   |   2   |   5   |
+| Build System                                        |          |        |        |   2   |       |       |       |   2   |
+| Project Management + Documentation                  |    4     |   1    |   1    |   1   |   1   |   1   |   1   |  10   |
+| Team Contract + Success Spectrum                    |    2     |  0.5   |  0.5   |  0.5  |  0.5  |  0.5  |  0.5  |   5   |
+| **Deliverable 1 Totals**                            |   8.5    |  6.5   |  6.5   |  8.5  |  6.5  |  6.5  |  7.5  | 50.5  |
+| **Deliverable 2**                                   |   ---    |  ---   |  ---   |  ---  |  ---  |  ---  |  ---  |  ---  |
+| API implementation (service and controller methods) |    5     |   5    |   5    |   6   |       |       |       |  21   |
+| QA plan and report                                  |          |        |        |       |   3   |       |   3   |   6   |
+| Unit testing of backend                             |    1     |   2    |   2    |   2   |   5   |   2   |   5   |  19   |
+| Integration testing                                 |    1     |   1    |   1    |   1   |   3   |   6   |   3   |  16   |
+| Gradle task for integration tests                   |          |        |        |       |       |   2   |       |   2   |
+| Project management + documentation                  |    3     |   2    |   1    |   2   |   2   |   1   |   1   |  12   |
+| **Deliverable 2 Totals**                            |    10    |   10   |   9    |  11   |  13   |  11   |  12   |  76   |
+| **Deliverable 3**                                   |   ---    |  ---   |  ---   |  ---  |  ---  |  ---  |  ---  |  ---  |
+| **Grand Total**                                     |   18.5   |  16.5  |  15.5  | 19.5  | 19.5  | 17.5  | 19.5  | 126.5 |
 
 ## Project Deliverable 1 (12%)
 For all details regarding this deliverable, please refer to the [Deliverable 1 Wiki Page](https://github.com/McGill-ECSE321-W26/ecse321-project-01/wiki/Project-Deliverable-1).
