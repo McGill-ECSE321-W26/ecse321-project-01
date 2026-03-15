@@ -36,7 +36,7 @@ public class PersonService {
     Person person = personRepository.findPersonByPersonID(id);
     if (person == null) {
       throw new ResponseStatusException(
-              HttpStatus.NOT_FOUND, "There is no person with ID " + id + ".");
+          HttpStatus.NOT_FOUND, "There is no person with ID " + id + ".");
     }
     return person;
   }
@@ -50,14 +50,14 @@ public class PersonService {
     }
     if (password == null || password.length() < 8) {
       throw new ResponseStatusException(
-              HttpStatus.BAD_REQUEST, "Password must be at least 8 characters.");
+          HttpStatus.BAD_REQUEST, "Password must be at least 8 characters.");
     }
     if (personRepository.findPersonByPersonID(id) != null) {
       throw new ResponseStatusException(HttpStatus.CONFLICT, "Account id already exists.");
     }
     if (personRepository.findPersonByEmail(email) != null) {
       throw new ResponseStatusException(
-              HttpStatus.CONFLICT, "Email " + email + " is already in use.");
+          HttpStatus.CONFLICT, "Email " + email + " is already in use.");
     }
   }
 

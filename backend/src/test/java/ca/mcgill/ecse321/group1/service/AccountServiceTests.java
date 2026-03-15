@@ -629,8 +629,7 @@ public class AccountServiceTests {
   public void testInvalidDeleteSelfAccountNotFound() {
     // no when() needed, returns null by default
     ResponseStatusException e =
-        assertThrows(
-            ResponseStatusException.class, () -> service.deleteAccount("nonExistentId"));
+        assertThrows(ResponseStatusException.class, () -> service.deleteAccount("nonExistentId"));
     assertEquals(HttpStatus.NOT_FOUND, e.getStatusCode());
     assertEquals("There is no person with ID nonExistentId.", e.getReason());
   }
