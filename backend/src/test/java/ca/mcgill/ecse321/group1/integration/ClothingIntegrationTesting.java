@@ -70,7 +70,6 @@ public class ClothingIntegrationTesting {
     modelRepository.deleteAll();
   }
 
-  // ==================== ClothingModel Tests ====================
 
   @Test
   @Order(1)
@@ -150,7 +149,6 @@ public class ClothingIntegrationTesting {
     assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
   }
 
-  // ==================== ClothingVariant Tests ====================
 
   @Test
   @Order(5)
@@ -228,7 +226,7 @@ public class ClothingIntegrationTesting {
   @Order(8)
   public void testGetVariantByValidId() {
     // Arrange
-    String url = "/api/clothing/variants/" + this.validVariantId;
+    String url = "/api/clothing/" + this.validModelId + "/variants/" + this.validVariantId;
 
     // Act
     ResponseEntity<ClothingVariantResponseDto> response =
@@ -248,7 +246,7 @@ public class ClothingIntegrationTesting {
   @Order(9)
   public void testGetVariantByInvalidId() {
     // Arrange
-    String url = "/api/clothing/variants/" + INVALID_VARIANT_ID;
+    String url = "/api/clothing/" + this.validModelId + "/variants/" + INVALID_VARIANT_ID;
 
     // Act
     ResponseEntity<String> response = client.get().uri(url).retrieve().toEntity(String.class);
@@ -258,13 +256,12 @@ public class ClothingIntegrationTesting {
     assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
   }
 
-  // ==================== Delete Tests (last to not break other tests) ====================
 
   @Test
   @Order(10)
   public void testDeleteVariant() {
     // Arrange
-    String url = "/api/clothing/variants/" + this.validVariantId;
+    String url = "/api/clothing/" + this.validModelId + "/variants/" + this.validVariantId;
 
     // Act
     client.delete().uri(url).retrieve().toBodilessEntity();
