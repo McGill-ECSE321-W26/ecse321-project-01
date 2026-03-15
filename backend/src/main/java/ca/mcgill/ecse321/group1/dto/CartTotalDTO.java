@@ -1,17 +1,17 @@
 package ca.mcgill.ecse321.group1.dto;
 
 public class CartTotalDTO {
-    private float cartTotal;
+  private float cartTotal;
 
-    public CartTotalDTO(float total) {
-        this.cartTotal = total;
-    }
+  public CartTotalDTO(float total) {
+    this.cartTotal = total;
+  }
 
-    public float getCartTotal() {
-        return this.cartTotal;
-    }
+  public float getCartTotal() {
+    return this.cartTotal;
+  }
 
-    public void setCartTotal(float total) {
-        this.cartTotal = total;
-    }
+  public void setCartTotal(float total) {
+    this.cartTotal = total;
+  }
 }

@@ -1,22 +1,22 @@
 package ca.mcgill.ecse321.group1.dto;
 
 public class AddItemDTO {
-    private String clothingVariantID;
-    private int quantity;
-    
-    public String getClothingVariantID() {
-        return this.clothingVariantID;
-    }
+  private String clothingVariantID;
+  private int quantity;
 
-    public void setClothingVariantID(String clothingVariantID) {
-        this.clothingVariantID = clothingVariantID;
-    }
+  public String getClothingVariantID() {
+    return this.clothingVariantID;
+  }
 
-    public int getQuantity() {
-        return this.quantity;
-    }
+  public void setClothingVariantID(String clothingVariantID) {
+    this.clothingVariantID = clothingVariantID;
+  }
 
-    public void setQuantity(int quantity) {
-        this.quantity = quantity;
-    }
+  public int getQuantity() {
+    return this.quantity;
+  }
+
+  public void setQuantity(int quantity) {
+    this.quantity = quantity;
+  }
 }
