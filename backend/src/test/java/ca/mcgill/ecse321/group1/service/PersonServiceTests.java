@@ -77,7 +77,6 @@ public class PersonServiceTests {
     assertEquals(email, createdPerson.getEmail());
   }
 
-
   @Test
   public void testCreateCustomerInvalidAddress() {
     String email = "bob@mail.mcgill.ca";
@@ -86,8 +85,7 @@ public class PersonServiceTests {
 
     ResponseStatusException e =
         assertThrows(
-            ResponseStatusException.class,
-            () -> service.createCustomer(email, password, address));
+            ResponseStatusException.class, () -> service.createCustomer(email, password, address));
     assertEquals(HttpStatus.BAD_REQUEST, e.getStatusCode());
     assertEquals("Address cannot be empty.", e.getReason());
   }
@@ -98,9 +96,7 @@ public class PersonServiceTests {
     String password = "12345678";
 
     ResponseStatusException e =
-        assertThrows(
-            ResponseStatusException.class,
-            () -> service.createEmployee(email, password));
+        assertThrows(ResponseStatusException.class, () -> service.createEmployee(email, password));
     assertEquals(HttpStatus.BAD_REQUEST, e.getStatusCode());
     assertEquals("Invalid email address.", e.getReason());
   }
@@ -114,9 +110,7 @@ public class PersonServiceTests {
     when(personRepository.findPersonByEmail(email)).thenReturn(existing);
 
     ResponseStatusException e =
-        assertThrows(
-            ResponseStatusException.class,
-            () -> service.createEmployee(email, password));
+        assertThrows(ResponseStatusException.class, () -> service.createEmployee(email, password));
     assertEquals(HttpStatus.CONFLICT, e.getStatusCode());
     assertEquals("Email " + email + " is already in use.", e.getReason());
   }
@@ -132,8 +126,7 @@ public class PersonServiceTests {
 
     ResponseStatusException e =
         assertThrows(
-            ResponseStatusException.class,
-            () -> service.createCustomer(email, password, address));
+            ResponseStatusException.class, () -> service.createCustomer(email, password, address));
     assertEquals(HttpStatus.CONFLICT, e.getStatusCode());
     assertEquals("Email " + email + " is already in use.", e.getReason());
   }
@@ -164,9 +157,7 @@ public class PersonServiceTests {
     String password = "1";
 
     ResponseStatusException e =
-        assertThrows(
-            ResponseStatusException.class,
-            () -> service.createEmployee(email, password));
+        assertThrows(ResponseStatusException.class, () -> service.createEmployee(email, password));
     assertEquals(HttpStatus.BAD_REQUEST, e.getStatusCode());
     assertEquals("Password must be at least 8 characters.", e.getReason());
   }
@@ -419,8 +410,7 @@ public class PersonServiceTests {
     when(personRepository.findPersonByPersonID("id1")).thenReturn(bob);
 
     ResponseStatusException e =
-        assertThrows(
-            ResponseStatusException.class, () -> service.updateCustomerAddress("id1", ""));
+        assertThrows(ResponseStatusException.class, () -> service.updateCustomerAddress("id1", ""));
     assertEquals(HttpStatus.BAD_REQUEST, e.getStatusCode());
     assertEquals("Address cannot be empty.", e.getReason());
   }

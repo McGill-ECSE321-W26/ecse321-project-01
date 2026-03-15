@@ -27,8 +27,7 @@ public class PersonController {
   @PostMapping("/customers")
   @ResponseStatus(HttpStatus.CREATED)
   public PersonResponseDto createCustomer(@RequestBody CreateCustomerDto dto) {
-    Person p =
-        personService.createCustomer(dto.getEmail(), dto.getPassword(), dto.getAddress());
+    Person p = personService.createCustomer(dto.getEmail(), dto.getPassword(), dto.getAddress());
     return new PersonResponseDto(p);
   }
 
