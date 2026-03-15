@@ -2,7 +2,7 @@ package ca.mcgill.ecse321.group1.dto;
 
 import java.sql.Date;
 
-public class UpdateOrderDeliveryDateDTO {
+public class UpdateOrderDeliveryDateRequestDto {
   private Date deliveryDate;
 
   public Date getDeliveryDate() {

@@ -1,7 +1,5 @@
 package ca.mcgill.ecse321.group1.service;
 
-import ca.mcgill.ecse321.group1.exception.InvalidInputException;
-import ca.mcgill.ecse321.group1.exception.NotFoundException;
 import ca.mcgill.ecse321.group1.model.Customer;
 import ca.mcgill.ecse321.group1.model.Employee;
 import ca.mcgill.ecse321.group1.model.Item;
@@ -10,11 +8,15 @@ import ca.mcgill.ecse321.group1.repository.CustomerRepository;
 import ca.mcgill.ecse321.group1.repository.EmployeeRepository;
 import ca.mcgill.ecse321.group1.repository.ItemRepository;
 import ca.mcgill.ecse321.group1.repository.OrderRepository;
-import jakarta.transaction.Transactional;
+
 import java.sql.Date;
 import java.time.LocalDate;
 import java.util.List;
+
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 @Service
 public class OrderService {
@@ -39,30 +41,32 @@ public class OrderService {
   public Order createOrder(String customerID, Date deliveryDate, int usedLoyaltyPoints) {
     Customer customer = customerRepository.findByRoleID(customerID);
     if (customer == null) {
-      throw new NotFoundException("There is no customer with id " + customerID + ".");
+      throw new ResponseStatusException(
+          HttpStatus.NOT_FOUND, "There is no customer with id " + customerID + ".");
     }
 
     Iterable<Item> items = itemRepository.findItemsByCustomer(customer);
     if (items == null) {
-      throw new InvalidInputException(
-          "There are no items in the cart of customer " + customerID + ".");
+      throw new ResponseStatusException(
+          HttpStatus.BAD_REQUEST, "There are no items in the cart of customer " + customerID + ".");
     }
 
     if (deliveryDate == null) {
-      throw new InvalidInputException("Delivery Date is null.");
+      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Delivery Date is null.");
     }
 
     if (deliveryDate.toLocalDate().isBefore(LocalDate.now().plusDays(1))) {
-      throw new InvalidInputException(
-          "Delivery Date must be at least 24 hours after the order date.");
+      throw new ResponseStatusException(
+          HttpStatus.BAD_REQUEST, "Delivery Date must be at least 24 hours after the order date.");
     }
 
     // Check that there are enough loyalty points in the customer's account
     if (usedLoyaltyPoints < 0) {
-      throw new InvalidInputException("Loyalty points must be positive.");
+      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Loyalty points must be positive.");
     }
     if (customer.getLoyaltyPoints() < usedLoyaltyPoints) {
-      throw new InvalidInputException(
+      throw new ResponseStatusException(
+          HttpStatus.BAD_REQUEST,
           "The customer does not have enough loyalty points to complete the purchase.");
     }
 
@@ -111,17 +115,20 @@ public class OrderService {
   public Order assignOrderToEmployee(String orderID, String employeeID) {
     Employee employee = employeeRepository.findByRoleID(employeeID);
     if (employee == null) {
-      throw new NotFoundException("There is no employee with id " + employeeID + ".");
+      throw new ResponseStatusException(
+          HttpStatus.NOT_FOUND, "There is no employee with id " + employeeID + ".");
     }
 
     Order order = orderRepository.findOrderByOrderID(orderID);
     if (order == null) {
-      throw new NotFoundException("There is no order with id " + orderID + ".");
+      throw new ResponseStatusException(
+          HttpStatus.NOT_FOUND, "There is no order with id " + orderID + ".");
     }
 
     // Check that the employee is not the same person as the customer
     if (employee.getPerson().getPersonID().equals(order.getCustomer().getPerson().getPersonID())) {
-      throw new InvalidInputException("The employee cannot be assigned to their own order.");
+      throw new ResponseStatusException(
+          HttpStatus.BAD_REQUEST, "The employee cannot be assigned to their own order.");
     }
 
     order.setEmployee(employee);
@@ -132,22 +139,24 @@ public class OrderService {
   public Order updateOrderDeliveryDate(String orderID, Date deliveryDate) {
     Order order = orderRepository.findOrderByOrderID(orderID);
     if (order == null) {
-      throw new NotFoundException("There is no order with id " + orderID + ".");
+      throw new ResponseStatusException(
+          HttpStatus.NOT_FOUND, "There is no order with id " + orderID + ".");
     }
 
     if (deliveryDate == null) {
-      throw new InvalidInputException("Delivery Date is null.");
+      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Delivery Date is null.");
     }
 
-    // can not change delivery date if with 24 hrs prior to current delivery date
+    // can not change delivery date if within 24 hrs prior to current delivery date
     if (order.getDeliveryDate().toLocalDate().isBefore((LocalDate.now().plusDays(1)))) {
-      throw new InvalidInputException(
+      throw new ResponseStatusException(
+          HttpStatus.BAD_REQUEST,
           "Delivery Date cannot be changed within 24 hours of the current delivery date.");
     }
 
     if (deliveryDate.toLocalDate().isBefore(LocalDate.now().plusDays(1))) {
-      throw new InvalidInputException(
-          "Delivery Date must be at least 24 hours after the order date.");
+      throw new ResponseStatusException(
+          HttpStatus.BAD_REQUEST, "Delivery Date must be at least 24 hours after the order date.");
     }
 
     order.setDeliveryDate(deliveryDate);
@@ -158,50 +167,56 @@ public class OrderService {
   public Order updateOrderStatus(String orderID, String orderStatus) {
     Order order = orderRepository.findOrderByOrderID(orderID);
     if (order == null) {
-      throw new NotFoundException("There is no order with id " + orderID + ".");
+      throw new ResponseStatusException(
+          HttpStatus.NOT_FOUND, "There is no order with id " + orderID + ".");
     }
 
     Order.OrderStatus orderStatusEnum;
     try {
       orderStatusEnum = Order.OrderStatus.valueOf(orderStatus);
     } catch (Exception e) {
-      throw new InvalidInputException("Invalid order status " + orderStatus + ".");
+      throw new ResponseStatusException(
+          HttpStatus.BAD_REQUEST, "Invalid order status " + orderStatus + ".");
     }
 
     order.setOrderStatus(orderStatusEnum);
     return orderRepository.save(order);
   }
 
+  @Transactional(readOnly = true)
   public List<Order> getOrders() {
     return orderRepository.findAll();
   }
 
+  @Transactional(readOnly = true)
   public Order getOrderByID(String orderID) {
     Order order = orderRepository.findOrderByOrderID(orderID);
     if (order == null) {
-      throw new NotFoundException("There is no order with id " + orderID + ".");
+      throw new ResponseStatusException(
+          HttpStatus.NOT_FOUND, "There is no order with id " + orderID + ".");
     }
-
     return order;
   }
 
+  @Transactional(readOnly = true)
   public List<Order> getOrdersByCustomerID(String customerID) {
     Customer customer = customerRepository.findByRoleID(customerID);
     if (customer == null) {
-      throw new NotFoundException("There is no customer with id " + customerID + ".");
+      throw new ResponseStatusException(
+          HttpStatus.NOT_FOUND, "There is no customer with id " + customerID + ".");
     }
-
     return orderRepository.findByCustomer(customer);
   }
 
+  @Transactional(readOnly = true)
   public List<Order> getOrdersByOrderStatus(String orderStatus) {
     Order.OrderStatus orderStatusEnum;
     try {
       orderStatusEnum = Order.OrderStatus.valueOf(orderStatus);
     } catch (Exception e) {
-      throw new InvalidInputException("Invalid order status " + orderStatus + ".");
+      throw new ResponseStatusException(
+          HttpStatus.BAD_REQUEST, "Invalid order status " + orderStatus + ".");
     }
-
     return orderRepository.findByOrderStatus(orderStatusEnum);
   }
 }

@@ -140,7 +140,7 @@ public class OrderIntegrationTests {
   @Order(1)
   public void testCreateOrderWithInvalidCustomer() {
     // Arrange
-    CreateOrderDTO dto = new CreateOrderDTO();
+    CreateOrderRequestDto dto = new CreateOrderRequestDto();
     dto.setCustomerID(INVALID_ID);
     dto.setDeliveryDate(VALID_DELIVERY_DATE);
     dto.setUsedLoyaltyPoints(0);
@@ -149,7 +149,7 @@ public class OrderIntegrationTests {
     ResponseEntity<String> response =
         client
             .post()
-            .uri("/api/order/create")
+            .uri("/api/order")
             .contentType(MediaType.APPLICATION_JSON)
             .body(dto)
             .retrieve()
@@ -164,7 +164,7 @@ public class OrderIntegrationTests {
   @Order(2)
   public void testCreateOrderWithInvalidDeliveryDate() {
     // Arrange – delivery date is today, which is not at least 24 h ahead
-    CreateOrderDTO dto = new CreateOrderDTO();
+    CreateOrderRequestDto dto = new CreateOrderRequestDto();
     dto.setCustomerID(testCustomer.getRoleID());
     dto.setDeliveryDate(INVALID_DELIVERY_DATE);
     dto.setUsedLoyaltyPoints(0);
@@ -173,7 +173,7 @@ public class OrderIntegrationTests {
     ResponseEntity<String> response =
         client
             .post()
-            .uri("/api/order/create")
+            .uri("/api/order")
             .contentType(MediaType.APPLICATION_JSON)
             .body(dto)
             .retrieve()
@@ -188,25 +188,25 @@ public class OrderIntegrationTests {
   @Order(3)
   public void testCreateOrderValid() {
     // Arrange
-    CreateOrderDTO dto = new CreateOrderDTO();
+    CreateOrderRequestDto dto = new CreateOrderRequestDto();
     dto.setCustomerID(testCustomer.getRoleID());
     dto.setDeliveryDate(VALID_DELIVERY_DATE);
     dto.setUsedLoyaltyPoints(0);
 
     // Act
-    ResponseEntity<OrderDTO> response =
+    ResponseEntity<OrderResponseDto> response =
         client
             .post()
-            .uri("/api/order/create")
+            .uri("/api/order")
             .contentType(MediaType.APPLICATION_JSON)
             .body(dto)
             .retrieve()
-            .toEntity(OrderDTO.class);
+            .toEntity(OrderResponseDto.class);
 
     // Assert
     assertNotNull(response);
-    assertEquals(HttpStatus.OK, response.getStatusCode());
-    OrderDTO body = response.getBody();
+    assertEquals(HttpStatus.CREATED, response.getStatusCode());
+    OrderResponseDto body = response.getBody();
     assertNotNull(body);
     assertNotNull(body.getOrderID());
     assertEquals(testCustomer.getRoleID(), body.getCustomerID());
@@ -230,12 +230,13 @@ public class OrderIntegrationTests {
     String url = "/api/order/" + validOrderID;
 
     // Act
-    ResponseEntity<OrderDTO> response = client.get().uri(url).retrieve().toEntity(OrderDTO.class);
+    ResponseEntity<OrderResponseDto> response =
+        client.get().uri(url).retrieve().toEntity(OrderResponseDto.class);
 
     // Assert
     assertNotNull(response);
     assertEquals(HttpStatus.OK, response.getStatusCode());
-    OrderDTO body = response.getBody();
+    OrderResponseDto body = response.getBody();
     assertNotNull(body);
     assertEquals(validOrderID, body.getOrderID());
     assertEquals(testCustomer.getRoleID(), body.getCustomerID());
@@ -262,17 +263,17 @@ public class OrderIntegrationTests {
   @Order(6)
   public void testGetAllOrders() {
     // Act
-    ResponseEntity<List<OrderDTO>> response =
+    ResponseEntity<List<OrderResponseDto>> response =
         client
             .get()
             .uri("/api/order")
             .retrieve()
-            .toEntity(new ParameterizedTypeReference<List<OrderDTO>>() {});
+            .toEntity(new ParameterizedTypeReference<List<OrderResponseDto>>() {});
 
     // Assert
     assertNotNull(response);
     assertEquals(HttpStatus.OK, response.getStatusCode());
-    List<OrderDTO> orders = response.getBody();
+    List<OrderResponseDto> orders = response.getBody();
     assertNotNull(orders);
     assertFalse(orders.isEmpty());
     assertEquals(orders.getFirst().getOrderID(), validOrderID);
@@ -287,17 +288,17 @@ public class OrderIntegrationTests {
     String url = "/api/order/customer/" + testCustomer.getRoleID();
 
     // Act
-    ResponseEntity<List<OrderDTO>> response =
+    ResponseEntity<List<OrderResponseDto>> response =
         client
             .get()
             .uri(url)
             .retrieve()
-            .toEntity(new ParameterizedTypeReference<List<OrderDTO>>() {});
+            .toEntity(new ParameterizedTypeReference<List<OrderResponseDto>>() {});
 
     // Assert
     assertNotNull(response);
     assertEquals(HttpStatus.OK, response.getStatusCode());
-    List<OrderDTO> orders = response.getBody();
+    List<OrderResponseDto> orders = response.getBody();
     assertNotNull(orders);
     assertFalse(orders.isEmpty());
     assertTrue(orders.stream().anyMatch(o -> validOrderID.equals(o.getOrderID())));
@@ -326,17 +327,17 @@ public class OrderIntegrationTests {
     String url = "/api/order/status/Preparing";
 
     // Act
-    ResponseEntity<List<OrderDTO>> response =
+    ResponseEntity<List<OrderResponseDto>> response =
         client
             .get()
             .uri(url)
             .retrieve()
-            .toEntity(new ParameterizedTypeReference<List<OrderDTO>>() {});
+            .toEntity(new ParameterizedTypeReference<List<OrderResponseDto>>() {});
 
     // Assert
     assertNotNull(response);
     assertEquals(HttpStatus.OK, response.getStatusCode());
-    List<OrderDTO> orders = response.getBody();
+    List<OrderResponseDto> orders = response.getBody();
     assertNotNull(orders);
     assertEquals(validOrderID, orders.getFirst().getOrderID());
     assertEquals("Preparing", orders.getFirst().getOrderStatus());
@@ -362,7 +363,7 @@ public class OrderIntegrationTests {
   @Order(11)
   public void testAssignInvalidOrderToEmployee() {
     // Arrange
-    AssignOrderToEmployeeDTO dto = new AssignOrderToEmployeeDTO();
+    AssignOrderToEmployeeRequestDto dto = new AssignOrderToEmployeeRequestDto();
     dto.setEmployeeID(testEmployee.getRoleID());
 
     // Act
@@ -384,7 +385,7 @@ public class OrderIntegrationTests {
   @Order(12)
   public void testAssignOrderToInvalidEmployee() {
     // Arrange
-    AssignOrderToEmployeeDTO dto = new AssignOrderToEmployeeDTO();
+    AssignOrderToEmployeeRequestDto dto = new AssignOrderToEmployeeRequestDto();
     dto.setEmployeeID(INVALID_ID);
 
     // Act
@@ -406,23 +407,23 @@ public class OrderIntegrationTests {
   @Order(13)
   public void testAssignOrderToEmployeeValid() {
     // Arrange
-    AssignOrderToEmployeeDTO dto = new AssignOrderToEmployeeDTO();
+    AssignOrderToEmployeeRequestDto dto = new AssignOrderToEmployeeRequestDto();
     dto.setEmployeeID(testEmployee.getRoleID());
 
     // Act
-    ResponseEntity<OrderDTO> response =
+    ResponseEntity<OrderResponseDto> response =
         client
             .put()
             .uri("/api/order/" + validOrderID + "/assign-employee")
             .contentType(MediaType.APPLICATION_JSON)
             .body(dto)
             .retrieve()
-            .toEntity(OrderDTO.class);
+            .toEntity(OrderResponseDto.class);
 
     // Assert
     assertNotNull(response);
     assertEquals(HttpStatus.OK, response.getStatusCode());
-    OrderDTO body = response.getBody();
+    OrderResponseDto body = response.getBody();
     assertNotNull(body);
     assertEquals(validOrderID, body.getOrderID());
     assertEquals(testEmployee.getRoleID(), body.getEmployeeID());
@@ -434,7 +435,7 @@ public class OrderIntegrationTests {
   @Order(14)
   public void testUpdateOrderDeliveryDateInvalid() {
     // Arrange – delivery date is today, which is not at least 24 h ahead
-    UpdateOrderDeliveryDateDTO dto = new UpdateOrderDeliveryDateDTO();
+    UpdateOrderDeliveryDateRequestDto dto = new UpdateOrderDeliveryDateRequestDto();
     dto.setDeliveryDate(INVALID_DELIVERY_DATE);
 
     // Act
@@ -457,23 +458,23 @@ public class OrderIntegrationTests {
   public void testUpdateOrderDeliveryDateValid() {
     // Arrange
     Date newDeliveryDate = Date.valueOf(LocalDate.now().plusDays(5));
-    UpdateOrderDeliveryDateDTO dto = new UpdateOrderDeliveryDateDTO();
+    UpdateOrderDeliveryDateRequestDto dto = new UpdateOrderDeliveryDateRequestDto();
     dto.setDeliveryDate(newDeliveryDate);
 
     // Act
-    ResponseEntity<OrderDTO> response =
+    ResponseEntity<OrderResponseDto> response =
         client
             .put()
             .uri("/api/order/" + validOrderID + "/delivery-date")
             .contentType(MediaType.APPLICATION_JSON)
             .body(dto)
             .retrieve()
-            .toEntity(OrderDTO.class);
+            .toEntity(OrderResponseDto.class);
 
     // Assert
     assertNotNull(response);
     assertEquals(HttpStatus.OK, response.getStatusCode());
-    OrderDTO body = response.getBody();
+    OrderResponseDto body = response.getBody();
     assertNotNull(body);
     assertEquals(validOrderID, body.getOrderID());
     assertEquals(newDeliveryDate, body.getDeliveryDate());
@@ -485,7 +486,7 @@ public class OrderIntegrationTests {
   @Order(16)
   public void testUpdateOrderStatusInvalid() {
     // Arrange
-    UpdateOrderStatusDTO dto = new UpdateOrderStatusDTO();
+    UpdateOrderStatusRequestDto dto = new UpdateOrderStatusRequestDto();
     dto.setOrderStatus(INVALID_STATUS);
 
     // Act
@@ -507,23 +508,23 @@ public class OrderIntegrationTests {
   @Order(17)
   public void testUpdateOrderStatusValid() {
     // Arrange
-    UpdateOrderStatusDTO dto = new UpdateOrderStatusDTO();
+    UpdateOrderStatusRequestDto dto = new UpdateOrderStatusRequestDto();
     dto.setOrderStatus("Delivered");
 
     // Act
-    ResponseEntity<OrderDTO> response =
+    ResponseEntity<OrderResponseDto> response =
         client
             .put()
             .uri("/api/order/" + validOrderID + "/status")
             .contentType(MediaType.APPLICATION_JSON)
             .body(dto)
             .retrieve()
-            .toEntity(OrderDTO.class);
+            .toEntity(OrderResponseDto.class);
 
     // Assert
     assertNotNull(response);
     assertEquals(HttpStatus.OK, response.getStatusCode());
-    OrderDTO body = response.getBody();
+    OrderResponseDto body = response.getBody();
     assertNotNull(body);
     assertEquals(validOrderID, body.getOrderID());
     assertEquals("Delivered", body.getOrderStatus());

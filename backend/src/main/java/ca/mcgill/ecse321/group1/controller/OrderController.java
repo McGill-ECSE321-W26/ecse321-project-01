@@ -5,9 +5,11 @@ import ca.mcgill.ecse321.group1.model.Order;
 import ca.mcgill.ecse321.group1.service.OrderService;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
-@RequestMapping("api/order")
+@RequestMapping("/api/order")
 @RestController
 public class OrderController {
   private final OrderService orderService;
@@ -16,75 +18,76 @@ public class OrderController {
     this.orderService = orderService;
   }
 
-  @PostMapping("create")
-  public OrderDTO createOrder(@RequestBody CreateOrderDTO dto) {
+  @PostMapping()
+  @ResponseStatus(HttpStatus.CREATED)
+  public OrderResponseDto createOrder(@RequestBody CreateOrderRequestDto dto) {
     Order order =
         orderService.createOrder(
             dto.getCustomerID(), dto.getDeliveryDate(), dto.getUsedLoyaltyPoints());
-    return new OrderDTO(order);
+    return new OrderResponseDto(order);
   }
 
-  @PutMapping("{orderID}/assign-employee")
-  public OrderDTO assignOrderToEmployee(
-      @PathVariable String orderID, @RequestBody AssignOrderToEmployeeDTO dto) {
+  @PutMapping("/{orderID}/assign-employee")
+  public OrderResponseDto assignOrderToEmployee(
+      @PathVariable String orderID, @RequestBody AssignOrderToEmployeeRequestDto dto) {
     Order order = orderService.assignOrderToEmployee(orderID, dto.getEmployeeID());
-    return new OrderDTO(order);
+    return new OrderResponseDto(order);
   }
 
-  @PutMapping("{orderID}/delivery-date")
-  public OrderDTO updateOrderDeliveryDate(
-      @PathVariable String orderID, @RequestBody UpdateOrderDeliveryDateDTO dto) {
+  @PutMapping("/{orderID}/delivery-date")
+  public OrderResponseDto updateOrderDeliveryDate(
+      @PathVariable String orderID, @RequestBody UpdateOrderDeliveryDateRequestDto dto) {
     Order order = orderService.updateOrderDeliveryDate(orderID, dto.getDeliveryDate());
-    return new OrderDTO(order);
+    return new OrderResponseDto(order);
   }
 
-  @PutMapping("{orderID}/status")
-  public OrderDTO updateOrderStatus(
-      @PathVariable String orderID, @RequestBody UpdateOrderStatusDTO dto) {
+  @PutMapping("/{orderID}/status")
+  public OrderResponseDto updateOrderStatus(
+      @PathVariable String orderID, @RequestBody UpdateOrderStatusRequestDto dto) {
     Order order = orderService.updateOrderStatus(orderID, dto.getOrderStatus());
-    return new OrderDTO(order);
+    return new OrderResponseDto(order);
   }
 
-  @GetMapping("")
-  public List<OrderDTO> getOrders() {
+  @GetMapping()
+  public List<OrderResponseDto> getOrders() {
     List<Order> orders = orderService.getOrders();
 
     // Convert list of orders to list of DTO
-    List<OrderDTO> ordersDTO = new ArrayList<>();
+    List<OrderResponseDto> ordersDTO = new ArrayList<>();
     for (Order order : orders) {
-      ordersDTO.add(new OrderDTO(order));
+      ordersDTO.add(new OrderResponseDto(order));
     }
 
     return ordersDTO;
   }
 
-  @GetMapping("{orderID}")
-  public OrderDTO getOrderByID(@PathVariable String orderID) {
+  @GetMapping("/{orderID}")
+  public OrderResponseDto getOrderByID(@PathVariable String orderID) {
     Order order = orderService.getOrderByID(orderID);
-    return new OrderDTO(order);
+    return new OrderResponseDto(order);
   }
 
-  @GetMapping("customer/{customerID}")
-  public List<OrderDTO> getOrdersByCustomerID(@PathVariable String customerID) {
+  @GetMapping("/customer/{customerID}")
+  public List<OrderResponseDto> getOrdersByCustomerID(@PathVariable String customerID) {
     List<Order> orders = orderService.getOrdersByCustomerID(customerID);
 
     // Convert list of orders to list of DTO
-    List<OrderDTO> ordersDTO = new ArrayList<>();
+    List<OrderResponseDto> ordersDTO = new ArrayList<>();
     for (Order order : orders) {
-      ordersDTO.add(new OrderDTO(order));
+      ordersDTO.add(new OrderResponseDto(order));
     }
 
     return ordersDTO;
   }
 
-  @GetMapping("status/{orderStatus}")
-  public List<OrderDTO> getOrdersByOrderStatus(@PathVariable String orderStatus) {
+  @GetMapping("/status/{orderStatus}")
+  public List<OrderResponseDto> getOrdersByOrderStatus(@PathVariable String orderStatus) {
     List<Order> orders = orderService.getOrdersByOrderStatus(orderStatus);
 
     // Convert list of orders to list of DTO
-    List<OrderDTO> ordersDTO = new ArrayList<>();
+    List<OrderResponseDto> ordersDTO = new ArrayList<>();
     for (Order order : orders) {
-      ordersDTO.add(new OrderDTO(order));
+      ordersDTO.add(new OrderResponseDto(order));
     }
 
     return ordersDTO;

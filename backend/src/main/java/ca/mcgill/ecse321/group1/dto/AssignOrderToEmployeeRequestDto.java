@@ -1,6 +1,6 @@
 package ca.mcgill.ecse321.group1.dto;
 
-public class AssignOrderToEmployeeDTO {
+public class AssignOrderToEmployeeRequestDto {
   private String employeeID;
 
   public String getEmployeeID() {
