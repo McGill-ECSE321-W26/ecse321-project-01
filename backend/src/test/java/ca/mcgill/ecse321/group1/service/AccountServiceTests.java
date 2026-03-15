@@ -13,6 +13,7 @@ import ca.mcgill.ecse321.group1.model.Person;
 import ca.mcgill.ecse321.group1.repository.CustomerRepository;
 import ca.mcgill.ecse321.group1.repository.EmployeeRepository;
 import ca.mcgill.ecse321.group1.repository.PersonRepository;
+import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -32,6 +33,18 @@ public class AccountServiceTests {
   @InjectMocks private PersonService service;
 
   private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+
+  @Test
+  public void testGetAllPeople() {
+    Person bob = new Person("id1", "bob@mail.com", "password123");
+    Person charlie = new Person("id2", "charlie@mail.com", "password456");
+    when(personRepository.findAll()).thenReturn(List.of(bob, charlie));
+
+    Iterable<Person> result = service.getPeople();
+
+    assertNotNull(result);
+    assertEquals(2, ((List<Person>) result).size());
+  }
 
   @Test
   public void testCreateValidEmployee() {
@@ -69,6 +82,31 @@ public class AccountServiceTests {
   }
 
   @Test
+  public void testCreateCustomerDuplicateId() {
+    Person existing = new Person("account1", "other@mail.com", "password123");
+    when(personRepository.findPersonByPersonID("account1")).thenReturn(existing);
+
+    ResponseStatusException e =
+        assertThrows(
+            ResponseStatusException.class,
+            () -> service.createCustomer("account1", "bob@mail.com", "password123", "123 St"));
+    assertEquals(HttpStatus.CONFLICT, e.getStatusCode());
+    assertEquals("Account id already exists.", e.getReason());
+  }
+
+  @Test
+  public void testCreatePersonNullId() {
+    String email = "bob@mail.mcgill.ca";
+    String password = "12345678";
+
+    ResponseStatusException e =
+        assertThrows(
+            ResponseStatusException.class, () -> service.createEmployee(null, email, password));
+    assertEquals(HttpStatus.BAD_REQUEST, e.getStatusCode());
+    assertEquals("Account id cannot be empty.", e.getReason());
+  }
+
+  @Test
   public void testCreateCustomerInvalidAddress() {
     String accountID = "account1";
     String email = "bob@mail.mcgill.ca";
@@ -98,6 +136,87 @@ public class AccountServiceTests {
             () -> service.createEmployee(accountID, email, password));
     assertEquals(HttpStatus.BAD_REQUEST, e.getStatusCode());
     assertEquals("Invalid email address.", e.getReason());
+  }
+
+  @Test
+  public void testCreatePersonDuplicateEmail() {
+    String accountID = "account1";
+    String email = "bob@mail.mcgill.ca";
+    String password = "12345678";
+    Person existing = new Person("otherId", email, password);
+
+    // duplicate ID check passes (null), but email check finds existing person
+    when(personRepository.findPersonByPersonID(accountID)).thenReturn(null);
+    when(personRepository.findPersonByEmail(email)).thenReturn(existing);
+
+    ResponseStatusException e =
+        assertThrows(
+            ResponseStatusException.class,
+            () -> service.createEmployee(accountID, email, password));
+    assertEquals(HttpStatus.CONFLICT, e.getStatusCode());
+    assertEquals("Email " + email + " is already in use.", e.getReason());
+  }
+
+  @Test
+  public void testCreateCustomerDuplicateEmail() {
+    String accountID = "account1";
+    String email = "bob@mail.mcgill.ca";
+    String password = "12345678";
+    String address = "123 Main St";
+    Person existing = new Person("otherId", email, password);
+
+    when(personRepository.findPersonByPersonID(accountID)).thenReturn(null);
+    when(personRepository.findPersonByEmail(email)).thenReturn(existing);
+
+    ResponseStatusException e =
+        assertThrows(
+            ResponseStatusException.class,
+            () -> service.createCustomer(accountID, email, password, address));
+    assertEquals(HttpStatus.CONFLICT, e.getStatusCode());
+    assertEquals("Email " + email + " is already in use.", e.getReason());
+  }
+
+  @Test
+  public void testCreateCustomerInvalidEmail() {
+    ResponseStatusException e =
+        assertThrows(
+            ResponseStatusException.class,
+            () -> service.createCustomer("account1", "notanemail", "password123", "123 St"));
+    assertEquals(HttpStatus.BAD_REQUEST, e.getStatusCode());
+    assertEquals("Invalid email address.", e.getReason());
+  }
+
+  @Test
+  public void testCreateCustomerInvalidPassword() {
+    ResponseStatusException e =
+        assertThrows(
+            ResponseStatusException.class,
+            () -> service.createCustomer("account1", "bob@mail.com", "short", "123 St"));
+    assertEquals(HttpStatus.BAD_REQUEST, e.getStatusCode());
+    assertEquals("Password must be at least 8 characters.", e.getReason());
+  }
+
+  @Test
+  public void testCreateCustomerNullId() {
+    ResponseStatusException e =
+        assertThrows(
+            ResponseStatusException.class,
+            () -> service.createCustomer(null, "bob@mail.com", "password123", "123 St"));
+    assertEquals(HttpStatus.BAD_REQUEST, e.getStatusCode());
+    assertEquals("Account id cannot be empty.", e.getReason());
+  }
+
+  @Test
+  public void testCreateEmployeeDuplicateId() {
+    Person existing = new Person("account1", "other@mail.com", "password123");
+    when(personRepository.findPersonByPersonID("account1")).thenReturn(existing);
+
+    ResponseStatusException e =
+        assertThrows(
+            ResponseStatusException.class,
+            () -> service.createEmployee("account1", "bob@mail.com", "password123"));
+    assertEquals(HttpStatus.CONFLICT, e.getStatusCode());
+    assertEquals("Account id already exists.", e.getReason());
   }
 
   @Test
@@ -306,6 +425,16 @@ public class AccountServiceTests {
   }
 
   @Test
+  public void testInvalidUpdatePasswordPersonNotFound() {
+    ResponseStatusException e =
+        assertThrows(
+            ResponseStatusException.class,
+            () -> service.updatePassword("nonExistentId", "password123", "newPassword123"));
+    assertEquals(HttpStatus.NOT_FOUND, e.getStatusCode());
+    assertEquals("There is no person with ID nonExistentId.", e.getReason());
+  }
+
+  @Test
   public void testInvalidUpdatePasswordOldPassword() {
     Person bob = new Person("id1", "bob@mail.com", passwordEncoder.encode("password123"));
     when(personRepository.findPersonByPersonID("id1")).thenReturn(bob);
@@ -358,6 +487,17 @@ public class AccountServiceTests {
   }
 
   @Test
+  public void testInvalidUpdateCustomerAddressNotFound() {
+    // customerRepo returns null by default
+    ResponseStatusException e =
+        assertThrows(
+            ResponseStatusException.class,
+            () -> service.updateCustomerAddress("nonExistentRoleId", "456 New Ave"));
+    assertEquals(HttpStatus.NOT_FOUND, e.getStatusCode());
+    assertEquals("There is no customer with role ID nonExistentRoleId.", e.getReason());
+  }
+
+  @Test
   public void testValidAddCustomerRoleToEmployee() {
     Person bob = new Person("id1", "bob@mail.com", "password123");
     Employee employeeRole = new Employee();
@@ -368,6 +508,16 @@ public class AccountServiceTests {
     Person result = service.addCustomerRoleToEmployee("id1", "123 Main St");
 
     assertNotNull(result);
+  }
+
+  @Test
+  public void testInvalidAddCustomerRoleToEmployeePersonNotFound() {
+    ResponseStatusException e =
+        assertThrows(
+            ResponseStatusException.class,
+            () -> service.addCustomerRoleToEmployee("nonExistentId", "123 St"));
+    assertEquals(HttpStatus.NOT_FOUND, e.getStatusCode());
+    assertEquals("There is no person with ID nonExistentId.", e.getReason());
   }
 
   @Test
@@ -388,6 +538,34 @@ public class AccountServiceTests {
   }
 
   @Test
+  public void testInvalidAddCustomerRoleToEmployeeNullAddress() {
+    Person bob = new Person("id1", "bob@mail.com", "password123");
+    Employee employeeRole = new Employee();
+    bob.addRole(employeeRole);
+    when(personRepository.findPersonByPersonID("id1")).thenReturn(bob);
+
+    ResponseStatusException e =
+        assertThrows(
+            ResponseStatusException.class, () -> service.addCustomerRoleToEmployee("id1", null));
+    assertEquals(HttpStatus.BAD_REQUEST, e.getStatusCode());
+    assertEquals("Address cannot be empty.", e.getReason());
+  }
+
+  @Test
+  public void testInvalidAddCustomerRoleToEmployeeNotEmployee() {
+    // person exists but has no roles at all
+    Person bob = new Person("id1", "bob@mail.com", "password123");
+    when(personRepository.findPersonByPersonID("id1")).thenReturn(bob);
+
+    ResponseStatusException e =
+        assertThrows(
+            ResponseStatusException.class,
+            () -> service.addCustomerRoleToEmployee("id1", "123 Main St"));
+    assertEquals(HttpStatus.BAD_REQUEST, e.getStatusCode());
+    assertEquals("This person is not an employee.", e.getReason());
+  }
+
+  @Test
   public void testValidAddEmployeeRoleToCustomer() {
     Person bob = new Person("id1", "bob@mail.com", "password123");
     Customer customerRole = new Customer();
@@ -398,6 +576,16 @@ public class AccountServiceTests {
     Person result = service.addEmployeeRoleToCustomer("id1");
 
     assertNotNull(result);
+  }
+
+  @Test
+  public void testInvalidAddEmployeeRoleToCustomerPersonNotFound() {
+    ResponseStatusException e =
+        assertThrows(
+            ResponseStatusException.class,
+            () -> service.addEmployeeRoleToCustomer("nonExistentId"));
+    assertEquals(HttpStatus.NOT_FOUND, e.getStatusCode());
+    assertEquals("There is no person with ID nonExistentId.", e.getReason());
   }
 
   @Test
@@ -416,6 +604,18 @@ public class AccountServiceTests {
   }
 
   @Test
+  public void testInvalidAddEmployeeRoleToCustomerNotCustomer() {
+    // person exists but has no roles at all
+    Person bob = new Person("id1", "bob@mail.com", "password123");
+    when(personRepository.findPersonByPersonID("id1")).thenReturn(bob);
+
+    ResponseStatusException e =
+        assertThrows(ResponseStatusException.class, () -> service.addEmployeeRoleToCustomer("id1"));
+    assertEquals(HttpStatus.BAD_REQUEST, e.getStatusCode());
+    assertEquals("This person is not a customer.", e.getReason());
+  }
+
+  @Test
   public void testValidDeleteSelfAccount() {
     Person bob = new Person("id1", "bob@mail.com", "password123");
     when(personRepository.findPersonByPersonID("id1")).thenReturn(bob);
@@ -423,6 +623,16 @@ public class AccountServiceTests {
     // just verify it doesn't throw and delete is called
     assertDoesNotThrow(() -> service.deleteSelfAccount("id1"));
     verify(personRepository, times(1)).delete(bob);
+  }
+
+  @Test
+  public void testInvalidDeleteSelfAccountNotFound() {
+    // no when() needed, returns null by default
+    ResponseStatusException e =
+        assertThrows(
+            ResponseStatusException.class, () -> service.deleteSelfAccount("nonExistentId"));
+    assertEquals(HttpStatus.NOT_FOUND, e.getStatusCode());
+    assertEquals("There is no person with ID nonExistentId.", e.getReason());
   }
 
   @Test
