@@ -13,5 +13,6 @@ public interface ItemRepository extends ListCrudRepository<Item, String> {
 
   List<Item> findItemsByCustomer(Customer customer);
 
-  int deleteByRoleID(String roleID);
+  // does not work
+  //int deleteByRoleID(String roleID);
 }
