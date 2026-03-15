@@ -27,7 +27,7 @@ public class CartController {
     this.cartService = cartService;
   }
 
-  @GetMapping("/{customerID}/total")
+  @GetMapping("/{customerID}")
   public CartTotalDTO getCartTotal(@PathVariable String customerID) {
     float total = cartService.getCartTotal(customerID);
     return new CartTotalDTO(total);
@@ -58,15 +58,17 @@ public class CartController {
   }
 
   @GetMapping("/{customerID}/items/{itemID}")
-  public ItemDTO getItemByID(@PathVariable String itemID) {
-    Item item = cartService.getItemByID(itemID);
+  public ItemDTO getItemByID(@PathVariable String customerID, @PathVariable String itemID) {
+    Item item = cartService.getItemByID(customerID, itemID);
     return new ItemDTO(item);
   }
 
   @PatchMapping("/{customerID}/items/{itemID}")
   public ItemDTO modifyQuantity(
-      @PathVariable String itemID, @RequestBody UpdateItemQuantityDTO dto) {
-    Item item = cartService.changeQuantity(itemID, dto.getQuantity());
+      @PathVariable String customerID,
+      @PathVariable String itemID,
+      @RequestBody UpdateItemQuantityDTO dto) {
+    Item item = cartService.changeQuantity(customerID, itemID, dto.getQuantity());
     return new ItemDTO(item);
   }
 }
