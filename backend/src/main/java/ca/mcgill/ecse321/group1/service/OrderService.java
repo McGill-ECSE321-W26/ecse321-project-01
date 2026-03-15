@@ -8,11 +8,9 @@ import ca.mcgill.ecse321.group1.repository.CustomerRepository;
 import ca.mcgill.ecse321.group1.repository.EmployeeRepository;
 import ca.mcgill.ecse321.group1.repository.ItemRepository;
 import ca.mcgill.ecse321.group1.repository.OrderRepository;
-
 import java.sql.Date;
 import java.time.LocalDate;
 import java.util.List;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
