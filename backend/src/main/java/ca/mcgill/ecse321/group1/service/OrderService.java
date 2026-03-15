@@ -177,6 +177,18 @@ public class OrderService {
           HttpStatus.BAD_REQUEST, "Invalid order status " + orderStatus + ".");
     }
 
+    if (orderStatusEnum == Order.OrderStatus.Cancelled) {
+      if (order.getOrderStatus() == Order.OrderStatus.Delivered) {
+        throw new ResponseStatusException(
+            HttpStatus.BAD_REQUEST, "Cannot cancel an order that has already been delivered.");
+      }
+      if (order.getDeliveryDate().toLocalDate().isBefore(LocalDate.now().plusDays(1))) {
+        throw new ResponseStatusException(
+            HttpStatus.BAD_REQUEST,
+            "Cannot cancel an order within 24 hours of its delivery date.");
+      }
+    }
+
     order.setOrderStatus(orderStatusEnum);
     return orderRepository.save(order);
   }

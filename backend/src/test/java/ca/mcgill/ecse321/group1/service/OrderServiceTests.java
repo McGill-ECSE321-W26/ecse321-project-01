@@ -444,6 +444,65 @@ public class OrderServiceTests {
     assertEquals("Invalid order status " + invalidStatus + ".", e.getReason());
   }
 
+  @Test
+  public void testCancelOrderValid() {
+    // Arrange
+    String orderId = "order1";
+    Order order = new Order();
+    order.setOrderID(orderId);
+    order.setOrderStatus(Order.OrderStatus.Preparing);
+    order.setDeliveryDate(Date.valueOf(LocalDate.now().plusDays(3)));
+
+    when(orderRepository.findOrderByOrderID(orderId)).thenReturn(order);
+    when(orderRepository.save(any(Order.class))).thenAnswer(i -> i.getArgument(0));
+
+    // Act
+    Order result = orderService.updateOrderStatus(orderId, "Cancelled");
+
+    // Assert
+    assertNotNull(result);
+    assertEquals(Order.OrderStatus.Cancelled, result.getOrderStatus());
+    verify(orderRepository, times(1)).save(order);
+  }
+
+  @Test
+  public void testCancelDeliveredOrder() {
+    // Arrange
+    String orderId = "order1";
+    Order order = new Order();
+    order.setOrderID(orderId);
+    order.setOrderStatus(Order.OrderStatus.Delivered);
+    order.setDeliveryDate(Date.valueOf(LocalDate.now().plusDays(3)));
+
+    when(orderRepository.findOrderByOrderID(orderId)).thenReturn(order);
+
+    // Act & Assert
+    ResponseStatusException e =
+        assertThrows(
+            ResponseStatusException.class,
+            () -> orderService.updateOrderStatus(orderId, "Cancelled"));
+    assertEquals("Cannot cancel an order that has already been delivered.", e.getReason());
+  }
+
+  @Test
+  public void testCancelOrderWithin24Hours() {
+    // Arrange
+    String orderId = "order1";
+    Order order = new Order();
+    order.setOrderID(orderId);
+    order.setOrderStatus(Order.OrderStatus.Preparing);
+    order.setDeliveryDate(Date.valueOf(LocalDate.now())); // delivery is today — within 24 hours
+
+    when(orderRepository.findOrderByOrderID(orderId)).thenReturn(order);
+
+    // Act & Assert
+    ResponseStatusException e =
+        assertThrows(
+            ResponseStatusException.class,
+            () -> orderService.updateOrderStatus(orderId, "Cancelled"));
+    assertEquals("Cannot cancel an order within 24 hours of its delivery date.", e.getReason());
+  }
+
   // ===== getOrders =====
 
   @Test

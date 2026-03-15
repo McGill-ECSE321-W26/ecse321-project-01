@@ -582,4 +582,26 @@ public class OrderIntegrationTests {
     assertEquals(validOrderID, body.getOrderID());
     assertEquals("Delivered", body.getOrderStatus());
   }
+
+  @Test
+  @Order(21)
+  public void testCancelDeliveredOrder() {
+    // Arrange – order is now "Delivered" after test 20
+    UpdateOrderStatusRequestDto dto = new UpdateOrderStatusRequestDto();
+    dto.setOrderStatus("Cancelled");
+
+    // Act
+    ResponseEntity<String> response =
+        client
+            .patch()
+            .uri("/api/orders/" + validOrderID + "/status")
+            .contentType(MediaType.APPLICATION_JSON)
+            .body(dto)
+            .retrieve()
+            .toEntity(String.class);
+
+    // Assert
+    assertNotNull(response);
+    assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+  }
 }
