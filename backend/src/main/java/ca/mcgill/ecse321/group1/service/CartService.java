@@ -135,10 +135,7 @@ public class CartService {
           HttpStatus.NOT_FOUND, "There is no customer with id " + customerID + ".");
     }
 
-    List<Item> items = customer.getItems();
-    for (Item item : items) {
-      itemRepository.delete(item);
-    }
+    itemRepository.deleteByCustomer(customer);
   }
 
   @Transactional

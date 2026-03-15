@@ -12,4 +12,6 @@ public interface ItemRepository extends ListCrudRepository<Item, String> {
   List<Item> findByClothingVariant_Model_ClothingModelIDAndOrderIsNull(String modelId);
 
   List<Item> findItemsByCustomer(Customer customer);
+
+  int deleteByCustomer(Customer customer);
 }
