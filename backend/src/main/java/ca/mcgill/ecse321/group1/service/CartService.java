@@ -28,12 +28,24 @@ public class CartService {
   }
 
   @Transactional(readOnly = true)
-  public Item getItemByID(String itemID) {
+  public Item getItemByID(String customerID, String itemID) {
     Item item = itemRepository.findItemByItemID(itemID);
+    Customer customer = customerRepository.findByRoleID(customerID);
 
     if (item == null) {
       throw new ResponseStatusException(
           HttpStatus.NOT_FOUND, "There is no item with id " + itemID + ".");
+    }
+
+    if (customer == null) {
+      throw new ResponseStatusException(
+          HttpStatus.NOT_FOUND, "There is no customer with id " + customerID + ".");
+    }
+
+    if (!customer.getItems().contains(item)) {
+      throw new ResponseStatusException(
+          HttpStatus.BAD_REQUEST,
+          "The item with id " + itemID + "is not part of customer's " + customerID + "cart.");
     }
 
     return item;
@@ -68,7 +80,7 @@ public class CartService {
 
     if (quantity < 1) {
       throw new ResponseStatusException(
-          HttpStatus.BAD_REQUEST, "The quantity must be greater than one.");
+          HttpStatus.BAD_REQUEST, "The quantity must be greater than zero.");
     }
 
     if (quantity > clothingVariant.getStockQuantity()) {
@@ -123,19 +135,28 @@ public class CartService {
           HttpStatus.NOT_FOUND, "There is no customer with id " + customerID + ".");
     }
 
-    List<Item> items = customer.getItems();
-    for (Item item : items) {
-      itemRepository.delete(item);
-    }
+    itemRepository.deleteByCustomer(customer);
   }
 
   @Transactional
-  public Item changeQuantity(String itemID, int newQuantity) {
+  public Item changeQuantity(String customerID, String itemID, int newQuantity) {
     Item item = itemRepository.findItemByItemID(itemID);
+    Customer customer = customerRepository.findByRoleID(customerID);
 
     if (item == null) {
       throw new ResponseStatusException(
           HttpStatus.NOT_FOUND, "There is no item with id " + itemID + ".");
+    }
+
+    if (customer == null) {
+      throw new ResponseStatusException(
+          HttpStatus.NOT_FOUND, "There is no customer with id " + customerID + ".");
+    }
+
+    if (!customer.getItems().contains(item)) {
+      throw new ResponseStatusException(
+          HttpStatus.BAD_REQUEST,
+          "The item with id " + itemID + "is not part of customer's " + customerID + "cart.");
     }
 
     // I assume that we can only change quantity to 1 <= newQuantity <= variantStockQuantity
