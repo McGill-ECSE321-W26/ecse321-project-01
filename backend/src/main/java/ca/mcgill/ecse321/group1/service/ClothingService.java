@@ -54,7 +54,8 @@ public class ClothingService {
     }
     if (clothingModelRepository.findByName(name) != null) {
       throw new ResponseStatusException(
-          HttpStatus.CONFLICT, String.format("A clothing model with name '%s' already exists", name));
+          HttpStatus.CONFLICT,
+          String.format("A clothing model with name '%s' already exists", name));
     }
 
     // Leave ID field as null so CRUD repository can fill with UUID
@@ -77,7 +78,8 @@ public class ClothingService {
       // Enforce name uniqueness
       if (existingWithName != null && !existingWithName.getClothingModelID().equals(modelId)) {
         throw new ResponseStatusException(
-                HttpStatus.CONFLICT, String.format("A clothing model with name '%s' already exists", name));
+            HttpStatus.CONFLICT,
+            String.format("A clothing model with name '%s' already exists", name));
       }
       model.setName(name);
     }
@@ -106,11 +108,14 @@ public class ClothingService {
   }
 
   @Transactional(readOnly = true)
-  public ClothingVariant getVariant(String variantId) throws ResponseStatusException {
+  public ClothingVariant getVariant(String modelId, String variantId)
+      throws ResponseStatusException {
     ClothingVariant variant = clothingVariantRepository.findByClothingVariantID(variantId);
-    if (variant == null) {
+    if (variant == null || !variant.getModel().getClothingModelID().equals(modelId)) {
       throw new ResponseStatusException(
-          HttpStatus.NOT_FOUND, String.format("Clothing variant with ID %s not found", variantId));
+          HttpStatus.NOT_FOUND,
+          String.format(
+              "Clothing variant with ID %s not found under model %s", variantId, modelId));
     }
     return variant;
   }
@@ -152,9 +157,9 @@ public class ClothingService {
   }
 
   @Transactional
-  public ClothingVariant updateVariantStock(String variantId, int stockQuantity)
+  public ClothingVariant updateVariantStock(String modelId, String variantId, int stockQuantity)
       throws ResponseStatusException {
-    ClothingVariant variant = getVariant(variantId);
+    ClothingVariant variant = getVariant(modelId, variantId);
     if (stockQuantity < 0) {
       throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Stock quantity must be >= 0");
     }
@@ -164,11 +169,8 @@ public class ClothingService {
   }
 
   @Transactional
-  public void deleteVariant(String variantId) throws ResponseStatusException {
-    int deleteCount = clothingVariantRepository.deleteByClothingVariantID(variantId);
-    if (deleteCount == 0) {
-      throw new ResponseStatusException(
-          HttpStatus.NOT_FOUND, String.format("Clothing variant with ID %s not found", variantId));
-    }
+  public void deleteVariant(String modelId, String variantId) throws ResponseStatusException {
+    getVariant(modelId, variantId); // Validate variant exists under model
+    clothingVariantRepository.deleteByClothingVariantID(variantId);
   }
 }

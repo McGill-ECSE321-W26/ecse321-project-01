@@ -54,15 +54,16 @@ public class ClothingController {
   }
 
   @GetMapping("/{modelId}/variants")
-  public List<ClothingVariantResponseDto> getVariantsByModel(@PathVariable String modelId) {
+  public List<ClothingVariantResponseDto> getAllVariantsForModel(@PathVariable String modelId) {
     return clothingService.getVariantsByModel(modelId).stream()
         .map(ClothingVariantResponseDto::new)
         .toList();
   }
 
-  @GetMapping("/variants/{variantId}")
-  public ClothingVariantResponseDto getVariant(@PathVariable String variantId) {
-    return new ClothingVariantResponseDto(clothingService.getVariant(variantId));
+  @GetMapping("/{modelId}/variants/{variantId}")
+  public ClothingVariantResponseDto getVariant(
+      @PathVariable String modelId, @PathVariable String variantId) {
+    return new ClothingVariantResponseDto(clothingService.getVariant(modelId, variantId));
   }
 
   @PostMapping("/{modelId}/variants")
@@ -74,16 +75,18 @@ public class ClothingController {
             modelId, request.getSize(), request.getColor(), request.getStockQuantity()));
   }
 
-  @PatchMapping("/variants/{variantId}")
+  @PatchMapping("/{modelId}/variants/{variantId}")
   public ClothingVariantResponseDto updateVariantStock(
-      @PathVariable String variantId, @RequestBody ClothingVariantUpdateRequestDto request) {
+      @PathVariable String modelId,
+      @PathVariable String variantId,
+      @RequestBody ClothingVariantUpdateRequestDto request) {
     return new ClothingVariantResponseDto(
-        clothingService.updateVariantStock(variantId, request.getStockQuantity()));
+        clothingService.updateVariantStock(modelId, variantId, request.getStockQuantity()));
   }
 
-  @DeleteMapping("/variants/{variantId}")
+  @DeleteMapping("/{modelId}/variants/{variantId}")
   @ResponseStatus(HttpStatus.NO_CONTENT)
-  public void deleteVariant(@PathVariable String variantId) {
-    clothingService.deleteVariant(variantId);
+  public void deleteVariant(@PathVariable String modelId, @PathVariable String variantId) {
+    clothingService.deleteVariant(modelId, variantId);
   }
 }
