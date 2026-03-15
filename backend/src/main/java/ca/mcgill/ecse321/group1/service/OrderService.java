@@ -160,6 +160,7 @@ public class OrderService {
       String orderID, String employeeID, Date deliveryDate, String orderStatus) {
     Order order = findOrder(orderID);
 
+    // This is a PATCH method, we allow partial modifications (not all fields must be specified)
     if (employeeID != null) {
       Employee employee = findEmployee(employeeID);
       validateEmployeeNotCustomer(employee, order);
