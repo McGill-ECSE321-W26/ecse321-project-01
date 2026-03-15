@@ -306,6 +306,7 @@ public class OrderServiceTests {
     // Arrange
     String orderId = "order1";
     Order order = new Order();
+    order.setDeliveryDate(Date.valueOf(LocalDate.now().plusDays(5)));
     order.setOrderID(orderId);
     Date newDate = Date.valueOf(LocalDate.now().plusDays(3));
 
@@ -356,6 +357,7 @@ public class OrderServiceTests {
     // Arrange
     String orderId = "order1";
     Order order = new Order();
+    order.setDeliveryDate(Date.valueOf(LocalDate.now().plusDays(5)));
     Date tooSoon = Date.valueOf(LocalDate.now());
 
     when(orderRepository.findOrderByOrderID(orderId)).thenReturn(order);
@@ -366,6 +368,25 @@ public class OrderServiceTests {
             InvalidInputException.class,
             () -> orderService.updateOrderDeliveryDate(orderId, tooSoon));
     assertEquals("Delivery Date must be at least 24 hours after the order date.", e.getMessage());
+  }
+
+  @Test
+  public void testUpdateOrderDeliveryDateWithin24Hours() {
+    // Arrange
+    String orderId = "order1";
+    Order order = new Order();
+    order.setOrderID(orderId);
+    order.setDeliveryDate(Date.valueOf(LocalDate.now())); // delivery is today — within 24 hours
+    Date newDate = Date.valueOf(LocalDate.now().plusDays(3));
+
+    when(orderRepository.findOrderByOrderID(orderId)).thenReturn(order);
+
+    // Act & Assert
+    InvalidInputException e =
+        assertThrows(
+            InvalidInputException.class,
+            () -> orderService.updateOrderDeliveryDate(orderId, newDate));
+    assertEquals("Delivery Date cannot be changed within 24 hours of the current delivery date.", e.getMessage());
   }
 
   // ===== updateOrderStatus =====
