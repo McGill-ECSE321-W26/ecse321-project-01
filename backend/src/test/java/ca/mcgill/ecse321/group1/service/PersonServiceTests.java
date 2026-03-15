@@ -26,7 +26,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 @SpringBootTest
 @MockitoSettings(strictness = Strictness.STRICT_STUBS)
-public class AccountServiceTests {
+public class PersonServiceTests {
   @Mock private PersonRepository personRepository;
   @Mock private CustomerRepository customerRepository;
   @Mock private EmployeeRepository employeeRepository;
@@ -48,67 +48,38 @@ public class AccountServiceTests {
 
   @Test
   public void testCreateValidEmployee() {
-    String accountID = "account1";
     String email = "bob@mail.mcgill.ca";
     String password = "12345678";
-    Person accountTest = new Person(accountID, email, password);
+    Person accountTest = new Person("generated-id", email, password);
 
-    when(personRepository.findPersonByPersonID(accountID)).thenReturn(null).thenReturn(accountTest);
+    when(personRepository.findPersonByPersonID(any())).thenReturn(accountTest);
     when(personRepository.save(any(Person.class))).thenReturn(accountTest);
 
-    Person createdPerson = service.createEmployee(accountID, email, password);
+    Person createdPerson = service.createEmployee(email, password);
 
     assertNotNull(createdPerson);
-    assertEquals(accountID, createdPerson.getPersonID());
     assertEquals(email, createdPerson.getEmail());
   }
 
   @Test
   public void testCreateValidCustomer() {
-    String accountID = "account1";
     String email = "bob@mail.mcgill.ca";
     String password = "12345678";
     String address = "123 Main St";
-    Person accountTest = new Person(accountID, email, password);
+    Person accountTest = new Person("generated-id", email, password);
 
-    when(personRepository.findPersonByPersonID(accountID)).thenReturn(null).thenReturn(accountTest);
+    when(personRepository.findPersonByPersonID(any())).thenReturn(accountTest);
     when(personRepository.save(any(Person.class))).thenReturn(accountTest);
 
-    Person createdPerson = service.createCustomer(accountID, email, password, address);
+    Person createdPerson = service.createCustomer(email, password, address);
 
     assertNotNull(createdPerson);
-    assertEquals(accountID, createdPerson.getPersonID());
     assertEquals(email, createdPerson.getEmail());
   }
 
-  @Test
-  public void testCreateCustomerDuplicateId() {
-    Person existing = new Person("account1", "other@mail.com", "password123");
-    when(personRepository.findPersonByPersonID("account1")).thenReturn(existing);
-
-    ResponseStatusException e =
-        assertThrows(
-            ResponseStatusException.class,
-            () -> service.createCustomer("account1", "bob@mail.com", "password123", "123 St"));
-    assertEquals(HttpStatus.CONFLICT, e.getStatusCode());
-    assertEquals("Account id already exists.", e.getReason());
-  }
-
-  @Test
-  public void testCreatePersonNullId() {
-    String email = "bob@mail.mcgill.ca";
-    String password = "12345678";
-
-    ResponseStatusException e =
-        assertThrows(
-            ResponseStatusException.class, () -> service.createEmployee(null, email, password));
-    assertEquals(HttpStatus.BAD_REQUEST, e.getStatusCode());
-    assertEquals("Account id cannot be empty.", e.getReason());
-  }
 
   @Test
   public void testCreateCustomerInvalidAddress() {
-    String accountID = "account1";
     String email = "bob@mail.mcgill.ca";
     String password = "12345678";
     String address = ""; // blank address
@@ -116,62 +87,53 @@ public class AccountServiceTests {
     ResponseStatusException e =
         assertThrows(
             ResponseStatusException.class,
-            () -> service.createCustomer(accountID, email, password, address));
+            () -> service.createCustomer(email, password, address));
     assertEquals(HttpStatus.BAD_REQUEST, e.getStatusCode());
     assertEquals("Address cannot be empty.", e.getReason());
   }
 
   @Test
   public void testCreatePersonInvalidEmail() {
-    // Arrange
-    String accountID = "account1";
     String email = "bobmcgill.ca";
     String password = "12345678";
 
-    // Act + Assert
-    // should have email validation in the insertPerson method in service
     ResponseStatusException e =
         assertThrows(
             ResponseStatusException.class,
-            () -> service.createEmployee(accountID, email, password));
+            () -> service.createEmployee(email, password));
     assertEquals(HttpStatus.BAD_REQUEST, e.getStatusCode());
     assertEquals("Invalid email address.", e.getReason());
   }
 
   @Test
   public void testCreatePersonDuplicateEmail() {
-    String accountID = "account1";
     String email = "bob@mail.mcgill.ca";
     String password = "12345678";
     Person existing = new Person("otherId", email, password);
 
-    // duplicate ID check passes (null), but email check finds existing person
-    when(personRepository.findPersonByPersonID(accountID)).thenReturn(null);
     when(personRepository.findPersonByEmail(email)).thenReturn(existing);
 
     ResponseStatusException e =
         assertThrows(
             ResponseStatusException.class,
-            () -> service.createEmployee(accountID, email, password));
+            () -> service.createEmployee(email, password));
     assertEquals(HttpStatus.CONFLICT, e.getStatusCode());
     assertEquals("Email " + email + " is already in use.", e.getReason());
   }
 
   @Test
   public void testCreateCustomerDuplicateEmail() {
-    String accountID = "account1";
     String email = "bob@mail.mcgill.ca";
     String password = "12345678";
     String address = "123 Main St";
     Person existing = new Person("otherId", email, password);
 
-    when(personRepository.findPersonByPersonID(accountID)).thenReturn(null);
     when(personRepository.findPersonByEmail(email)).thenReturn(existing);
 
     ResponseStatusException e =
         assertThrows(
             ResponseStatusException.class,
-            () -> service.createCustomer(accountID, email, password, address));
+            () -> service.createCustomer(email, password, address));
     assertEquals(HttpStatus.CONFLICT, e.getStatusCode());
     assertEquals("Email " + email + " is already in use.", e.getReason());
   }
@@ -181,7 +143,7 @@ public class AccountServiceTests {
     ResponseStatusException e =
         assertThrows(
             ResponseStatusException.class,
-            () -> service.createCustomer("account1", "notanemail", "password123", "123 St"));
+            () -> service.createCustomer("notanemail", "password123", "123 St"));
     assertEquals(HttpStatus.BAD_REQUEST, e.getStatusCode());
     assertEquals("Invalid email address.", e.getReason());
   }
@@ -191,47 +153,20 @@ public class AccountServiceTests {
     ResponseStatusException e =
         assertThrows(
             ResponseStatusException.class,
-            () -> service.createCustomer("account1", "bob@mail.com", "short", "123 St"));
+            () -> service.createCustomer("bob@mail.com", "short", "123 St"));
     assertEquals(HttpStatus.BAD_REQUEST, e.getStatusCode());
     assertEquals("Password must be at least 8 characters.", e.getReason());
   }
 
   @Test
-  public void testCreateCustomerNullId() {
-    ResponseStatusException e =
-        assertThrows(
-            ResponseStatusException.class,
-            () -> service.createCustomer(null, "bob@mail.com", "password123", "123 St"));
-    assertEquals(HttpStatus.BAD_REQUEST, e.getStatusCode());
-    assertEquals("Account id cannot be empty.", e.getReason());
-  }
-
-  @Test
-  public void testCreateEmployeeDuplicateId() {
-    Person existing = new Person("account1", "other@mail.com", "password123");
-    when(personRepository.findPersonByPersonID("account1")).thenReturn(existing);
-
-    ResponseStatusException e =
-        assertThrows(
-            ResponseStatusException.class,
-            () -> service.createEmployee("account1", "bob@mail.com", "password123"));
-    assertEquals(HttpStatus.CONFLICT, e.getStatusCode());
-    assertEquals("Account id already exists.", e.getReason());
-  }
-
-  @Test
   public void testCreatePersonInvalidPassword() {
-    // Arrange
-    String accountID = "account1";
     String email = "bob@mail.mcgill.ca";
     String password = "1";
 
-    // Act + Assert
-    // should have email validation in the insertPerson method in service
     ResponseStatusException e =
         assertThrows(
             ResponseStatusException.class,
-            () -> service.createEmployee(accountID, email, password));
+            () -> service.createEmployee(email, password));
     assertEquals(HttpStatus.BAD_REQUEST, e.getStatusCode());
     assertEquals("Password must be at least 8 characters.", e.getReason());
   }
@@ -462,12 +397,14 @@ public class AccountServiceTests {
 
   @Test
   public void testValidUpdateCustomerAddress() {
+    Person bob = new Person("id1", "bob@mail.com", "password123");
     Customer customer = new Customer();
     customer.setAddress("123 Old St");
-    when(customerRepository.findByRoleID("roleId1")).thenReturn(customer);
+    bob.addRole(customer);
+    when(personRepository.findPersonByPersonID("id1")).thenReturn(bob);
     when(customerRepository.save(any(Customer.class))).thenReturn(customer);
 
-    Customer result = service.updateCustomerAddress("roleId1", "456 New Ave");
+    Customer result = service.updateCustomerAddress("id1", "456 New Ave");
 
     assertNotNull(result);
     assertEquals("456 New Ave", result.getAddress());
@@ -475,26 +412,42 @@ public class AccountServiceTests {
 
   @Test
   public void testInvalidUpdateCustomerAddressEmpty() {
+    Person bob = new Person("id1", "bob@mail.com", "password123");
     Customer customer = new Customer();
     customer.setAddress("123 Old St");
-    when(customerRepository.findByRoleID("roleId1")).thenReturn(customer);
+    bob.addRole(customer);
+    when(personRepository.findPersonByPersonID("id1")).thenReturn(bob);
 
     ResponseStatusException e =
         assertThrows(
-            ResponseStatusException.class, () -> service.updateCustomerAddress("roleId1", ""));
+            ResponseStatusException.class, () -> service.updateCustomerAddress("id1", ""));
     assertEquals(HttpStatus.BAD_REQUEST, e.getStatusCode());
     assertEquals("Address cannot be empty.", e.getReason());
   }
 
   @Test
-  public void testInvalidUpdateCustomerAddressNotFound() {
-    // customerRepo returns null by default
+  public void testInvalidUpdateCustomerAddressPersonNotFound() {
     ResponseStatusException e =
         assertThrows(
             ResponseStatusException.class,
-            () -> service.updateCustomerAddress("nonExistentRoleId", "456 New Ave"));
+            () -> service.updateCustomerAddress("nonExistentId", "456 New Ave"));
     assertEquals(HttpStatus.NOT_FOUND, e.getStatusCode());
-    assertEquals("There is no customer with role ID nonExistentRoleId.", e.getReason());
+    assertEquals("There is no person with ID nonExistentId.", e.getReason());
+  }
+
+  @Test
+  public void testInvalidUpdateCustomerAddressNotCustomer() {
+    Person bob = new Person("id1", "bob@mail.com", "password123");
+    Employee employee = new Employee();
+    bob.addRole(employee);
+    when(personRepository.findPersonByPersonID("id1")).thenReturn(bob);
+
+    ResponseStatusException e =
+        assertThrows(
+            ResponseStatusException.class,
+            () -> service.updateCustomerAddress("id1", "456 New Ave"));
+    assertEquals(HttpStatus.BAD_REQUEST, e.getStatusCode());
+    assertEquals("Person with ID id1 does not have a customer role.", e.getReason());
   }
 
   @Test

@@ -28,15 +28,14 @@ public class PersonController {
   @ResponseStatus(HttpStatus.CREATED)
   public PersonResponseDto createCustomer(@RequestBody CreateCustomerDto dto) {
     Person p =
-        personService.createCustomer(
-            dto.getId(), dto.getEmail(), dto.getPassword(), dto.getAddress());
+        personService.createCustomer(dto.getEmail(), dto.getPassword(), dto.getAddress());
     return new PersonResponseDto(p);
   }
 
   @PostMapping("/employees")
   @ResponseStatus(HttpStatus.CREATED)
   public PersonResponseDto createEmployee(@RequestBody CreateEmployeeDto dto) {
-    Person p = personService.createEmployee(dto.getId(), dto.getEmail(), dto.getPassword());
+    Person p = personService.createEmployee(dto.getEmail(), dto.getPassword());
     return new PersonResponseDto(p);
   }
 
@@ -85,10 +84,10 @@ public class PersonController {
     return new PersonResponseDto(p);
   }
 
-  @PatchMapping("/customers/{customerRoleId}/address")
+  @PatchMapping("/{id}/address")
   public PersonResponseDto updateCustomerAddress(
-      @PathVariable String customerRoleId, @RequestBody AddressDto dto) {
-    Customer c = personService.updateCustomerAddress(customerRoleId, dto.getAddress());
+      @PathVariable String id, @RequestBody AddressDto dto) {
+    Customer c = personService.updateCustomerAddress(id, dto.getAddress());
     return new PersonResponseDto(c.getPerson());
   }
 
