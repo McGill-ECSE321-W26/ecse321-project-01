@@ -6,33 +6,41 @@ import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
 
-public class OrderDTO {
+public class OrderResponseDto {
   private String orderID;
   private String orderStatus;
   private Date orderDate;
   private Date deliveryDate;
   private float loyaltySaving;
+  private float totalPrice;
   private String address;
   private String customerID;
   private String employeeID;
   private List<String> itemIDs;
 
   @SuppressWarnings("unused")
-  private OrderDTO() {}
+  private OrderResponseDto() {}
 
-  public OrderDTO(Order model) {
+  public OrderResponseDto(Order model) {
     this.orderID = model.getOrderID();
     this.orderStatus = model.getOrderStatus() != null ? model.getOrderStatus().toString() : null;
+
     this.orderDate = model.getOrderDate();
     this.deliveryDate = model.getDeliveryDate();
+
     this.loyaltySaving = model.getLoyaltySaving();
+
     this.address = model.getAddress();
     this.customerID = model.getCustomer() != null ? model.getCustomer().getRoleID() : null;
     this.employeeID = model.getEmployee() != null ? model.getEmployee().getRoleID() : null;
+
     this.itemIDs = new ArrayList<>();
+    this.totalPrice = 0.0f;
     for (Item item : model.getItems()) {
       this.itemIDs.add(item.getItemID());
+      this.totalPrice += item.getQuantity() * item.getPrice();
     }
+    this.totalPrice -= this.loyaltySaving;
   }
 
   public String getOrderID() {
@@ -73,6 +81,14 @@ public class OrderDTO {
 
   public void setLoyaltySaving(float loyaltySaving) {
     this.loyaltySaving = loyaltySaving;
+  }
+
+  public float getTotalPrice() {
+    return totalPrice;
+  }
+
+  public void setTotalPrice(float totalPrice) {
+    this.totalPrice = totalPrice;
   }
 
   public String getAddress() {

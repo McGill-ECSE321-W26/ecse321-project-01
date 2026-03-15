@@ -1,6 +1,6 @@
 package ca.mcgill.ecse321.group1.dto;
 
-public class UpdateOrderStatusDTO {
+public class UpdateOrderStatusRequestDto {
   private String orderStatus;
 
   public String getOrderStatus() {

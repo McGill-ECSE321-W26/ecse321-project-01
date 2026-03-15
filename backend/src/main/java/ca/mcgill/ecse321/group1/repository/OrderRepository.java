@@ -11,4 +11,6 @@ public interface OrderRepository extends ListCrudRepository<Order, String> {
   List<Order> findByCustomer(Customer customer);
 
   List<Order> findByOrderStatus(Order.OrderStatus orderStatus);
+
+  List<Order> findByCustomerAndOrderStatus(Customer customer, Order.OrderStatus orderStatus);
 }

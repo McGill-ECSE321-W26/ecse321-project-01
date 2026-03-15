@@ -2,7 +2,7 @@ package ca.mcgill.ecse321.group1.dto;
 
 import java.sql.Date;
 
-public class CreateOrderDTO {
+public class CreateOrderRequestDto {
   private String customerID;
   private Date deliveryDate;
   private int usedLoyaltyPoints;
