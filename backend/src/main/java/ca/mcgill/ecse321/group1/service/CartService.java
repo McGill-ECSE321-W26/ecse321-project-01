@@ -53,7 +53,7 @@ public class CartService {
   @Transactional
   public Item addItem(String clothingVariantID, String customerID, int quantity) {
     ClothingVariant clothingVariant =
-        clothingVariantRepository.findClothingVariantByClothingVariantID(clothingVariantID);
+        clothingVariantRepository.findByClothingVariantID(clothingVariantID);
     Customer customer = customerRepository.findByRoleID(customerID);
 
     if (customer == null) {
