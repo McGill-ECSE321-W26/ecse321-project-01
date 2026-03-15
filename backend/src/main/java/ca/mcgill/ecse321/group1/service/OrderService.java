@@ -156,7 +156,8 @@ public class OrderService {
   }
 
   @Transactional
-  public Order updateOrder(String orderID, String employeeID, Date deliveryDate, String orderStatus) {
+  public Order updateOrder(
+      String orderID, String employeeID, Date deliveryDate, String orderStatus) {
     Order order = findOrder(orderID);
 
     if (employeeID != null) {
