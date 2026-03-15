@@ -29,7 +29,7 @@ import org.springframework.web.server.ResponseStatusException;
 public class ClothingServiceTests {
   @Mock ClothingModelRepository clothingModelRepository;
   @Mock ClothingVariantRepository clothingVariantRepository;
-  @Autowired @Mock ItemRepository itemRepository;
+  @Mock ItemRepository itemRepository;
   @InjectMocks ClothingService clothingService;
 
   // ===== getAllClothingModels =====
@@ -446,10 +446,7 @@ public class ClothingServiceTests {
     // Arrange
     String modelId = "model1";
     String variantId = "variant1";
-    ClothingModel model = new ClothingModel(modelId, "Summer Jacket", 79.99f);
-    ClothingVariant variant =
-        new ClothingVariant(variantId, ClothingVariant.Size.M, "Red", 10, model);
-    when(clothingVariantRepository.findByClothingVariantID(variantId)).thenReturn(variant);
+    when(clothingVariantRepository.deleteByClothingVariantID(variantId)).thenReturn(1);
 
     // Act
     clothingService.deleteVariant(modelId, variantId);
@@ -463,7 +460,6 @@ public class ClothingServiceTests {
     // Arrange
     String modelId = "model1";
     String variantId = "badVariant";
-    when(clothingVariantRepository.findByClothingVariantID(variantId)).thenReturn(null);
 
     // Act & Assert
     ResponseStatusException e =
