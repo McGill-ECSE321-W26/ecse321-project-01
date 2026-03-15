@@ -219,4 +219,23 @@ public class OrderService {
     }
     return orderRepository.findByOrderStatus(orderStatusEnum);
   }
+
+  @Transactional(readOnly = true)
+  public List<Order> getOrdersByCustomerIDAndStatus(String customerID, String orderStatus) {
+    Customer customer = customerRepository.findByRoleID(customerID);
+    if (customer == null) {
+      throw new ResponseStatusException(
+          HttpStatus.NOT_FOUND, "There is no customer with id " + customerID + ".");
+    }
+
+    Order.OrderStatus orderStatusEnum;
+    try {
+      orderStatusEnum = Order.OrderStatus.valueOf(orderStatus);
+    } catch (Exception e) {
+      throw new ResponseStatusException(
+          HttpStatus.BAD_REQUEST, "Invalid order status " + orderStatus + ".");
+    }
+
+    return orderRepository.findByCustomerAndOrderStatus(customer, orderStatusEnum);
+  }
 }

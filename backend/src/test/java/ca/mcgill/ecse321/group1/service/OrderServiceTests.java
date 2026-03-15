@@ -554,4 +554,62 @@ public class OrderServiceTests {
             () -> orderService.getOrdersByOrderStatus(invalidStatus));
     assertEquals("Invalid order status " + invalidStatus + ".", e.getReason());
   }
+
+  // ===== getOrdersByCustomerIDAndStatus =====
+
+  @Test
+  public void testGetOrdersByCustomerIDAndStatusValid() {
+    // Arrange
+    String customerId = "customer1";
+    Customer customer = new Customer();
+    customer.setRoleID(customerId);
+    Order order1 = new Order();
+    order1.setOrderStatus(Order.OrderStatus.Preparing);
+    Order order2 = new Order();
+    order2.setOrderStatus(Order.OrderStatus.Preparing);
+
+    when(customerRepository.findByRoleID(customerId)).thenReturn(customer);
+    when(orderRepository.findByCustomerAndOrderStatus(customer, Order.OrderStatus.Preparing))
+        .thenReturn(List.of(order1, order2));
+
+    // Act
+    List<Order> orders = orderService.getOrdersByCustomerIDAndStatus(customerId, "Preparing");
+
+    // Assert
+    assertNotNull(orders);
+    assertEquals(2, orders.size());
+    assertEquals(order1, orders.getFirst());
+    assertEquals(order2, orders.getLast());
+  }
+
+  @Test
+  public void testGetOrdersByCustomerIDAndStatusInvalidCustomer() {
+    // Arrange
+    String customerId = "badCustomer";
+    when(customerRepository.findByRoleID(customerId)).thenReturn(null);
+
+    // Act & Assert
+    ResponseStatusException e =
+        assertThrows(
+            ResponseStatusException.class,
+            () -> orderService.getOrdersByCustomerIDAndStatus(customerId, "Preparing"));
+    assertEquals("There is no customer with id " + customerId + ".", e.getReason());
+  }
+
+  @Test
+  public void testGetOrdersByCustomerIDAndStatusInvalidStatus() {
+    // Arrange
+    String customerId = "customer1";
+    String invalidStatus = "Unknown";
+    Customer customer = new Customer();
+    customer.setRoleID(customerId);
+    when(customerRepository.findByRoleID(customerId)).thenReturn(customer);
+
+    // Act & Assert
+    ResponseStatusException e =
+        assertThrows(
+            ResponseStatusException.class,
+            () -> orderService.getOrdersByCustomerIDAndStatus(customerId, invalidStatus));
+    assertEquals("Invalid order status " + invalidStatus + ".", e.getReason());
+  }
 }

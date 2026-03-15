@@ -9,7 +9,7 @@ import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
-@RequestMapping("/api/order")
+@RequestMapping("/api/orders")
 @RestController
 public class OrderController {
   private final OrderService orderService;
@@ -27,7 +27,7 @@ public class OrderController {
     return new OrderResponseDto(order);
   }
 
-  @PatchMapping("/{orderID}/assign-employee")
+  @PatchMapping("/{orderID}/employee")
   public OrderResponseDto assignOrderToEmployee(
       @PathVariable String orderID, @RequestBody AssignOrderToEmployeeRequestDto dto) {
     Order order = orderService.assignOrderToEmployee(orderID, dto.getEmployeeID());
@@ -49,15 +49,24 @@ public class OrderController {
   }
 
   @GetMapping()
-  public List<OrderResponseDto> getOrders() {
-    List<Order> orders = orderService.getOrders();
+  public List<OrderResponseDto> getOrders(
+      @RequestParam(required = false) String customerID,
+      @RequestParam(required = false) String orderStatus) {
+    List<Order> orders;
+    if (customerID != null && orderStatus != null) {
+      orders = orderService.getOrdersByCustomerIDAndStatus(customerID, orderStatus);
+    } else if (customerID != null) {
+      orders = orderService.getOrdersByCustomerID(customerID);
+    } else if (orderStatus != null) {
+      orders = orderService.getOrdersByOrderStatus(orderStatus);
+    } else {
+      orders = orderService.getOrders();
+    }
 
-    // Convert list of orders to list of DTO
     List<OrderResponseDto> ordersDTO = new ArrayList<>();
     for (Order order : orders) {
       ordersDTO.add(new OrderResponseDto(order));
     }
-
     return ordersDTO;
   }
 
@@ -65,31 +74,5 @@ public class OrderController {
   public OrderResponseDto getOrderByID(@PathVariable String orderID) {
     Order order = orderService.getOrderByID(orderID);
     return new OrderResponseDto(order);
-  }
-
-  @GetMapping("/customer/{customerID}")
-  public List<OrderResponseDto> getOrdersByCustomerID(@PathVariable String customerID) {
-    List<Order> orders = orderService.getOrdersByCustomerID(customerID);
-
-    // Convert list of orders to list of DTO
-    List<OrderResponseDto> ordersDTO = new ArrayList<>();
-    for (Order order : orders) {
-      ordersDTO.add(new OrderResponseDto(order));
-    }
-
-    return ordersDTO;
-  }
-
-  @GetMapping("/status/{orderStatus}")
-  public List<OrderResponseDto> getOrdersByOrderStatus(@PathVariable String orderStatus) {
-    List<Order> orders = orderService.getOrdersByOrderStatus(orderStatus);
-
-    // Convert list of orders to list of DTO
-    List<OrderResponseDto> ordersDTO = new ArrayList<>();
-    for (Order order : orders) {
-      ordersDTO.add(new OrderResponseDto(order));
-    }
-
-    return ordersDTO;
   }
 }

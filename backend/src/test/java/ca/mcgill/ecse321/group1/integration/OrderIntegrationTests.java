@@ -135,7 +135,7 @@ public class OrderIntegrationTests {
     clothingModelRepository.deleteById(testModel.getClothingModelID());
   }
 
-  // ==== POST /api/order/create ====
+  // ==== POST /api/orders/create ====
 
   @Test
   @Order(1)
@@ -150,7 +150,7 @@ public class OrderIntegrationTests {
     ResponseEntity<String> response =
         client
             .post()
-            .uri("/api/order")
+            .uri("/api/orderss")
             .contentType(MediaType.APPLICATION_JSON)
             .body(dto)
             .retrieve()
@@ -174,7 +174,7 @@ public class OrderIntegrationTests {
     ResponseEntity<String> response =
         client
             .post()
-            .uri("/api/order")
+            .uri("/api/orders")
             .contentType(MediaType.APPLICATION_JSON)
             .body(dto)
             .retrieve()
@@ -198,7 +198,7 @@ public class OrderIntegrationTests {
     ResponseEntity<OrderResponseDto> response =
         client
             .post()
-            .uri("/api/order")
+            .uri("/api/orders")
             .contentType(MediaType.APPLICATION_JSON)
             .body(dto)
             .retrieve()
@@ -222,13 +222,13 @@ public class OrderIntegrationTests {
     validOrderID = body.getOrderID();
   }
 
-  // ==== GET /api/order/{orderID} ====
+  // ==== GET /api/orders/{orderID} ====
 
   @Test
   @Order(4)
   public void testGetOrderByValidID() {
     // Arrange
-    String url = "/api/order/" + validOrderID;
+    String url = "/api/orders/" + validOrderID;
 
     // Act
     ResponseEntity<OrderResponseDto> response =
@@ -248,7 +248,7 @@ public class OrderIntegrationTests {
   @Order(5)
   public void testGetOrderByInvalidID() {
     // Arrange
-    String url = "/api/order/" + INVALID_ID;
+    String url = "/api/orders/" + INVALID_ID;
 
     // Act
     ResponseEntity<String> response = client.get().uri(url).retrieve().toEntity(String.class);
@@ -258,7 +258,7 @@ public class OrderIntegrationTests {
     assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
   }
 
-  // ==== GET /api/order ====
+  // ==== GET /api/orders ====
 
   @Test
   @Order(6)
@@ -267,7 +267,7 @@ public class OrderIntegrationTests {
     ResponseEntity<List<OrderResponseDto>> response =
         client
             .get()
-            .uri("/api/order")
+            .uri("/api/orders")
             .retrieve()
             .toEntity(new ParameterizedTypeReference<List<OrderResponseDto>>() {});
 
@@ -280,19 +280,16 @@ public class OrderIntegrationTests {
     assertEquals(orders.getFirst().getOrderID(), validOrderID);
   }
 
-  // ==== GET /api/order/customer/{customerID} ====
+  // ==== GET /api/orders?customerID={customerID} ====
 
   @Test
   @Order(7)
   public void testGetOrdersByValidCustomerID() {
-    // Arrange
-    String url = "/api/order/customer/" + testCustomer.getRoleID();
-
     // Act
     ResponseEntity<List<OrderResponseDto>> response =
         client
             .get()
-            .uri(url)
+            .uri("/api/orders?customerID=" + testCustomer.getRoleID())
             .retrieve()
             .toEntity(new ParameterizedTypeReference<List<OrderResponseDto>>() {});
 
@@ -308,30 +305,25 @@ public class OrderIntegrationTests {
   @Test
   @Order(8)
   public void testGetOrdersByInvalidCustomerID() {
-    // Arrange
-    String url = "/api/order/customer/" + INVALID_ID;
-
     // Act
-    ResponseEntity<String> response = client.get().uri(url).retrieve().toEntity(String.class);
+    ResponseEntity<String> response =
+        client.get().uri("/api/orders?customerID=" + INVALID_ID).retrieve().toEntity(String.class);
 
     // Assert
     assertNotNull(response);
     assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
   }
 
-  // ==== GET /api/order/status/{orderStatus} ====
+  // ==== GET /api/orders?orderStatus={orderStatus} ====
 
   @Test
   @Order(9)
   public void testGetOrdersByValidStatus() {
-    // Arrange – order was created with status "Preparing"
-    String url = "/api/order/status/Preparing";
-
     // Act
     ResponseEntity<List<OrderResponseDto>> response =
         client
             .get()
-            .uri(url)
+            .uri("/api/orders?orderStatus=Preparing")
             .retrieve()
             .toEntity(new ParameterizedTypeReference<List<OrderResponseDto>>() {});
 
@@ -347,55 +339,49 @@ public class OrderIntegrationTests {
   @Test
   @Order(10)
   public void testGetOrdersByInvalidStatus() {
-    // Arrange
-    String url = "/api/order/status/" + INVALID_STATUS;
-
     // Act
-    ResponseEntity<String> response = client.get().uri(url).retrieve().toEntity(String.class);
+    ResponseEntity<String> response =
+        client
+            .get()
+            .uri("/api/orders?orderStatus=" + INVALID_STATUS)
+            .retrieve()
+            .toEntity(String.class);
 
     // Assert
     assertNotNull(response);
     assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
   }
 
-  // ==== PATCH /api/order/{orderID}/assign-employee ====
+  // ==== GET /api/orders?customerID={customerID}&orderStatus={orderStatus} ====
 
   @Test
   @Order(11)
-  public void testAssignInvalidOrderToEmployee() {
-    // Arrange
-    AssignOrderToEmployeeRequestDto dto = new AssignOrderToEmployeeRequestDto();
-    dto.setEmployeeID(testEmployee.getRoleID());
-
+  public void testGetOrdersByValidCustomerIDAndValidStatus() {
     // Act
-    ResponseEntity<String> response =
+    ResponseEntity<List<OrderResponseDto>> response =
         client
-            .patch()
-            .uri("/api/order/" + INVALID_ID + "/assign-employee")
-            .contentType(MediaType.APPLICATION_JSON)
-            .body(dto)
+            .get()
+            .uri("/api/orders?customerID=" + testCustomer.getRoleID() + "&orderStatus=Preparing")
             .retrieve()
-            .toEntity(String.class);
+            .toEntity(new ParameterizedTypeReference<List<OrderResponseDto>>() {});
 
     // Assert
     assertNotNull(response);
-    assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+    assertEquals(HttpStatus.OK, response.getStatusCode());
+    List<OrderResponseDto> orders = response.getBody();
+    assertNotNull(orders);
+    assertFalse(orders.isEmpty());
+    assertTrue(orders.stream().anyMatch(o -> validOrderID.equals(o.getOrderID())));
   }
 
   @Test
   @Order(12)
-  public void testAssignOrderToInvalidEmployee() {
-    // Arrange
-    AssignOrderToEmployeeRequestDto dto = new AssignOrderToEmployeeRequestDto();
-    dto.setEmployeeID(INVALID_ID);
-
+  public void testGetOrdersByInvalidCustomerIDAndValidStatus() {
     // Act
     ResponseEntity<String> response =
         client
-            .patch()
-            .uri("/api/order/" + validOrderID + "/assign-employee")
-            .contentType(MediaType.APPLICATION_JSON)
-            .body(dto)
+            .get()
+            .uri("/api/orders?customerID=" + INVALID_ID + "&orderStatus=Preparing")
             .retrieve()
             .toEntity(String.class);
 
@@ -406,7 +392,73 @@ public class OrderIntegrationTests {
 
   @Test
   @Order(13)
-  public void testAssignOrderToEmployeeValid() {
+  public void testGetOrdersByValidCustomerIDAndInvalidStatus() {
+    // Act
+    ResponseEntity<String> response =
+        client
+            .get()
+            .uri(
+                "/api/orders?customerID="
+                    + testCustomer.getRoleID()
+                    + "&orderStatus="
+                    + INVALID_STATUS)
+            .retrieve()
+            .toEntity(String.class);
+
+    // Assert
+    assertNotNull(response);
+    assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+  }
+
+  // ==== PATCH /api/orders/{orderID}/assign-employee ====
+
+  @Test
+  @Order(14)
+  public void testAssignInvalidOrderToEmployee() {
+    // Arrange
+    AssignOrderToEmployeeRequestDto dto = new AssignOrderToEmployeeRequestDto();
+    dto.setEmployeeID(testEmployee.getRoleID());
+
+    // Act
+    ResponseEntity<String> response =
+        client
+            .patch()
+            .uri("/api/orders/" + INVALID_ID + "/employee")
+            .contentType(MediaType.APPLICATION_JSON)
+            .body(dto)
+            .retrieve()
+            .toEntity(String.class);
+
+    // Assert
+    assertNotNull(response);
+    assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+  }
+
+  @Test
+  @Order(15)
+  public void testAssignOrderToInvalidEmployee() {
+    // Arrange
+    AssignOrderToEmployeeRequestDto dto = new AssignOrderToEmployeeRequestDto();
+    dto.setEmployeeID(INVALID_ID);
+
+    // Act
+    ResponseEntity<String> response =
+        client
+            .patch()
+            .uri("/api/orders/" + validOrderID + "/employee")
+            .contentType(MediaType.APPLICATION_JSON)
+            .body(dto)
+            .retrieve()
+            .toEntity(String.class);
+
+    // Assert
+    assertNotNull(response);
+    assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+  }
+
+  @Test
+  @Order(16)
+  public void testAssignOrderToValidEmployee() {
     // Arrange
     AssignOrderToEmployeeRequestDto dto = new AssignOrderToEmployeeRequestDto();
     dto.setEmployeeID(testEmployee.getRoleID());
@@ -415,7 +467,7 @@ public class OrderIntegrationTests {
     ResponseEntity<OrderResponseDto> response =
         client
             .patch()
-            .uri("/api/order/" + validOrderID + "/assign-employee")
+            .uri("/api/orders/" + validOrderID + "/employee")
             .contentType(MediaType.APPLICATION_JSON)
             .body(dto)
             .retrieve()
@@ -430,11 +482,11 @@ public class OrderIntegrationTests {
     assertEquals(testEmployee.getRoleID(), body.getEmployeeID());
   }
 
-  // ==== PATCH /api/order/{orderID}/delivery-date ====
+  // ==== PATCH /api/orders/{orderID}/delivery-date ====
 
   @Test
-  @Order(14)
-  public void testUpdateOrderDeliveryDateInvalid() {
+  @Order(17)
+  public void testUpdateOrderInvalidDeliveryDate() {
     // Arrange – delivery date is today, which is not at least 24 h ahead
     UpdateOrderDeliveryDateRequestDto dto = new UpdateOrderDeliveryDateRequestDto();
     dto.setDeliveryDate(INVALID_DELIVERY_DATE);
@@ -443,7 +495,7 @@ public class OrderIntegrationTests {
     ResponseEntity<String> response =
         client
             .patch()
-            .uri("/api/order/" + validOrderID + "/delivery-date")
+            .uri("/api/orders/" + validOrderID + "/delivery-date")
             .contentType(MediaType.APPLICATION_JSON)
             .body(dto)
             .retrieve()
@@ -455,8 +507,8 @@ public class OrderIntegrationTests {
   }
 
   @Test
-  @Order(15)
-  public void testUpdateOrderDeliveryDateValid() {
+  @Order(18)
+  public void testUpdateOrderValidDeliveryDate() {
     // Arrange
     Date newDeliveryDate = Date.valueOf(LocalDate.now().plusDays(5));
     UpdateOrderDeliveryDateRequestDto dto = new UpdateOrderDeliveryDateRequestDto();
@@ -466,7 +518,7 @@ public class OrderIntegrationTests {
     ResponseEntity<OrderResponseDto> response =
         client
             .patch()
-            .uri("/api/order/" + validOrderID + "/delivery-date")
+            .uri("/api/orders/" + validOrderID + "/delivery-date")
             .contentType(MediaType.APPLICATION_JSON)
             .body(dto)
             .retrieve()
@@ -481,11 +533,11 @@ public class OrderIntegrationTests {
     assertEquals(newDeliveryDate, body.getDeliveryDate());
   }
 
-  // ==== PATCH /api/order/{orderID}/status ====
+  // ==== PATCH /api/orders/{orderID}/status ====
 
   @Test
-  @Order(16)
-  public void testUpdateOrderStatusInvalid() {
+  @Order(19)
+  public void testUpdateInvalidOrderStatus() {
     // Arrange
     UpdateOrderStatusRequestDto dto = new UpdateOrderStatusRequestDto();
     dto.setOrderStatus(INVALID_STATUS);
@@ -494,7 +546,7 @@ public class OrderIntegrationTests {
     ResponseEntity<String> response =
         client
             .patch()
-            .uri("/api/order/" + validOrderID + "/status")
+            .uri("/api/orders/" + validOrderID + "/status")
             .contentType(MediaType.APPLICATION_JSON)
             .body(dto)
             .retrieve()
@@ -506,8 +558,8 @@ public class OrderIntegrationTests {
   }
 
   @Test
-  @Order(17)
-  public void testUpdateOrderStatusValid() {
+  @Order(20)
+  public void testUpdateValidOrderStatus() {
     // Arrange
     UpdateOrderStatusRequestDto dto = new UpdateOrderStatusRequestDto();
     dto.setOrderStatus("Delivered");
@@ -516,7 +568,7 @@ public class OrderIntegrationTests {
     ResponseEntity<OrderResponseDto> response =
         client
             .patch()
-            .uri("/api/order/" + validOrderID + "/status")
+            .uri("/api/orders/" + validOrderID + "/status")
             .contentType(MediaType.APPLICATION_JSON)
             .body(dto)
             .retrieve()
