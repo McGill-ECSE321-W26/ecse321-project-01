@@ -247,7 +247,7 @@ public class CartIntegrationTests {
     assertEquals(testVariant.getClothingVariantID(), body.getClothingVariantID());
   }
 
-  // ==== GET /api/carts/{customerID}/total ====
+  // ==== GET /api/carts/{customerID} ====
 
   @Test
   @Order(8)
@@ -255,7 +255,7 @@ public class CartIntegrationTests {
     ResponseEntity<CartTotalDTO> response =
         client
             .get()
-            .uri("/api/carts/" + testCustomer.getRoleID() + "/total")
+            .uri("/api/carts/" + testCustomer.getRoleID())
             .retrieve()
             .toEntity(CartTotalDTO.class);
 

@@ -59,13 +59,17 @@ public class CartServiceTests {
   @Test
   public void testGetItemByID() {
     // Arrange
+    String customerId = "customer1";
+    Customer customer = new Customer();
     String itemId = "item1";
     ClothingVariant variant = buildVariant("variant1", 50f, 10);
     Item item = buildItem(itemId, variant, 2);
+    item.setCustomer(customer);
+    when(customerRepository.findByRoleID(customerId)).thenReturn(customer);
     when(itemRepository.findItemByItemID(itemId)).thenReturn(item);
 
     // Act
-    Item result = cartService.getItemByID(itemId);
+    Item result = cartService.getItemByID(customerId, itemId);
 
     // Assert
     assertNotNull(result);
@@ -76,12 +80,16 @@ public class CartServiceTests {
   @Test
   public void testGetItemByInvalidID() {
     // Arrange
+    String customerId = "customer1";
+    Customer customer = new Customer();
     String itemId = "badItem";
+    when(customerRepository.findByRoleID(customerId)).thenReturn(customer);
     when(itemRepository.findItemByItemID(itemId)).thenReturn(null);
 
     // Act & Assert
     ResponseStatusException e =
-        assertThrows(ResponseStatusException.class, () -> cartService.getItemByID(itemId));
+        assertThrows(
+            ResponseStatusException.class, () -> cartService.getItemByID(customerId, itemId));
     assertEquals("404 NOT_FOUND \"There is no item with id " + itemId + ".\"", e.getMessage());
   }
 
@@ -256,7 +264,7 @@ public class CartServiceTests {
         assertThrows(
             ResponseStatusException.class, () -> cartService.addItem(variantId, customerId, 0));
 
-    assertEquals("400 BAD_REQUEST \"The quantity must be greater than one.\"", e.getMessage());
+    assertEquals("400 BAD_REQUEST \"The quantity must be greater than zero.\"", e.getMessage());
   }
 
   // ===== removeItem =====
@@ -346,10 +354,11 @@ public class CartServiceTests {
     when(customerRepository.findByRoleID(customerId)).thenReturn(customer);
 
     // Act
-    cartService.removeAllItems(customerId);
+    int result = cartService.removeAllItems(customerId);
 
     // Assert
-    verify(itemRepository, times(0)).delete(any());
+    verify(itemRepository, times(1)).deleteByCustomer(customer);
+    assertEquals(0, result);
   }
 
   @Test
@@ -364,8 +373,11 @@ public class CartServiceTests {
     when(customerRepository.findByRoleID(customerId)).thenReturn(customer);
 
     // Act
-    cartService.removeAllItems(customerId);
-    verify(itemRepository, times(1)).delete(item);
+    int result = cartService.removeAllItems(customerId);
+
+    // Assert
+    verify(itemRepository, times(1)).deleteByCustomer(customer);
+    assertEquals(1, result);
   }
 
   @Test
@@ -381,8 +393,9 @@ public class CartServiceTests {
     customer.addItem(item2);
     when(customerRepository.findByRoleID(customerId)).thenReturn(customer);
 
-    cartService.removeAllItems(customerId);
-    verify(itemRepository, times(2)).delete(any());
+    int result = cartService.removeAllItems(customerId);
+    verify(itemRepository, times(1)).deleteByCustomer(customer);
+    assertEquals(2, result);
   }
 
   @Test
@@ -403,15 +416,19 @@ public class CartServiceTests {
   @Test
   public void testChangeQuantity() {
     // Arrange
+    String customerId = "customer1";
+    Customer customer = new Customer();
     String itemId = "item1";
     int newQuantity = 3;
     ClothingVariant variant = buildVariant("variant1", 50f, 10);
     Item item = buildItem(itemId, variant, 1);
+    item.setCustomer(customer);
+    when(customerRepository.findByRoleID(customerId)).thenReturn(customer);
     when(itemRepository.findItemByItemID(itemId)).thenReturn(item);
     when(itemRepository.save(any(Item.class))).thenAnswer(i -> i.getArgument(0));
 
     // Act
-    Item result = cartService.changeQuantity(itemId, newQuantity);
+    Item result = cartService.changeQuantity(customerId, itemId, newQuantity);
 
     // Assert
     assertNotNull(result);
@@ -422,15 +439,19 @@ public class CartServiceTests {
   @Test
   public void testChangeQuantityAtExactStock() {
     // Arrange
+    String customerId = "customer1";
+    Customer customer = new Customer();
     String itemId = "item1";
     int stock = 7;
     ClothingVariant variant = buildVariant("variant1", 50f, stock);
     Item item = buildItem(itemId, variant, 1);
+    item.setCustomer(customer);
+    when(customerRepository.findByRoleID(customerId)).thenReturn(customer);
     when(itemRepository.findItemByItemID(itemId)).thenReturn(item);
     when(itemRepository.save(any(Item.class))).thenAnswer(i -> i.getArgument(0));
 
     // Act
-    Item result = cartService.changeQuantity(itemId, stock);
+    Item result = cartService.changeQuantity(customerId, itemId, stock);
 
     // Insert
     assertEquals(stock, result.getQuantity());
@@ -439,24 +460,33 @@ public class CartServiceTests {
   @Test
   public void testChangeQuantityWithInvalidItem() {
     // Arrange
+    String customerId = "customer1";
+    Customer customer = new Customer();
     String itemId = "badItem";
+    when(customerRepository.findByRoleID(customerId)).thenReturn(customer);
     when(itemRepository.findItemByItemID(itemId)).thenReturn(null);
 
     // Act & Assert
     ResponseStatusException e =
-        assertThrows(ResponseStatusException.class, () -> cartService.changeQuantity(itemId, 1));
+        assertThrows(
+            ResponseStatusException.class, () -> cartService.changeQuantity(customerId, itemId, 1));
     assertEquals("404 NOT_FOUND \"There is no item with id " + itemId + ".\"", e.getMessage());
   }
 
   @Test
   public void testChangeQuantityWithZeroQuantity() {
+    String customerId = "customer1";
+    Customer customer = new Customer();
     String itemId = "item1";
     ClothingVariant variant = buildVariant("variant1", 50f, 10);
     Item item = buildItem(itemId, variant, 2);
+    item.setCustomer(customer);
+    when(customerRepository.findByRoleID(customerId)).thenReturn(customer);
     when(itemRepository.findItemByItemID(itemId)).thenReturn(item);
 
     ResponseStatusException e =
-        assertThrows(ResponseStatusException.class, () -> cartService.changeQuantity(itemId, 0));
+        assertThrows(
+            ResponseStatusException.class, () -> cartService.changeQuantity(customerId, itemId, 0));
     assertEquals(
         "400 BAD_REQUEST \"The new quantity has to be a positive number.\"", e.getMessage());
   }
@@ -464,13 +494,19 @@ public class CartServiceTests {
   @Test
   public void testChangeQuantityWithNegativeQuantity() {
     // Negative quantities must also be rejected by the newQuantity < 1 check
+    String customerId = "customer1";
+    Customer customer = new Customer();
     String itemId = "item1";
     ClothingVariant variant = buildVariant("variant1", 50f, 10);
     Item item = buildItem(itemId, variant, 2);
+    item.setCustomer(customer);
+    when(customerRepository.findByRoleID(customerId)).thenReturn(customer);
     when(itemRepository.findItemByItemID(itemId)).thenReturn(item);
 
     ResponseStatusException e =
-        assertThrows(ResponseStatusException.class, () -> cartService.changeQuantity(itemId, -5));
+        assertThrows(
+            ResponseStatusException.class,
+            () -> cartService.changeQuantity(customerId, itemId, -5));
     assertEquals(
         "400 BAD_REQUEST \"The new quantity has to be a positive number.\"", e.getMessage());
   }
@@ -478,17 +514,22 @@ public class CartServiceTests {
   @Test
   public void testChangeQuantityExceedingStock() {
     // Arrange
+    String customerId = "customer1";
+    Customer customer = new Customer();
     String itemId = "item1";
     int stock = 5;
     int newQuantity = 10;
     ClothingVariant variant = buildVariant("variant1", 50f, stock);
     Item item = buildItem(itemId, variant, 2);
+    item.setCustomer(customer);
+    when(customerRepository.findByRoleID(customerId)).thenReturn(customer);
     when(itemRepository.findItemByItemID(itemId)).thenReturn(item);
 
     // Act & Assert
     ResponseStatusException e =
         assertThrows(
-            ResponseStatusException.class, () -> cartService.changeQuantity(itemId, newQuantity));
+            ResponseStatusException.class,
+            () -> cartService.changeQuantity(customerId, itemId, newQuantity));
     assertEquals(
         "400 BAD_REQUEST \"The quantity "
             + newQuantity

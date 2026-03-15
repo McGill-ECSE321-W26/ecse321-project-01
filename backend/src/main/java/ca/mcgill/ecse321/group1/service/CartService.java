@@ -127,7 +127,7 @@ public class CartService {
   }
 
   @Transactional
-  public void removeAllItems(String customerID) {
+  public int removeAllItems(String customerID) {
     Customer customer = customerRepository.findByRoleID(customerID);
 
     if (customer == null) {
@@ -135,7 +135,7 @@ public class CartService {
           HttpStatus.NOT_FOUND, "There is no customer with id " + customerID + ".");
     }
 
-    itemRepository.deleteByCustomer(customer);
+    return itemRepository.deleteByCustomer(customer);
   }
 
   @Transactional
