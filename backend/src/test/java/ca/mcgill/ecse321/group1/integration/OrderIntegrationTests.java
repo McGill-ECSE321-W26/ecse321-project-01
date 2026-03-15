@@ -604,4 +604,96 @@ public class OrderIntegrationTests {
     assertNotNull(response);
     assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
   }
+
+  // ==== GET /api/orders/employee/{employeeID} ====
+
+  @Test
+  @Order(22)
+  public void testGetOrdersByValidEmployeeID() {
+    // Act
+    ResponseEntity<List<OrderResponseDto>> response =
+        client
+            .get()
+            .uri("/api/orders/employee/" + testEmployee.getRoleID())
+            .retrieve()
+            .toEntity(new ParameterizedTypeReference<List<OrderResponseDto>>() {});
+
+    // Assert
+    assertNotNull(response);
+    assertEquals(HttpStatus.OK, response.getStatusCode());
+    List<OrderResponseDto> orders = response.getBody();
+    assertNotNull(orders);
+    assertFalse(orders.isEmpty());
+    assertTrue(orders.stream().anyMatch(o -> validOrderID.equals(o.getOrderID())));
+  }
+
+  @Test
+  @Order(23)
+  public void testGetOrdersByInvalidEmployeeID() {
+    // Act
+    ResponseEntity<String> response =
+        client.get().uri("/api/orders/employee/" + INVALID_ID).retrieve().toEntity(String.class);
+
+    // Assert
+    assertNotNull(response);
+    assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+  }
+
+  // ==== GET /api/orders/employee/{employeeID}?orderStatus={orderStatus} ====
+
+  @Test
+  @Order(24)
+  public void testGetOrdersByValidEmployeeIDAndValidStatus() {
+    // Act
+    ResponseEntity<List<OrderResponseDto>> response =
+        client
+            .get()
+            .uri("/api/orders/employee/" + testEmployee.getRoleID() + "?orderStatus=Delivered")
+            .retrieve()
+            .toEntity(new ParameterizedTypeReference<List<OrderResponseDto>>() {});
+
+    // Assert
+    assertNotNull(response);
+    assertEquals(HttpStatus.OK, response.getStatusCode());
+    List<OrderResponseDto> orders = response.getBody();
+    assertNotNull(orders);
+    assertFalse(orders.isEmpty());
+    assertTrue(orders.stream().anyMatch(o -> validOrderID.equals(o.getOrderID())));
+  }
+
+  @Test
+  @Order(25)
+  public void testGetOrdersByInvalidEmployeeIDAndValidStatus() {
+    // Act
+    ResponseEntity<String> response =
+        client
+            .get()
+            .uri("/api/orders/employee/" + INVALID_ID + "?orderStatus=Delivered")
+            .retrieve()
+            .toEntity(String.class);
+
+    // Assert
+    assertNotNull(response);
+    assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+  }
+
+  @Test
+  @Order(26)
+  public void testGetOrdersByValidEmployeeIDAndInvalidStatus() {
+    // Act
+    ResponseEntity<String> response =
+        client
+            .get()
+            .uri(
+                "/api/orders/employee/"
+                    + testEmployee.getRoleID()
+                    + "?orderStatus="
+                    + INVALID_STATUS)
+            .retrieve()
+            .toEntity(String.class);
+
+    // Assert
+    assertNotNull(response);
+    assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+  }
 }
