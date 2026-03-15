@@ -184,8 +184,7 @@ public class OrderService {
       }
       if (order.getDeliveryDate().toLocalDate().isBefore(LocalDate.now().plusDays(1))) {
         throw new ResponseStatusException(
-            HttpStatus.BAD_REQUEST,
-            "Cannot cancel an order within 24 hours of its delivery date.");
+            HttpStatus.BAD_REQUEST, "Cannot cancel an order within 24 hours of its delivery date.");
       }
     }
 
