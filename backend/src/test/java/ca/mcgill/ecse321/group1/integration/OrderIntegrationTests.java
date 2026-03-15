@@ -410,20 +410,20 @@ public class OrderIntegrationTests {
     assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
   }
 
-  // ==== PATCH /api/orders/{orderID}/assign-employee ====
+  // ==== PATCH /api/orders/{orderID} (assign employee) ====
 
   @Test
   @Order(14)
   public void testAssignInvalidOrderToEmployee() {
     // Arrange
-    AssignOrderToEmployeeRequestDto dto = new AssignOrderToEmployeeRequestDto();
+    OrderRequestUpdateDto dto = new OrderRequestUpdateDto();
     dto.setEmployeeID(testEmployee.getRoleID());
 
     // Act
     ResponseEntity<String> response =
         client
             .patch()
-            .uri("/api/orders/" + INVALID_ID + "/employee")
+            .uri("/api/orders/" + INVALID_ID)
             .contentType(MediaType.APPLICATION_JSON)
             .body(dto)
             .retrieve()
@@ -438,14 +438,14 @@ public class OrderIntegrationTests {
   @Order(15)
   public void testAssignOrderToInvalidEmployee() {
     // Arrange
-    AssignOrderToEmployeeRequestDto dto = new AssignOrderToEmployeeRequestDto();
+    OrderRequestUpdateDto dto = new OrderRequestUpdateDto();
     dto.setEmployeeID(INVALID_ID);
 
     // Act
     ResponseEntity<String> response =
         client
             .patch()
-            .uri("/api/orders/" + validOrderID + "/employee")
+            .uri("/api/orders/" + validOrderID)
             .contentType(MediaType.APPLICATION_JSON)
             .body(dto)
             .retrieve()
@@ -460,14 +460,14 @@ public class OrderIntegrationTests {
   @Order(16)
   public void testAssignOrderToValidEmployee() {
     // Arrange
-    AssignOrderToEmployeeRequestDto dto = new AssignOrderToEmployeeRequestDto();
+    OrderRequestUpdateDto dto = new OrderRequestUpdateDto();
     dto.setEmployeeID(testEmployee.getRoleID());
 
     // Act
     ResponseEntity<OrderResponseDto> response =
         client
             .patch()
-            .uri("/api/orders/" + validOrderID + "/employee")
+            .uri("/api/orders/" + validOrderID)
             .contentType(MediaType.APPLICATION_JSON)
             .body(dto)
             .retrieve()
@@ -482,20 +482,20 @@ public class OrderIntegrationTests {
     assertEquals(testEmployee.getRoleID(), body.getEmployeeID());
   }
 
-  // ==== PATCH /api/orders/{orderID}/delivery-date ====
+  // ==== PATCH /api/orders/{orderID} (delivery date) ====
 
   @Test
   @Order(17)
   public void testUpdateOrderInvalidDeliveryDate() {
     // Arrange – delivery date is today, which is not at least 24 h ahead
-    UpdateOrderDeliveryDateRequestDto dto = new UpdateOrderDeliveryDateRequestDto();
+    OrderRequestUpdateDto dto = new OrderRequestUpdateDto();
     dto.setDeliveryDate(INVALID_DELIVERY_DATE);
 
     // Act
     ResponseEntity<String> response =
         client
             .patch()
-            .uri("/api/orders/" + validOrderID + "/delivery-date")
+            .uri("/api/orders/" + validOrderID)
             .contentType(MediaType.APPLICATION_JSON)
             .body(dto)
             .retrieve()
@@ -511,14 +511,14 @@ public class OrderIntegrationTests {
   public void testUpdateOrderValidDeliveryDate() {
     // Arrange
     Date newDeliveryDate = Date.valueOf(LocalDate.now().plusDays(5));
-    UpdateOrderDeliveryDateRequestDto dto = new UpdateOrderDeliveryDateRequestDto();
+    OrderRequestUpdateDto dto = new OrderRequestUpdateDto();
     dto.setDeliveryDate(newDeliveryDate);
 
     // Act
     ResponseEntity<OrderResponseDto> response =
         client
             .patch()
-            .uri("/api/orders/" + validOrderID + "/delivery-date")
+            .uri("/api/orders/" + validOrderID)
             .contentType(MediaType.APPLICATION_JSON)
             .body(dto)
             .retrieve()
@@ -533,20 +533,20 @@ public class OrderIntegrationTests {
     assertEquals(newDeliveryDate, body.getDeliveryDate());
   }
 
-  // ==== PATCH /api/orders/{orderID}/status ====
+  // ==== PATCH /api/orders/{orderID} (status) ====
 
   @Test
   @Order(19)
   public void testUpdateInvalidOrderStatus() {
     // Arrange
-    UpdateOrderStatusRequestDto dto = new UpdateOrderStatusRequestDto();
+    OrderRequestUpdateDto dto = new OrderRequestUpdateDto();
     dto.setOrderStatus(INVALID_STATUS);
 
     // Act
     ResponseEntity<String> response =
         client
             .patch()
-            .uri("/api/orders/" + validOrderID + "/status")
+            .uri("/api/orders/" + validOrderID)
             .contentType(MediaType.APPLICATION_JSON)
             .body(dto)
             .retrieve()
@@ -561,14 +561,14 @@ public class OrderIntegrationTests {
   @Order(20)
   public void testUpdateValidOrderStatus() {
     // Arrange
-    UpdateOrderStatusRequestDto dto = new UpdateOrderStatusRequestDto();
+    OrderRequestUpdateDto dto = new OrderRequestUpdateDto();
     dto.setOrderStatus("Delivered");
 
     // Act
     ResponseEntity<OrderResponseDto> response =
         client
             .patch()
-            .uri("/api/orders/" + validOrderID + "/status")
+            .uri("/api/orders/" + validOrderID)
             .contentType(MediaType.APPLICATION_JSON)
             .body(dto)
             .retrieve()
@@ -587,14 +587,14 @@ public class OrderIntegrationTests {
   @Order(21)
   public void testCancelDeliveredOrder() {
     // Arrange – order is now "Delivered" after test 20
-    UpdateOrderStatusRequestDto dto = new UpdateOrderStatusRequestDto();
+    OrderRequestUpdateDto dto = new OrderRequestUpdateDto();
     dto.setOrderStatus("Cancelled");
 
     // Act
     ResponseEntity<String> response =
         client
             .patch()
-            .uri("/api/orders/" + validOrderID + "/status")
+            .uri("/api/orders/" + validOrderID)
             .contentType(MediaType.APPLICATION_JSON)
             .body(dto)
             .retrieve()
