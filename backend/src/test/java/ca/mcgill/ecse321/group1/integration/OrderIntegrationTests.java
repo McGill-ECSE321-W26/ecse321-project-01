@@ -150,7 +150,7 @@ public class OrderIntegrationTests {
     ResponseEntity<String> response =
         client
             .post()
-            .uri("/api/orderss")
+            .uri("/api/orders")
             .contentType(MediaType.APPLICATION_JSON)
             .body(dto)
             .retrieve()
@@ -280,7 +280,7 @@ public class OrderIntegrationTests {
     assertEquals(orders.getFirst().getOrderID(), validOrderID);
   }
 
-  // ==== GET /api/orders?customerID={customerID} ====
+  // ==== GET /api/orders/customer/{customerID} ====
 
   @Test
   @Order(7)
@@ -289,7 +289,7 @@ public class OrderIntegrationTests {
     ResponseEntity<List<OrderResponseDto>> response =
         client
             .get()
-            .uri("/api/orders?customerID=" + testCustomer.getRoleID())
+            .uri("/api/orders/customer/" + testCustomer.getRoleID())
             .retrieve()
             .toEntity(new ParameterizedTypeReference<List<OrderResponseDto>>() {});
 
@@ -307,7 +307,7 @@ public class OrderIntegrationTests {
   public void testGetOrdersByInvalidCustomerID() {
     // Act
     ResponseEntity<String> response =
-        client.get().uri("/api/orders?customerID=" + INVALID_ID).retrieve().toEntity(String.class);
+        client.get().uri("/api/orders/customer/" + INVALID_ID).retrieve().toEntity(String.class);
 
     // Assert
     assertNotNull(response);
@@ -352,7 +352,7 @@ public class OrderIntegrationTests {
     assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
   }
 
-  // ==== GET /api/orders?customerID={customerID}&orderStatus={orderStatus} ====
+  // ==== GET /api/orders/customer/{customerID}?orderStatus={orderStatus} ====
 
   @Test
   @Order(11)
@@ -361,7 +361,7 @@ public class OrderIntegrationTests {
     ResponseEntity<List<OrderResponseDto>> response =
         client
             .get()
-            .uri("/api/orders?customerID=" + testCustomer.getRoleID() + "&orderStatus=Preparing")
+            .uri("/api/orders/customer/" + testCustomer.getRoleID() + "?orderStatus=Preparing")
             .retrieve()
             .toEntity(new ParameterizedTypeReference<List<OrderResponseDto>>() {});
 
@@ -381,7 +381,7 @@ public class OrderIntegrationTests {
     ResponseEntity<String> response =
         client
             .get()
-            .uri("/api/orders?customerID=" + INVALID_ID + "&orderStatus=Preparing")
+            .uri("/api/orders/customer/" + INVALID_ID + "?orderStatus=Preparing")
             .retrieve()
             .toEntity(String.class);
 
@@ -398,9 +398,9 @@ public class OrderIntegrationTests {
         client
             .get()
             .uri(
-                "/api/orders?customerID="
+                "/api/orders/customer/"
                     + testCustomer.getRoleID()
-                    + "&orderStatus="
+                    + "?orderStatus="
                     + INVALID_STATUS)
             .retrieve()
             .toEntity(String.class);
@@ -597,6 +597,98 @@ public class OrderIntegrationTests {
             .uri("/api/orders/" + validOrderID)
             .contentType(MediaType.APPLICATION_JSON)
             .body(dto)
+            .retrieve()
+            .toEntity(String.class);
+
+    // Assert
+    assertNotNull(response);
+    assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+  }
+
+  // ==== GET /api/orders/employee/{employeeID} ====
+
+  @Test
+  @Order(22)
+  public void testGetOrdersByValidEmployeeID() {
+    // Act
+    ResponseEntity<List<OrderResponseDto>> response =
+        client
+            .get()
+            .uri("/api/orders/employee/" + testEmployee.getRoleID())
+            .retrieve()
+            .toEntity(new ParameterizedTypeReference<List<OrderResponseDto>>() {});
+
+    // Assert
+    assertNotNull(response);
+    assertEquals(HttpStatus.OK, response.getStatusCode());
+    List<OrderResponseDto> orders = response.getBody();
+    assertNotNull(orders);
+    assertFalse(orders.isEmpty());
+    assertTrue(orders.stream().anyMatch(o -> validOrderID.equals(o.getOrderID())));
+  }
+
+  @Test
+  @Order(23)
+  public void testGetOrdersByInvalidEmployeeID() {
+    // Act
+    ResponseEntity<String> response =
+        client.get().uri("/api/orders/employee/" + INVALID_ID).retrieve().toEntity(String.class);
+
+    // Assert
+    assertNotNull(response);
+    assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+  }
+
+  // ==== GET /api/orders/employee/{employeeID}?orderStatus={orderStatus} ====
+
+  @Test
+  @Order(24)
+  public void testGetOrdersByValidEmployeeIDAndValidStatus() {
+    // Act
+    ResponseEntity<List<OrderResponseDto>> response =
+        client
+            .get()
+            .uri("/api/orders/employee/" + testEmployee.getRoleID() + "?orderStatus=Delivered")
+            .retrieve()
+            .toEntity(new ParameterizedTypeReference<List<OrderResponseDto>>() {});
+
+    // Assert
+    assertNotNull(response);
+    assertEquals(HttpStatus.OK, response.getStatusCode());
+    List<OrderResponseDto> orders = response.getBody();
+    assertNotNull(orders);
+    assertFalse(orders.isEmpty());
+    assertTrue(orders.stream().anyMatch(o -> validOrderID.equals(o.getOrderID())));
+  }
+
+  @Test
+  @Order(25)
+  public void testGetOrdersByInvalidEmployeeIDAndValidStatus() {
+    // Act
+    ResponseEntity<String> response =
+        client
+            .get()
+            .uri("/api/orders/employee/" + INVALID_ID + "?orderStatus=Delivered")
+            .retrieve()
+            .toEntity(String.class);
+
+    // Assert
+    assertNotNull(response);
+    assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+  }
+
+  @Test
+  @Order(26)
+  public void testGetOrdersByValidEmployeeIDAndInvalidStatus() {
+    // Act
+    ResponseEntity<String> response =
+        client
+            .get()
+            .uri(
+                "/api/orders/employee/"
+                    + testEmployee.getRoleID()
+                    + "?orderStatus="
+                    + INVALID_STATUS)
             .retrieve()
             .toEntity(String.class);
 
