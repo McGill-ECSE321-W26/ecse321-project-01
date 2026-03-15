@@ -130,6 +130,25 @@ public class OrderServiceTests {
   }
 
   @Test
+  public void testCreateOrderWithEmptyCart() {
+    // Arrange
+    String customerId = "customer1";
+    Customer customer = new Customer();
+    customer.setRoleID(customerId);
+
+    when(customerRepository.findByRoleID(customerId)).thenReturn(customer);
+    when(itemRepository.findItemsByCustomer(customer)).thenReturn(List.of());
+
+    // Act & Assert
+    ResponseStatusException e =
+        assertThrows(
+            ResponseStatusException.class,
+            () ->
+                orderService.createOrder(customerId, Date.valueOf(LocalDate.now().plusDays(2)), 0));
+    assertEquals("There are no items in the cart of customer " + customerId + ".", e.getReason());
+  }
+
+  @Test
   public void testCreateOrderWithNullDeliveryDate() {
     // Arrange
     String customerId = "customer1";
@@ -196,6 +215,62 @@ public class OrderServiceTests {
             ResponseStatusException.class,
             () -> orderService.createOrder(customerId, deliveryDate, -1));
     assertEquals("Loyalty points must be positive.", e.getReason());
+  }
+
+  @Test
+  public void testCreateOrderWithInsufficientLoyaltyPoints() {
+    // Arrange
+    String customerId = "customer1";
+    int initialLoyaltyPoints = 5;
+    int usedLoyaltyPoints = 50; // More than the customer owns
+
+    Customer customer = new Customer();
+    customer.setRoleID(customerId);
+    customer.setLoyaltyPoints(initialLoyaltyPoints);
+
+    Item item = buildItemWithPrice(100.0f);
+    item.setCustomer(customer);
+
+    Date deliveryDate = Date.valueOf(LocalDate.now().plusDays(2));
+
+    when(customerRepository.findByRoleID(customerId)).thenReturn(customer);
+    when(itemRepository.findItemsByCustomer(customer)).thenReturn(List.of(item));
+
+    // Act & Assert
+    ResponseStatusException e =
+        assertThrows(
+            ResponseStatusException.class,
+            () -> orderService.createOrder(customerId, deliveryDate, usedLoyaltyPoints));
+    assertEquals(
+        "The customer does not have enough loyalty points to complete the purchase.",
+        e.getReason());
+  }
+
+  @Test
+  public void testCreateOrderWithLoyaltyPointsCoveringEntireOrder() {
+    // Arrange – loyaltySaving = 100 * 0.2 = 20 >= 10 (item total)
+    String customerId = "customer1";
+    int usedLoyaltyPoints = 100;
+    float itemPrice = 10.0f;
+
+    Customer customer = new Customer();
+    customer.setRoleID(customerId);
+    customer.setLoyaltyPoints(usedLoyaltyPoints); // enough to pass validateLoyaltyPoints
+
+    Item item = buildItemWithPrice(itemPrice);
+    item.setCustomer(customer);
+
+    Date deliveryDate = Date.valueOf(LocalDate.now().plusDays(2));
+
+    when(customerRepository.findByRoleID(customerId)).thenReturn(customer);
+    when(itemRepository.findItemsByCustomer(customer)).thenReturn(List.of(item));
+
+    // Act & Assert
+    ResponseStatusException e =
+        assertThrows(
+            ResponseStatusException.class,
+            () -> orderService.createOrder(customerId, deliveryDate, usedLoyaltyPoints));
+    assertEquals("Cannot pay for an entire order with only loyalty points.", e.getReason());
   }
 
   // ===== updateOrder (assign employee) =====
@@ -648,6 +723,100 @@ public class OrderServiceTests {
         assertThrows(
             ResponseStatusException.class,
             () -> orderService.getOrdersByCustomerIDAndStatus(customerId, invalidStatus));
+    assertEquals("Invalid order status " + invalidStatus + ".", e.getReason());
+  }
+
+  // ===== getOrdersByEmployeeID =====
+
+  @Test
+  public void testGetOrdersByValidEmployeeID() {
+    // Arrange
+    String employeeId = "emp1";
+    Employee employee = new Employee();
+    employee.setRoleID(employeeId);
+    Order order1 = new Order();
+    Order order2 = new Order();
+
+    when(employeeRepository.findByRoleID(employeeId)).thenReturn(employee);
+    when(orderRepository.findByEmployee(employee)).thenReturn(List.of(order1, order2));
+
+    // Act
+    List<Order> orders = orderService.getOrdersByEmployeeID(employeeId);
+
+    // Assert
+    assertNotNull(orders);
+    assertEquals(order1, orders.getFirst());
+    assertEquals(order2, orders.getLast());
+  }
+
+  @Test
+  public void testGetOrdersByInvalidEmployeeID() {
+    // Arrange
+    String employeeId = "badEmployee";
+    when(employeeRepository.findByRoleID(employeeId)).thenReturn(null);
+
+    // Act & Assert
+    ResponseStatusException e =
+        assertThrows(
+            ResponseStatusException.class, () -> orderService.getOrdersByEmployeeID(employeeId));
+    assertEquals("There is no employee with id " + employeeId + ".", e.getReason());
+  }
+
+  // ===== getOrdersByEmployeeIDAndStatus =====
+
+  @Test
+  public void testGetOrdersByEmployeeIDAndStatusValid() {
+    // Arrange
+    String employeeId = "emp1";
+    Employee employee = new Employee();
+    employee.setRoleID(employeeId);
+    Order order1 = new Order();
+    order1.setOrderStatus(Order.OrderStatus.Preparing);
+    Order order2 = new Order();
+    order2.setOrderStatus(Order.OrderStatus.Preparing);
+
+    when(employeeRepository.findByRoleID(employeeId)).thenReturn(employee);
+    when(orderRepository.findByEmployeeAndOrderStatus(employee, Order.OrderStatus.Preparing))
+        .thenReturn(List.of(order1, order2));
+
+    // Act
+    List<Order> orders = orderService.getOrdersByEmployeeIDAndStatus(employeeId, "Preparing");
+
+    // Assert
+    assertNotNull(orders);
+    assertEquals(2, orders.size());
+    assertEquals(order1, orders.getFirst());
+    assertEquals(order2, orders.getLast());
+  }
+
+  @Test
+  public void testGetOrdersByEmployeeIDAndStatusInvalidEmployee() {
+    // Arrange
+    String employeeId = "badEmployee";
+    when(employeeRepository.findByRoleID(employeeId)).thenReturn(null);
+
+    // Act & Assert
+    ResponseStatusException e =
+        assertThrows(
+            ResponseStatusException.class,
+            () -> orderService.getOrdersByEmployeeIDAndStatus(employeeId, "Preparing"));
+    assertEquals("There is no employee with id " + employeeId + ".", e.getReason());
+  }
+
+  @Test
+  public void testGetOrdersByEmployeeIDAndStatusInvalidStatus() {
+    // Arrange
+    String employeeId = "emp1";
+    String invalidStatus = "Unknown";
+    Employee employee = new Employee();
+    employee.setRoleID(employeeId);
+    when(employeeRepository.findByRoleID(employeeId)).thenReturn(employee);
+
+    // Act & Assert
+    ResponseStatusException e =
+        assertThrows(
+            ResponseStatusException.class,
+            () -> orderService.getOrdersByEmployeeIDAndStatus(employeeId, invalidStatus));
     assertEquals("Invalid order status " + invalidStatus + ".", e.getReason());
   }
 }
