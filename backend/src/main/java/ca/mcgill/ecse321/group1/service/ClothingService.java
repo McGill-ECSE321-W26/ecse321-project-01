@@ -170,7 +170,11 @@ public class ClothingService {
 
   @Transactional
   public void deleteVariant(String modelId, String variantId) throws ResponseStatusException {
-    getVariant(modelId, variantId); // Validate variant exists under model
-    clothingVariantRepository.deleteByClothingVariantID(variantId);
+    int deletedCount = clothingVariantRepository.deleteByClothingVariantID(variantId);
+    if (deletedCount == 0) {
+      throw new ResponseStatusException(
+          HttpStatus.NOT_FOUND,
+          String.format("Clothing variant with ID %s not found under model %s", variantId, modelId));
+    }
   }
 }
