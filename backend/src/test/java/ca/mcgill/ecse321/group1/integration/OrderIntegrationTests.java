@@ -125,12 +125,13 @@ public class OrderIntegrationTests {
 
   @AfterAll
   public void cleanup() {
-    orderRepository.deleteById(validOrderID);
+    if (validOrderID != null) orderRepository.deleteById(validOrderID);
     itemRepository.deleteById(testItem.getItemID());
     customerRepository.deleteById(testCustomer.getRoleID());
     employeeRepository.deleteById(testEmployee.getRoleID());
     personRepository.deleteById(testCustomerPerson.getPersonID());
     personRepository.deleteById(testEmployeePerson.getPersonID());
+    clothingVariantRepository.deleteById(testVariant.getClothingVariantID());
     clothingModelRepository.deleteById(testModel.getClothingModelID());
   }
 
@@ -357,7 +358,7 @@ public class OrderIntegrationTests {
     assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
   }
 
-  // ==== PUT /api/order/{orderID}/assign-employee ====
+  // ==== PATCH /api/order/{orderID}/assign-employee ====
 
   @Test
   @Order(11)
@@ -369,7 +370,7 @@ public class OrderIntegrationTests {
     // Act
     ResponseEntity<String> response =
         client
-            .put()
+            .patch()
             .uri("/api/order/" + INVALID_ID + "/assign-employee")
             .contentType(MediaType.APPLICATION_JSON)
             .body(dto)
@@ -391,7 +392,7 @@ public class OrderIntegrationTests {
     // Act
     ResponseEntity<String> response =
         client
-            .put()
+            .patch()
             .uri("/api/order/" + validOrderID + "/assign-employee")
             .contentType(MediaType.APPLICATION_JSON)
             .body(dto)
@@ -413,7 +414,7 @@ public class OrderIntegrationTests {
     // Act
     ResponseEntity<OrderResponseDto> response =
         client
-            .put()
+            .patch()
             .uri("/api/order/" + validOrderID + "/assign-employee")
             .contentType(MediaType.APPLICATION_JSON)
             .body(dto)
@@ -429,7 +430,7 @@ public class OrderIntegrationTests {
     assertEquals(testEmployee.getRoleID(), body.getEmployeeID());
   }
 
-  // ==== PUT /api/order/{orderID}/delivery-date ====
+  // ==== PATCH /api/order/{orderID}/delivery-date ====
 
   @Test
   @Order(14)
@@ -441,7 +442,7 @@ public class OrderIntegrationTests {
     // Act
     ResponseEntity<String> response =
         client
-            .put()
+            .patch()
             .uri("/api/order/" + validOrderID + "/delivery-date")
             .contentType(MediaType.APPLICATION_JSON)
             .body(dto)
@@ -464,7 +465,7 @@ public class OrderIntegrationTests {
     // Act
     ResponseEntity<OrderResponseDto> response =
         client
-            .put()
+            .patch()
             .uri("/api/order/" + validOrderID + "/delivery-date")
             .contentType(MediaType.APPLICATION_JSON)
             .body(dto)
@@ -480,7 +481,7 @@ public class OrderIntegrationTests {
     assertEquals(newDeliveryDate, body.getDeliveryDate());
   }
 
-  // ==== PUT /api/order/{orderID}/status ====
+  // ==== PATCH /api/order/{orderID}/status ====
 
   @Test
   @Order(16)
@@ -492,7 +493,7 @@ public class OrderIntegrationTests {
     // Act
     ResponseEntity<String> response =
         client
-            .put()
+            .patch()
             .uri("/api/order/" + validOrderID + "/status")
             .contentType(MediaType.APPLICATION_JSON)
             .body(dto)
@@ -514,7 +515,7 @@ public class OrderIntegrationTests {
     // Act
     ResponseEntity<OrderResponseDto> response =
         client
-            .put()
+            .patch()
             .uri("/api/order/" + validOrderID + "/status")
             .contentType(MediaType.APPLICATION_JSON)
             .body(dto)

@@ -27,21 +27,21 @@ public class OrderController {
     return new OrderResponseDto(order);
   }
 
-  @PutMapping("/{orderID}/assign-employee")
+  @PatchMapping("/{orderID}/assign-employee")
   public OrderResponseDto assignOrderToEmployee(
       @PathVariable String orderID, @RequestBody AssignOrderToEmployeeRequestDto dto) {
     Order order = orderService.assignOrderToEmployee(orderID, dto.getEmployeeID());
     return new OrderResponseDto(order);
   }
 
-  @PutMapping("/{orderID}/delivery-date")
+  @PatchMapping("/{orderID}/delivery-date")
   public OrderResponseDto updateOrderDeliveryDate(
       @PathVariable String orderID, @RequestBody UpdateOrderDeliveryDateRequestDto dto) {
     Order order = orderService.updateOrderDeliveryDate(orderID, dto.getDeliveryDate());
     return new OrderResponseDto(order);
   }
 
-  @PutMapping("/{orderID}/status")
+  @PatchMapping("/{orderID}/status")
   public OrderResponseDto updateOrderStatus(
       @PathVariable String orderID, @RequestBody UpdateOrderStatusRequestDto dto) {
     Order order = orderService.updateOrderStatus(orderID, dto.getOrderStatus());
