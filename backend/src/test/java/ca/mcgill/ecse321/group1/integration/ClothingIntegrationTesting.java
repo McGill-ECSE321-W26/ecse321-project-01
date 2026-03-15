@@ -7,8 +7,13 @@ import ca.mcgill.ecse321.group1.dto.ClothingModelResponseDto;
 import ca.mcgill.ecse321.group1.dto.ClothingVariantCreateRequestDto;
 import ca.mcgill.ecse321.group1.dto.ClothingVariantResponseDto;
 import ca.mcgill.ecse321.group1.model.ClothingVariant;
+import ca.mcgill.ecse321.group1.model.Manager;
+import ca.mcgill.ecse321.group1.model.Person;
 import ca.mcgill.ecse321.group1.repository.ClothingModelRepository;
 import ca.mcgill.ecse321.group1.repository.ClothingVariantRepository;
+import ca.mcgill.ecse321.group1.repository.ManagerRepository;
+import ca.mcgill.ecse321.group1.repository.PersonRepository;
+import ca.mcgill.ecse321.group1.security.JwtUtil;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.MethodOrderer;
@@ -40,6 +45,15 @@ public class ClothingIntegrationTesting {
 
   @Autowired private ClothingModelRepository modelRepository;
 
+  @Autowired private PersonRepository personRepository;
+
+  @Autowired private ManagerRepository managerRepository;
+
+  @Autowired private JwtUtil jwtUtil;
+
+  private Person managerPerson;
+  private String managerToken;
+
   // Valid test data
   private final String VALID_NAME = "Winter Jacket";
   private final float VALID_PRICE = 99.99f;
@@ -62,12 +76,25 @@ public class ClothingIntegrationTesting {
             .baseUrl("http://localhost:" + port)
             .defaultStatusHandler(HttpStatusCode::isError, (request, response) -> {})
             .build();
+
+    managerPerson = new Person();
+    managerPerson.setEmail("clothing-manager@test.com");
+    managerPerson.setPassword("password");
+    managerPerson = personRepository.save(managerPerson);
+
+    Manager manager = new Manager();
+    manager.setPerson(managerPerson);
+    managerRepository.save(manager);
+
+    managerToken = jwtUtil.generateToken(managerPerson, "Manager");
   }
 
   @AfterAll
   public void clearDatabase() {
     variantRepository.deleteAll();
     modelRepository.deleteAll();
+    managerRepository.deleteAll();
+    personRepository.deleteById(managerPerson.getPersonID());
   }
 
   @Test
@@ -82,6 +109,7 @@ public class ClothingIntegrationTesting {
         client
             .post()
             .uri("/api/clothing")
+            .header("Authorization", "Bearer " + managerToken)
             .contentType(MediaType.APPLICATION_JSON)
             .body(request)
             .retrieve()
@@ -161,6 +189,7 @@ public class ClothingIntegrationTesting {
         client
             .post()
             .uri(url)
+            .header("Authorization", "Bearer " + managerToken)
             .contentType(MediaType.APPLICATION_JSON)
             .body(request)
             .retrieve()
@@ -192,6 +221,7 @@ public class ClothingIntegrationTesting {
         client
             .post()
             .uri(url)
+            .header("Authorization", "Bearer " + managerToken)
             .contentType(MediaType.APPLICATION_JSON)
             .body(request)
             .retrieve()
@@ -261,7 +291,12 @@ public class ClothingIntegrationTesting {
     String url = "/api/clothing/" + this.validModelId + "/variants/" + this.validVariantId;
 
     // Act
-    client.delete().uri(url).retrieve().toBodilessEntity();
+    client
+        .delete()
+        .uri(url)
+        .header("Authorization", "Bearer " + managerToken)
+        .retrieve()
+        .toBodilessEntity();
 
     // Assert - confirm it's gone
     ResponseEntity<String> response = client.get().uri(url).retrieve().toEntity(String.class);
@@ -275,7 +310,12 @@ public class ClothingIntegrationTesting {
     String url = "/api/clothing/" + this.validModelId;
 
     // Act
-    client.delete().uri(url).retrieve().toBodilessEntity();
+    client
+        .delete()
+        .uri(url)
+        .header("Authorization", "Bearer " + managerToken)
+        .retrieve()
+        .toBodilessEntity();
 
     // Assert - confirm it's gone
     ResponseEntity<String> response = client.get().uri(url).retrieve().toEntity(String.class);
@@ -289,7 +329,13 @@ public class ClothingIntegrationTesting {
     String url = "/api/clothing/" + INVALID_MODEL_ID;
 
     // Act
-    ResponseEntity<String> response = client.delete().uri(url).retrieve().toEntity(String.class);
+    ResponseEntity<String> response =
+        client
+            .delete()
+            .uri(url)
+            .header("Authorization", "Bearer " + managerToken)
+            .retrieve()
+            .toEntity(String.class);
 
     // Assert
     assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());

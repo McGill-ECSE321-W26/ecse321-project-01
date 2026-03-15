@@ -1,6 +1,7 @@
 package ca.mcgill.ecse321.group1.controller;
 
 import ca.mcgill.ecse321.group1.dto.AddressDto;
+import ca.mcgill.ecse321.group1.dto.AuthResponseDto;
 import ca.mcgill.ecse321.group1.dto.CreateCustomerDto;
 import ca.mcgill.ecse321.group1.dto.CreateEmployeeDto;
 import ca.mcgill.ecse321.group1.dto.LoginDto;
@@ -8,6 +9,7 @@ import ca.mcgill.ecse321.group1.dto.PersonResponseDto;
 import ca.mcgill.ecse321.group1.dto.UpdatePasswordDto;
 import ca.mcgill.ecse321.group1.model.Customer;
 import ca.mcgill.ecse321.group1.model.Person;
+import ca.mcgill.ecse321.group1.security.JwtUtil;
 import ca.mcgill.ecse321.group1.service.PersonService;
 import java.util.ArrayList;
 import java.util.List;
@@ -19,9 +21,11 @@ import org.springframework.web.bind.annotation.*;
 public class PersonController {
 
   private final PersonService personService;
+  private final JwtUtil jwtUtil;
 
-  public PersonController(PersonService personService) {
+  public PersonController(PersonService personService, JwtUtil jwtUtil) {
     this.personService = personService;
+    this.jwtUtil = jwtUtil;
   }
 
   @PostMapping("/customers")
@@ -54,9 +58,10 @@ public class PersonController {
   }
 
   @PostMapping("/sessions")
-  public PersonResponseDto logIn(@RequestBody LoginDto dto) {
+  public AuthResponseDto logIn(@RequestBody LoginDto dto) {
     Person p = personService.logIn(dto.getEmail(), dto.getPassword(), dto.getRole());
-    return new PersonResponseDto(p);
+    String token = jwtUtil.generateToken(p, dto.getRole());
+    return new AuthResponseDto(token, new PersonResponseDto(p));
   }
 
   @GetMapping

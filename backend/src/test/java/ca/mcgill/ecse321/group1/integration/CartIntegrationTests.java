@@ -8,6 +8,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import ca.mcgill.ecse321.group1.dto.*;
 import ca.mcgill.ecse321.group1.model.*;
 import ca.mcgill.ecse321.group1.repository.*;
+import ca.mcgill.ecse321.group1.security.JwtUtil;
 import java.util.List;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -42,9 +43,12 @@ public class CartIntegrationTests {
   @Autowired private PersonRepository personRepository;
   @Autowired private ClothingModelRepository clothingModelRepository;
   @Autowired private ClothingVariantRepository clothingVariantRepository;
+  @Autowired private JwtUtil jwtUtil;
 
   private static final String INVALID_ID = "not-a-real-id";
   private static final int STOCK_QUANTITY = 3;
+
+  private String customerToken;
 
   // Test objects created in setup
   private Customer testCustomer;
@@ -57,12 +61,6 @@ public class CartIntegrationTests {
 
   @BeforeAll
   public void setup() {
-    client =
-        RestClient.builder()
-            .baseUrl("http://localhost:" + port)
-            .defaultStatusHandler(HttpStatusCode::isError, (request, response) -> {})
-            .build();
-
     // Create clothing model
     testModel = new ClothingModel();
     testModel.setName("Test Hoodie");
@@ -88,6 +86,15 @@ public class CartIntegrationTests {
     testCustomer.setLoyaltyPoints(0);
     testCustomer.setPerson(testCustomerPerson);
     testCustomer = customerRepository.save(testCustomer);
+
+    customerToken = jwtUtil.generateToken(testCustomerPerson, "Customer");
+
+    client =
+        RestClient.builder()
+            .baseUrl("http://localhost:" + port)
+            .defaultHeader("Authorization", "Bearer " + customerToken)
+            .defaultStatusHandler(HttpStatusCode::isError, (request, response) -> {})
+            .build();
   }
 
   @AfterAll
