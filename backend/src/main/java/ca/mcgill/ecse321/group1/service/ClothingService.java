@@ -1,0 +1,181 @@
+package ca.mcgill.ecse321.group1.service;
+
+import ca.mcgill.ecse321.group1.model.ClothingModel;
+import ca.mcgill.ecse321.group1.model.ClothingVariant;
+import ca.mcgill.ecse321.group1.model.Item;
+import ca.mcgill.ecse321.group1.repository.ClothingModelRepository;
+import ca.mcgill.ecse321.group1.repository.ClothingVariantRepository;
+import ca.mcgill.ecse321.group1.repository.ItemRepository;
+import java.util.List;
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
+
+@Service
+public class ClothingService {
+
+  private final ClothingModelRepository clothingModelRepository;
+  private final ClothingVariantRepository clothingVariantRepository;
+  private final ItemRepository itemRepository;
+
+  public ClothingService(
+      ClothingModelRepository clothingModelRepository,
+      ClothingVariantRepository clothingVariantRepository,
+      ItemRepository itemRepository) {
+    this.clothingModelRepository = clothingModelRepository;
+    this.clothingVariantRepository = clothingVariantRepository;
+    this.itemRepository = itemRepository;
+  }
+
+  @Transactional(readOnly = true)
+  public List<ClothingModel> getAllClothingModels() {
+    return clothingModelRepository.findAll();
+  }
+
+  @Transactional(readOnly = true)
+  public ClothingModel getClothingModel(String modelId) throws ResponseStatusException {
+    ClothingModel model = clothingModelRepository.findByClothingModelID(modelId);
+    if (model == null) {
+      throw new ResponseStatusException(
+          HttpStatus.NOT_FOUND, String.format("Clothing model with ID %s not found", modelId));
+    }
+    return model;
+  }
+
+  @Transactional
+  public ClothingModel createClothingModel(String name, float price)
+      throws ResponseStatusException {
+    if (name == null || name.isBlank()) {
+      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Name must not be blank");
+    }
+    if (price <= 0) {
+      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Price must be > 0");
+    }
+    if (clothingModelRepository.findByName(name) != null) {
+      throw new ResponseStatusException(
+          HttpStatus.CONFLICT,
+          String.format("A clothing model with name '%s' already exists", name));
+    }
+
+    // Leave ID field as null so CRUD repository can fill with UUID
+    ClothingModel model = new ClothingModel(null, name, price);
+    return clothingModelRepository.save(model);
+  }
+
+  @Transactional
+  public ClothingModel updateClothingModel(String modelId, String name, float price) {
+    ClothingModel model = getClothingModel(modelId);
+    if (name == null || name.isBlank()) {
+      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Name must not be blank");
+    }
+    if (price <= 0) {
+      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Price must be > 0");
+    }
+
+    if (!name.equals(model.getName())) {
+      ClothingModel existingWithName = clothingModelRepository.findByName(name);
+      // Enforce name uniqueness
+      if (existingWithName != null && !existingWithName.getClothingModelID().equals(modelId)) {
+        throw new ResponseStatusException(
+            HttpStatus.CONFLICT,
+            String.format("A clothing model with name '%s' already exists", name));
+      }
+      model.setName(name);
+    }
+
+    // Only execute if there is a price change
+    if (price != model.getPrice()) {
+      model.setPrice(price);
+      // Update price of items linked to this model that are in a cart
+      List<Item> cartItems =
+          itemRepository.findByClothingVariant_Model_ClothingModelIDAndOrderIsNull(modelId);
+      cartItems.forEach(item -> item.setPrice(price));
+      itemRepository.saveAll(cartItems);
+    }
+
+    clothingModelRepository.save(model);
+    return model;
+  }
+
+  @Transactional
+  public void deleteClothingModel(String modelId) throws ResponseStatusException {
+    int deletedCount = clothingModelRepository.deleteByClothingModelID(modelId);
+    if (deletedCount == 0) {
+      throw new ResponseStatusException(
+          HttpStatus.NOT_FOUND, String.format("Clothing model with ID %s not found", modelId));
+    }
+  }
+
+  @Transactional(readOnly = true)
+  public ClothingVariant getVariant(String modelId, String variantId)
+      throws ResponseStatusException {
+    ClothingVariant variant = clothingVariantRepository.findByClothingVariantID(variantId);
+    if (variant == null || !variant.getModel().getClothingModelID().equals(modelId)) {
+      throw new ResponseStatusException(
+          HttpStatus.NOT_FOUND,
+          String.format(
+              "Clothing variant with ID %s not found under model %s", variantId, modelId));
+    }
+    return variant;
+  }
+
+  @Transactional(readOnly = true)
+  public List<ClothingVariant> getVariantsByModel(String modelId) {
+    ClothingModel model = getClothingModel(modelId);
+    return model.getClothingVariants();
+  }
+
+  @Transactional
+  public ClothingVariant createVariant(
+      String modelId, ClothingVariant.Size size, String color, int stockQuantity)
+      throws ResponseStatusException {
+    ClothingModel model = getClothingModel(modelId);
+    if (size == null) {
+      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Size must be specified");
+    }
+    if (color == null || color.isBlank()) {
+      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Color must not be blank");
+    }
+    if (stockQuantity < 0) {
+      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Stock quantity must be >= 0");
+    }
+
+    // No 2 variants of the same model can have the same color/size combination
+    if (model.getClothingVariants().stream()
+        .anyMatch(variant -> variant.getSize() == size && variant.getColor().equals(color))) {
+      throw new ResponseStatusException(
+          HttpStatus.CONFLICT,
+          String.format(
+              "A variant with size %s and color %s already exists for this clothing model",
+              size, color));
+    }
+
+    // Leave ID field as null so CRUD repository can fill with UUID
+    ClothingVariant variant = new ClothingVariant(null, size, color, stockQuantity, model);
+    return clothingVariantRepository.save(variant);
+  }
+
+  @Transactional
+  public ClothingVariant updateVariantStock(String modelId, String variantId, int stockQuantity)
+      throws ResponseStatusException {
+    ClothingVariant variant = getVariant(modelId, variantId);
+    if (stockQuantity < 0) {
+      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Stock quantity must be >= 0");
+    }
+
+    variant.setStockQuantity(stockQuantity);
+    return clothingVariantRepository.save(variant);
+  }
+
+  @Transactional
+  public void deleteVariant(String modelId, String variantId) throws ResponseStatusException {
+    int deletedCount = clothingVariantRepository.deleteByClothingVariantID(variantId);
+    if (deletedCount == 0) {
+      throw new ResponseStatusException(
+          HttpStatus.NOT_FOUND,
+          String.format(
+              "Clothing variant with ID %s not found under model %s", variantId, modelId));
+    }
+  }
+}
