@@ -139,8 +139,8 @@ public class OrderService {
       throw new InvalidInputException("Delivery Date is null.");
     }
 
-    //can not change delivery date if with 24 hrs prior to current delivery date
-    if(order.getDeliveryDate().toLocalDate().isBefore((LocalDate.now().plusDays(1)))){
+    // can not change delivery date if with 24 hrs prior to current delivery date
+    if (order.getDeliveryDate().toLocalDate().isBefore((LocalDate.now().plusDays(1)))) {
       throw new InvalidInputException(
           "Delivery Date cannot be changed within 24 hours of the current delivery date.");
     }

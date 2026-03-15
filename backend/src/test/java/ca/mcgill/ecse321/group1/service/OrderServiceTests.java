@@ -386,7 +386,9 @@ public class OrderServiceTests {
         assertThrows(
             InvalidInputException.class,
             () -> orderService.updateOrderDeliveryDate(orderId, newDate));
-    assertEquals("Delivery Date cannot be changed within 24 hours of the current delivery date.", e.getMessage());
+    assertEquals(
+        "Delivery Date cannot be changed within 24 hours of the current delivery date.",
+        e.getMessage());
   }
 
   // ===== updateOrderStatus =====
