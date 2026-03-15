@@ -93,6 +93,48 @@ public class CartServiceTests {
     assertEquals("404 NOT_FOUND \"There is no item with id " + itemId + ".\"", e.getMessage());
   }
 
+  @Test
+  public void testGetItemByInvalidCustomer() {
+    // Arrange
+    String customerId = "badCustomer";
+    String itemId = "item1";
+    ClothingVariant variant = buildVariant("variant1", 50f, 10);
+    Item item = buildItem(itemId, variant, 2);
+    when(customerRepository.findByRoleID(customerId)).thenReturn(null);
+    when(itemRepository.findItemByItemID(itemId)).thenReturn(item);
+
+    // Act & Assert
+    ResponseStatusException e =
+        assertThrows(
+            ResponseStatusException.class, () -> cartService.getItemByID(customerId, itemId));
+    assertEquals(
+        "404 NOT_FOUND \"There is no customer with id " + customerId + ".\"", e.getMessage());
+  }
+
+  @Test
+  public void testGetItemWrongCustomer() {
+    // Arrange
+    String customerId = "customer1";
+    Customer customer = new Customer();
+    String itemId = "item1";
+    ClothingVariant variant = buildVariant("variant1", 50f, 10);
+    Item item = buildItem(itemId, variant, 2);
+    when(customerRepository.findByRoleID(customerId)).thenReturn(customer);
+    when(itemRepository.findItemByItemID(itemId)).thenReturn(item);
+
+    // Act & Assert
+    ResponseStatusException e =
+        assertThrows(
+            ResponseStatusException.class, () -> cartService.getItemByID(customerId, itemId));
+    assertEquals(
+        "400 BAD_REQUEST \"The item with id "
+            + itemId
+            + "is not part of customer's "
+            + customerId
+            + "cart.\"",
+        e.getMessage());
+  }
+
   // ===== getCartItems =====
 
   @Test
@@ -352,6 +394,7 @@ public class CartServiceTests {
     String customerId = "customer1";
     Customer customer = new Customer();
     when(customerRepository.findByRoleID(customerId)).thenReturn(customer);
+    when(itemRepository.deleteByCustomer(customer)).thenReturn(0);
 
     // Act
     int result = cartService.removeAllItems(customerId);
@@ -371,6 +414,7 @@ public class CartServiceTests {
     Customer customer = new Customer();
     item.setCustomer(customer);
     when(customerRepository.findByRoleID(customerId)).thenReturn(customer);
+    when(itemRepository.deleteByCustomer(customer)).thenReturn(1);
 
     // Act
     int result = cartService.removeAllItems(customerId);
@@ -392,6 +436,7 @@ public class CartServiceTests {
     customer.addItem(item1);
     customer.addItem(item2);
     when(customerRepository.findByRoleID(customerId)).thenReturn(customer);
+    when(itemRepository.deleteByCustomer(customer)).thenReturn(2);
 
     int result = cartService.removeAllItems(customerId);
     verify(itemRepository, times(1)).deleteByCustomer(customer);
@@ -471,6 +516,50 @@ public class CartServiceTests {
         assertThrows(
             ResponseStatusException.class, () -> cartService.changeQuantity(customerId, itemId, 1));
     assertEquals("404 NOT_FOUND \"There is no item with id " + itemId + ".\"", e.getMessage());
+  }
+
+  @Test
+  public void testChangeQuantityWithInvalidCustomer() {
+    // Arrange
+    String customerId = "badCustomer";
+    String itemId = "item1";
+    int stock = 7;
+    ClothingVariant variant = buildVariant("variant1", 50f, stock);
+    Item item = buildItem(itemId, variant, 1);
+    when(customerRepository.findByRoleID(customerId)).thenReturn(null);
+    when(itemRepository.findItemByItemID(itemId)).thenReturn(item);
+
+    // Act & Assert
+    ResponseStatusException e =
+        assertThrows(
+            ResponseStatusException.class, () -> cartService.changeQuantity(customerId, itemId, 1));
+    assertEquals(
+        "404 NOT_FOUND \"There is no customer with id " + customerId + ".\"", e.getMessage());
+  }
+
+  @Test
+  public void testChangeQuantityWithWrongCustomer() {
+    // Arrange
+    String customerId = "customer1";
+    Customer customer = new Customer();
+    String itemId = "item1";
+    int stock = 7;
+    ClothingVariant variant = buildVariant("variant1", 50f, stock);
+    Item item = buildItem(itemId, variant, 1);
+    when(customerRepository.findByRoleID(customerId)).thenReturn(customer);
+    when(itemRepository.findItemByItemID(itemId)).thenReturn(item);
+
+    // Act & Assert
+    ResponseStatusException e =
+        assertThrows(
+            ResponseStatusException.class, () -> cartService.changeQuantity(customerId, itemId, 1));
+    assertEquals(
+        "400 BAD_REQUEST \"The item with id "
+            + itemId
+            + "is not part of customer's "
+            + customerId
+            + "cart.\"",
+        e.getMessage());
   }
 
   @Test
