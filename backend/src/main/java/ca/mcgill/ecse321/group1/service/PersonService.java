@@ -41,19 +41,13 @@ public class PersonService {
     return person;
   }
 
-  private void validateNewPerson(String id, String email, String password) {
-    if (id == null || id.isBlank()) {
-      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Account id cannot be empty.");
-    }
+  private void validateNewPerson(String email, String password) {
     if (email == null || !email.contains("@")) {
       throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid email address.");
     }
     if (password == null || password.length() < 8) {
       throw new ResponseStatusException(
           HttpStatus.BAD_REQUEST, "Password must be at least 8 characters.");
-    }
-    if (personRepository.findPersonByPersonID(id) != null) {
-      throw new ResponseStatusException(HttpStatus.CONFLICT, "Account id already exists.");
     }
     if (personRepository.findPersonByEmail(email) != null) {
       throw new ResponseStatusException(
@@ -72,13 +66,15 @@ public class PersonService {
   }
 
   @Transactional
-  public Person createCustomer(String id, String email, String password, String address) {
-    validateNewPerson(id, email, password);
+  public Person createCustomer(String email, String password, String address) {
+    validateNewPerson(email, password);
     if (address == null || address.isBlank()) {
       throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Address cannot be empty.");
     }
 
-    Person person = new Person(id, email, passwordEncoder.encode(password));
+    Person person = new Person();
+    person.setEmail(email);
+    person.setPassword(passwordEncoder.encode(password));
     person = personRepository.save(person);
 
     Customer customer = new Customer();
@@ -87,21 +83,23 @@ public class PersonService {
     customer.setPerson(person);
     customerRepository.save(customer);
 
-    return personRepository.findPersonByPersonID(id);
+    return personRepository.findPersonByPersonID(person.getPersonID());
   }
 
   @Transactional
-  public Person createEmployee(String id, String email, String password) {
-    validateNewPerson(id, email, password);
+  public Person createEmployee(String email, String password) {
+    validateNewPerson(email, password);
 
-    Person person = new Person(id, email, passwordEncoder.encode(password));
+    Person person = new Person();
+    person.setEmail(email);
+    person.setPassword(passwordEncoder.encode(password));
     person = personRepository.save(person);
 
     Employee employee = new Employee();
     employee.setPerson(person);
     employeeRepository.save(employee);
 
-    return personRepository.findPersonByPersonID(id);
+    return personRepository.findPersonByPersonID(person.getPersonID());
   }
 
   @Transactional(readOnly = true)
@@ -139,18 +137,20 @@ public class PersonService {
   }
 
   @Transactional
-  public Customer updateCustomerAddress(String customerRoleId, String newAddress) {
-    Customer customer = customerRepository.findByRoleID(customerRoleId);
-    if (customer == null) {
-      throw new ResponseStatusException(
-          HttpStatus.NOT_FOUND, "There is no customer with role ID " + customerRoleId + ".");
-    }
+  public Customer updateCustomerAddress(String personId, String newAddress) {
+    Person person = findPersonOrThrow(personId);
     if (newAddress == null || newAddress.isBlank()) {
       throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Address cannot be empty.");
     }
 
-    customer.setAddress(newAddress);
-    return customerRepository.save(customer);
+    for (PersonRole role : person.getRoles()) {
+      if (role instanceof Customer customer) {
+        customer.setAddress(newAddress);
+        return customerRepository.save(customer);
+      }
+    }
+    throw new ResponseStatusException(
+        HttpStatus.BAD_REQUEST, "Person with ID " + personId + " does not have a customer role.");
   }
 
   @Transactional

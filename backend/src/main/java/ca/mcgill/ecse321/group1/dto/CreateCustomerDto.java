@@ -1,17 +1,12 @@
 package ca.mcgill.ecse321.group1.dto;
 
 public class CreateCustomerDto {
-  private String id;
   private String email;
   private String password;
   private String address;
 
   @SuppressWarnings("unused")
   private CreateCustomerDto() {}
-
-  public String getId() {
-    return id;
-  }
 
   public String getEmail() {
     return email;
@@ -23,10 +18,6 @@ public class CreateCustomerDto {
 
   public String getAddress() {
     return address;
-  }
-
-  public void setId(String id) {
-    this.id = id;
   }
 
   public void setEmail(String email) {
