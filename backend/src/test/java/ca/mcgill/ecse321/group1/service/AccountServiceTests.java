@@ -77,7 +77,8 @@ public class AccountServiceTests {
 
     ResponseStatusException e =
         assertThrows(
-                ResponseStatusException .class, () -> service.createCustomer(accountID, email, password, address));
+            ResponseStatusException.class,
+            () -> service.createCustomer(accountID, email, password, address));
     assertEquals(HttpStatus.BAD_REQUEST, e.getStatusCode());
     assertEquals("Address cannot be empty.", e.getReason());
   }
@@ -92,7 +93,9 @@ public class AccountServiceTests {
     // Act + Assert
     // should have email validation in the insertPerson method in service
     ResponseStatusException e =
-        assertThrows(ResponseStatusException.class, () -> service.createEmployee(accountID, email, password));
+        assertThrows(
+            ResponseStatusException.class,
+            () -> service.createEmployee(accountID, email, password));
     assertEquals(HttpStatus.BAD_REQUEST, e.getStatusCode());
     assertEquals("Invalid email address.", e.getReason());
   }
@@ -107,7 +110,9 @@ public class AccountServiceTests {
     // Act + Assert
     // should have email validation in the insertPerson method in service
     ResponseStatusException e =
-        assertThrows(ResponseStatusException.class, () -> service.createEmployee(accountID, email, password));
+        assertThrows(
+            ResponseStatusException.class,
+            () -> service.createEmployee(accountID, email, password));
     assertEquals(HttpStatus.BAD_REQUEST, e.getStatusCode());
     assertEquals("Password must be at least 8 characters.", e.getReason());
   }
@@ -138,7 +143,8 @@ public class AccountServiceTests {
 
     // Act
     // Assert
-    ResponseStatusException e = assertThrows(ResponseStatusException.class, () -> service.getPersonById(ID));
+    ResponseStatusException e =
+        assertThrows(ResponseStatusException.class, () -> service.getPersonById(ID));
     assertEquals(HttpStatus.NOT_FOUND, e.getStatusCode());
     assertEquals("There is no person with ID " + ID + ".", e.getReason());
   }
@@ -160,7 +166,9 @@ public class AccountServiceTests {
   public void testGetPersonByInvalidEmail() {
     when(personRepository.findPersonByEmail(any())).thenReturn(null);
 
-    ResponseStatusException e = assertThrows(ResponseStatusException.class, () -> service.getPersonByEmail("ghost@mail.com"));
+    ResponseStatusException e =
+        assertThrows(
+            ResponseStatusException.class, () -> service.getPersonByEmail("ghost@mail.com"));
     assertEquals(HttpStatus.NOT_FOUND, e.getStatusCode());
     assertEquals("There is no person with email ghost@mail.com.", e.getReason());
   }
@@ -230,7 +238,9 @@ public class AccountServiceTests {
 
     // Act
     // Assert
-    ResponseStatusException e = assertThrows(ResponseStatusException.class, () -> service.logIn(email, password, "Customer"));
+    ResponseStatusException e =
+        assertThrows(
+            ResponseStatusException.class, () -> service.logIn(email, password, "Customer"));
     assertEquals(HttpStatus.NOT_FOUND, e.getStatusCode());
     assertEquals("There is no person with email " + email + ".", e.getReason());
   }
@@ -245,7 +255,8 @@ public class AccountServiceTests {
     when(personRepository.findPersonByEmail(email)).thenReturn(charlie);
 
     ResponseStatusException e =
-        assertThrows(ResponseStatusException.class, () -> service.logIn(email, "wrongPassword", "Customer"));
+        assertThrows(
+            ResponseStatusException.class, () -> service.logIn(email, "wrongPassword", "Customer"));
     assertEquals(HttpStatus.UNAUTHORIZED, e.getStatusCode());
     assertEquals("Wrong password.", e.getReason());
   }
@@ -260,7 +271,8 @@ public class AccountServiceTests {
 
     ResponseStatusException e =
         assertThrows(
-                ResponseStatusException.class, () -> service.logIn("bob@mail.com", "password123", "Manager"));
+            ResponseStatusException.class,
+            () -> service.logIn("bob@mail.com", "password123", "Manager"));
     assertEquals(HttpStatus.UNAUTHORIZED, e.getStatusCode());
     assertEquals("Person does not have role Manager.", e.getReason());
   }
@@ -273,7 +285,8 @@ public class AccountServiceTests {
 
     ResponseStatusException e =
         assertThrows(
-                ResponseStatusException.class, () -> service.logIn("bob@mail.com", "password123", "Astronaut"));
+            ResponseStatusException.class,
+            () -> service.logIn("bob@mail.com", "password123", "Astronaut"));
     assertEquals(HttpStatus.UNAUTHORIZED, e.getStatusCode());
     assertEquals("Person does not have role Astronaut.", e.getReason());
   }
@@ -299,7 +312,7 @@ public class AccountServiceTests {
 
     ResponseStatusException e =
         assertThrows(
-                ResponseStatusException.class,
+            ResponseStatusException.class,
             () -> service.updatePassword("id1", "wrongOldPassword", "newPassword123"));
     assertEquals(HttpStatus.UNAUTHORIZED, e.getStatusCode());
     assertEquals("Old password is incorrect.", e.getReason());
@@ -311,7 +324,9 @@ public class AccountServiceTests {
     when(personRepository.findPersonByPersonID("id1")).thenReturn(bob);
 
     ResponseStatusException e =
-        assertThrows(ResponseStatusException.class, () -> service.updatePassword("id1", "password123", "short"));
+        assertThrows(
+            ResponseStatusException.class,
+            () -> service.updatePassword("id1", "password123", "short"));
     assertEquals(HttpStatus.BAD_REQUEST, e.getStatusCode());
     assertEquals("New password must be at least 8 characters.", e.getReason());
   }
@@ -335,7 +350,9 @@ public class AccountServiceTests {
     customer.setAddress("123 Old St");
     when(customerRepository.findByRoleID("roleId1")).thenReturn(customer);
 
-    ResponseStatusException e = assertThrows(ResponseStatusException.class, () -> service.updateCustomerAddress("roleId1", ""));
+    ResponseStatusException e =
+        assertThrows(
+            ResponseStatusException.class, () -> service.updateCustomerAddress("roleId1", ""));
     assertEquals(HttpStatus.BAD_REQUEST, e.getStatusCode());
     assertEquals("Address cannot be empty.", e.getReason());
   }
@@ -364,7 +381,8 @@ public class AccountServiceTests {
 
     ResponseStatusException e =
         assertThrows(
-                ResponseStatusException.class, () -> service.addCustomerRoleToEmployee("id1", "123 Main St"));
+            ResponseStatusException.class,
+            () -> service.addCustomerRoleToEmployee("id1", "123 Main St"));
     assertEquals(HttpStatus.CONFLICT, e.getStatusCode());
     assertEquals("This person already has a customer role.", e.getReason());
   }
@@ -391,7 +409,8 @@ public class AccountServiceTests {
     bob.addRole(employeeRole); // already has employee role
     when(personRepository.findPersonByPersonID("id1")).thenReturn(bob);
 
-    ResponseStatusException e = assertThrows(ResponseStatusException.class, () -> service.addEmployeeRoleToCustomer("id1"));
+    ResponseStatusException e =
+        assertThrows(ResponseStatusException.class, () -> service.addEmployeeRoleToCustomer("id1"));
     assertEquals(HttpStatus.CONFLICT, e.getStatusCode());
     assertEquals("This person already has an employee role.", e.getReason());
   }
@@ -420,7 +439,8 @@ public class AccountServiceTests {
   public void testInvalidManagerDeleteAccountNotFound() {
     // no when() needed, repo returns null by default
 
-    ResponseStatusException e = assertThrows(ResponseStatusException.class, () -> service.deleteAccount("nonExistentId"));
+    ResponseStatusException e =
+        assertThrows(ResponseStatusException.class, () -> service.deleteAccount("nonExistentId"));
     assertEquals(HttpStatus.NOT_FOUND, e.getStatusCode());
     assertEquals("There is no person with ID nonExistentId.", e.getReason());
   }
@@ -432,7 +452,8 @@ public class AccountServiceTests {
     manager.addRole(managerRole);
     when(personRepository.findPersonByPersonID("managerId")).thenReturn(manager);
 
-    ResponseStatusException e = assertThrows(ResponseStatusException.class, () -> service.deleteAccount("managerId"));
+    ResponseStatusException e =
+        assertThrows(ResponseStatusException.class, () -> service.deleteAccount("managerId"));
     assertEquals(HttpStatus.BAD_REQUEST, e.getStatusCode());
     assertEquals("The manager cannot delete their own account.", e.getReason());
   }
