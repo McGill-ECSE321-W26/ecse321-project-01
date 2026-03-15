@@ -10,8 +10,12 @@ import static org.mockito.Mockito.when;
 import ca.mcgill.ecse321.group1.repository.CustomerRepository;
 import ca.mcgill.ecse321.group1.repository.EmployeeRepository;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import ca.mcgill.ecse321.group1.model.Customer;
@@ -23,13 +27,14 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 
 @SpringBootTest
+@MockitoSettings(strictness = Strictness.STRICT_STUBS)
 public class AccountServiceTests {
     @Mock
-    private PersonRepository repo;
+    private PersonRepository personRepository;
     @Mock
-    private CustomerRepository customerRepo;
+    private CustomerRepository customerRepository;
     @Mock
-    private EmployeeRepository employeeRepo;
+    private EmployeeRepository employeeRepository;
     @InjectMocks
     private PersonService service;
 
@@ -44,8 +49,10 @@ public class AccountServiceTests {
         String password = "12345678";
         Person accountTest = new Person(accountID, email, password);
 
-        when(repo.save(any(Person.class))).thenReturn(accountTest);
-        when(repo.findPersonByPersonID(accountID)).thenReturn(accountTest); // final fetch at end of createEmployee
+        when(personRepository.findPersonByPersonID(accountID))
+                .thenReturn(null)
+                .thenReturn(accountTest);
+        when(personRepository.save(any(Person.class))).thenReturn(accountTest);
 
         Person createdPerson = service.createEmployee(accountID, email, password);
 
@@ -62,8 +69,10 @@ public class AccountServiceTests {
         String address = "123 Main St";
         Person accountTest = new Person(accountID, email, password);
 
-        when(repo.save(any(Person.class))).thenReturn(accountTest);
-        when(repo.findPersonByPersonID(accountID)).thenReturn(accountTest); // final fetch
+        when(personRepository.findPersonByPersonID(accountID))
+                .thenReturn(null)
+                .thenReturn(accountTest);
+        when(personRepository.save(any(Person.class))).thenReturn(accountTest);
 
         Person createdPerson = service.createCustomer(accountID, email, password, address);
 
@@ -115,7 +124,7 @@ public class AccountServiceTests {
         // Arrange
         String ID = "validID";
         Person charlie = new Person(ID, "charlie@mail.mcgill.ca", "password123");
-        when(repo.findPersonByPersonID(ID)).thenReturn(charlie);
+        when(personRepository.findPersonByPersonID(ID)).thenReturn(charlie);
 
         // Act
         Person person = service.getPersonById(ID);
@@ -132,7 +141,7 @@ public class AccountServiceTests {
         // Set up
         String ID = "validID";
         // Default is to return null, so you could omit this
-        when(repo.findPersonByPersonID(ID)).thenReturn(null);
+        when(personRepository.findPersonByPersonID(ID)).thenReturn(null);
 
         // Act
         // Assert
@@ -144,7 +153,7 @@ public class AccountServiceTests {
     public void testGetPersonByValidEmail() {
         String email = "bob@mail.com";
         Person bob = new Person("id1", email, "password123");
-        when(repo.findPersonByEmail(email)).thenReturn(bob);
+        when(personRepository.findPersonByEmail(email)).thenReturn(bob);
 
         Person result = service.getPersonByEmail(email);
 
@@ -155,7 +164,7 @@ public class AccountServiceTests {
 
     @Test
     public void testGetPersonByInvalidEmail() {
-        when(repo.findPersonByEmail(any())).thenReturn(null);
+        when(personRepository.findPersonByEmail(any())).thenReturn(null);
 
         Exception e = assertThrows(Exception.class,
                 () -> service.getPersonByEmail("ghost@mail.com"));
@@ -172,7 +181,7 @@ public class AccountServiceTests {
         Person charlie = new Person("validID", email, passwordEncoder.encode(password));
         Customer customerRole = new Customer();
         charlie.addRole(customerRole);
-        when(repo.findPersonByEmail(email)).thenReturn(charlie);
+        when(personRepository.findPersonByEmail(email)).thenReturn(charlie);
 
         Person person = service.logIn(email, password, "Customer");
 
@@ -189,7 +198,7 @@ public class AccountServiceTests {
         Person bob = new Person("id1", email,  passwordEncoder.encode(password));
         Employee employeeRole = new Employee();
         bob.addRole(employeeRole);
-        when(repo.findPersonByEmail(email)).thenReturn(bob);
+        when(personRepository.findPersonByEmail(email)).thenReturn(bob);
 
         // Act
         Person result = service.logIn(email, password, "Employee");
@@ -208,7 +217,7 @@ public class AccountServiceTests {
         Person bob = new Person("id1", email,  passwordEncoder.encode(password));
         Manager managerRole = new Manager();
         bob.addRole(managerRole);
-        when(repo.findPersonByEmail(email)).thenReturn(bob);
+        when(personRepository.findPersonByEmail(email)).thenReturn(bob);
 
         // Act
         Person result = service.logIn(email, password, "Manager");
@@ -238,7 +247,7 @@ public class AccountServiceTests {
         Person charlie = new Person("validID", email, passwordEncoder.encode(correctPassword));
         Customer customerRole = new Customer();
         charlie.addRole(customerRole);
-        when(repo.findPersonByEmail(email)).thenReturn(charlie);
+        when(personRepository.findPersonByEmail(email)).thenReturn(charlie);
 
         Exception e = assertThrows(Exception.class,
                 () -> service.logIn(email, "wrongPassword", "Customer"));
@@ -252,7 +261,7 @@ public class AccountServiceTests {
         Person bob = new Person("id1", "bob@mail.com", passwordEncoder.encode("password123"));
         Customer customerRole = new Customer();
         bob.addRole(customerRole);
-        when(repo.findPersonByEmail("bob@mail.com")).thenReturn(bob);
+        when(personRepository.findPersonByEmail("bob@mail.com")).thenReturn(bob);
 
         Exception e = assertThrows(Exception.class,
                 () -> service.logIn("bob@mail.com", "password123", "Manager"));
@@ -263,7 +272,7 @@ public class AccountServiceTests {
     public void testLogInRoleStringInvalid() {
         // completely garbage role string
         Person bob = new Person("id1", "bob@mail.com", passwordEncoder.encode("password123"));
-        when(repo.findPersonByEmail("bob@mail.com")).thenReturn(bob);
+        when(personRepository.findPersonByEmail("bob@mail.com")).thenReturn(bob);
 
         Exception e = assertThrows(Exception.class,
                 () -> service.logIn("bob@mail.com", "password123", "Astronaut"));
@@ -277,9 +286,9 @@ public class AccountServiceTests {
     public void testValidUpdatePassword() {
         String oldPassword = "password123";
         Person bob = new Person("id1", "bob@mail.com", passwordEncoder.encode(oldPassword));
-        when(repo.findPersonByPersonID("id1")).thenReturn(bob);
+        when(personRepository.findPersonByPersonID("id1")).thenReturn(bob);
         // mock save to return bob AFTER password is changed
-        when(repo.save(any(Person.class))).thenAnswer(i -> i.getArgument(0));
+        when(personRepository.save(any(Person.class))).thenAnswer(i -> i.getArgument(0));
 
         Person result = service.updatePassword("id1", "password123", "newPassword123");
 
@@ -290,7 +299,7 @@ public class AccountServiceTests {
     @Test
     public void testInvalidUpdatePasswordOldPassword() {
         Person bob = new Person("id1", "bob@mail.com", passwordEncoder.encode("password123"));
-        when(repo.findPersonByPersonID("id1")).thenReturn(bob);
+        when(personRepository.findPersonByPersonID("id1")).thenReturn(bob);
 
         Exception e = assertThrows(Exception.class,
                 () -> service.updatePassword("id1", "wrongOldPassword", "newPassword123"));
@@ -300,7 +309,7 @@ public class AccountServiceTests {
     @Test
     public void testInvalidUpdatePasswordLength() {
         Person bob = new Person("id1", "bob@mail.com", passwordEncoder.encode("password123"));
-        when(repo.findPersonByPersonID("id1")).thenReturn(bob);
+        when(personRepository.findPersonByPersonID("id1")).thenReturn(bob);
 
         Exception e = assertThrows(Exception.class,
                 () -> service.updatePassword("id1", "password123", "short"));
@@ -311,8 +320,8 @@ public class AccountServiceTests {
     public void testValidUpdateCustomerAddress() {
         Customer customer = new Customer();
         customer.setAddress("123 Old St");
-        when(customerRepo.findByRoleID("roleId1")).thenReturn(customer);
-        when(customerRepo.save(any(Customer.class))).thenReturn(customer);
+        when(customerRepository.findByRoleID("roleId1")).thenReturn(customer);
+        when(customerRepository.save(any(Customer.class))).thenReturn(customer);
 
         Customer result = service.updateCustomerAddress("roleId1", "456 New Ave");
 
@@ -324,7 +333,7 @@ public class AccountServiceTests {
     public void testInvalidUpdateCustomerAddressEmpty() {
         Customer customer = new Customer();
         customer.setAddress("123 Old St");
-        when(customerRepo.findByRoleID("roleId1")).thenReturn(customer);
+        when(customerRepository.findByRoleID("roleId1")).thenReturn(customer);
 
         Exception e = assertThrows(Exception.class,
                 () -> service.updateCustomerAddress("roleId1", ""));
@@ -336,8 +345,8 @@ public class AccountServiceTests {
         Person bob = new Person("id1", "bob@mail.com", "password123");
         Employee employeeRole = new Employee();
         bob.addRole(employeeRole);
-        when(repo.findPersonByPersonID("id1")).thenReturn(bob); // final fetch
-        when(customerRepo.save(any(Customer.class))).thenReturn(new Customer());
+        when(personRepository.findPersonByPersonID("id1")).thenReturn(bob); // final fetch
+        when(customerRepository.save(any(Customer.class))).thenReturn(new Customer());
 
         Person result = service.addCustomerRoleToEmployee("id1", "123 Main St");
 
@@ -351,7 +360,7 @@ public class AccountServiceTests {
         Customer customerRole = new Customer();
         bob.addRole(employeeRole);
         bob.addRole(customerRole);  // already has customer role
-        when(repo.findPersonByPersonID("id1")).thenReturn(bob);
+        when(personRepository.findPersonByPersonID("id1")).thenReturn(bob);
 
         Exception e = assertThrows(Exception.class,
                 () -> service.addCustomerRoleToEmployee("id1", "123 Main St"));
@@ -363,8 +372,8 @@ public class AccountServiceTests {
         Person bob = new Person("id1", "bob@mail.com", "password123");
         Customer customerRole = new Customer();
         bob.addRole(customerRole);
-        when(repo.findPersonByPersonID("id1")).thenReturn(bob);
-        when(employeeRepo.save(any(Employee.class))).thenReturn(new Employee());
+        when(personRepository.findPersonByPersonID("id1")).thenReturn(bob);
+        when(employeeRepository.save(any(Employee.class))).thenReturn(new Employee());
 
         Person result = service.addEmployeeRoleToCustomer("id1");
 
@@ -378,7 +387,7 @@ public class AccountServiceTests {
         Employee employeeRole = new Employee();
         bob.addRole(customerRole);
         bob.addRole(employeeRole);  // already has employee role
-        when(repo.findPersonByPersonID("id1")).thenReturn(bob);
+        when(personRepository.findPersonByPersonID("id1")).thenReturn(bob);
 
         Exception e = assertThrows(Exception.class,
                 () -> service.addEmployeeRoleToCustomer("id1"));
@@ -388,21 +397,21 @@ public class AccountServiceTests {
     @Test
     public void testValidDeleteSelfAccount() {
         Person bob = new Person("id1", "bob@mail.com", "password123");
-        when(repo.findPersonByPersonID("id1")).thenReturn(bob);
+        when(personRepository.findPersonByPersonID("id1")).thenReturn(bob);
 
         // just verify it doesn't throw and delete is called
         assertDoesNotThrow(() -> service.deleteSelfAccount("id1"));
-        verify(repo, times(1)).delete(bob);
+        verify(personRepository, times(1)).delete(bob);
     }
 
     @Test
     public void testValidManagerDeleteAccount() {
         // just a regular person with no manager role
         Person bob = new Person("id1", "bob@mail.com", "password123");
-        when(repo.findPersonByPersonID("id1")).thenReturn(bob);
+        when(personRepository.findPersonByPersonID("id1")).thenReturn(bob);
 
         assertDoesNotThrow(() -> service.deleteAccount("id1"));
-        verify(repo, times(1)).delete(bob);
+        verify(personRepository, times(1)).delete(bob);
     }
 
     @Test
@@ -419,7 +428,7 @@ public class AccountServiceTests {
         Person manager = new Person("managerId", "manager@mail.com", "password123");
         Manager managerRole = new Manager();
         manager.addRole(managerRole);
-        when(repo.findPersonByPersonID("managerId")).thenReturn(manager);
+        when(personRepository.findPersonByPersonID("managerId")).thenReturn(manager);
 
         Exception e = assertThrows(Exception.class,
                 () -> service.deleteAccount("managerId"));
