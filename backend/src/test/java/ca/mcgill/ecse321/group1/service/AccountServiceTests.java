@@ -621,7 +621,7 @@ public class AccountServiceTests {
     when(personRepository.findPersonByPersonID("id1")).thenReturn(bob);
 
     // just verify it doesn't throw and delete is called
-    assertDoesNotThrow(() -> service.deleteSelfAccount("id1"));
+    assertDoesNotThrow(() -> service.deleteAccount("id1"));
     verify(personRepository, times(1)).delete(bob);
   }
 
@@ -630,7 +630,7 @@ public class AccountServiceTests {
     // no when() needed, returns null by default
     ResponseStatusException e =
         assertThrows(
-            ResponseStatusException.class, () -> service.deleteSelfAccount("nonExistentId"));
+            ResponseStatusException.class, () -> service.deleteAccount("nonExistentId"));
     assertEquals(HttpStatus.NOT_FOUND, e.getStatusCode());
     assertEquals("There is no person with ID nonExistentId.", e.getReason());
   }

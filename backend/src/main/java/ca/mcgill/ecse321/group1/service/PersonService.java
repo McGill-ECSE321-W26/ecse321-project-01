@@ -32,25 +32,16 @@ public class PersonService {
     this.passwordEncoder = new BCryptPasswordEncoder();
   }
 
-  // Should map to Transfer Objects
-  @Transactional(readOnly = true)
-  public Iterable<Person> getPeople() {
-    return personRepository.findAll();
-  }
-
-  @Transactional(readOnly = true)
-  public Person getPersonById(String id) {
-
+  private Person findPersonOrThrow(String id) {
     Person person = personRepository.findPersonByPersonID(id);
     if (person == null) {
       throw new ResponseStatusException(
-          HttpStatus.NOT_FOUND, "There is no person with ID " + id + ".");
+              HttpStatus.NOT_FOUND, "There is no person with ID " + id + ".");
     }
     return person;
   }
 
-  @Transactional
-  public Person createCustomer(String id, String email, String password, String address) {
+  private void validateNewPerson(String id, String email, String password) {
     if (id == null || id.isBlank()) {
       throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Account id cannot be empty.");
     }
@@ -59,15 +50,30 @@ public class PersonService {
     }
     if (password == null || password.length() < 8) {
       throw new ResponseStatusException(
-          HttpStatus.BAD_REQUEST, "Password must be at least 8 characters.");
+              HttpStatus.BAD_REQUEST, "Password must be at least 8 characters.");
     }
     if (personRepository.findPersonByPersonID(id) != null) {
       throw new ResponseStatusException(HttpStatus.CONFLICT, "Account id already exists.");
     }
     if (personRepository.findPersonByEmail(email) != null) {
       throw new ResponseStatusException(
-          HttpStatus.CONFLICT, "Email " + email + " is already in use.");
+              HttpStatus.CONFLICT, "Email " + email + " is already in use.");
     }
+  }
+
+  @Transactional(readOnly = true)
+  public Iterable<Person> getPeople() {
+    return personRepository.findAll();
+  }
+
+  @Transactional(readOnly = true)
+  public Person getPersonById(String id) {
+    return findPersonOrThrow(id);
+  }
+
+  @Transactional
+  public Person createCustomer(String id, String email, String password, String address) {
+    validateNewPerson(id, email, password);
     if (address == null || address.isBlank()) {
       throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Address cannot be empty.");
     }
@@ -86,23 +92,7 @@ public class PersonService {
 
   @Transactional
   public Person createEmployee(String id, String email, String password) {
-    if (id == null || id.isBlank()) {
-      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Account id cannot be empty.");
-    }
-    if (email == null || !email.contains("@")) {
-      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid email address.");
-    }
-    if (password == null || password.length() < 8) {
-      throw new ResponseStatusException(
-          HttpStatus.BAD_REQUEST, "Password must be at least 8 characters.");
-    }
-    if (personRepository.findPersonByPersonID(id) != null) {
-      throw new ResponseStatusException(HttpStatus.CONFLICT, "Account id already exists.");
-    }
-    if (personRepository.findPersonByEmail(email) != null) {
-      throw new ResponseStatusException(
-          HttpStatus.CONFLICT, "Email " + email + " is already in use.");
-    }
+    validateNewPerson(id, email, password);
 
     Person person = new Person(id, email, passwordEncoder.encode(password));
     person = personRepository.save(person);
@@ -135,11 +125,7 @@ public class PersonService {
 
   @Transactional
   public Person updatePassword(String id, String oldPassword, String newPassword) {
-    Person person = personRepository.findPersonByPersonID(id);
-    if (person == null) {
-      throw new ResponseStatusException(
-          HttpStatus.NOT_FOUND, "There is no person with ID " + id + ".");
-    }
+    Person person = findPersonOrThrow(id);
     if (!passwordEncoder.matches(oldPassword, person.getPassword())) {
       throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Old password is incorrect.");
     }
@@ -169,11 +155,7 @@ public class PersonService {
 
   @Transactional
   public Person addCustomerRoleToEmployee(String id, String address) {
-    Person person = personRepository.findPersonByPersonID(id);
-    if (person == null) {
-      throw new ResponseStatusException(
-          HttpStatus.NOT_FOUND, "There is no person with ID " + id + ".");
-    }
+    Person person = findPersonOrThrow(id);
     if (address == null || address.isBlank()) {
       throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Address cannot be empty.");
     }
@@ -204,12 +186,7 @@ public class PersonService {
 
   @Transactional
   public Person addEmployeeRoleToCustomer(String id) {
-    Person person = personRepository.findPersonByPersonID(id);
-    if (person == null) {
-      throw new ResponseStatusException(
-          HttpStatus.NOT_FOUND, "There is no person with ID " + id + ".");
-    }
-
+    Person person = findPersonOrThrow(id);
     boolean hasCustomer = false;
     for (PersonRole role : person.getRoles()) {
       if (role instanceof Employee) {
@@ -232,22 +209,8 @@ public class PersonService {
   }
 
   @Transactional
-  public void deleteSelfAccount(String id) {
-    Person person = personRepository.findPersonByPersonID(id);
-    if (person == null) {
-      throw new ResponseStatusException(
-          HttpStatus.NOT_FOUND, "There is no person with ID " + id + ".");
-    }
-    personRepository.delete(person);
-  }
-
-  @Transactional
   public void deleteAccount(String id) {
-    Person person = personRepository.findPersonByPersonID(id);
-    if (person == null) {
-      throw new ResponseStatusException(
-          HttpStatus.NOT_FOUND, "There is no person with ID " + id + ".");
-    }
+    Person person = findPersonOrThrow(id);
 
     // Prevent manager from deleting their own account
     for (PersonRole role : person.getRoles()) {
