@@ -129,7 +129,7 @@ public class ClothingServiceTests {
     ResponseStatusException e =
         assertThrows(
             ResponseStatusException.class, () -> clothingService.createClothingModel(name, price));
-    assertEquals("400 BAD_REQUEST \"Price must be greater than 0\"", e.getMessage());
+    assertEquals("400 BAD_REQUEST \"Price must be > 0\"", e.getMessage());
   }
 
   // ===== updateClothingModel =====
@@ -156,7 +156,7 @@ public class ClothingServiceTests {
     assertEquals(newName, res.getName());
     assertEquals(newPrice, res.getPrice());
     // HOW DO I EVEN ASSERT FOR ITEM PRICE??
-    verify(itemRepository, times(1)).save(any(Item.class));
+    verify(itemRepository, times(1)).saveAll(any());
     verify(clothingModelRepository, times(1)).save(any(ClothingModel.class));
   }
 
