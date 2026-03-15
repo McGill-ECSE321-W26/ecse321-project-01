@@ -112,6 +112,23 @@ public class ClothingServiceTests {
   }
 
   @Test
+  public void testCreateClothingModelWithExistingName() {
+    // Arrange
+    String name = "Summer Jacket";
+    float price = 79.99f;
+    ClothingModel saved = new ClothingModel(null, name, price);
+    when(clothingModelRepository.findByName(name)).thenReturn(saved);
+
+    // Act & Assert
+    ResponseStatusException e =
+        assertThrows(
+            ResponseStatusException.class, () -> clothingService.createClothingModel(name, price));
+    assertEquals(
+        String.format("409 CONFLICT \"A clothing model with name '%s' already exists\"", name),
+        e.getMessage());
+  }
+
+  @Test
   public void testCreateClothingModelWithBlankName() {
     ResponseStatusException e =
         assertThrows(
@@ -186,6 +203,27 @@ public class ClothingServiceTests {
             ResponseStatusException.class,
             () -> clothingService.updateClothingModel(id, "  ", 79.99f));
     assertEquals("400 BAD_REQUEST \"Name must not be blank\"", e.getMessage());
+  }
+
+  @Test
+  public void testUpdateClothingModelWithExistingName() {
+    // Arrange
+    String id = "1";
+    String newName = "Winter Coat";
+    float price = 79.99f;
+    ClothingModel saved = new ClothingModel(id, "Summer Jacket", price);
+    ClothingModel exist = new ClothingModel("2", newName, price);
+    when(clothingModelRepository.findByClothingModelID(id)).thenReturn(saved);
+    when(clothingModelRepository.findByName(newName)).thenReturn(exist);
+
+    // Act & Assert
+    ResponseStatusException e =
+        assertThrows(
+            ResponseStatusException.class,
+            () -> clothingService.updateClothingModel(id, newName, price));
+    assertEquals(
+        String.format("409 CONFLICT \"A clothing model with name '%s' already exists\"", newName),
+        e.getMessage());
   }
 
   @Test
