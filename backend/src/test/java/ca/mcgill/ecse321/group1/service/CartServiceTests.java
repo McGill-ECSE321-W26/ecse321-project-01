@@ -367,9 +367,24 @@ public class CartServiceTests {
 
     // Act
     cartService.removeAllItems(customerId);
-
-    // Assert
     verify(itemRepository, times(1)).delete(item);
+  }
+
+  @Test
+  public void testRemoveAllItemsWithMultipleItems() {
+    String customerId = "customer1";
+    String itemId1 = "item1";
+    String itemId2 = "item2";
+    Customer customer = new Customer();
+    ClothingVariant variant = buildVariant("variant1", 50f, 10);
+    Item item1 = buildItem(itemId1, variant, 2);
+    Item item2 = buildItem(itemId2, variant, 2);
+    customer.addItem(item1);
+    customer.addItem(item2);
+    when(customerRepository.findByRoleID(customerId)).thenReturn(customer);
+
+    cartService.removeAllItems(customerId);
+    verify(itemRepository, times(2)).delete(any());
   }
 
   @Test
