@@ -1,16 +1,16 @@
 package ca.mcgill.ecse321.group1.service;
 
-import ca.mcgill.ecse321.group1.exception.InvalidInputException;
-import ca.mcgill.ecse321.group1.exception.NotFoundException;
 import ca.mcgill.ecse321.group1.model.ClothingVariant;
 import ca.mcgill.ecse321.group1.model.Customer;
 import ca.mcgill.ecse321.group1.model.Item;
 import ca.mcgill.ecse321.group1.repository.ClothingVariantRepository;
 import ca.mcgill.ecse321.group1.repository.CustomerRepository;
 import ca.mcgill.ecse321.group1.repository.ItemRepository;
-import jakarta.transaction.Transactional;
 import java.util.List;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 @Service
 public class CartService {
@@ -27,12 +27,13 @@ public class CartService {
     this.clothingVariantRepository = clothingVariantRepository;
   }
 
-  @Transactional
+  @Transactional(readOnly = true)
   public Item getItemByID(String itemID) {
     Item item = itemRepository.findItemByItemID(itemID);
 
     if (item == null) {
-      throw new NotFoundException("There is no item with id " + itemID + ".");
+      throw new ResponseStatusException(
+          HttpStatus.NOT_FOUND, "There is no item with id " + itemID + ".");
     }
 
     return item;
@@ -42,7 +43,8 @@ public class CartService {
   public List<Item> getCartItems(String customerID) {
     Customer customer = customerRepository.findByRoleID(customerID);
     if (customer == null) {
-      throw new NotFoundException("There is no customer with id " + customerID + ".");
+      throw new ResponseStatusException(
+          HttpStatus.NOT_FOUND, "There is no customer with id " + customerID + ".");
     }
 
     return itemRepository.findItemsByCustomer(customer);
@@ -55,16 +57,23 @@ public class CartService {
     Customer customer = customerRepository.findByRoleID(customerID);
 
     if (customer == null) {
-      throw new NotFoundException("There is no customer with id " + customerID + ".");
+      throw new ResponseStatusException(
+          HttpStatus.NOT_FOUND, "There is no customer with id " + customerID + ".");
     }
 
     if (clothingVariant == null) {
-      throw new NotFoundException(
-          "There is no clothing variant with id " + clothingVariantID + ".");
+      throw new ResponseStatusException(
+          HttpStatus.NOT_FOUND, "There is no clothing variant with id " + clothingVariantID + ".");
+    }
+
+    if (quantity < 1) {
+      throw new ResponseStatusException(
+          HttpStatus.BAD_REQUEST, "The quantity must be greater than one.");
     }
 
     if (quantity > clothingVariant.getStockQuantity()) {
-      throw new InvalidInputException(
+      throw new ResponseStatusException(
+          HttpStatus.BAD_REQUEST,
           "The quantity "
               + quantity
               + "is higher than the available stock for this clothing piece ("
@@ -87,22 +96,22 @@ public class CartService {
     Customer customer = customerRepository.findByRoleID(customerID);
 
     if (customer == null) {
-      throw new NotFoundException("There is no customer with id " + customerID + ".");
+      throw new ResponseStatusException(
+          HttpStatus.NOT_FOUND, "There is no customer with id " + customerID + ".");
     }
 
     if (item == null) {
-      throw new NotFoundException("There is no item with id " + itemID + ".");
+      throw new ResponseStatusException(
+          HttpStatus.NOT_FOUND, "There is no item with id " + itemID + ".");
     }
 
     if (!customer.getItems().contains(item)) {
-      throw new InvalidInputException(
+      throw new ResponseStatusException(
+          HttpStatus.BAD_REQUEST,
           "The item with ID " + itemID + "is not in customer's " + customerID + "cart.");
     }
 
-    customer.removeItem(item);
-
-    itemRepository.deleteByItemID(itemID);
-    item.delete();
+    itemRepository.delete(item);
   }
 
   @Transactional
@@ -110,18 +119,11 @@ public class CartService {
     Customer customer = customerRepository.findByRoleID(customerID);
 
     if (customer == null) {
-      throw new NotFoundException("There is no customer with id " + customerID + ".");
+      throw new ResponseStatusException(
+          HttpStatus.NOT_FOUND, "There is no customer with id " + customerID + ".");
     }
 
-    List<Item> items = customer.getItems();
-
-    if (items != null) {
-      for (Item item : items) {
-        customer.removeItem(item);
-        itemRepository.deleteByItemID(item.getItemID());
-        item.delete();
-      }
-    }
+    itemRepository.deleteByRoleID(customerID);
   }
 
   @Transactional
@@ -129,16 +131,19 @@ public class CartService {
     Item item = itemRepository.findItemByItemID(itemID);
 
     if (item == null) {
-      throw new NotFoundException("There is no item with id " + itemID + ".");
+      throw new ResponseStatusException(
+          HttpStatus.NOT_FOUND, "There is no item with id " + itemID + ".");
     }
 
     // I assume that we can only change quantity to 1 <= newQuantity <= variantStockQuantity
     // If we want to be able to change quantity to 0, then it would be a special case where
     if (newQuantity < 1) {
-      throw new InvalidInputException("The new quantity has to be a positive number.");
+      throw new ResponseStatusException(
+          HttpStatus.BAD_REQUEST, "The new quantity has to be a positive number.");
     }
     if (newQuantity > item.getClothingVariant().getStockQuantity()) {
-      throw new InvalidInputException(
+      throw new ResponseStatusException(
+          HttpStatus.BAD_REQUEST,
           "The quantity "
               + newQuantity
               + "is higher than the available stock for this clothing piece ("
@@ -151,15 +156,13 @@ public class CartService {
     return item;
   }
 
-  @Transactional
+  @Transactional(readOnly = true)
   public float getCartTotal(String customerID) {
     List<Item> items = getCartItems(customerID);
     float total = 0.00f;
 
-    if (!items.isEmpty()) {
-      for (Item item : items) {
-        total += item.getPrice() * item.getQuantity();
-      }
+    for (Item item : items) {
+      total += item.getPrice() * item.getQuantity();
     }
 
     return total;
