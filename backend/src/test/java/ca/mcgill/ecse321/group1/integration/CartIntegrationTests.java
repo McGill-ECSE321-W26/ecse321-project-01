@@ -114,7 +114,7 @@ public class CartIntegrationTests {
   @Test
   @Order(1)
   public void testAddItemInvalidVariant() {
-    AddItemDTO dto = new AddItemDTO();
+    ItemCreateRequestDto dto = new ItemCreateRequestDto();
     dto.setClothingVariantID(INVALID_ID);
     dto.setQuantity(1);
 
@@ -134,7 +134,7 @@ public class CartIntegrationTests {
   @Test
   @Order(2)
   public void testAddItemQuantityZero() {
-    AddItemDTO dto = new AddItemDTO();
+    ItemCreateRequestDto dto = new ItemCreateRequestDto();
     dto.setClothingVariantID(testVariant.getClothingVariantID());
     dto.setQuantity(0);
 
@@ -154,7 +154,7 @@ public class CartIntegrationTests {
   @Test
   @Order(3)
   public void testAddItemQuantityExceedsStock() {
-    AddItemDTO dto = new AddItemDTO();
+    ItemCreateRequestDto dto = new ItemCreateRequestDto();
     dto.setClothingVariantID(testVariant.getClothingVariantID());
     dto.setQuantity(STOCK_QUANTITY + 1);
 
@@ -174,22 +174,22 @@ public class CartIntegrationTests {
   @Test
   @Order(4)
   public void testAddItemValid() {
-    AddItemDTO dto = new AddItemDTO();
+    ItemCreateRequestDto dto = new ItemCreateRequestDto();
     dto.setClothingVariantID(testVariant.getClothingVariantID());
     dto.setQuantity(2);
 
-    ResponseEntity<ItemDTO> response =
+    ResponseEntity<ItemResponseDto> response =
         client
             .post()
             .uri("/api/carts/" + testCustomer.getRoleID() + "/items")
             .contentType(MediaType.APPLICATION_JSON)
             .body(dto)
             .retrieve()
-            .toEntity(ItemDTO.class);
+            .toEntity(ItemResponseDto.class);
 
     assertNotNull(response);
     assertEquals(HttpStatus.CREATED, response.getStatusCode());
-    ItemDTO body = response.getBody();
+    ItemResponseDto body = response.getBody();
     assertNotNull(body);
     assertNotNull(body.getItemID());
     assertEquals(2, body.getQuantity());
@@ -205,7 +205,7 @@ public class CartIntegrationTests {
   @Test
   @Order(5)
   public void testGetCartItemsValid() {
-    ResponseEntity<List<ItemDTO>> response =
+    ResponseEntity<List<ItemResponseDto>> response =
         client
             .get()
             .uri("/api/carts/" + testCustomer.getRoleID() + "/items")
@@ -214,7 +214,7 @@ public class CartIntegrationTests {
 
     assertNotNull(response);
     assertEquals(HttpStatus.OK, response.getStatusCode());
-    List<ItemDTO> items = response.getBody();
+    List<ItemResponseDto> items = response.getBody();
     assertNotNull(items);
     assertFalse(items.isEmpty());
     assertTrue(items.stream().anyMatch(i -> validItemID.equals(i.getItemID())));
@@ -239,16 +239,16 @@ public class CartIntegrationTests {
   @Test
   @Order(7)
   public void testGetItemByValidID() {
-    ResponseEntity<ItemDTO> response =
+    ResponseEntity<ItemResponseDto> response =
         client
             .get()
             .uri("/api/carts/" + testCustomer.getRoleID() + "/items/" + validItemID)
             .retrieve()
-            .toEntity(ItemDTO.class);
+            .toEntity(ItemResponseDto.class);
 
     assertNotNull(response);
     assertEquals(HttpStatus.OK, response.getStatusCode());
-    ItemDTO body = response.getBody();
+    ItemResponseDto body = response.getBody();
     assertNotNull(body);
     assertEquals(validItemID, body.getItemID());
     assertEquals(testVariant.getClothingVariantID(), body.getClothingVariantID());
@@ -259,16 +259,16 @@ public class CartIntegrationTests {
   @Test
   @Order(8)
   public void testGetCartTotalValid() {
-    ResponseEntity<CartTotalDTO> response =
+    ResponseEntity<CartTotalDto> response =
         client
             .get()
             .uri("/api/carts/" + testCustomer.getRoleID())
             .retrieve()
-            .toEntity(CartTotalDTO.class);
+            .toEntity(CartTotalDto.class);
 
     assertNotNull(response);
     assertEquals(HttpStatus.OK, response.getStatusCode());
-    CartTotalDTO body = response.getBody();
+    CartTotalDto body = response.getBody();
     assertNotNull(body);
     // quantity=2, price=29.99 → total=59.98
     assertEquals(testModel.getPrice() * 2, body.getCartTotal(), 0.01f);
@@ -279,7 +279,7 @@ public class CartIntegrationTests {
   @Test
   @Order(9)
   public void testModifyQuantityInvalidItem() {
-    UpdateItemQuantityDTO dto = new UpdateItemQuantityDTO();
+    ItemQuantityUpdateRequestDto dto = new ItemQuantityUpdateRequestDto();
     dto.setQuantity(1);
 
     ResponseEntity<String> response =
@@ -298,7 +298,7 @@ public class CartIntegrationTests {
   @Test
   @Order(10)
   public void testModifyQuantityToZero() {
-    UpdateItemQuantityDTO dto = new UpdateItemQuantityDTO();
+    ItemQuantityUpdateRequestDto dto = new ItemQuantityUpdateRequestDto();
     dto.setQuantity(0);
 
     ResponseEntity<String> response =
@@ -317,7 +317,7 @@ public class CartIntegrationTests {
   @Test
   @Order(11)
   public void testModifyQuantityExceedsStock() {
-    UpdateItemQuantityDTO dto = new UpdateItemQuantityDTO();
+    ItemQuantityUpdateRequestDto dto = new ItemQuantityUpdateRequestDto();
     dto.setQuantity(STOCK_QUANTITY + 1);
 
     ResponseEntity<String> response =
@@ -336,21 +336,21 @@ public class CartIntegrationTests {
   @Test
   @Order(12)
   public void testModifyQuantityValid() {
-    UpdateItemQuantityDTO dto = new UpdateItemQuantityDTO();
+    ItemQuantityUpdateRequestDto dto = new ItemQuantityUpdateRequestDto();
     dto.setQuantity(1);
 
-    ResponseEntity<ItemDTO> response =
+    ResponseEntity<ItemResponseDto> response =
         client
             .patch()
             .uri("/api/carts/" + testCustomer.getRoleID() + "/items/" + validItemID)
             .contentType(MediaType.APPLICATION_JSON)
             .body(dto)
             .retrieve()
-            .toEntity(ItemDTO.class);
+            .toEntity(ItemResponseDto.class);
 
     assertNotNull(response);
     assertEquals(HttpStatus.OK, response.getStatusCode());
-    ItemDTO body = response.getBody();
+    ItemResponseDto body = response.getBody();
     assertNotNull(body);
     assertEquals(validItemID, body.getItemID());
     assertEquals(1, body.getQuantity());
@@ -401,7 +401,7 @@ public class CartIntegrationTests {
   @Order(15)
   public void testRemoveAllItemsValid() {
     // Add a fresh item to the cart first
-    AddItemDTO dto = new AddItemDTO();
+    ItemCreateRequestDto dto = new ItemCreateRequestDto();
     dto.setClothingVariantID(testVariant.getClothingVariantID());
     dto.setQuantity(1);
     client
@@ -424,7 +424,7 @@ public class CartIntegrationTests {
     assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
 
     // Verify cart is empty
-    ResponseEntity<List<ItemDTO>> getResponse =
+    ResponseEntity<List<ItemResponseDto>> getResponse =
         client
             .get()
             .uri("/api/carts/" + testCustomer.getRoleID() + "/items")

@@ -1,11 +1,8 @@
 package ca.mcgill.ecse321.group1.dto;
 
-public class UpdatePasswordDto {
+public class PersonPasswordUpdateRequestDto {
   private String oldPassword;
   private String newPassword;
-
-  @SuppressWarnings("unused")
-  private UpdatePasswordDto() {}
 
   public String getOldPassword() {
     return oldPassword;

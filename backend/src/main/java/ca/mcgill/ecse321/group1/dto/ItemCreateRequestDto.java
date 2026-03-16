@@ -1,6 +1,6 @@
 package ca.mcgill.ecse321.group1.dto;
 
-public class AddItemDTO {
+public class ItemCreateRequestDto {
   private String clothingVariantID;
   private int quantity;
 

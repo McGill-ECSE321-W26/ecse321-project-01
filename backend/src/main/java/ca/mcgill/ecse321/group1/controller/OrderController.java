@@ -1,6 +1,6 @@
 package ca.mcgill.ecse321.group1.controller;
 
-import ca.mcgill.ecse321.group1.dto.CreateOrderRequestDto;
+import ca.mcgill.ecse321.group1.dto.OrderCreateRequestDto;
 import ca.mcgill.ecse321.group1.dto.OrderRequestUpdateDto;
 import ca.mcgill.ecse321.group1.dto.OrderResponseDto;
 import ca.mcgill.ecse321.group1.model.Order;
@@ -21,7 +21,7 @@ public class OrderController {
 
   @PostMapping
   @ResponseStatus(HttpStatus.CREATED)
-  public OrderResponseDto createOrder(@RequestBody CreateOrderRequestDto dto) {
+  public OrderResponseDto createOrder(@RequestBody OrderCreateRequestDto dto) {
     Order order =
         orderService.createOrder(
             dto.getCustomerID(), dto.getDeliveryDate(), dto.getUsedLoyaltyPoints());

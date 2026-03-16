@@ -2,11 +2,11 @@ package ca.mcgill.ecse321.group1.controller;
 
 import ca.mcgill.ecse321.group1.dto.AddressDto;
 import ca.mcgill.ecse321.group1.dto.AuthResponseDto;
-import ca.mcgill.ecse321.group1.dto.CreateCustomerDto;
-import ca.mcgill.ecse321.group1.dto.CreateEmployeeDto;
-import ca.mcgill.ecse321.group1.dto.LoginDto;
+import ca.mcgill.ecse321.group1.dto.CustomerCreateRequestDto;
+import ca.mcgill.ecse321.group1.dto.EmployeeCreateRequestDto;
+import ca.mcgill.ecse321.group1.dto.LoginRequestDto;
+import ca.mcgill.ecse321.group1.dto.PersonPasswordUpdateRequestDto;
 import ca.mcgill.ecse321.group1.dto.PersonResponseDto;
-import ca.mcgill.ecse321.group1.dto.UpdatePasswordDto;
 import ca.mcgill.ecse321.group1.model.Customer;
 import ca.mcgill.ecse321.group1.model.Person;
 import ca.mcgill.ecse321.group1.security.JwtUtil;
@@ -31,14 +31,14 @@ public class PersonController {
 
   @PostMapping("/customers")
   @ResponseStatus(HttpStatus.CREATED)
-  public PersonResponseDto createCustomer(@RequestBody CreateCustomerDto dto) {
+  public PersonResponseDto createCustomer(@RequestBody CustomerCreateRequestDto dto) {
     Person p = personService.createCustomer(dto.getEmail(), dto.getPassword(), dto.getAddress());
     return new PersonResponseDto(p);
   }
 
   @PostMapping("/employees")
   @ResponseStatus(HttpStatus.CREATED)
-  public PersonResponseDto createEmployee(@RequestBody CreateEmployeeDto dto) {
+  public PersonResponseDto createEmployee(@RequestBody EmployeeCreateRequestDto dto) {
     Person p = personService.createEmployee(dto.getEmail(), dto.getPassword());
     return new PersonResponseDto(p);
   }
@@ -62,7 +62,7 @@ public class PersonController {
   // containing the person's ID and the requested role. Returns both the token (for the client
   // to store and send on future requests) and the person data
   @PostMapping("/sessions")
-  public AuthResponseDto logIn(@RequestBody LoginDto dto) {
+  public AuthResponseDto logIn(@RequestBody LoginRequestDto dto) {
     Person p = personService.logIn(dto.getEmail(), dto.getPassword(), dto.getRole());
     String token = jwtUtil.generateToken(p, dto.getRole());
     return new AuthResponseDto(token, new PersonResponseDto(p));
@@ -87,7 +87,7 @@ public class PersonController {
 
   @PatchMapping("/{id}/password")
   public PersonResponseDto updatePassword(
-      @PathVariable String id, @RequestBody UpdatePasswordDto dto) {
+      @PathVariable String id, @RequestBody PersonPasswordUpdateRequestDto dto) {
     Person p = personService.updatePassword(id, dto.getOldPassword(), dto.getNewPassword());
     return new PersonResponseDto(p);
   }

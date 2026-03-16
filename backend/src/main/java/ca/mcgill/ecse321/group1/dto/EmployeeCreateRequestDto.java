@@ -1,11 +1,8 @@
 package ca.mcgill.ecse321.group1.dto;
 
-public class CreateEmployeeDto {
+public class EmployeeCreateRequestDto {
   private String email;
   private String password;
-
-  @SuppressWarnings("unused")
-  private CreateEmployeeDto() {}
 
   public String getEmail() {
     return email;

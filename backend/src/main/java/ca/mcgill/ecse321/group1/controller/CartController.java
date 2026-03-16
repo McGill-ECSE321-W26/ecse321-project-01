@@ -1,9 +1,9 @@
 package ca.mcgill.ecse321.group1.controller;
 
-import ca.mcgill.ecse321.group1.dto.AddItemDTO;
-import ca.mcgill.ecse321.group1.dto.CartTotalDTO;
-import ca.mcgill.ecse321.group1.dto.ItemDTO;
-import ca.mcgill.ecse321.group1.dto.UpdateItemQuantityDTO;
+import ca.mcgill.ecse321.group1.dto.CartTotalDto;
+import ca.mcgill.ecse321.group1.dto.ItemCreateRequestDto;
+import ca.mcgill.ecse321.group1.dto.ItemQuantityUpdateRequestDto;
+import ca.mcgill.ecse321.group1.dto.ItemResponseDto;
 import ca.mcgill.ecse321.group1.model.Item;
 import ca.mcgill.ecse321.group1.service.CartService;
 import java.util.List;
@@ -28,21 +28,22 @@ public class CartController {
   }
 
   @GetMapping("/{customerID}")
-  public CartTotalDTO getCartTotal(@PathVariable String customerID) {
+  public CartTotalDto getCartTotal(@PathVariable String customerID) {
     float total = cartService.getCartTotal(customerID);
-    return new CartTotalDTO(total);
+    return new CartTotalDto(total);
   }
 
   @PostMapping("/{customerID}/items")
   @ResponseStatus(HttpStatus.CREATED)
-  public ItemDTO addItem(@PathVariable String customerID, @RequestBody AddItemDTO dto) {
+  public ItemResponseDto addItem(
+      @PathVariable String customerID, @RequestBody ItemCreateRequestDto dto) {
     Item item = cartService.addItem(dto.getClothingVariantID(), customerID, dto.getQuantity());
-    return new ItemDTO(item);
+    return new ItemResponseDto(item);
   }
 
   @GetMapping("/{customerID}/items")
-  public List<ItemDTO> getCartItems(@PathVariable String customerID) {
-    return cartService.getCartItems(customerID).stream().map(ItemDTO::new).toList();
+  public List<ItemResponseDto> getCartItems(@PathVariable String customerID) {
+    return cartService.getCartItems(customerID).stream().map(ItemResponseDto::new).toList();
   }
 
   @DeleteMapping("/{customerID}/items")
@@ -58,17 +59,17 @@ public class CartController {
   }
 
   @GetMapping("/{customerID}/items/{itemID}")
-  public ItemDTO getItemByID(@PathVariable String customerID, @PathVariable String itemID) {
+  public ItemResponseDto getItemByID(@PathVariable String customerID, @PathVariable String itemID) {
     Item item = cartService.getItemByID(customerID, itemID);
-    return new ItemDTO(item);
+    return new ItemResponseDto(item);
   }
 
   @PatchMapping("/{customerID}/items/{itemID}")
-  public ItemDTO modifyQuantity(
+  public ItemResponseDto modifyQuantity(
       @PathVariable String customerID,
       @PathVariable String itemID,
-      @RequestBody UpdateItemQuantityDTO dto) {
+      @RequestBody ItemQuantityUpdateRequestDto dto) {
     Item item = cartService.changeQuantity(customerID, itemID, dto.getQuantity());
-    return new ItemDTO(item);
+    return new ItemResponseDto(item);
   }
 }
