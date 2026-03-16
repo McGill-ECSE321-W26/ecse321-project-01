@@ -8,6 +8,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import ca.mcgill.ecse321.group1.dto.*;
 import ca.mcgill.ecse321.group1.model.*;
 import ca.mcgill.ecse321.group1.repository.*;
+import ca.mcgill.ecse321.group1.security.JwtUtil;
 import java.sql.Date;
 import java.time.LocalDate;
 import java.util.List;
@@ -53,6 +54,11 @@ public class OrderIntegrationTests {
 
   @Autowired private ClothingVariantRepository clothingVariantRepository;
 
+  @Autowired private JwtUtil jwtUtil;
+
+  private String customerToken;
+  private String employeeToken;
+
   private static final String INVALID_ID = "not-a-real-id";
   private static final String INVALID_STATUS = "NotARealStatus";
   private final Date VALID_DELIVERY_DATE = Date.valueOf(LocalDate.now().plusDays(2));
@@ -72,13 +78,6 @@ public class OrderIntegrationTests {
 
   @BeforeAll
   public void setup() {
-    // Configure rest client (needed due to Spring Boot V4 instead of TestRestTemplate)
-    client =
-        RestClient.builder()
-            .baseUrl("http://localhost:" + port)
-            .defaultStatusHandler(HttpStatusCode::isError, (request, response) -> {})
-            .build();
-
     // Create clothing model
     testModel = new ClothingModel();
     testModel.setName("McGill Hoodie");
@@ -121,6 +120,18 @@ public class OrderIntegrationTests {
     testEmployee = new Employee();
     testEmployee.setPerson(testEmployeePerson);
     testEmployee = employeeRepository.save(testEmployee);
+
+    // Generate JWT tokens
+    customerToken = jwtUtil.generateToken(testCustomerPerson, "Customer");
+    employeeToken = jwtUtil.generateToken(testEmployeePerson, "Employee");
+
+    // Configure rest client (needed due to Spring Boot V4 instead of TestRestTemplate)
+    client =
+        RestClient.builder()
+            .baseUrl("http://localhost:" + port)
+            .defaultHeader("Authorization", "Bearer " + customerToken)
+            .defaultStatusHandler(HttpStatusCode::isError, (request, response) -> {})
+            .build();
   }
 
   @AfterAll
@@ -141,7 +152,7 @@ public class OrderIntegrationTests {
   @Order(1)
   public void testCreateOrderWithInvalidCustomer() {
     // Arrange
-    CreateOrderRequestDto dto = new CreateOrderRequestDto();
+    OrderCreateRequestDto dto = new OrderCreateRequestDto();
     dto.setCustomerID(INVALID_ID);
     dto.setDeliveryDate(VALID_DELIVERY_DATE);
     dto.setUsedLoyaltyPoints(0);
@@ -164,8 +175,8 @@ public class OrderIntegrationTests {
   @Test
   @Order(2)
   public void testCreateOrderWithInvalidDeliveryDate() {
-    // Arrange – delivery date is today, which is not at least 24 h ahead
-    CreateOrderRequestDto dto = new CreateOrderRequestDto();
+    // Arrange
+    OrderCreateRequestDto dto = new OrderCreateRequestDto();
     dto.setCustomerID(testCustomer.getRoleID());
     dto.setDeliveryDate(INVALID_DELIVERY_DATE);
     dto.setUsedLoyaltyPoints(0);
@@ -189,7 +200,7 @@ public class OrderIntegrationTests {
   @Order(3)
   public void testCreateOrderValid() {
     // Arrange
-    CreateOrderRequestDto dto = new CreateOrderRequestDto();
+    OrderCreateRequestDto dto = new OrderCreateRequestDto();
     dto.setCustomerID(testCustomer.getRoleID());
     dto.setDeliveryDate(VALID_DELIVERY_DATE);
     dto.setUsedLoyaltyPoints(0);
@@ -424,6 +435,7 @@ public class OrderIntegrationTests {
         client
             .patch()
             .uri("/api/orders/" + INVALID_ID)
+            .header("Authorization", "Bearer " + employeeToken)
             .contentType(MediaType.APPLICATION_JSON)
             .body(dto)
             .retrieve()
@@ -446,6 +458,7 @@ public class OrderIntegrationTests {
         client
             .patch()
             .uri("/api/orders/" + validOrderID)
+            .header("Authorization", "Bearer " + employeeToken)
             .contentType(MediaType.APPLICATION_JSON)
             .body(dto)
             .retrieve()
@@ -468,6 +481,7 @@ public class OrderIntegrationTests {
         client
             .patch()
             .uri("/api/orders/" + validOrderID)
+            .header("Authorization", "Bearer " + employeeToken)
             .contentType(MediaType.APPLICATION_JSON)
             .body(dto)
             .retrieve()
@@ -487,7 +501,7 @@ public class OrderIntegrationTests {
   @Test
   @Order(17)
   public void testUpdateOrderInvalidDeliveryDate() {
-    // Arrange – delivery date is today, which is not at least 24 h ahead
+    // Arrange
     OrderRequestUpdateDto dto = new OrderRequestUpdateDto();
     dto.setDeliveryDate(INVALID_DELIVERY_DATE);
 
@@ -496,6 +510,7 @@ public class OrderIntegrationTests {
         client
             .patch()
             .uri("/api/orders/" + validOrderID)
+            .header("Authorization", "Bearer " + employeeToken)
             .contentType(MediaType.APPLICATION_JSON)
             .body(dto)
             .retrieve()
@@ -519,6 +534,7 @@ public class OrderIntegrationTests {
         client
             .patch()
             .uri("/api/orders/" + validOrderID)
+            .header("Authorization", "Bearer " + employeeToken)
             .contentType(MediaType.APPLICATION_JSON)
             .body(dto)
             .retrieve()
@@ -547,6 +563,7 @@ public class OrderIntegrationTests {
         client
             .patch()
             .uri("/api/orders/" + validOrderID)
+            .header("Authorization", "Bearer " + employeeToken)
             .contentType(MediaType.APPLICATION_JSON)
             .body(dto)
             .retrieve()
@@ -569,6 +586,7 @@ public class OrderIntegrationTests {
         client
             .patch()
             .uri("/api/orders/" + validOrderID)
+            .header("Authorization", "Bearer " + employeeToken)
             .contentType(MediaType.APPLICATION_JSON)
             .body(dto)
             .retrieve()
@@ -586,7 +604,7 @@ public class OrderIntegrationTests {
   @Test
   @Order(21)
   public void testCancelDeliveredOrder() {
-    // Arrange – order is now "Delivered" after test 20
+    // Arrange
     OrderRequestUpdateDto dto = new OrderRequestUpdateDto();
     dto.setOrderStatus("Cancelled");
 
@@ -595,6 +613,7 @@ public class OrderIntegrationTests {
         client
             .patch()
             .uri("/api/orders/" + validOrderID)
+            .header("Authorization", "Bearer " + employeeToken)
             .contentType(MediaType.APPLICATION_JSON)
             .body(dto)
             .retrieve()
@@ -615,6 +634,7 @@ public class OrderIntegrationTests {
         client
             .get()
             .uri("/api/orders/employee/" + testEmployee.getRoleID())
+            .header("Authorization", "Bearer " + employeeToken)
             .retrieve()
             .toEntity(new ParameterizedTypeReference<List<OrderResponseDto>>() {});
 
@@ -632,7 +652,12 @@ public class OrderIntegrationTests {
   public void testGetOrdersByInvalidEmployeeID() {
     // Act
     ResponseEntity<String> response =
-        client.get().uri("/api/orders/employee/" + INVALID_ID).retrieve().toEntity(String.class);
+        client
+            .get()
+            .uri("/api/orders/employee/" + INVALID_ID)
+            .header("Authorization", "Bearer " + employeeToken)
+            .retrieve()
+            .toEntity(String.class);
 
     // Assert
     assertNotNull(response);
@@ -649,6 +674,7 @@ public class OrderIntegrationTests {
         client
             .get()
             .uri("/api/orders/employee/" + testEmployee.getRoleID() + "?orderStatus=Delivered")
+            .header("Authorization", "Bearer " + employeeToken)
             .retrieve()
             .toEntity(new ParameterizedTypeReference<List<OrderResponseDto>>() {});
 
@@ -663,22 +689,6 @@ public class OrderIntegrationTests {
 
   @Test
   @Order(25)
-  public void testGetOrdersByInvalidEmployeeIDAndValidStatus() {
-    // Act
-    ResponseEntity<String> response =
-        client
-            .get()
-            .uri("/api/orders/employee/" + INVALID_ID + "?orderStatus=Delivered")
-            .retrieve()
-            .toEntity(String.class);
-
-    // Assert
-    assertNotNull(response);
-    assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
-  }
-
-  @Test
-  @Order(26)
   public void testGetOrdersByValidEmployeeIDAndInvalidStatus() {
     // Act
     ResponseEntity<String> response =
@@ -689,11 +699,29 @@ public class OrderIntegrationTests {
                     + testEmployee.getRoleID()
                     + "?orderStatus="
                     + INVALID_STATUS)
+            .header("Authorization", "Bearer " + employeeToken)
             .retrieve()
             .toEntity(String.class);
 
     // Assert
     assertNotNull(response);
     assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+  }
+
+  @Test
+  @Order(26)
+  public void testGetOrdersByInvalidEmployeeIDAndValidStatus() {
+    // Act
+    ResponseEntity<String> response =
+        client
+            .get()
+            .uri("/api/orders/employee/" + INVALID_ID + "?orderStatus=Delivered")
+            .header("Authorization", "Bearer " + employeeToken)
+            .retrieve()
+            .toEntity(String.class);
+
+    // Assert
+    assertNotNull(response);
+    assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
   }
 }

@@ -6,9 +6,15 @@ import ca.mcgill.ecse321.group1.dto.ClothingModelCreateRequestDto;
 import ca.mcgill.ecse321.group1.dto.ClothingModelResponseDto;
 import ca.mcgill.ecse321.group1.dto.ClothingVariantCreateRequestDto;
 import ca.mcgill.ecse321.group1.dto.ClothingVariantResponseDto;
+import ca.mcgill.ecse321.group1.dto.ClothingVariantUpdateRequestDto;
 import ca.mcgill.ecse321.group1.model.ClothingVariant;
+import ca.mcgill.ecse321.group1.model.Manager;
+import ca.mcgill.ecse321.group1.model.Person;
 import ca.mcgill.ecse321.group1.repository.ClothingModelRepository;
 import ca.mcgill.ecse321.group1.repository.ClothingVariantRepository;
+import ca.mcgill.ecse321.group1.repository.ManagerRepository;
+import ca.mcgill.ecse321.group1.repository.PersonRepository;
+import ca.mcgill.ecse321.group1.security.JwtUtil;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.MethodOrderer;
@@ -30,7 +36,7 @@ import org.springframework.web.client.RestClient;
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @TestInstance(Lifecycle.PER_CLASS)
-public class ClothingIntegrationTesting {
+public class ClothingIntegrationTests {
 
   @LocalServerPort private int port;
 
@@ -39,6 +45,15 @@ public class ClothingIntegrationTesting {
   @Autowired private ClothingVariantRepository variantRepository;
 
   @Autowired private ClothingModelRepository modelRepository;
+
+  @Autowired private PersonRepository personRepository;
+
+  @Autowired private ManagerRepository managerRepository;
+
+  @Autowired private JwtUtil jwtUtil;
+
+  private Person managerPerson;
+  private String managerToken;
 
   // Valid test data
   private final String VALID_NAME = "Winter Jacket";
@@ -62,12 +77,25 @@ public class ClothingIntegrationTesting {
             .baseUrl("http://localhost:" + port)
             .defaultStatusHandler(HttpStatusCode::isError, (request, response) -> {})
             .build();
+
+    managerPerson = new Person();
+    managerPerson.setEmail("clothing-manager@test.com");
+    managerPerson.setPassword("password");
+    managerPerson = personRepository.save(managerPerson);
+
+    Manager manager = new Manager();
+    manager.setPerson(managerPerson);
+    managerRepository.save(manager);
+
+    managerToken = jwtUtil.generateToken(managerPerson, "Manager");
   }
 
   @AfterAll
   public void clearDatabase() {
     variantRepository.deleteAll();
     modelRepository.deleteAll();
+    managerRepository.deleteAll();
+    personRepository.deleteById(managerPerson.getPersonID());
   }
 
   @Test
@@ -82,6 +110,7 @@ public class ClothingIntegrationTesting {
         client
             .post()
             .uri("/api/clothing")
+            .header("Authorization", "Bearer " + managerToken)
             .contentType(MediaType.APPLICATION_JSON)
             .body(request)
             .retrieve()
@@ -161,6 +190,7 @@ public class ClothingIntegrationTesting {
         client
             .post()
             .uri(url)
+            .header("Authorization", "Bearer " + managerToken)
             .contentType(MediaType.APPLICATION_JSON)
             .body(request)
             .retrieve()
@@ -192,6 +222,7 @@ public class ClothingIntegrationTesting {
         client
             .post()
             .uri(url)
+            .header("Authorization", "Bearer " + managerToken)
             .contentType(MediaType.APPLICATION_JSON)
             .body(request)
             .retrieve()
@@ -254,14 +285,188 @@ public class ClothingIntegrationTesting {
     assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
   }
 
+  // ==== PUT /api/clothing/{modelId} ====
+
   @Test
   @Order(10)
+  public void testUpdateClothingModelValid() {
+    // Arrange
+    ClothingModelCreateRequestDto request =
+        new ClothingModelCreateRequestDto("Updated Jacket", 149.99f);
+
+    // Act
+    ResponseEntity<ClothingModelResponseDto> response =
+        client
+            .put()
+            .uri("/api/clothing/" + this.validModelId)
+            .header("Authorization", "Bearer " + managerToken)
+            .contentType(MediaType.APPLICATION_JSON)
+            .body(request)
+            .retrieve()
+            .toEntity(ClothingModelResponseDto.class);
+
+    // Assert
+    assertNotNull(response);
+    assertEquals(HttpStatus.OK, response.getStatusCode());
+    ClothingModelResponseDto body = response.getBody();
+    assertNotNull(body);
+    assertEquals(this.validModelId, body.getClothingModelID());
+    assertEquals("Updated Jacket", body.getName());
+    assertEquals(149.99f, body.getPrice());
+  }
+
+  @Test
+  @Order(11)
+  public void testUpdateClothingModelBlankName() {
+    // Arrange
+    ClothingModelCreateRequestDto request = new ClothingModelCreateRequestDto("", 149.99f);
+
+    // Act
+    ResponseEntity<String> response =
+        client
+            .put()
+            .uri("/api/clothing/" + this.validModelId)
+            .header("Authorization", "Bearer " + managerToken)
+            .contentType(MediaType.APPLICATION_JSON)
+            .body(request)
+            .retrieve()
+            .toEntity(String.class);
+
+    // Assert
+    assertNotNull(response);
+    assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+  }
+
+  @Test
+  @Order(12)
+  public void testUpdateClothingModelNonPositivePrice() {
+    // Arrange
+    ClothingModelCreateRequestDto request = new ClothingModelCreateRequestDto("Updated Jacket", 0f);
+
+    // Act
+    ResponseEntity<String> response =
+        client
+            .put()
+            .uri("/api/clothing/" + this.validModelId)
+            .header("Authorization", "Bearer " + managerToken)
+            .contentType(MediaType.APPLICATION_JSON)
+            .body(request)
+            .retrieve()
+            .toEntity(String.class);
+
+    // Assert
+    assertNotNull(response);
+    assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+  }
+
+  @Test
+  @Order(13)
+  public void testUpdateClothingModelInvalidId() {
+    // Arrange
+    ClothingModelCreateRequestDto request =
+        new ClothingModelCreateRequestDto("Updated Jacket", 149.99f);
+
+    // Act
+    ResponseEntity<String> response =
+        client
+            .put()
+            .uri("/api/clothing/" + INVALID_MODEL_ID)
+            .header("Authorization", "Bearer " + managerToken)
+            .contentType(MediaType.APPLICATION_JSON)
+            .body(request)
+            .retrieve()
+            .toEntity(String.class);
+
+    // Assert
+    assertNotNull(response);
+    assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+  }
+
+  // ==== PATCH /api/clothing/{modelId}/variants/{variantId} ====
+
+  @Test
+  @Order(14)
+  public void testUpdateVariantStockValid() {
+    // Arrange
+    ClothingVariantUpdateRequestDto request = new ClothingVariantUpdateRequestDto(25);
+
+    // Act
+    ResponseEntity<ClothingVariantResponseDto> response =
+        client
+            .patch()
+            .uri("/api/clothing/" + this.validModelId + "/variants/" + this.validVariantId)
+            .header("Authorization", "Bearer " + managerToken)
+            .contentType(MediaType.APPLICATION_JSON)
+            .body(request)
+            .retrieve()
+            .toEntity(ClothingVariantResponseDto.class);
+
+    // Assert
+    assertNotNull(response);
+    assertEquals(HttpStatus.OK, response.getStatusCode());
+    ClothingVariantResponseDto body = response.getBody();
+    assertNotNull(body);
+    assertEquals(this.validVariantId, body.getClothingVariantID());
+    assertEquals(25, body.getStockQuantity());
+  }
+
+  @Test
+  @Order(15)
+  public void testUpdateVariantStockNegative() {
+    // Arrange
+    ClothingVariantUpdateRequestDto request = new ClothingVariantUpdateRequestDto(-1);
+
+    // Act
+    ResponseEntity<String> response =
+        client
+            .patch()
+            .uri("/api/clothing/" + this.validModelId + "/variants/" + this.validVariantId)
+            .header("Authorization", "Bearer " + managerToken)
+            .contentType(MediaType.APPLICATION_JSON)
+            .body(request)
+            .retrieve()
+            .toEntity(String.class);
+
+    // Assert
+    assertNotNull(response);
+    assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+  }
+
+  @Test
+  @Order(16)
+  public void testUpdateVariantStockInvalidVariantId() {
+    // Arrange
+    ClothingVariantUpdateRequestDto request = new ClothingVariantUpdateRequestDto(5);
+
+    // Act
+    ResponseEntity<String> response =
+        client
+            .patch()
+            .uri("/api/clothing/" + this.validModelId + "/variants/" + INVALID_VARIANT_ID)
+            .header("Authorization", "Bearer " + managerToken)
+            .contentType(MediaType.APPLICATION_JSON)
+            .body(request)
+            .retrieve()
+            .toEntity(String.class);
+
+    // Assert
+    assertNotNull(response);
+    assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+  }
+
+  @Test
+  @Order(17)
   public void testDeleteVariant() {
     // Arrange
     String url = "/api/clothing/" + this.validModelId + "/variants/" + this.validVariantId;
 
     // Act
-    client.delete().uri(url).retrieve().toBodilessEntity();
+    client
+        .delete()
+        .uri(url)
+        .header("Authorization", "Bearer " + managerToken)
+        .retrieve()
+        .toBodilessEntity();
 
     // Assert - confirm it's gone
     ResponseEntity<String> response = client.get().uri(url).retrieve().toEntity(String.class);
@@ -269,13 +474,18 @@ public class ClothingIntegrationTesting {
   }
 
   @Test
-  @Order(11)
+  @Order(18)
   public void testDeleteClothingModel() {
     // Arrange
     String url = "/api/clothing/" + this.validModelId;
 
     // Act
-    client.delete().uri(url).retrieve().toBodilessEntity();
+    client
+        .delete()
+        .uri(url)
+        .header("Authorization", "Bearer " + managerToken)
+        .retrieve()
+        .toBodilessEntity();
 
     // Assert - confirm it's gone
     ResponseEntity<String> response = client.get().uri(url).retrieve().toEntity(String.class);
@@ -283,13 +493,19 @@ public class ClothingIntegrationTesting {
   }
 
   @Test
-  @Order(12)
+  @Order(19)
   public void testDeleteNonExistentModel() {
     // Arrange
     String url = "/api/clothing/" + INVALID_MODEL_ID;
 
     // Act
-    ResponseEntity<String> response = client.delete().uri(url).retrieve().toEntity(String.class);
+    ResponseEntity<String> response =
+        client
+            .delete()
+            .uri(url)
+            .header("Authorization", "Bearer " + managerToken)
+            .retrieve()
+            .toEntity(String.class);
 
     // Assert
     assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
