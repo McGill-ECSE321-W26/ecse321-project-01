@@ -10,8 +10,8 @@ import javax.crypto.SecretKey;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-// Utility class for creating and validating JWT tokens.
-// Tokens contain the person's ID, email, and role, and are signed with HMAC-SHA256.
+// Utility class for creating and validating JWT tokens
+// Tokens contain person ID, email, and role
 @Component
 public class JwtUtil {
 
@@ -45,7 +45,7 @@ public class JwtUtil {
     return parseClaims(token).get("role", String.class);
   }
 
-  // Return true if the token's signature is valid and not expired.
+  // Return true if the token signature is valid and not expired.
   // Any parsing/validation failure (bad signature, expired, malformed) returns false.
   public boolean validateToken(String token) {
     try {

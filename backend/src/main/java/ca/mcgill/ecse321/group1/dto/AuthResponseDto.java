@@ -1,8 +1,5 @@
 package ca.mcgill.ecse321.group1.dto;
 
-// Response DTO for the login endpoint (POST /api/persons/sessions).
-// Contains the JWT token the client should store and send on future requests,
-// along with the person's profile data.
 public class AuthResponseDto {
 
   private String token;

@@ -11,11 +11,9 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 
-// Configures Spring Security for stateless JWT authentication.
-// - CSRF is disabled because we use stateless tokens (no cookies/sessions to protect).
-// - Sessions are disabled (STATELESS) — every request must carry its own JWT.
-// - The JwtAuthenticationFilter runs before Spring's built-in UsernamePasswordAuthenticationFilter,
-//   so by the time authorization checks happen, the user's role is already set.
+// Configures Spring Security for stateless JWT authentication
+// - CSRF is disabled because we use stateless tokens (no cookies/sessions to protect)
+// - Sessions are disabled (STATELESS) every request must carry its own JWT
 @Configuration
 @EnableMethodSecurity
 public class SecurityConfig {
@@ -29,7 +27,7 @@ public class SecurityConfig {
   @Bean
   public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
     http.csrf(AbstractHttpConfigurer::disable)
-        // Allow all origins for development — the frontend runs on a different port
+        // CORS CONFIG
         .cors(
             cors ->
                 cors.configurationSource(
@@ -41,7 +39,7 @@ public class SecurityConfig {
                       config.setAllowCredentials(true);
                       return config;
                     }))
-        // No server-side sessions — authentication comes from the JWT on each request
+        // No server-side sessions authentication comes from the JWT on each request
         .sessionManagement(
             session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
         // URL-based authorization rules.

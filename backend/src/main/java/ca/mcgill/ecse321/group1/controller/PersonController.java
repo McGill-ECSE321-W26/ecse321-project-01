@@ -58,9 +58,9 @@ public class PersonController {
     return new PersonResponseDto(p);
   }
 
-  // Login endpoint — validates credentials via PersonService, then generates a JWT token
+  // Login endpoint validates credentials via PersonService, then generates a JWT token
   // containing the person's ID and the requested role. Returns both the token (for the client
-  // to store and send on future requests) and the person data.
+  // to store and send on future requests) and the person data
   @PostMapping("/sessions")
   public AuthResponseDto logIn(@RequestBody LoginDto dto) {
     Person p = personService.logIn(dto.getEmail(), dto.getPassword(), dto.getRole());
