@@ -38,18 +38,46 @@ public class OrderController {
   }
 
   @GetMapping
-  public List<OrderResponseDto> getOrders(
-      @RequestParam(required = false) String customerID,
-      @RequestParam(required = false) String orderStatus) {
+  public List<OrderResponseDto> getOrders(@RequestParam(required = false) String orderStatus) {
     List<Order> orders;
-    if (customerID != null && orderStatus != null) {
-      orders = orderService.getOrdersByCustomerIDAndStatus(customerID, orderStatus);
-    } else if (customerID != null) {
-      orders = orderService.getOrdersByCustomerID(customerID);
-    } else if (orderStatus != null) {
-      orders = orderService.getOrdersByOrderStatus(orderStatus);
-    } else {
+    if (orderStatus == null) {
       orders = orderService.getOrders();
+    } else {
+      orders = orderService.getOrdersByOrderStatus(orderStatus);
+    }
+
+    List<OrderResponseDto> ordersDTO = new ArrayList<>();
+    for (Order order : orders) {
+      ordersDTO.add(new OrderResponseDto(order));
+    }
+    return ordersDTO;
+  }
+
+  @GetMapping("/customer/{customerID}")
+  public List<OrderResponseDto> getOrdersByCustomerID(
+      @PathVariable String customerID, @RequestParam(required = false) String orderStatus) {
+    List<Order> orders;
+    if (orderStatus == null) {
+      orders = orderService.getOrdersByCustomerID(customerID);
+    } else {
+      orders = orderService.getOrdersByCustomerIDAndStatus(customerID, orderStatus);
+    }
+
+    List<OrderResponseDto> ordersDTO = new ArrayList<>();
+    for (Order order : orders) {
+      ordersDTO.add(new OrderResponseDto(order));
+    }
+    return ordersDTO;
+  }
+
+  @GetMapping("/employee/{employeeID}")
+  public List<OrderResponseDto> getOrdersByEmployeeID(
+      @PathVariable String employeeID, @RequestParam(required = false) String orderStatus) {
+    List<Order> orders;
+    if (orderStatus == null) {
+      orders = orderService.getOrdersByEmployeeID(employeeID);
+    } else {
+      orders = orderService.getOrdersByEmployeeIDAndStatus(employeeID, orderStatus);
     }
 
     List<OrderResponseDto> ordersDTO = new ArrayList<>();

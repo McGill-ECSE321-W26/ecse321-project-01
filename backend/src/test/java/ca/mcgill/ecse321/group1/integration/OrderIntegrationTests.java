@@ -54,9 +54,10 @@ public class OrderIntegrationTests {
 
   @Autowired private ClothingVariantRepository clothingVariantRepository;
 
-  @Autowired private ManagerRepository managerRepository;
-
   @Autowired private JwtUtil jwtUtil;
+
+  private String customerToken;
+  private String employeeToken;
 
   private static final String INVALID_ID = "not-a-real-id";
   private static final String INVALID_STATUS = "NotARealStatus";
@@ -68,8 +69,6 @@ public class OrderIntegrationTests {
   private Employee testEmployee;
   private Person testCustomerPerson;
   private Person testEmployeePerson;
-  private Person testManagerPerson;
-  private Manager testManager;
   private ClothingModel testModel;
   private ClothingVariant testVariant;
   private Item testItem;
@@ -77,19 +76,8 @@ public class OrderIntegrationTests {
   // Used for GET tests afterward
   private String validOrderID;
 
-  private String customerToken;
-  private String employeeToken;
-  private String managerToken;
-
   @BeforeAll
   public void setup() {
-    // Configure rest client (needed due to Spring Boot V4 instead of TestRestTemplate)
-    client =
-        RestClient.builder()
-            .baseUrl("http://localhost:" + port)
-            .defaultStatusHandler(HttpStatusCode::isError, (request, response) -> {})
-            .build();
-
     // Create clothing model
     testModel = new ClothingModel();
     testModel.setName("McGill Hoodie");
@@ -133,33 +121,27 @@ public class OrderIntegrationTests {
     testEmployee.setPerson(testEmployeePerson);
     testEmployee = employeeRepository.save(testEmployee);
 
-    // Create manager
-    testManagerPerson = new Person();
-    testManagerPerson.setEmail("order-manager@test.com");
-    testManagerPerson.setPassword("password");
-    testManagerPerson = personRepository.save(testManagerPerson);
-
-    testManager = new Manager();
-    testManager.setPerson(testManagerPerson);
-    testManager = managerRepository.save(testManager);
-
+    // Generate JWT tokens
     customerToken = jwtUtil.generateToken(testCustomerPerson, "Customer");
     employeeToken = jwtUtil.generateToken(testEmployeePerson, "Employee");
-    managerToken = jwtUtil.generateToken(testManagerPerson, "Manager");
+
+    // Configure rest client (needed due to Spring Boot V4 instead of TestRestTemplate)
+    client =
+        RestClient.builder()
+            .baseUrl("http://localhost:" + port)
+            .defaultHeader("Authorization", "Bearer " + customerToken)
+            .defaultStatusHandler(HttpStatusCode::isError, (request, response) -> {})
+            .build();
   }
 
   @AfterAll
   public void cleanup() {
-    if (validOrderID != null) {
-      orderRepository.deleteById(validOrderID);
-    }
+    if (validOrderID != null) orderRepository.deleteById(validOrderID);
     itemRepository.deleteById(testItem.getItemID());
     customerRepository.deleteById(testCustomer.getRoleID());
     employeeRepository.deleteById(testEmployee.getRoleID());
-    managerRepository.deleteById(testManager.getRoleID());
     personRepository.deleteById(testCustomerPerson.getPersonID());
     personRepository.deleteById(testEmployeePerson.getPersonID());
-    personRepository.deleteById(testManagerPerson.getPersonID());
     clothingVariantRepository.deleteById(testVariant.getClothingVariantID());
     clothingModelRepository.deleteById(testModel.getClothingModelID());
   }
@@ -179,8 +161,7 @@ public class OrderIntegrationTests {
     ResponseEntity<String> response =
         client
             .post()
-            .uri("/api/orderss")
-            .header("Authorization", "Bearer " + customerToken)
+            .uri("/api/orders")
             .contentType(MediaType.APPLICATION_JSON)
             .body(dto)
             .retrieve()
@@ -205,7 +186,6 @@ public class OrderIntegrationTests {
         client
             .post()
             .uri("/api/orders")
-            .header("Authorization", "Bearer " + customerToken)
             .contentType(MediaType.APPLICATION_JSON)
             .body(dto)
             .retrieve()
@@ -230,7 +210,6 @@ public class OrderIntegrationTests {
         client
             .post()
             .uri("/api/orders")
-            .header("Authorization", "Bearer " + customerToken)
             .contentType(MediaType.APPLICATION_JSON)
             .body(dto)
             .retrieve()
@@ -264,12 +243,7 @@ public class OrderIntegrationTests {
 
     // Act
     ResponseEntity<OrderResponseDto> response =
-        client
-            .get()
-            .uri(url)
-            .header("Authorization", "Bearer " + customerToken)
-            .retrieve()
-            .toEntity(OrderResponseDto.class);
+        client.get().uri(url).retrieve().toEntity(OrderResponseDto.class);
 
     // Assert
     assertNotNull(response);
@@ -288,13 +262,7 @@ public class OrderIntegrationTests {
     String url = "/api/orders/" + INVALID_ID;
 
     // Act
-    ResponseEntity<String> response =
-        client
-            .get()
-            .uri(url)
-            .header("Authorization", "Bearer " + customerToken)
-            .retrieve()
-            .toEntity(String.class);
+    ResponseEntity<String> response = client.get().uri(url).retrieve().toEntity(String.class);
 
     // Assert
     assertNotNull(response);
@@ -311,7 +279,6 @@ public class OrderIntegrationTests {
         client
             .get()
             .uri("/api/orders")
-            .header("Authorization", "Bearer " + managerToken)
             .retrieve()
             .toEntity(new ParameterizedTypeReference<List<OrderResponseDto>>() {});
 
@@ -324,7 +291,7 @@ public class OrderIntegrationTests {
     assertEquals(orders.getFirst().getOrderID(), validOrderID);
   }
 
-  // ==== GET /api/orders?customerID={customerID} ====
+  // ==== GET /api/orders/customer/{customerID} ====
 
   @Test
   @Order(7)
@@ -333,8 +300,7 @@ public class OrderIntegrationTests {
     ResponseEntity<List<OrderResponseDto>> response =
         client
             .get()
-            .uri("/api/orders?customerID=" + testCustomer.getRoleID())
-            .header("Authorization", "Bearer " + customerToken)
+            .uri("/api/orders/customer/" + testCustomer.getRoleID())
             .retrieve()
             .toEntity(new ParameterizedTypeReference<List<OrderResponseDto>>() {});
 
@@ -354,8 +320,7 @@ public class OrderIntegrationTests {
     ResponseEntity<String> response =
         client
             .get()
-            .uri("/api/orders?customerID=" + INVALID_ID)
-            .header("Authorization", "Bearer " + customerToken)
+            .uri("/api/orders/customer/" + INVALID_ID)
             .retrieve()
             .toEntity(String.class);
 
@@ -374,7 +339,6 @@ public class OrderIntegrationTests {
         client
             .get()
             .uri("/api/orders?orderStatus=Preparing")
-            .header("Authorization", "Bearer " + customerToken)
             .retrieve()
             .toEntity(new ParameterizedTypeReference<List<OrderResponseDto>>() {});
 
@@ -395,7 +359,6 @@ public class OrderIntegrationTests {
         client
             .get()
             .uri("/api/orders?orderStatus=" + INVALID_STATUS)
-            .header("Authorization", "Bearer " + customerToken)
             .retrieve()
             .toEntity(String.class);
 
@@ -404,7 +367,7 @@ public class OrderIntegrationTests {
     assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
   }
 
-  // ==== GET /api/orders?customerID={customerID}&orderStatus={orderStatus} ====
+  // ==== GET /api/orders/customer/{customerID}?orderStatus={orderStatus} ====
 
   @Test
   @Order(11)
@@ -413,8 +376,10 @@ public class OrderIntegrationTests {
     ResponseEntity<List<OrderResponseDto>> response =
         client
             .get()
-            .uri("/api/orders?customerID=" + testCustomer.getRoleID() + "&orderStatus=Preparing")
-            .header("Authorization", "Bearer " + customerToken)
+            .uri(
+                "/api/orders/customer/"
+                    + testCustomer.getRoleID()
+                    + "?orderStatus=Preparing")
             .retrieve()
             .toEntity(new ParameterizedTypeReference<List<OrderResponseDto>>() {});
 
@@ -434,8 +399,7 @@ public class OrderIntegrationTests {
     ResponseEntity<String> response =
         client
             .get()
-            .uri("/api/orders?customerID=" + INVALID_ID + "&orderStatus=Preparing")
-            .header("Authorization", "Bearer " + customerToken)
+            .uri("/api/orders/customer/" + INVALID_ID + "?orderStatus=Preparing")
             .retrieve()
             .toEntity(String.class);
 
@@ -452,11 +416,10 @@ public class OrderIntegrationTests {
         client
             .get()
             .uri(
-                "/api/orders?customerID="
+                "/api/orders/customer/"
                     + testCustomer.getRoleID()
-                    + "&orderStatus="
+                    + "?orderStatus="
                     + INVALID_STATUS)
-            .header("Authorization", "Bearer " + customerToken)
             .retrieve()
             .toEntity(String.class);
 
