@@ -318,11 +318,7 @@ public class OrderIntegrationTests {
   public void testGetOrdersByInvalidCustomerID() {
     // Act
     ResponseEntity<String> response =
-        client
-            .get()
-            .uri("/api/orders/customer/" + INVALID_ID)
-            .retrieve()
-            .toEntity(String.class);
+        client.get().uri("/api/orders/customer/" + INVALID_ID).retrieve().toEntity(String.class);
 
     // Assert
     assertNotNull(response);
@@ -376,10 +372,7 @@ public class OrderIntegrationTests {
     ResponseEntity<List<OrderResponseDto>> response =
         client
             .get()
-            .uri(
-                "/api/orders/customer/"
-                    + testCustomer.getRoleID()
-                    + "?orderStatus=Preparing")
+            .uri("/api/orders/customer/" + testCustomer.getRoleID() + "?orderStatus=Preparing")
             .retrieve()
             .toEntity(new ParameterizedTypeReference<List<OrderResponseDto>>() {});
 
