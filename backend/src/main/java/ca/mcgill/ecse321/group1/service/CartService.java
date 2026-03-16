@@ -27,20 +27,54 @@ public class CartService {
     this.clothingVariantRepository = clothingVariantRepository;
   }
 
-  @Transactional(readOnly = true)
-  public Item getItemByID(String customerID, String itemID) {
-    Item item = itemRepository.findItemByItemID(itemID);
-    Customer customer = customerRepository.findByRoleID(customerID);
-
-    if (item == null) {
-      throw new ResponseStatusException(
-          HttpStatus.NOT_FOUND, "There is no item with id " + itemID + ".");
-    }
-
+  private void validateCustomerExists(Customer customer, String customerID) {
     if (customer == null) {
       throw new ResponseStatusException(
           HttpStatus.NOT_FOUND, "There is no customer with id " + customerID + ".");
     }
+  }
+
+  private void validateItemExists(Item item, String itemID) {
+    if (item == null) {
+      throw new ResponseStatusException(
+          HttpStatus.NOT_FOUND, "There is no item with id " + itemID + ".");
+    }
+  }
+
+  private void validateClothingVariantExists(
+      ClothingVariant clothingVariant, String clothingVariantID) {
+    if (clothingVariant == null) {
+      throw new ResponseStatusException(
+          HttpStatus.NOT_FOUND,
+          "There is no clothing variant with id " + clothingVariantID + ".");
+    }
+  }
+
+  private void validateQuantity(int quantity) {
+    if (quantity < 1) {
+      throw new ResponseStatusException(
+          HttpStatus.BAD_REQUEST, "The quantity must be greater than zero.");
+    }
+  }
+
+  private void validateStock(int quantity, int stockQuantity) {
+    if (quantity > stockQuantity) {
+      throw new ResponseStatusException(
+          HttpStatus.BAD_REQUEST,
+          "The quantity "
+              + quantity
+              + " is higher than the available stock for this clothing piece ("
+              + stockQuantity
+              + ").");
+    }
+  }
+
+  @Transactional(readOnly = true)
+  public Item getItemByID(String customerID, String itemID) {
+    Item item = itemRepository.findItemByItemID(itemID);
+    Customer customer = customerRepository.findByRoleID(customerID);
+    validateItemExists(item, itemID);
+    validateCustomerExists(customer, customerID);
 
     if (!customer.getItems().contains(item)) {
       throw new ResponseStatusException(
@@ -54,11 +88,7 @@ public class CartService {
   @Transactional
   public List<Item> getCartItems(String customerID) {
     Customer customer = customerRepository.findByRoleID(customerID);
-    if (customer == null) {
-      throw new ResponseStatusException(
-          HttpStatus.NOT_FOUND, "There is no customer with id " + customerID + ".");
-    }
-
+    validateCustomerExists(customer, customerID);
     return itemRepository.findItemsByCustomer(customer);
   }
 
@@ -67,31 +97,10 @@ public class CartService {
     ClothingVariant clothingVariant =
         clothingVariantRepository.findByClothingVariantID(clothingVariantID);
     Customer customer = customerRepository.findByRoleID(customerID);
-
-    if (customer == null) {
-      throw new ResponseStatusException(
-          HttpStatus.NOT_FOUND, "There is no customer with id " + customerID + ".");
-    }
-
-    if (clothingVariant == null) {
-      throw new ResponseStatusException(
-          HttpStatus.NOT_FOUND, "There is no clothing variant with id " + clothingVariantID + ".");
-    }
-
-    if (quantity < 1) {
-      throw new ResponseStatusException(
-          HttpStatus.BAD_REQUEST, "The quantity must be greater than zero.");
-    }
-
-    if (quantity > clothingVariant.getStockQuantity()) {
-      throw new ResponseStatusException(
-          HttpStatus.BAD_REQUEST,
-          "The quantity "
-              + quantity
-              + " is higher than the available stock for this clothing piece ("
-              + clothingVariant.getStockQuantity()
-              + ").");
-    }
+    validateCustomerExists(customer, customerID);
+    validateClothingVariantExists(clothingVariant, clothingVariantID);
+    validateQuantity(quantity);
+    validateStock(quantity, clothingVariant.getStockQuantity());
 
     Item item = new Item();
     item.setQuantity(quantity);
@@ -106,16 +115,8 @@ public class CartService {
   public void removeItem(String itemID, String customerID) {
     Item item = itemRepository.findItemByItemID(itemID);
     Customer customer = customerRepository.findByRoleID(customerID);
-
-    if (customer == null) {
-      throw new ResponseStatusException(
-          HttpStatus.NOT_FOUND, "There is no customer with id " + customerID + ".");
-    }
-
-    if (item == null) {
-      throw new ResponseStatusException(
-          HttpStatus.NOT_FOUND, "There is no item with id " + itemID + ".");
-    }
+    validateCustomerExists(customer, customerID);
+    validateItemExists(item, itemID);
 
     if (!customer.getItems().contains(item)) {
       throw new ResponseStatusException(
@@ -129,12 +130,7 @@ public class CartService {
   @Transactional
   public int removeAllItems(String customerID) {
     Customer customer = customerRepository.findByRoleID(customerID);
-
-    if (customer == null) {
-      throw new ResponseStatusException(
-          HttpStatus.NOT_FOUND, "There is no customer with id " + customerID + ".");
-    }
-
+    validateCustomerExists(customer, customerID);
     return itemRepository.deleteByCustomer(customer);
   }
 
@@ -142,16 +138,8 @@ public class CartService {
   public Item changeQuantity(String customerID, String itemID, int newQuantity) {
     Item item = itemRepository.findItemByItemID(itemID);
     Customer customer = customerRepository.findByRoleID(customerID);
-
-    if (item == null) {
-      throw new ResponseStatusException(
-          HttpStatus.NOT_FOUND, "There is no item with id " + itemID + ".");
-    }
-
-    if (customer == null) {
-      throw new ResponseStatusException(
-          HttpStatus.NOT_FOUND, "There is no customer with id " + customerID + ".");
-    }
+    validateItemExists(item, itemID);
+    validateCustomerExists(customer, customerID);
 
     if (!customer.getItems().contains(item)) {
       throw new ResponseStatusException(
@@ -159,8 +147,6 @@ public class CartService {
           "The item with id " + itemID + "is not part of customer's " + customerID + "cart.");
     }
 
-    // I assume that we can only change quantity to 1 <= newQuantity <= variantStockQuantity
-    // If we want to be able to change quantity to 0, then it would be a special case where
     if (newQuantity < 1) {
       throw new ResponseStatusException(
           HttpStatus.BAD_REQUEST, "The new quantity has to be a positive number.");
@@ -176,7 +162,7 @@ public class CartService {
     }
 
     item.setQuantity(newQuantity);
-    itemRepository.save(item); // save new quantity in DB
+    itemRepository.save(item);
     return item;
   }
 
