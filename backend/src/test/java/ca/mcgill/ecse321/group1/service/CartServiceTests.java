@@ -58,6 +58,7 @@ public class CartServiceTests {
 
   @Test
   public void testGetItemByID() {
+    // Valid get item
     // Arrange
     String customerId = "customer1";
     Customer customer = new Customer();
@@ -79,6 +80,7 @@ public class CartServiceTests {
 
   @Test
   public void testGetItemByInvalidID() {
+    // Call get Item with invalid ID
     // Arrange
     String customerId = "customer1";
     Customer customer = new Customer();
@@ -95,7 +97,7 @@ public class CartServiceTests {
 
   @Test
   public void testGetItemByInvalidCustomer() {
-    // Arrange
+    // Get item using invalid customer id
     String customerId = "badCustomer";
     String itemId = "item1";
     ClothingVariant variant = buildVariant("variant1", 50f, 10);
@@ -113,6 +115,7 @@ public class CartServiceTests {
 
   @Test
   public void testGetItemWrongCustomer() {
+    // Get item not belong to the customer
     // Arrange
     String customerId = "customer1";
     Customer customer = new Customer();
@@ -139,6 +142,7 @@ public class CartServiceTests {
 
   @Test
   public void testGetCartItems() {
+    // Get item with valid arguments
     // Arrange
     String customerId = "customer1";
     Customer customer = new Customer();
@@ -160,20 +164,24 @@ public class CartServiceTests {
 
   @Test
   public void testGetCartItemsEmptyCart() {
-    // Customer exists but has no items — result must be an empty list, not null
+    // Get item of an empty cart
+    // Arrange
     String customerId = "customer1";
     Customer customer = new Customer();
     when(customerRepository.findByRoleID(customerId)).thenReturn(customer);
     when(itemRepository.findItemsByCustomer(customer)).thenReturn(List.of());
 
+    // Act
     List<Item> result = cartService.getCartItems(customerId);
 
+    // Assert
     assertNotNull(result);
     assertEquals(0, result.size());
   }
 
   @Test
   public void testGetCartItemsWithInvalidCustomer() {
+    // Get item of invalid customer
     // Arrange
     String customerId = "badCustomer";
     when(customerRepository.findByRoleID(customerId)).thenReturn(null);
@@ -189,6 +197,7 @@ public class CartServiceTests {
 
   @Test
   public void testAddItem() {
+    // Add valid item
     // Arrange
     String variantId = "variant1";
     String customerId = "customer1";
@@ -214,8 +223,8 @@ public class CartServiceTests {
 
   @Test
   public void testAddItemAtExactStockQuantity() {
-    // Boundary: quantity == stock. The check is quantity > stock (strict),
-    // so exactly at stock should succeed, not throw.
+    // Add item with stock quantity
+    // Arrange
     String variantId = "variant1";
     String customerId = "customer1";
     int stock = 5;
@@ -233,6 +242,7 @@ public class CartServiceTests {
 
   @Test
   public void testAddItemWithInvalidCustomer() {
+    // Add item to an invalid customer
     // Arrange
     String variantId = "variant1";
     String customerId = "badCustomer";
@@ -250,6 +260,7 @@ public class CartServiceTests {
 
   @Test
   public void testAddItemWithInvalidVariant() {
+    // Add item of an invalid clothing variant
     // Arrange
     String variantId = "badVariant";
     String customerId = "customer1";
@@ -268,6 +279,7 @@ public class CartServiceTests {
 
   @Test
   public void testAddItemWithExcessiveQuantity() {
+    // Add item with quantity exceed stock
     // Arrange
     String variantId = "variant1";
     String customerId = "customer1";
@@ -294,8 +306,7 @@ public class CartServiceTests {
 
   @Test
   public void testAddItemWithZeroQuantity() {
-    // 0 is not > stock, so the service allows adding an item with quantity=0.
-    // This test documents that behavior — it reveals a missing validation in the service.
+    // Add item with 0 quantity
     String variantId = "variant1";
     String customerId = "customer1";
     ClothingVariant variant = buildVariant(variantId, 50f, 5);
@@ -313,6 +324,7 @@ public class CartServiceTests {
 
   @Test
   public void testRemoveItem() {
+    // Remove valid item
     // Arrange
     String itemId = "item1";
     String customerId = "customer1";
@@ -332,6 +344,7 @@ public class CartServiceTests {
 
   @Test
   public void testRemoveItemWithInvalidCustomer() {
+    // remove item of invalid customer
     // Arrange
     String itemId = "item1";
     String customerId = "badCustomer";
@@ -348,6 +361,7 @@ public class CartServiceTests {
 
   @Test
   public void testRemoveItemWithInvalidItem() {
+    // Remove invalid item
     // Arrange
     String itemId = "badItem";
     String customerId = "customer1";
@@ -364,7 +378,7 @@ public class CartServiceTests {
 
   @Test
   public void testRemoveItemNotInCart() {
-    // Item exists and customer exists, but item belongs to a different customer
+    // remove item belongs to a different customer
     String itemId = "item1";
     String customerId = "customer1";
     ClothingVariant variant = buildVariant("variant1", 50f, 10);
@@ -390,6 +404,7 @@ public class CartServiceTests {
 
   @Test
   public void testRemoveAllItemsEmptyCart() {
+    // Remove all item with 0 item
     // Arrange
     String customerId = "customer1";
     Customer customer = new Customer();
@@ -406,6 +421,7 @@ public class CartServiceTests {
 
   @Test
   public void testRemoveAllItemsWithOneItem() {
+    // Remove all with one item
     // Arrange
     String customerId = "customer1";
     String itemId = "item1";
@@ -426,6 +442,8 @@ public class CartServiceTests {
 
   @Test
   public void testRemoveAllItemsWithMultipleItems() {
+    // Remove all with multiple item
+    // Arrange
     String customerId = "customer1";
     String itemId1 = "item1";
     String itemId2 = "item2";
@@ -438,7 +456,10 @@ public class CartServiceTests {
     when(customerRepository.findByRoleID(customerId)).thenReturn(customer);
     when(itemRepository.deleteByCustomer(customer)).thenReturn(2);
 
+    // Act
     int result = cartService.removeAllItems(customerId);
+
+    // Assert
     verify(itemRepository, times(1)).deleteByCustomer(customer);
     assertEquals(2, result);
   }
@@ -460,6 +481,7 @@ public class CartServiceTests {
 
   @Test
   public void testChangeQuantity() {
+    // Update quantity of an item
     // Arrange
     String customerId = "customer1";
     Customer customer = new Customer();
@@ -483,6 +505,7 @@ public class CartServiceTests {
 
   @Test
   public void testChangeQuantityAtExactStock() {
+    // update quantity of item to item's stock amount
     // Arrange
     String customerId = "customer1";
     Customer customer = new Customer();
@@ -498,12 +521,13 @@ public class CartServiceTests {
     // Act
     Item result = cartService.changeQuantity(customerId, itemId, stock);
 
-    // Insert
+    // Assert
     assertEquals(stock, result.getQuantity());
   }
 
   @Test
   public void testChangeQuantityWithInvalidItem() {
+    // update quantity with invalid item
     // Arrange
     String customerId = "customer1";
     Customer customer = new Customer();
@@ -520,6 +544,7 @@ public class CartServiceTests {
 
   @Test
   public void testChangeQuantityWithInvalidCustomer() {
+    // Update item stock with invalid customer
     // Arrange
     String customerId = "badCustomer";
     String itemId = "item1";
@@ -564,6 +589,8 @@ public class CartServiceTests {
 
   @Test
   public void testChangeQuantityWithZeroQuantity() {
+    // Update quantity to 0
+    // Arrange
     String customerId = "customer1";
     Customer customer = new Customer();
     String itemId = "item1";
@@ -582,7 +609,8 @@ public class CartServiceTests {
 
   @Test
   public void testChangeQuantityWithNegativeQuantity() {
-    // Negative quantities must also be rejected by the newQuantity < 1 check
+    // Update quantity to negative amount
+    // Arrange
     String customerId = "customer1";
     Customer customer = new Customer();
     String itemId = "item1";
@@ -592,6 +620,7 @@ public class CartServiceTests {
     when(customerRepository.findByRoleID(customerId)).thenReturn(customer);
     when(itemRepository.findItemByItemID(itemId)).thenReturn(item);
 
+    // Act & Assert
     ResponseStatusException e =
         assertThrows(
             ResponseStatusException.class,
@@ -602,6 +631,7 @@ public class CartServiceTests {
 
   @Test
   public void testChangeQuantityExceedingStock() {
+    // update item with quantity exceed stock
     // Arrange
     String customerId = "customer1";
     Customer customer = new Customer();
@@ -633,6 +663,7 @@ public class CartServiceTests {
   @Test
   public void testGetCartTotal() {
     // Total = sum of (price * quantity) per item
+    // Arrange
     String customerId = "customer1";
     Customer customer = new Customer();
     ClothingVariant variant = buildVariant("variant1", 50f, 10);
@@ -641,14 +672,17 @@ public class CartServiceTests {
     when(customerRepository.findByRoleID(customerId)).thenReturn(customer);
     when(itemRepository.findItemsByCustomer(customer)).thenReturn(List.of(item1, item2));
 
+    // Act
     float total = cartService.getCartTotal(customerId);
 
+    // Assert
     assertEquals(250f, total);
   }
 
   @Test
   public void testGetCartTotalWithDifferentPricesAndQuantities() {
-    // Each item has a distinct price and quantity — ensures price*quantity is computed per item
+    // Calculate total with different price and quantity
+    // Arrange
     String customerId = "customer1";
     Customer customer = new Customer();
     ClothingVariant variant1 = buildVariant("variant1", 30f, 10);
@@ -658,8 +692,10 @@ public class CartServiceTests {
     when(customerRepository.findByRoleID(customerId)).thenReturn(customer);
     when(itemRepository.findItemsByCustomer(customer)).thenReturn(List.of(item1, item2));
 
+    // Act
     float total = cartService.getCartTotal(customerId);
 
+    // Assert
     assertEquals(190f, total);
   }
 
