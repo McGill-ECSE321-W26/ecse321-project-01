@@ -94,11 +94,13 @@ public class PersonIntegrationTests {
   @Test
   @Order(1)
   public void testCreateCustomerInvalidEmail() {
+    // Arrange
     CustomerCreateRequestDto dto = new CustomerCreateRequestDto();
     dto.setEmail("notanemail");
     dto.setPassword(VALID_PASSWORD);
     dto.setAddress("123 Main St");
 
+    // Act
     ResponseEntity<String> response =
         unauthClient
             .post()
@@ -108,6 +110,7 @@ public class PersonIntegrationTests {
             .retrieve()
             .toEntity(String.class);
 
+    // Assert
     assertNotNull(response);
     assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
   }
@@ -115,11 +118,13 @@ public class PersonIntegrationTests {
   @Test
   @Order(2)
   public void testCreateCustomerPasswordTooShort() {
+    // Arrange
     CustomerCreateRequestDto dto = new CustomerCreateRequestDto();
     dto.setEmail("valid@email.com");
     dto.setPassword(SHORT_PASSWORD);
     dto.setAddress("123 Main St");
 
+    // Act
     ResponseEntity<String> response =
         unauthClient
             .post()
@@ -129,6 +134,7 @@ public class PersonIntegrationTests {
             .retrieve()
             .toEntity(String.class);
 
+    // Assert
     assertNotNull(response);
     assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
   }
@@ -136,11 +142,13 @@ public class PersonIntegrationTests {
   @Test
   @Order(3)
   public void testCreateCustomerEmptyAddress() {
+    // Arrange
     CustomerCreateRequestDto dto = new CustomerCreateRequestDto();
     dto.setEmail("validaddress@email.com");
     dto.setPassword(VALID_PASSWORD);
     dto.setAddress("");
 
+    // Act
     ResponseEntity<String> response =
         unauthClient
             .post()
@@ -150,6 +158,7 @@ public class PersonIntegrationTests {
             .retrieve()
             .toEntity(String.class);
 
+    // Assert
     assertNotNull(response);
     assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
   }
@@ -157,12 +166,14 @@ public class PersonIntegrationTests {
   @Test
   @Order(4)
   public void testCreateCustomerValid() {
+    // Arrange
     createdCustomerEmail = "person-test-customer@test.com";
     CustomerCreateRequestDto dto = new CustomerCreateRequestDto();
     dto.setEmail(createdCustomerEmail);
     dto.setPassword(VALID_PASSWORD);
     dto.setAddress("456 Customer Ave");
 
+    // Act
     ResponseEntity<PersonResponseDto> response =
         unauthClient
             .post()
@@ -172,6 +183,7 @@ public class PersonIntegrationTests {
             .retrieve()
             .toEntity(PersonResponseDto.class);
 
+    // Assert
     assertNotNull(response);
     assertEquals(HttpStatus.CREATED, response.getStatusCode());
     PersonResponseDto body = response.getBody();
@@ -188,11 +200,13 @@ public class PersonIntegrationTests {
   @Test
   @Order(5)
   public void testCreateCustomerDuplicateEmail() {
+    // Arrange
     CustomerCreateRequestDto dto = new CustomerCreateRequestDto();
     dto.setEmail(createdCustomerEmail);
     dto.setPassword(VALID_PASSWORD);
     dto.setAddress("789 Other St");
 
+    // Act
     ResponseEntity<String> response =
         unauthClient
             .post()
@@ -202,6 +216,7 @@ public class PersonIntegrationTests {
             .retrieve()
             .toEntity(String.class);
 
+    // Assert
     assertNotNull(response);
     assertEquals(HttpStatus.CONFLICT, response.getStatusCode());
   }
@@ -211,11 +226,13 @@ public class PersonIntegrationTests {
   @Test
   @Order(6)
   public void testLoginNonExistentEmail() {
+    // Arrange
     LoginRequestDto dto = new LoginRequestDto();
     dto.setEmail("nobody@example.com");
     dto.setPassword(VALID_PASSWORD);
     dto.setRole("Customer");
 
+    // Act
     ResponseEntity<String> response =
         unauthClient
             .post()
@@ -225,6 +242,7 @@ public class PersonIntegrationTests {
             .retrieve()
             .toEntity(String.class);
 
+    // Assert
     assertNotNull(response);
     assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
   }
@@ -232,11 +250,13 @@ public class PersonIntegrationTests {
   @Test
   @Order(7)
   public void testLoginWrongPassword() {
+    // Arrange
     LoginRequestDto dto = new LoginRequestDto();
     dto.setEmail(createdCustomerEmail);
     dto.setPassword("wrongpassword");
     dto.setRole("Customer");
 
+    // Act
     ResponseEntity<String> response =
         unauthClient
             .post()
@@ -246,6 +266,7 @@ public class PersonIntegrationTests {
             .retrieve()
             .toEntity(String.class);
 
+    // Assert
     assertNotNull(response);
     assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
   }
@@ -253,11 +274,13 @@ public class PersonIntegrationTests {
   @Test
   @Order(8)
   public void testLoginWrongRole() {
+    // Arrange
     LoginRequestDto dto = new LoginRequestDto();
     dto.setEmail(createdCustomerEmail);
     dto.setPassword(VALID_PASSWORD);
-    dto.setRole("Employee"); // customer does not have this role
+    dto.setRole("Employee"); // Customer does not have this role
 
+    // Act
     ResponseEntity<String> response =
         unauthClient
             .post()
@@ -267,6 +290,7 @@ public class PersonIntegrationTests {
             .retrieve()
             .toEntity(String.class);
 
+    // Assert
     assertNotNull(response);
     assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
   }
@@ -274,11 +298,13 @@ public class PersonIntegrationTests {
   @Test
   @Order(9)
   public void testLoginValid() {
+    // Arrange
     LoginRequestDto dto = new LoginRequestDto();
     dto.setEmail(createdCustomerEmail);
     dto.setPassword(VALID_PASSWORD);
     dto.setRole("Customer");
 
+    // Act
     ResponseEntity<AuthResponseDto> response =
         unauthClient
             .post()
@@ -288,6 +314,7 @@ public class PersonIntegrationTests {
             .retrieve()
             .toEntity(AuthResponseDto.class);
 
+    // Assert
     assertNotNull(response);
     assertEquals(HttpStatus.OK, response.getStatusCode());
     AuthResponseDto body = response.getBody();
@@ -304,6 +331,7 @@ public class PersonIntegrationTests {
   @Test
   @Order(10)
   public void testGetPersonByIdUnauthenticated() {
+    // Act
     ResponseEntity<String> response =
         unauthClient
             .get()
@@ -311,6 +339,7 @@ public class PersonIntegrationTests {
             .retrieve()
             .toEntity(String.class);
 
+    // Assert
     assertNotNull(response);
     assertEquals(HttpStatus.FORBIDDEN, response.getStatusCode());
   }
@@ -318,9 +347,11 @@ public class PersonIntegrationTests {
   @Test
   @Order(11)
   public void testGetPersonByIdNotFound() {
+    // Act
     ResponseEntity<String> response =
         managerClient.get().uri("/api/persons/" + INVALID_ID).retrieve().toEntity(String.class);
 
+    // Assert
     assertNotNull(response);
     assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
   }
@@ -328,6 +359,7 @@ public class PersonIntegrationTests {
   @Test
   @Order(12)
   public void testGetPersonByIdValid() {
+    // Act
     ResponseEntity<PersonResponseDto> response =
         managerClient
             .get()
@@ -335,6 +367,7 @@ public class PersonIntegrationTests {
             .retrieve()
             .toEntity(PersonResponseDto.class);
 
+    // Assert
     assertNotNull(response);
     assertEquals(HttpStatus.OK, response.getStatusCode());
     PersonResponseDto body = response.getBody();
@@ -348,6 +381,7 @@ public class PersonIntegrationTests {
   @Test
   @Order(13)
   public void testGetPeopleUnauthorized() {
+    // Arrange
     RestClient customerClient =
         RestClient.builder()
             .baseUrl("http://localhost:" + port)
@@ -355,9 +389,11 @@ public class PersonIntegrationTests {
             .defaultStatusHandler(HttpStatusCode::isError, (req, res) -> {})
             .build();
 
+    // Act
     ResponseEntity<String> response =
         customerClient.get().uri("/api/persons").retrieve().toEntity(String.class);
 
+    // Assert
     assertNotNull(response);
     assertEquals(HttpStatus.FORBIDDEN, response.getStatusCode());
   }
@@ -365,6 +401,7 @@ public class PersonIntegrationTests {
   @Test
   @Order(14)
   public void testGetPeopleValid() {
+    // Act
     ResponseEntity<List<PersonResponseDto>> response =
         managerClient
             .get()
@@ -372,6 +409,7 @@ public class PersonIntegrationTests {
             .retrieve()
             .toEntity(new ParameterizedTypeReference<>() {});
 
+    // Assert
     assertNotNull(response);
     assertEquals(HttpStatus.OK, response.getStatusCode());
     List<PersonResponseDto> body = response.getBody();
@@ -383,6 +421,7 @@ public class PersonIntegrationTests {
   @Test
   @Order(15)
   public void testGetPeopleByEmailValid() {
+    // Act
     ResponseEntity<List<PersonResponseDto>> response =
         managerClient
             .get()
@@ -390,6 +429,7 @@ public class PersonIntegrationTests {
             .retrieve()
             .toEntity(new ParameterizedTypeReference<>() {});
 
+    // Assert
     assertNotNull(response);
     assertEquals(HttpStatus.OK, response.getStatusCode());
     List<PersonResponseDto> body = response.getBody();
@@ -401,6 +441,7 @@ public class PersonIntegrationTests {
   @Test
   @Order(16)
   public void testGetPeopleByEmailNotFound() {
+    // Act
     ResponseEntity<String> response =
         managerClient
             .get()
@@ -408,6 +449,7 @@ public class PersonIntegrationTests {
             .retrieve()
             .toEntity(String.class);
 
+    // Assert
     assertNotNull(response);
     assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
   }
@@ -417,10 +459,12 @@ public class PersonIntegrationTests {
   @Test
   @Order(17)
   public void testUpdatePasswordInvalidPersonId() {
+    // Arrange
     PersonPasswordUpdateRequestDto dto = new PersonPasswordUpdateRequestDto();
     dto.setOldPassword(VALID_PASSWORD);
     dto.setNewPassword("newpassword123");
 
+    // Act
     ResponseEntity<String> response =
         managerClient
             .patch()
@@ -430,6 +474,7 @@ public class PersonIntegrationTests {
             .retrieve()
             .toEntity(String.class);
 
+    // Assert
     assertNotNull(response);
     assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
   }
@@ -437,10 +482,12 @@ public class PersonIntegrationTests {
   @Test
   @Order(18)
   public void testUpdatePasswordWrongOldPassword() {
+    // Arrange
     PersonPasswordUpdateRequestDto dto = new PersonPasswordUpdateRequestDto();
     dto.setOldPassword("wrongoldpassword");
     dto.setNewPassword("newpassword123");
 
+    // Act
     ResponseEntity<String> response =
         managerClient
             .patch()
@@ -450,6 +497,7 @@ public class PersonIntegrationTests {
             .retrieve()
             .toEntity(String.class);
 
+    // Assert
     assertNotNull(response);
     assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
   }
@@ -457,10 +505,12 @@ public class PersonIntegrationTests {
   @Test
   @Order(19)
   public void testUpdatePasswordNewTooShort() {
+    // Arrange
     PersonPasswordUpdateRequestDto dto = new PersonPasswordUpdateRequestDto();
     dto.setOldPassword(VALID_PASSWORD);
     dto.setNewPassword(SHORT_PASSWORD);
 
+    // Act
     ResponseEntity<String> response =
         managerClient
             .patch()
@@ -470,6 +520,7 @@ public class PersonIntegrationTests {
             .retrieve()
             .toEntity(String.class);
 
+    // Assert
     assertNotNull(response);
     assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
   }
@@ -477,10 +528,12 @@ public class PersonIntegrationTests {
   @Test
   @Order(20)
   public void testUpdatePasswordValid() {
+    // Arrange
     PersonPasswordUpdateRequestDto dto = new PersonPasswordUpdateRequestDto();
     dto.setOldPassword(VALID_PASSWORD);
     dto.setNewPassword("updatedpassword123");
 
+    // Act
     ResponseEntity<PersonResponseDto> response =
         managerClient
             .patch()
@@ -490,6 +543,7 @@ public class PersonIntegrationTests {
             .retrieve()
             .toEntity(PersonResponseDto.class);
 
+    // Assert
     assertNotNull(response);
     assertEquals(HttpStatus.OK, response.getStatusCode());
     PersonResponseDto body = response.getBody();
@@ -502,6 +556,7 @@ public class PersonIntegrationTests {
   @Test
   @Order(21)
   public void testUpdateAddressEmptyAddress() {
+    // Arrange
     RestClient customerClient =
         RestClient.builder()
             .baseUrl("http://localhost:" + port)
@@ -512,6 +567,7 @@ public class PersonIntegrationTests {
     AddressDto dto = new AddressDto();
     dto.setAddress("");
 
+    // Act
     ResponseEntity<String> response =
         customerClient
             .patch()
@@ -521,6 +577,7 @@ public class PersonIntegrationTests {
             .retrieve()
             .toEntity(String.class);
 
+    // Assert
     assertNotNull(response);
     assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
   }
@@ -528,6 +585,7 @@ public class PersonIntegrationTests {
   @Test
   @Order(22)
   public void testUpdateAddressValid() {
+    // Arrange
     RestClient customerClient =
         RestClient.builder()
             .baseUrl("http://localhost:" + port)
@@ -538,6 +596,7 @@ public class PersonIntegrationTests {
     AddressDto dto = new AddressDto();
     dto.setAddress("789 New Address Blvd");
 
+    // Act
     ResponseEntity<PersonResponseDto> response =
         customerClient
             .patch()
@@ -547,6 +606,7 @@ public class PersonIntegrationTests {
             .retrieve()
             .toEntity(PersonResponseDto.class);
 
+    // Assert
     assertNotNull(response);
     assertEquals(HttpStatus.OK, response.getStatusCode());
     PersonResponseDto body = response.getBody();
@@ -559,6 +619,7 @@ public class PersonIntegrationTests {
   @Test
   @Order(23)
   public void testCreateEmployeeUnauthorized() {
+    // Arrange
     RestClient customerClient =
         RestClient.builder()
             .baseUrl("http://localhost:" + port)
@@ -570,6 +631,7 @@ public class PersonIntegrationTests {
     dto.setEmail("unauthorized.employee@test.com");
     dto.setPassword(VALID_PASSWORD);
 
+    // Act
     ResponseEntity<String> response =
         customerClient
             .post()
@@ -579,6 +641,7 @@ public class PersonIntegrationTests {
             .retrieve()
             .toEntity(String.class);
 
+    // Assert
     assertNotNull(response);
     assertEquals(HttpStatus.FORBIDDEN, response.getStatusCode());
   }
@@ -586,11 +649,13 @@ public class PersonIntegrationTests {
   @Test
   @Order(24)
   public void testCreateEmployeeValid() {
+    // Arrange
     createdEmployeeEmail = "person-test-employee@test.com";
     EmployeeCreateRequestDto dto = new EmployeeCreateRequestDto();
     dto.setEmail(createdEmployeeEmail);
     dto.setPassword(VALID_PASSWORD);
 
+    // Act
     ResponseEntity<PersonResponseDto> response =
         managerClient
             .post()
@@ -600,6 +665,7 @@ public class PersonIntegrationTests {
             .retrieve()
             .toEntity(PersonResponseDto.class);
 
+    // Assert
     assertNotNull(response);
     assertEquals(HttpStatus.CREATED, response.getStatusCode());
     PersonResponseDto body = response.getBody();
@@ -616,10 +682,12 @@ public class PersonIntegrationTests {
   @Test
   @Order(25)
   public void testAddCustomerRoleToPersonAlreadyHasCustomer() {
+    // Arrange
     // createdCustomerId already has a Customer role
     AddressDto dto = new AddressDto();
     dto.setAddress("100 Role St");
 
+    // Act
     ResponseEntity<String> response =
         managerClient
             .post()
@@ -629,6 +697,7 @@ public class PersonIntegrationTests {
             .retrieve()
             .toEntity(String.class);
 
+    // Assert
     assertNotNull(response);
     assertEquals(HttpStatus.CONFLICT, response.getStatusCode());
   }
@@ -636,10 +705,12 @@ public class PersonIntegrationTests {
   @Test
   @Order(26)
   public void testAddCustomerRoleToNonEmployee() {
+    // Arrange
     // managerPerson only has a Manager role, not an Employee role
     AddressDto dto = new AddressDto();
     dto.setAddress("100 Role St");
 
+    // Act
     ResponseEntity<String> response =
         managerClient
             .post()
@@ -649,6 +720,7 @@ public class PersonIntegrationTests {
             .retrieve()
             .toEntity(String.class);
 
+    // Assert
     assertNotNull(response);
     assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
   }
@@ -656,10 +728,12 @@ public class PersonIntegrationTests {
   @Test
   @Order(27)
   public void testAddCustomerRoleToEmployeeValid() {
+    // Arrange
     // createdEmployeeId has only an Employee role
     AddressDto dto = new AddressDto();
     dto.setAddress("100 Role St");
 
+    // Act
     ResponseEntity<PersonResponseDto> response =
         managerClient
             .post()
@@ -669,6 +743,7 @@ public class PersonIntegrationTests {
             .retrieve()
             .toEntity(PersonResponseDto.class);
 
+    // Assert
     assertNotNull(response);
     assertEquals(HttpStatus.CREATED, response.getStatusCode());
     PersonResponseDto body = response.getBody();
@@ -682,6 +757,7 @@ public class PersonIntegrationTests {
   @Test
   @Order(28)
   public void testAddEmployeeRoleToPersonAlreadyHasEmployee() {
+    // Act
     // createdEmployeeId now has both Customer and Employee roles (from Order 27)
     ResponseEntity<String> response =
         managerClient
@@ -690,6 +766,7 @@ public class PersonIntegrationTests {
             .retrieve()
             .toEntity(String.class);
 
+    // Assert
     assertNotNull(response);
     assertEquals(HttpStatus.CONFLICT, response.getStatusCode());
   }
@@ -697,6 +774,7 @@ public class PersonIntegrationTests {
   @Test
   @Order(29)
   public void testAddEmployeeRoleToNonCustomer() {
+    // Act
     // managerPerson only has a Manager role, not a Customer role
     ResponseEntity<String> response =
         managerClient
@@ -705,6 +783,7 @@ public class PersonIntegrationTests {
             .retrieve()
             .toEntity(String.class);
 
+    // Assert
     assertNotNull(response);
     assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
   }
@@ -712,6 +791,7 @@ public class PersonIntegrationTests {
   @Test
   @Order(30)
   public void testAddEmployeeRoleToCustomerValid() {
+    // Act
     // createdCustomerId is a pure Customer
     ResponseEntity<PersonResponseDto> response =
         managerClient
@@ -720,6 +800,7 @@ public class PersonIntegrationTests {
             .retrieve()
             .toEntity(PersonResponseDto.class);
 
+    // Assert
     assertNotNull(response);
     assertEquals(HttpStatus.CREATED, response.getStatusCode());
     PersonResponseDto body = response.getBody();
@@ -733,9 +814,11 @@ public class PersonIntegrationTests {
   @Test
   @Order(31)
   public void testDeletePersonInvalidId() {
+    // Act
     ResponseEntity<String> response =
         managerClient.delete().uri("/api/persons/" + INVALID_ID).retrieve().toEntity(String.class);
 
+    // Assert
     assertNotNull(response);
     assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
   }
@@ -743,6 +826,7 @@ public class PersonIntegrationTests {
   @Test
   @Order(32)
   public void testDeleteManagerAccountForbidden() {
+    // Act
     // Manager cannot delete their own account
     ResponseEntity<String> response =
         managerClient
@@ -751,6 +835,7 @@ public class PersonIntegrationTests {
             .retrieve()
             .toEntity(String.class);
 
+    // Assert
     assertNotNull(response);
     assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
   }
@@ -758,6 +843,7 @@ public class PersonIntegrationTests {
   @Test
   @Order(33)
   public void testDeletePersonValid() {
+    // Act
     ResponseEntity<Void> response =
         managerClient
             .delete()
@@ -765,6 +851,7 @@ public class PersonIntegrationTests {
             .retrieve()
             .toEntity(Void.class);
 
+    // Assert
     assertNotNull(response);
     assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
 
