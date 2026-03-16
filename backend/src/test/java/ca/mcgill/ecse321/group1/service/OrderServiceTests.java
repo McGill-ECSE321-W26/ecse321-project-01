@@ -434,7 +434,7 @@ public class OrderServiceTests {
     String orderId = "order1";
     Order order = new Order();
     order.setOrderID(orderId);
-    order.setDeliveryDate(Date.valueOf(LocalDate.now())); // delivery is today — within 24 hours
+    order.setDeliveryDate(Date.valueOf(LocalDate.now())); // delivery is today within 24 hours
     Date newDate = Date.valueOf(LocalDate.now().plusDays(3));
 
     when(orderRepository.findOrderByOrderID(orderId)).thenReturn(order);

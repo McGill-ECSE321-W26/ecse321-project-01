@@ -112,6 +112,7 @@ public class PersonService {
     if (!passwordEncoder.matches(password, person.getPassword())) {
       throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Wrong password.");
     }
+    // Match the requested role string against the concrete class name of each PersonRole
     boolean hasRole =
         person.getRoles().stream().anyMatch(r -> r.getClass().getSimpleName().equals(role));
     if (!hasRole) {
@@ -143,6 +144,7 @@ public class PersonService {
       throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Address cannot be empty.");
     }
 
+    // Find the Customer role among the person's roles via pattern matching
     for (PersonRole role : person.getRoles()) {
       if (role instanceof Customer customer) {
         customer.setAddress(newAddress);

@@ -60,6 +60,8 @@ public class ClothingService {
     }
   }
 
+  // Checks name uniqueness, optionally excluding a model ID (used during updates to allow keeping
+  // the same name)
   private void validateNameUniqueness(String name, String excludeModelId) {
     ClothingModel existing = clothingModelRepository.findByName(name);
     if (existing != null
@@ -100,6 +102,7 @@ public class ClothingService {
     }
   }
 
+  // Propagates a model price change to all items sitting in customer carts (not yet ordered)
   private void updateCartItemPrices(String modelId, float price) {
     List<Item> cartItems =
         itemRepository.findByClothingVariant_Model_ClothingModelIDAndOrderIsNull(modelId);
@@ -134,11 +137,13 @@ public class ClothingService {
     validateName(name);
     validatePrice(price);
 
+    // Only validate uniqueness and update if the name actually changed
     if (!name.equals(model.getName())) {
       validateNameUniqueness(name, modelId);
       model.setName(name);
     }
 
+    // Sync price across existing cart items when the model price changes
     if (price != model.getPrice()) {
       model.setPrice(price);
       updateCartItemPrices(modelId, price);

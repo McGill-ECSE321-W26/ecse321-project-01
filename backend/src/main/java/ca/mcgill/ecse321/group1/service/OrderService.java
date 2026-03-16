@@ -22,7 +22,7 @@ public class OrderService {
   private final CustomerRepository customerRepository;
   private final ItemRepository itemRepository;
   private final EmployeeRepository employeeRepository;
-  static float loyaltyModifier = 0.2f; // Modifier between loyalty points and money
+  static float loyaltyModifier = 0.2f; // Conversion rate: 1 loyalty point = $0.20
 
   public OrderService(
       OrderRepository orderRepository,
