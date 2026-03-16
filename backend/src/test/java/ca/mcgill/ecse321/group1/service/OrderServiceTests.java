@@ -176,7 +176,8 @@ public class OrderServiceTests {
     Item item = buildItemWithPrice(50.0f);
     item.setCustomer(customer);
 
-    Date tooSoon = Date.valueOf(LocalDate.now()); // same day — not 24 h ahead
+    // Same day, not at least 24 hours
+    Date tooSoon = Date.valueOf(LocalDate.now());
 
     when(customerRepository.findByRoleID(customerId)).thenReturn(customer);
     when(itemRepository.findItemsByCustomer(customer)).thenReturn(List.of(item));
@@ -248,14 +249,15 @@ public class OrderServiceTests {
 
   @Test
   public void testCreateOrderWithLoyaltyPointsCoveringEntireOrder() {
-    // Arrange – loyaltySaving = 100 * 0.2 = 20 >= 10 (item total)
+    // Arrange
+    // loyaltySaving = 100 * 0.2 = 20 >= 10 (item total)
     String customerId = "customer1";
     int usedLoyaltyPoints = 100;
     float itemPrice = 10.0f;
 
     Customer customer = new Customer();
     customer.setRoleID(customerId);
-    customer.setLoyaltyPoints(usedLoyaltyPoints); // enough to pass validateLoyaltyPoints
+    customer.setLoyaltyPoints(usedLoyaltyPoints);
 
     Item item = buildItemWithPrice(itemPrice);
     item.setCustomer(customer);
@@ -545,7 +547,7 @@ public class OrderServiceTests {
     Order order = new Order();
     order.setOrderID(orderId);
     order.setOrderStatus(Order.OrderStatus.Preparing);
-    order.setDeliveryDate(Date.valueOf(LocalDate.now())); // delivery is today — within 24 hours
+    order.setDeliveryDate(Date.valueOf(LocalDate.now())); // Delivery date within 24 hours
 
     when(orderRepository.findOrderByOrderID(orderId)).thenReturn(order);
 

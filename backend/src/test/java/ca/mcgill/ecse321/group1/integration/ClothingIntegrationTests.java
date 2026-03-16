@@ -6,6 +6,7 @@ import ca.mcgill.ecse321.group1.dto.ClothingModelCreateRequestDto;
 import ca.mcgill.ecse321.group1.dto.ClothingModelResponseDto;
 import ca.mcgill.ecse321.group1.dto.ClothingVariantCreateRequestDto;
 import ca.mcgill.ecse321.group1.dto.ClothingVariantResponseDto;
+import ca.mcgill.ecse321.group1.dto.ClothingVariantUpdateRequestDto;
 import ca.mcgill.ecse321.group1.model.ClothingVariant;
 import ca.mcgill.ecse321.group1.model.Manager;
 import ca.mcgill.ecse321.group1.model.Person;
@@ -35,7 +36,7 @@ import org.springframework.web.client.RestClient;
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @TestInstance(Lifecycle.PER_CLASS)
-public class ClothingIntegrationTesting {
+public class ClothingIntegrationTests {
 
   @LocalServerPort private int port;
 
@@ -284,8 +285,177 @@ public class ClothingIntegrationTesting {
     assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
   }
 
+  // ==== PUT /api/clothing/{modelId} ====
+
   @Test
   @Order(10)
+  public void testUpdateClothingModelValid() {
+    // Arrange
+    ClothingModelCreateRequestDto request =
+        new ClothingModelCreateRequestDto("Updated Jacket", 149.99f);
+
+    // Act
+    ResponseEntity<ClothingModelResponseDto> response =
+        client
+            .put()
+            .uri("/api/clothing/" + this.validModelId)
+            .header("Authorization", "Bearer " + managerToken)
+            .contentType(MediaType.APPLICATION_JSON)
+            .body(request)
+            .retrieve()
+            .toEntity(ClothingModelResponseDto.class);
+
+    // Assert
+    assertNotNull(response);
+    assertEquals(HttpStatus.OK, response.getStatusCode());
+    ClothingModelResponseDto body = response.getBody();
+    assertNotNull(body);
+    assertEquals(this.validModelId, body.getClothingModelID());
+    assertEquals("Updated Jacket", body.getName());
+    assertEquals(149.99f, body.getPrice());
+  }
+
+  @Test
+  @Order(11)
+  public void testUpdateClothingModelBlankName() {
+    // Arrange
+    ClothingModelCreateRequestDto request = new ClothingModelCreateRequestDto("", 149.99f);
+
+    // Act
+    ResponseEntity<String> response =
+        client
+            .put()
+            .uri("/api/clothing/" + this.validModelId)
+            .header("Authorization", "Bearer " + managerToken)
+            .contentType(MediaType.APPLICATION_JSON)
+            .body(request)
+            .retrieve()
+            .toEntity(String.class);
+
+    // Assert
+    assertNotNull(response);
+    assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+  }
+
+  @Test
+  @Order(12)
+  public void testUpdateClothingModelNonPositivePrice() {
+    // Arrange
+    ClothingModelCreateRequestDto request = new ClothingModelCreateRequestDto("Updated Jacket", 0f);
+
+    // Act
+    ResponseEntity<String> response =
+        client
+            .put()
+            .uri("/api/clothing/" + this.validModelId)
+            .header("Authorization", "Bearer " + managerToken)
+            .contentType(MediaType.APPLICATION_JSON)
+            .body(request)
+            .retrieve()
+            .toEntity(String.class);
+
+    // Assert
+    assertNotNull(response);
+    assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+  }
+
+  @Test
+  @Order(13)
+  public void testUpdateClothingModelInvalidId() {
+    // Arrange
+    ClothingModelCreateRequestDto request =
+        new ClothingModelCreateRequestDto("Updated Jacket", 149.99f);
+
+    // Act
+    ResponseEntity<String> response =
+        client
+            .put()
+            .uri("/api/clothing/" + INVALID_MODEL_ID)
+            .header("Authorization", "Bearer " + managerToken)
+            .contentType(MediaType.APPLICATION_JSON)
+            .body(request)
+            .retrieve()
+            .toEntity(String.class);
+
+    // Assert
+    assertNotNull(response);
+    assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+  }
+
+  // ==== PATCH /api/clothing/{modelId}/variants/{variantId} ====
+
+  @Test
+  @Order(14)
+  public void testUpdateVariantStockValid() {
+    // Arrange
+    ClothingVariantUpdateRequestDto request = new ClothingVariantUpdateRequestDto(25);
+
+    // Act
+    ResponseEntity<ClothingVariantResponseDto> response =
+        client
+            .patch()
+            .uri("/api/clothing/" + this.validModelId + "/variants/" + this.validVariantId)
+            .header("Authorization", "Bearer " + managerToken)
+            .contentType(MediaType.APPLICATION_JSON)
+            .body(request)
+            .retrieve()
+            .toEntity(ClothingVariantResponseDto.class);
+
+    // Assert
+    assertNotNull(response);
+    assertEquals(HttpStatus.OK, response.getStatusCode());
+    ClothingVariantResponseDto body = response.getBody();
+    assertNotNull(body);
+    assertEquals(this.validVariantId, body.getClothingVariantID());
+    assertEquals(25, body.getStockQuantity());
+  }
+
+  @Test
+  @Order(15)
+  public void testUpdateVariantStockNegative() {
+    // Arrange
+    ClothingVariantUpdateRequestDto request = new ClothingVariantUpdateRequestDto(-1);
+
+    // Act
+    ResponseEntity<String> response =
+        client
+            .patch()
+            .uri("/api/clothing/" + this.validModelId + "/variants/" + this.validVariantId)
+            .header("Authorization", "Bearer " + managerToken)
+            .contentType(MediaType.APPLICATION_JSON)
+            .body(request)
+            .retrieve()
+            .toEntity(String.class);
+
+    // Assert
+    assertNotNull(response);
+    assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+  }
+
+  @Test
+  @Order(16)
+  public void testUpdateVariantStockInvalidVariantId() {
+    // Arrange
+    ClothingVariantUpdateRequestDto request = new ClothingVariantUpdateRequestDto(5);
+
+    // Act
+    ResponseEntity<String> response =
+        client
+            .patch()
+            .uri("/api/clothing/" + this.validModelId + "/variants/" + INVALID_VARIANT_ID)
+            .header("Authorization", "Bearer " + managerToken)
+            .contentType(MediaType.APPLICATION_JSON)
+            .body(request)
+            .retrieve()
+            .toEntity(String.class);
+
+    // Assert
+    assertNotNull(response);
+    assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+  }
+
+  @Test
+  @Order(17)
   public void testDeleteVariant() {
     // Arrange
     String url = "/api/clothing/" + this.validModelId + "/variants/" + this.validVariantId;
@@ -304,7 +474,7 @@ public class ClothingIntegrationTesting {
   }
 
   @Test
-  @Order(11)
+  @Order(18)
   public void testDeleteClothingModel() {
     // Arrange
     String url = "/api/clothing/" + this.validModelId;
@@ -323,7 +493,7 @@ public class ClothingIntegrationTesting {
   }
 
   @Test
-  @Order(12)
+  @Order(19)
   public void testDeleteNonExistentModel() {
     // Arrange
     String url = "/api/clothing/" + INVALID_MODEL_ID;

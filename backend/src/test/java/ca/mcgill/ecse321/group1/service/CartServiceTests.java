@@ -295,7 +295,7 @@ public class CartServiceTests {
   @Test
   public void testAddItemWithZeroQuantity() {
     // 0 is not > stock, so the service allows adding an item with quantity=0.
-    // This test documents that behavior — it reveals a missing validation in the service.
+    // This test documents that behavior and reveals a missing validation in the service.
     String variantId = "variant1";
     String customerId = "customer1";
     ClothingVariant variant = buildVariant(variantId, 50f, 5);
@@ -648,7 +648,8 @@ public class CartServiceTests {
 
   @Test
   public void testGetCartTotalWithDifferentPricesAndQuantities() {
-    // Each item has a distinct price and quantity — ensures price*quantity is computed per item
+    // Each item has a distinct price and quantity, so it ensures price * quantity is computed per
+    // item
     String customerId = "customer1";
     Customer customer = new Customer();
     ClothingVariant variant1 = buildVariant("variant1", 30f, 10);

@@ -2,7 +2,7 @@ package ca.mcgill.ecse321.group1.dto;
 
 import ca.mcgill.ecse321.group1.model.Item;
 
-public class ItemDTO {
+public class ItemResponseDto {
   private String itemID;
   private float price;
   private int quantity;
@@ -10,9 +10,9 @@ public class ItemDTO {
   private String customerID;
 
   @SuppressWarnings("unused")
-  private ItemDTO() {}
+  private ItemResponseDto() {}
 
-  public ItemDTO(Item item) {
+  public ItemResponseDto(Item item) {
     this.itemID = item.getItemID();
     this.price = item.getPrice();
     this.quantity = item.getQuantity();

@@ -1,12 +1,9 @@
 package ca.mcgill.ecse321.group1.dto;
 
-public class LoginDto {
+public class CustomerCreateRequestDto {
   private String email;
   private String password;
-  private String role;
-
-  @SuppressWarnings("unused")
-  private LoginDto() {}
+  private String address;
 
   public String getEmail() {
     return email;
@@ -16,8 +13,8 @@ public class LoginDto {
     return password;
   }
 
-  public String getRole() {
-    return role;
+  public String getAddress() {
+    return address;
   }
 
   public void setEmail(String email) {
@@ -28,7 +25,7 @@ public class LoginDto {
     this.password = password;
   }
 
-  public void setRole(String role) {
-    this.role = role;
+  public void setAddress(String address) {
+    this.address = address;
   }
 }

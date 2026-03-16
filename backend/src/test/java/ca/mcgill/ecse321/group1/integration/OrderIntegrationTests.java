@@ -152,7 +152,7 @@ public class OrderIntegrationTests {
   @Order(1)
   public void testCreateOrderWithInvalidCustomer() {
     // Arrange
-    CreateOrderRequestDto dto = new CreateOrderRequestDto();
+    OrderCreateRequestDto dto = new OrderCreateRequestDto();
     dto.setCustomerID(INVALID_ID);
     dto.setDeliveryDate(VALID_DELIVERY_DATE);
     dto.setUsedLoyaltyPoints(0);
@@ -175,8 +175,8 @@ public class OrderIntegrationTests {
   @Test
   @Order(2)
   public void testCreateOrderWithInvalidDeliveryDate() {
-    // Arrange – delivery date is today, which is not at least 24 h ahead
-    CreateOrderRequestDto dto = new CreateOrderRequestDto();
+    // Arrange
+    OrderCreateRequestDto dto = new OrderCreateRequestDto();
     dto.setCustomerID(testCustomer.getRoleID());
     dto.setDeliveryDate(INVALID_DELIVERY_DATE);
     dto.setUsedLoyaltyPoints(0);
@@ -200,7 +200,7 @@ public class OrderIntegrationTests {
   @Order(3)
   public void testCreateOrderValid() {
     // Arrange
-    CreateOrderRequestDto dto = new CreateOrderRequestDto();
+    OrderCreateRequestDto dto = new OrderCreateRequestDto();
     dto.setCustomerID(testCustomer.getRoleID());
     dto.setDeliveryDate(VALID_DELIVERY_DATE);
     dto.setUsedLoyaltyPoints(0);
@@ -501,7 +501,7 @@ public class OrderIntegrationTests {
   @Test
   @Order(17)
   public void testUpdateOrderInvalidDeliveryDate() {
-    // Arrange – delivery date is today, which is not at least 24 h ahead
+    // Arrange
     OrderRequestUpdateDto dto = new OrderRequestUpdateDto();
     dto.setDeliveryDate(INVALID_DELIVERY_DATE);
 
@@ -604,7 +604,7 @@ public class OrderIntegrationTests {
   @Test
   @Order(21)
   public void testCancelDeliveredOrder() {
-    // Arrange – order is now "Delivered" after test 20
+    // Arrange
     OrderRequestUpdateDto dto = new OrderRequestUpdateDto();
     dto.setOrderStatus("Cancelled");
 
@@ -622,5 +622,106 @@ public class OrderIntegrationTests {
     // Assert
     assertNotNull(response);
     assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+  }
+
+  // ==== GET /api/orders/employee/{employeeID} ====
+
+  @Test
+  @Order(22)
+  public void testGetOrdersByValidEmployeeID() {
+    // Act
+    ResponseEntity<List<OrderResponseDto>> response =
+        client
+            .get()
+            .uri("/api/orders/employee/" + testEmployee.getRoleID())
+            .header("Authorization", "Bearer " + employeeToken)
+            .retrieve()
+            .toEntity(new ParameterizedTypeReference<List<OrderResponseDto>>() {});
+
+    // Assert
+    assertNotNull(response);
+    assertEquals(HttpStatus.OK, response.getStatusCode());
+    List<OrderResponseDto> orders = response.getBody();
+    assertNotNull(orders);
+    assertFalse(orders.isEmpty());
+    assertTrue(orders.stream().anyMatch(o -> validOrderID.equals(o.getOrderID())));
+  }
+
+  @Test
+  @Order(23)
+  public void testGetOrdersByInvalidEmployeeID() {
+    // Act
+    ResponseEntity<String> response =
+        client
+            .get()
+            .uri("/api/orders/employee/" + INVALID_ID)
+            .header("Authorization", "Bearer " + employeeToken)
+            .retrieve()
+            .toEntity(String.class);
+
+    // Assert
+    assertNotNull(response);
+    assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+  }
+
+  // ==== GET /api/orders/employee/{employeeID}?orderStatus={orderStatus} ====
+
+  @Test
+  @Order(24)
+  public void testGetOrdersByValidEmployeeIDAndValidStatus() {
+    // Act
+    ResponseEntity<List<OrderResponseDto>> response =
+        client
+            .get()
+            .uri("/api/orders/employee/" + testEmployee.getRoleID() + "?orderStatus=Delivered")
+            .header("Authorization", "Bearer " + employeeToken)
+            .retrieve()
+            .toEntity(new ParameterizedTypeReference<List<OrderResponseDto>>() {});
+
+    // Assert
+    assertNotNull(response);
+    assertEquals(HttpStatus.OK, response.getStatusCode());
+    List<OrderResponseDto> orders = response.getBody();
+    assertNotNull(orders);
+    assertFalse(orders.isEmpty());
+    assertTrue(orders.stream().anyMatch(o -> validOrderID.equals(o.getOrderID())));
+  }
+
+  @Test
+  @Order(25)
+  public void testGetOrdersByValidEmployeeIDAndInvalidStatus() {
+    // Act
+    ResponseEntity<String> response =
+        client
+            .get()
+            .uri(
+                "/api/orders/employee/"
+                    + testEmployee.getRoleID()
+                    + "?orderStatus="
+                    + INVALID_STATUS)
+            .header("Authorization", "Bearer " + employeeToken)
+            .retrieve()
+            .toEntity(String.class);
+
+    // Assert
+    assertNotNull(response);
+    assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+  }
+
+  @Test
+  @Order(26)
+  public void testGetOrdersByInvalidEmployeeIDAndValidStatus() {
+    // Act
+    ResponseEntity<String> response =
+        client
+            .get()
+            .uri("/api/orders/employee/" + INVALID_ID + "?orderStatus=Delivered")
+            .header("Authorization", "Bearer " + employeeToken)
+            .retrieve()
+            .toEntity(String.class);
+
+    // Assert
+    assertNotNull(response);
+    assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
   }
 }

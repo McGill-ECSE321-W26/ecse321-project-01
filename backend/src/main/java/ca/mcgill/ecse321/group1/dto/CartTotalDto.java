@@ -1,12 +1,12 @@
 package ca.mcgill.ecse321.group1.dto;
 
-public class CartTotalDTO {
+public class CartTotalDto {
   private float cartTotal;
 
   @SuppressWarnings("unused")
-  private CartTotalDTO() {}
+  private CartTotalDto() {}
 
-  public CartTotalDTO(float total) {
+  public CartTotalDto(float total) {
     this.cartTotal = total;
   }
 
