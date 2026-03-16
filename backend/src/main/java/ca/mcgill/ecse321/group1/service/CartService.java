@@ -45,8 +45,7 @@ public class CartService {
       ClothingVariant clothingVariant, String clothingVariantID) {
     if (clothingVariant == null) {
       throw new ResponseStatusException(
-          HttpStatus.NOT_FOUND,
-          "There is no clothing variant with id " + clothingVariantID + ".");
+          HttpStatus.NOT_FOUND, "There is no clothing variant with id " + clothingVariantID + ".");
     }
   }
 
