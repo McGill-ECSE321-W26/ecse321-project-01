@@ -70,7 +70,7 @@ public class CartService {
 
   @Transactional(readOnly = true)
   public Item getItemByID(String customerID, String itemID) {
-    Item item = itemRepository.findItemByItemID(itemID);
+    Item item = itemRepository.findByItemID(itemID);
     Customer customer = customerRepository.findByRoleID(customerID);
     validateItemExists(item, itemID);
     validateCustomerExists(customer, customerID);
@@ -88,7 +88,7 @@ public class CartService {
   public List<Item> getCartItems(String customerID) {
     Customer customer = customerRepository.findByRoleID(customerID);
     validateCustomerExists(customer, customerID);
-    return itemRepository.findItemsByCustomer(customer);
+    return itemRepository.findByCustomer(customer);
   }
 
   @Transactional
@@ -112,7 +112,7 @@ public class CartService {
 
   @Transactional
   public void removeItem(String itemID, String customerID) {
-    Item item = itemRepository.findItemByItemID(itemID);
+    Item item = itemRepository.findByItemID(itemID);
     Customer customer = customerRepository.findByRoleID(customerID);
     validateCustomerExists(customer, customerID);
     validateItemExists(item, itemID);
@@ -135,7 +135,7 @@ public class CartService {
 
   @Transactional
   public Item changeQuantity(String customerID, String itemID, int newQuantity) {
-    Item item = itemRepository.findItemByItemID(itemID);
+    Item item = itemRepository.findByItemID(itemID);
     Customer customer = customerRepository.findByRoleID(customerID);
     validateItemExists(item, itemID);
     validateCustomerExists(customer, customerID);

@@ -8,6 +8,7 @@ import ca.mcgill.ecse321.group1.model.PersonRole;
 import ca.mcgill.ecse321.group1.repository.CustomerRepository;
 import ca.mcgill.ecse321.group1.repository.EmployeeRepository;
 import ca.mcgill.ecse321.group1.repository.PersonRepository;
+import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -33,7 +34,7 @@ public class PersonService {
   }
 
   private Person findPersonOrThrow(String id) {
-    Person person = personRepository.findPersonByPersonID(id);
+    Person person = personRepository.findByPersonID(id);
     if (person == null) {
       throw new ResponseStatusException(
           HttpStatus.NOT_FOUND, "There is no person with ID " + id + ".");
@@ -49,14 +50,14 @@ public class PersonService {
       throw new ResponseStatusException(
           HttpStatus.BAD_REQUEST, "Password must be at least 8 characters.");
     }
-    if (personRepository.findPersonByEmail(email) != null) {
+    if (personRepository.findByEmail(email) != null) {
       throw new ResponseStatusException(
           HttpStatus.CONFLICT, "Email " + email + " is already in use.");
     }
   }
 
   @Transactional(readOnly = true)
-  public Iterable<Person> getPeople() {
+  public List<Person> getPeople() {
     return personRepository.findAll();
   }
 
@@ -83,7 +84,7 @@ public class PersonService {
     customer.setPerson(person);
     customerRepository.save(customer);
 
-    return personRepository.findPersonByPersonID(person.getPersonID());
+    return personRepository.findByPersonID(person.getPersonID());
   }
 
   @Transactional
@@ -99,12 +100,12 @@ public class PersonService {
     employee.setPerson(person);
     employeeRepository.save(employee);
 
-    return personRepository.findPersonByPersonID(person.getPersonID());
+    return personRepository.findByPersonID(person.getPersonID());
   }
 
   @Transactional(readOnly = true)
   public Person logIn(String email, String password, String role) {
-    Person person = personRepository.findPersonByEmail(email);
+    Person person = personRepository.findByEmail(email);
     if (person == null) {
       throw new ResponseStatusException(
           HttpStatus.NOT_FOUND, "There is no person with email " + email + ".");
@@ -183,7 +184,7 @@ public class PersonService {
     customer.setPerson(person);
     customerRepository.save(customer);
 
-    return personRepository.findPersonByPersonID(id);
+    return personRepository.findByPersonID(id);
   }
 
   @Transactional
@@ -207,7 +208,7 @@ public class PersonService {
     employee.setPerson(person);
     employeeRepository.save(employee);
 
-    return personRepository.findPersonByPersonID(id);
+    return personRepository.findByPersonID(id);
   }
 
   @Transactional
@@ -227,7 +228,7 @@ public class PersonService {
 
   @Transactional(readOnly = true)
   public Person getPersonByEmail(String email) {
-    Person person = personRepository.findPersonByEmail(email);
+    Person person = personRepository.findByEmail(email);
     if (person == null) {
       throw new ResponseStatusException(
           HttpStatus.NOT_FOUND, "There is no person with email " + email + ".");

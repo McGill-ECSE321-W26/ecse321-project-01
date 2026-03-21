@@ -52,7 +52,7 @@ public class PersonServiceTests {
     String password = "12345678";
     Person accountTest = new Person("generated-id", email, password);
 
-    when(personRepository.findPersonByPersonID(any())).thenReturn(accountTest);
+    when(personRepository.findByPersonID(any())).thenReturn(accountTest);
     when(personRepository.save(any(Person.class))).thenReturn(accountTest);
 
     Person createdPerson = service.createEmployee(email, password);
@@ -68,7 +68,7 @@ public class PersonServiceTests {
     String address = "123 Main St";
     Person accountTest = new Person("generated-id", email, password);
 
-    when(personRepository.findPersonByPersonID(any())).thenReturn(accountTest);
+    when(personRepository.findByPersonID(any())).thenReturn(accountTest);
     when(personRepository.save(any(Person.class))).thenReturn(accountTest);
 
     Person createdPerson = service.createCustomer(email, password, address);
@@ -107,7 +107,7 @@ public class PersonServiceTests {
     String password = "12345678";
     Person existing = new Person("otherId", email, password);
 
-    when(personRepository.findPersonByEmail(email)).thenReturn(existing);
+    when(personRepository.findByEmail(email)).thenReturn(existing);
 
     ResponseStatusException e =
         assertThrows(ResponseStatusException.class, () -> service.createEmployee(email, password));
@@ -122,7 +122,7 @@ public class PersonServiceTests {
     String address = "123 Main St";
     Person existing = new Person("otherId", email, password);
 
-    when(personRepository.findPersonByEmail(email)).thenReturn(existing);
+    when(personRepository.findByEmail(email)).thenReturn(existing);
 
     ResponseStatusException e =
         assertThrows(
@@ -167,7 +167,7 @@ public class PersonServiceTests {
     // Arrange
     String ID = "validID";
     Person charlie = new Person(ID, "charlie@mail.mcgill.ca", "password123");
-    when(personRepository.findPersonByPersonID(ID)).thenReturn(charlie);
+    when(personRepository.findByPersonID(ID)).thenReturn(charlie);
 
     // Act
     Person person = service.getPersonById(ID);
@@ -184,7 +184,7 @@ public class PersonServiceTests {
     // Set up
     String ID = "validID";
     // Default is to return null, so you could omit this
-    when(personRepository.findPersonByPersonID(ID)).thenReturn(null);
+    when(personRepository.findByPersonID(ID)).thenReturn(null);
 
     // Act
     // Assert
@@ -198,7 +198,7 @@ public class PersonServiceTests {
   public void testGetPersonByValidEmail() {
     String email = "bob@mail.com";
     Person bob = new Person("id1", email, "password123");
-    when(personRepository.findPersonByEmail(email)).thenReturn(bob);
+    when(personRepository.findByEmail(email)).thenReturn(bob);
 
     Person result = service.getPersonByEmail(email);
 
@@ -209,7 +209,7 @@ public class PersonServiceTests {
 
   @Test
   public void testGetPersonByInvalidEmail() {
-    when(personRepository.findPersonByEmail(any())).thenReturn(null);
+    when(personRepository.findByEmail(any())).thenReturn(null);
 
     ResponseStatusException e =
         assertThrows(
@@ -228,7 +228,7 @@ public class PersonServiceTests {
     Person charlie = new Person("validID", email, passwordEncoder.encode(password));
     Customer customerRole = new Customer();
     charlie.addRole(customerRole);
-    when(personRepository.findPersonByEmail(email)).thenReturn(charlie);
+    when(personRepository.findByEmail(email)).thenReturn(charlie);
 
     Person person = service.logIn(email, password, "Customer");
 
@@ -245,7 +245,7 @@ public class PersonServiceTests {
     Person bob = new Person("id1", email, passwordEncoder.encode(password));
     Employee employeeRole = new Employee();
     bob.addRole(employeeRole);
-    when(personRepository.findPersonByEmail(email)).thenReturn(bob);
+    when(personRepository.findByEmail(email)).thenReturn(bob);
 
     // Act
     Person result = service.logIn(email, password, "Employee");
@@ -264,7 +264,7 @@ public class PersonServiceTests {
     Person bob = new Person("id1", email, passwordEncoder.encode(password));
     Manager managerRole = new Manager();
     bob.addRole(managerRole);
-    when(personRepository.findPersonByEmail(email)).thenReturn(bob);
+    when(personRepository.findByEmail(email)).thenReturn(bob);
 
     // Act
     Person result = service.logIn(email, password, "Manager");
@@ -297,7 +297,7 @@ public class PersonServiceTests {
     Person charlie = new Person("validID", email, passwordEncoder.encode(correctPassword));
     Customer customerRole = new Customer();
     charlie.addRole(customerRole);
-    when(personRepository.findPersonByEmail(email)).thenReturn(charlie);
+    when(personRepository.findByEmail(email)).thenReturn(charlie);
 
     ResponseStatusException e =
         assertThrows(
@@ -312,7 +312,7 @@ public class PersonServiceTests {
     Person bob = new Person("id1", "bob@mail.com", passwordEncoder.encode("password123"));
     Customer customerRole = new Customer();
     bob.addRole(customerRole);
-    when(personRepository.findPersonByEmail("bob@mail.com")).thenReturn(bob);
+    when(personRepository.findByEmail("bob@mail.com")).thenReturn(bob);
 
     ResponseStatusException e =
         assertThrows(
@@ -326,7 +326,7 @@ public class PersonServiceTests {
   public void testLogInRoleStringInvalid() {
     // completely garbage role string
     Person bob = new Person("id1", "bob@mail.com", passwordEncoder.encode("password123"));
-    when(personRepository.findPersonByEmail("bob@mail.com")).thenReturn(bob);
+    when(personRepository.findByEmail("bob@mail.com")).thenReturn(bob);
 
     ResponseStatusException e =
         assertThrows(
@@ -340,7 +340,7 @@ public class PersonServiceTests {
   public void testValidUpdatePassword() {
     String oldPassword = "password123";
     Person bob = new Person("id1", "bob@mail.com", passwordEncoder.encode(oldPassword));
-    when(personRepository.findPersonByPersonID("id1")).thenReturn(bob);
+    when(personRepository.findByPersonID("id1")).thenReturn(bob);
     // mock save to return bob AFTER password is changed
     when(personRepository.save(any(Person.class))).thenAnswer(i -> i.getArgument(0));
 
@@ -363,7 +363,7 @@ public class PersonServiceTests {
   @Test
   public void testInvalidUpdatePasswordOldPassword() {
     Person bob = new Person("id1", "bob@mail.com", passwordEncoder.encode("password123"));
-    when(personRepository.findPersonByPersonID("id1")).thenReturn(bob);
+    when(personRepository.findByPersonID("id1")).thenReturn(bob);
 
     ResponseStatusException e =
         assertThrows(
@@ -376,7 +376,7 @@ public class PersonServiceTests {
   @Test
   public void testInvalidUpdatePasswordLength() {
     Person bob = new Person("id1", "bob@mail.com", passwordEncoder.encode("password123"));
-    when(personRepository.findPersonByPersonID("id1")).thenReturn(bob);
+    when(personRepository.findByPersonID("id1")).thenReturn(bob);
 
     ResponseStatusException e =
         assertThrows(
@@ -392,7 +392,7 @@ public class PersonServiceTests {
     Customer customer = new Customer();
     customer.setAddress("123 Old St");
     bob.addRole(customer);
-    when(personRepository.findPersonByPersonID("id1")).thenReturn(bob);
+    when(personRepository.findByPersonID("id1")).thenReturn(bob);
     when(customerRepository.save(any(Customer.class))).thenReturn(customer);
 
     Customer result = service.updateCustomerAddress("id1", "456 New Ave");
@@ -407,7 +407,7 @@ public class PersonServiceTests {
     Customer customer = new Customer();
     customer.setAddress("123 Old St");
     bob.addRole(customer);
-    when(personRepository.findPersonByPersonID("id1")).thenReturn(bob);
+    when(personRepository.findByPersonID("id1")).thenReturn(bob);
 
     ResponseStatusException e =
         assertThrows(ResponseStatusException.class, () -> service.updateCustomerAddress("id1", ""));
@@ -430,7 +430,7 @@ public class PersonServiceTests {
     Person bob = new Person("id1", "bob@mail.com", "password123");
     Employee employee = new Employee();
     bob.addRole(employee);
-    when(personRepository.findPersonByPersonID("id1")).thenReturn(bob);
+    when(personRepository.findByPersonID("id1")).thenReturn(bob);
 
     ResponseStatusException e =
         assertThrows(
@@ -445,7 +445,7 @@ public class PersonServiceTests {
     Person bob = new Person("id1", "bob@mail.com", "password123");
     Employee employeeRole = new Employee();
     bob.addRole(employeeRole);
-    when(personRepository.findPersonByPersonID("id1")).thenReturn(bob); // final fetch
+    when(personRepository.findByPersonID("id1")).thenReturn(bob); // final fetch
     when(customerRepository.save(any(Customer.class))).thenReturn(new Customer());
 
     Person result = service.addCustomerRoleToEmployee("id1", "123 Main St");
@@ -470,7 +470,7 @@ public class PersonServiceTests {
     Customer customerRole = new Customer();
     bob.addRole(employeeRole);
     bob.addRole(customerRole); // already has customer role
-    when(personRepository.findPersonByPersonID("id1")).thenReturn(bob);
+    when(personRepository.findByPersonID("id1")).thenReturn(bob);
 
     ResponseStatusException e =
         assertThrows(
@@ -485,7 +485,7 @@ public class PersonServiceTests {
     Person bob = new Person("id1", "bob@mail.com", "password123");
     Employee employeeRole = new Employee();
     bob.addRole(employeeRole);
-    when(personRepository.findPersonByPersonID("id1")).thenReturn(bob);
+    when(personRepository.findByPersonID("id1")).thenReturn(bob);
 
     ResponseStatusException e =
         assertThrows(
@@ -498,7 +498,7 @@ public class PersonServiceTests {
   public void testInvalidAddCustomerRoleToEmployeeNotEmployee() {
     // person exists but has no roles at all
     Person bob = new Person("id1", "bob@mail.com", "password123");
-    when(personRepository.findPersonByPersonID("id1")).thenReturn(bob);
+    when(personRepository.findByPersonID("id1")).thenReturn(bob);
 
     ResponseStatusException e =
         assertThrows(
@@ -513,7 +513,7 @@ public class PersonServiceTests {
     Person bob = new Person("id1", "bob@mail.com", "password123");
     Customer customerRole = new Customer();
     bob.addRole(customerRole);
-    when(personRepository.findPersonByPersonID("id1")).thenReturn(bob);
+    when(personRepository.findByPersonID("id1")).thenReturn(bob);
     when(employeeRepository.save(any(Employee.class))).thenReturn(new Employee());
 
     Person result = service.addEmployeeRoleToCustomer("id1");
@@ -538,7 +538,7 @@ public class PersonServiceTests {
     Employee employeeRole = new Employee();
     bob.addRole(customerRole);
     bob.addRole(employeeRole); // already has employee role
-    when(personRepository.findPersonByPersonID("id1")).thenReturn(bob);
+    when(personRepository.findByPersonID("id1")).thenReturn(bob);
 
     ResponseStatusException e =
         assertThrows(ResponseStatusException.class, () -> service.addEmployeeRoleToCustomer("id1"));
@@ -550,7 +550,7 @@ public class PersonServiceTests {
   public void testInvalidAddEmployeeRoleToCustomerNotCustomer() {
     // person exists but has no roles at all
     Person bob = new Person("id1", "bob@mail.com", "password123");
-    when(personRepository.findPersonByPersonID("id1")).thenReturn(bob);
+    when(personRepository.findByPersonID("id1")).thenReturn(bob);
 
     ResponseStatusException e =
         assertThrows(ResponseStatusException.class, () -> service.addEmployeeRoleToCustomer("id1"));
@@ -561,7 +561,7 @@ public class PersonServiceTests {
   @Test
   public void testValidDeleteSelfAccount() {
     Person bob = new Person("id1", "bob@mail.com", "password123");
-    when(personRepository.findPersonByPersonID("id1")).thenReturn(bob);
+    when(personRepository.findByPersonID("id1")).thenReturn(bob);
 
     // just verify it doesn't throw and delete is called
     assertDoesNotThrow(() -> service.deleteAccount("id1"));
@@ -581,7 +581,7 @@ public class PersonServiceTests {
   public void testValidManagerDeleteAccount() {
     // just a regular person with no manager role
     Person bob = new Person("id1", "bob@mail.com", "password123");
-    when(personRepository.findPersonByPersonID("id1")).thenReturn(bob);
+    when(personRepository.findByPersonID("id1")).thenReturn(bob);
 
     assertDoesNotThrow(() -> service.deleteAccount("id1"));
     verify(personRepository, times(1)).delete(bob);
@@ -602,7 +602,7 @@ public class PersonServiceTests {
     Person manager = new Person("managerId", "manager@mail.com", "password123");
     Manager managerRole = new Manager();
     manager.addRole(managerRole);
-    when(personRepository.findPersonByPersonID("managerId")).thenReturn(manager);
+    when(personRepository.findByPersonID("managerId")).thenReturn(manager);
 
     ResponseStatusException e =
         assertThrows(ResponseStatusException.class, () -> service.deleteAccount("managerId"));

@@ -37,7 +37,7 @@ public class PersonRepositoryTests {
     personRepository.save(person);
 
     // Read person
-    Person personFromDb = personRepository.findPersonByEmail(email);
+    Person personFromDb = personRepository.findByEmail(email);
 
     // Assertions
     assertNotNull(personFromDb);
@@ -49,7 +49,7 @@ public class PersonRepositoryTests {
   @Test
   public void testFindPersonByInvalidEmail() {
     String invalidEmail = "nonexistent@example.com";
-    Person personFromDb = personRepository.findPersonByEmail(invalidEmail);
+    Person personFromDb = personRepository.findByEmail(invalidEmail);
     assertNull(personFromDb);
   }
 
@@ -69,7 +69,7 @@ public class PersonRepositoryTests {
     personRepository.save(person);
 
     // Read person
-    Person personFromDb = personRepository.findPersonByEmail(newEmail);
+    Person personFromDb = personRepository.findByEmail(newEmail);
 
     // Assertions
     assertNotNull(personFromDb);
@@ -88,14 +88,14 @@ public class PersonRepositoryTests {
     personRepository.save(person);
 
     // Check successful insertion
-    Person personFromDb = personRepository.findPersonByEmail(email);
+    Person personFromDb = personRepository.findByEmail(email);
     assertNotNull(personFromDb);
 
     // Delete
     personRepository.delete(person);
 
     // Check successful deletion
-    personFromDb = personRepository.findPersonByEmail(email);
+    personFromDb = personRepository.findByEmail(email);
     assertNull(personFromDb);
   }
 
@@ -117,7 +117,7 @@ public class PersonRepositoryTests {
     customerRepository.save(customer);
 
     // Reload person and verify the roles reference
-    Person personFromDb = personRepository.findPersonByEmail(email);
+    Person personFromDb = personRepository.findByEmail(email);
 
     String expectedRoleID = customer.getRoleID();
     assertNotNull(personFromDb);

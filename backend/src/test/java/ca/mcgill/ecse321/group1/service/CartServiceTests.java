@@ -67,7 +67,7 @@ public class CartServiceTests {
     Item item = buildItem(itemId, variant, 2);
     item.setCustomer(customer);
     when(customerRepository.findByRoleID(customerId)).thenReturn(customer);
-    when(itemRepository.findItemByItemID(itemId)).thenReturn(item);
+    when(itemRepository.findByItemID(itemId)).thenReturn(item);
 
     // Act
     Item result = cartService.getItemByID(customerId, itemId);
@@ -86,7 +86,7 @@ public class CartServiceTests {
     Customer customer = new Customer();
     String itemId = "badItem";
     when(customerRepository.findByRoleID(customerId)).thenReturn(customer);
-    when(itemRepository.findItemByItemID(itemId)).thenReturn(null);
+    when(itemRepository.findByItemID(itemId)).thenReturn(null);
 
     // Act & Assert
     ResponseStatusException e =
@@ -103,7 +103,7 @@ public class CartServiceTests {
     ClothingVariant variant = buildVariant("variant1", 50f, 10);
     Item item = buildItem(itemId, variant, 2);
     when(customerRepository.findByRoleID(customerId)).thenReturn(null);
-    when(itemRepository.findItemByItemID(itemId)).thenReturn(item);
+    when(itemRepository.findByItemID(itemId)).thenReturn(item);
 
     // Act & Assert
     ResponseStatusException e =
@@ -123,7 +123,7 @@ public class CartServiceTests {
     ClothingVariant variant = buildVariant("variant1", 50f, 10);
     Item item = buildItem(itemId, variant, 2);
     when(customerRepository.findByRoleID(customerId)).thenReturn(customer);
-    when(itemRepository.findItemByItemID(itemId)).thenReturn(item);
+    when(itemRepository.findByItemID(itemId)).thenReturn(item);
 
     // Act & Assert
     ResponseStatusException e =
@@ -150,7 +150,7 @@ public class CartServiceTests {
     Item item1 = buildItem("item1", variant, 1);
     Item item2 = buildItem("item2", variant, 3);
     when(customerRepository.findByRoleID(customerId)).thenReturn(customer);
-    when(itemRepository.findItemsByCustomer(customer)).thenReturn(List.of(item1, item2));
+    when(itemRepository.findByCustomer(customer)).thenReturn(List.of(item1, item2));
 
     // Act
     List<Item> result = cartService.getCartItems(customerId);
@@ -169,7 +169,7 @@ public class CartServiceTests {
     String customerId = "customer1";
     Customer customer = new Customer();
     when(customerRepository.findByRoleID(customerId)).thenReturn(customer);
-    when(itemRepository.findItemsByCustomer(customer)).thenReturn(List.of());
+    when(itemRepository.findByCustomer(customer)).thenReturn(List.of());
 
     // Act
     List<Item> result = cartService.getCartItems(customerId);
@@ -333,7 +333,7 @@ public class CartServiceTests {
     Customer customer = new Customer();
     item.setCustomer(customer); // adds item to customer.items
     when(customerRepository.findByRoleID(customerId)).thenReturn(customer);
-    when(itemRepository.findItemByItemID(itemId)).thenReturn(item);
+    when(itemRepository.findByItemID(itemId)).thenReturn(item);
 
     // Act
     cartService.removeItem(itemId, customerId);
@@ -349,7 +349,7 @@ public class CartServiceTests {
     String itemId = "item1";
     String customerId = "badCustomer";
     when(customerRepository.findByRoleID(customerId)).thenReturn(null);
-    when(itemRepository.findItemByItemID(itemId)).thenReturn(new Item());
+    when(itemRepository.findByItemID(itemId)).thenReturn(new Item());
 
     // Act & Assert
     ResponseStatusException e =
@@ -367,7 +367,7 @@ public class CartServiceTests {
     String customerId = "customer1";
     Customer customer = new Customer();
     when(customerRepository.findByRoleID(customerId)).thenReturn(customer);
-    when(itemRepository.findItemByItemID(itemId)).thenReturn(null);
+    when(itemRepository.findByItemID(itemId)).thenReturn(null);
 
     // Act & Assert
     ResponseStatusException e =
@@ -385,7 +385,7 @@ public class CartServiceTests {
     Item item = buildItem(itemId, variant, 2); // not added to this customer
     Customer customer = new Customer();
     when(customerRepository.findByRoleID(customerId)).thenReturn(customer);
-    when(itemRepository.findItemByItemID(itemId)).thenReturn(item);
+    when(itemRepository.findByItemID(itemId)).thenReturn(item);
 
     // Act & Assert
     ResponseStatusException e =
@@ -491,7 +491,7 @@ public class CartServiceTests {
     Item item = buildItem(itemId, variant, 1);
     item.setCustomer(customer);
     when(customerRepository.findByRoleID(customerId)).thenReturn(customer);
-    when(itemRepository.findItemByItemID(itemId)).thenReturn(item);
+    when(itemRepository.findByItemID(itemId)).thenReturn(item);
     when(itemRepository.save(any(Item.class))).thenAnswer(i -> i.getArgument(0));
 
     // Act
@@ -515,7 +515,7 @@ public class CartServiceTests {
     Item item = buildItem(itemId, variant, 1);
     item.setCustomer(customer);
     when(customerRepository.findByRoleID(customerId)).thenReturn(customer);
-    when(itemRepository.findItemByItemID(itemId)).thenReturn(item);
+    when(itemRepository.findByItemID(itemId)).thenReturn(item);
     when(itemRepository.save(any(Item.class))).thenAnswer(i -> i.getArgument(0));
 
     // Act
@@ -533,7 +533,7 @@ public class CartServiceTests {
     Customer customer = new Customer();
     String itemId = "badItem";
     when(customerRepository.findByRoleID(customerId)).thenReturn(customer);
-    when(itemRepository.findItemByItemID(itemId)).thenReturn(null);
+    when(itemRepository.findByItemID(itemId)).thenReturn(null);
 
     // Act & Assert
     ResponseStatusException e =
@@ -552,7 +552,7 @@ public class CartServiceTests {
     ClothingVariant variant = buildVariant("variant1", 50f, stock);
     Item item = buildItem(itemId, variant, 1);
     when(customerRepository.findByRoleID(customerId)).thenReturn(null);
-    when(itemRepository.findItemByItemID(itemId)).thenReturn(item);
+    when(itemRepository.findByItemID(itemId)).thenReturn(item);
 
     // Act & Assert
     ResponseStatusException e =
@@ -572,7 +572,7 @@ public class CartServiceTests {
     ClothingVariant variant = buildVariant("variant1", 50f, stock);
     Item item = buildItem(itemId, variant, 1);
     when(customerRepository.findByRoleID(customerId)).thenReturn(customer);
-    when(itemRepository.findItemByItemID(itemId)).thenReturn(item);
+    when(itemRepository.findByItemID(itemId)).thenReturn(item);
 
     // Act & Assert
     ResponseStatusException e =
@@ -598,7 +598,7 @@ public class CartServiceTests {
     Item item = buildItem(itemId, variant, 2);
     item.setCustomer(customer);
     when(customerRepository.findByRoleID(customerId)).thenReturn(customer);
-    when(itemRepository.findItemByItemID(itemId)).thenReturn(item);
+    when(itemRepository.findByItemID(itemId)).thenReturn(item);
 
     ResponseStatusException e =
         assertThrows(
@@ -618,7 +618,7 @@ public class CartServiceTests {
     Item item = buildItem(itemId, variant, 2);
     item.setCustomer(customer);
     when(customerRepository.findByRoleID(customerId)).thenReturn(customer);
-    when(itemRepository.findItemByItemID(itemId)).thenReturn(item);
+    when(itemRepository.findByItemID(itemId)).thenReturn(item);
 
     // Act & Assert
     ResponseStatusException e =
@@ -642,7 +642,7 @@ public class CartServiceTests {
     Item item = buildItem(itemId, variant, 2);
     item.setCustomer(customer);
     when(customerRepository.findByRoleID(customerId)).thenReturn(customer);
-    when(itemRepository.findItemByItemID(itemId)).thenReturn(item);
+    when(itemRepository.findByItemID(itemId)).thenReturn(item);
 
     // Act & Assert
     ResponseStatusException e =
@@ -670,7 +670,7 @@ public class CartServiceTests {
     Item item1 = buildItem("item1", variant, 2); // 50 * 2 = 100
     Item item2 = buildItem("item2", variant, 3); // 50 * 3 = 150
     when(customerRepository.findByRoleID(customerId)).thenReturn(customer);
-    when(itemRepository.findItemsByCustomer(customer)).thenReturn(List.of(item1, item2));
+    when(itemRepository.findByCustomer(customer)).thenReturn(List.of(item1, item2));
 
     // Act
     float total = cartService.getCartTotal(customerId);
@@ -690,7 +690,7 @@ public class CartServiceTests {
     Item item1 = buildItem("item1", variant1, 4); // 30 * 4 = 120
     Item item2 = buildItem("item2", variant2, 1); // 70 * 1 = 70
     when(customerRepository.findByRoleID(customerId)).thenReturn(customer);
-    when(itemRepository.findItemsByCustomer(customer)).thenReturn(List.of(item1, item2));
+    when(itemRepository.findByCustomer(customer)).thenReturn(List.of(item1, item2));
 
     // Act
     float total = cartService.getCartTotal(customerId);
@@ -705,7 +705,7 @@ public class CartServiceTests {
     String customerId = "customer1";
     Customer customer = new Customer();
     when(customerRepository.findByRoleID(customerId)).thenReturn(customer);
-    when(itemRepository.findItemsByCustomer(customer)).thenReturn(List.of());
+    when(itemRepository.findByCustomer(customer)).thenReturn(List.of());
 
     // Act
     float total = cartService.getCartTotal(customerId);

@@ -60,7 +60,7 @@ public class ItemRepositoryTests {
     String id = itemTest.getItemID();
 
     // Read item from database
-    Item itemTestFromDb = itemRepository.findItemByItemID(id);
+    Item itemTestFromDb = itemRepository.findByItemID(id);
 
     // Assert correct response
     assertNotNull(itemTestFromDb);
@@ -70,7 +70,7 @@ public class ItemRepositoryTests {
 
   @Test
   public void testFindItemByInvalidId() {
-    Item result = itemRepository.findItemByItemID("nonexistent-id");
+    Item result = itemRepository.findByItemID("nonexistent-id");
     assertNull(result);
   }
 
@@ -87,7 +87,7 @@ public class ItemRepositoryTests {
     itemRepository.save(item);
 
     // Read back and assert
-    Item updatedItem = itemRepository.findItemByItemID(id);
+    Item updatedItem = itemRepository.findByItemID(id);
     assertNotNull(updatedItem);
     assertEquals(99, updatedItem.getQuantity());
   }
@@ -103,7 +103,7 @@ public class ItemRepositoryTests {
     item = itemRepository.save(item);
     String id = item.getItemID();
 
-    Item fromDb = itemRepository.findItemByItemID(id);
+    Item fromDb = itemRepository.findByItemID(id);
     assertNotNull(fromDb);
     assertEquals(quantity, fromDb.getQuantity());
     assertEquals(price, fromDb.getPrice());
@@ -119,7 +119,7 @@ public class ItemRepositoryTests {
 
     itemRepository.delete(item);
 
-    Item deletedItem = itemRepository.findItemByItemID(id);
+    Item deletedItem = itemRepository.findByItemID(id);
     assertNull(deletedItem);
   }
 
@@ -156,7 +156,7 @@ public class ItemRepositoryTests {
     item = itemRepository.save(item);
     String id = item.getItemID();
 
-    Item fromDb = itemRepository.findItemByItemID(id);
+    Item fromDb = itemRepository.findByItemID(id);
     assertNotNull(fromDb);
     assertEquals(0, fromDb.getQuantity());
   }
@@ -198,7 +198,7 @@ public class ItemRepositoryTests {
     String id = item.getItemID();
 
     // retrieve the item from the db to ensure data is still correct via assertions
-    Item fromDb = itemRepository.findItemByItemID(id);
+    Item fromDb = itemRepository.findByItemID(id);
     assertNotNull(fromDb);
     assertNotNull(fromDb.getClothingVariant());
     assertEquals(
@@ -250,7 +250,7 @@ public class ItemRepositoryTests {
     String itemID = item.getItemID();
 
     // Read back and assert
-    Item fromDb = itemRepository.findItemByItemID(itemID);
+    Item fromDb = itemRepository.findByItemID(itemID);
     String orderID = order.getOrderID();
     assertNotNull(fromDb);
     assertTrue(fromDb.hasOrder());
@@ -283,7 +283,7 @@ public class ItemRepositoryTests {
     String itemID = item.getItemID();
 
     // Read back and assert
-    Item fromDb = itemRepository.findItemByItemID(itemID);
+    Item fromDb = itemRepository.findByItemID(itemID);
     String customerRoleID = customer.getRoleID();
     assertNotNull(fromDb);
     assertTrue(fromDb.hasCustomer());
@@ -301,7 +301,7 @@ public class ItemRepositoryTests {
     item = itemRepository.save(item);
     String id = item.getItemID();
 
-    Item fromDb = itemRepository.findItemByItemID(id);
+    Item fromDb = itemRepository.findByItemID(id);
     assertNotNull(fromDb);
     assertFalse(fromDb.hasOrder());
     assertFalse(fromDb.hasCustomer());

@@ -6,12 +6,12 @@ import java.util.List;
 import org.springframework.data.repository.ListCrudRepository;
 
 public interface ItemRepository extends ListCrudRepository<Item, String> {
-  Item findItemByItemID(String itemID);
+  Item findByItemID(String itemID);
 
   // Find Items linked to a specific model that are in a cart
   List<Item> findByClothingVariant_Model_ClothingModelIDAndOrderIsNull(String modelId);
 
-  List<Item> findItemsByCustomer(Customer customer);
+  List<Item> findByCustomer(Customer customer);
 
   int deleteByCustomer(Customer customer);
 }

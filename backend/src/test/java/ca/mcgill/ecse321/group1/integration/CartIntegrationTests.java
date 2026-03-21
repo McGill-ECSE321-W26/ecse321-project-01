@@ -100,7 +100,7 @@ public class CartIntegrationTests {
   @AfterAll
   public void cleanup() {
     // Delete any remaining items for this customer
-    List<Item> remainingItems = itemRepository.findItemsByCustomer(testCustomer);
+    List<Item> remainingItems = itemRepository.findByCustomer(testCustomer);
     for (Item item : remainingItems) {
       itemRepository.deleteById(item.getItemID());
     }
