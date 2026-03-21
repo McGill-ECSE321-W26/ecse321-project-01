@@ -64,6 +64,7 @@ No separate `tailwind.config` file is needed — Tailwind v4 uses CSS-based conf
 
 [shadcn-vue](https://www.shadcn-vue.com/) provides accessible, customizable UI components built on top of Tailwind CSS. The project is configured with the **new-york** style and **lucide** icons (see `components.json`).
 
+Available components here: https://www.shadcn-vue.com/docs/components
 ### Adding components
 
 To add a new shadcn-vue component:
