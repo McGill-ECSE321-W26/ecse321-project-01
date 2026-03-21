@@ -11,7 +11,6 @@ import ca.mcgill.ecse321.group1.model.Customer;
 import ca.mcgill.ecse321.group1.model.Person;
 import ca.mcgill.ecse321.group1.security.JwtUtil;
 import ca.mcgill.ecse321.group1.service.PersonService;
-import java.util.ArrayList;
 import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
