@@ -74,7 +74,7 @@ public class OrderServiceTests {
     Date deliveryDate = Date.valueOf(LocalDate.now().plusDays(2));
 
     when(customerRepository.findByRoleID(customerId)).thenReturn(customer);
-    when(itemRepository.findItemsByCustomer(customer)).thenReturn(List.of(item));
+    when(itemRepository.findByCustomer(customer)).thenReturn(List.of(item));
     when(orderRepository.save(any(Order.class)))
         .thenAnswer((InvocationOnMock iom) -> iom.getArgument(0));
 
@@ -118,7 +118,7 @@ public class OrderServiceTests {
     customer.setRoleID(customerId);
 
     when(customerRepository.findByRoleID(customerId)).thenReturn(customer);
-    when(itemRepository.findItemsByCustomer(customer)).thenReturn(null);
+    when(itemRepository.findByCustomer(customer)).thenReturn(null);
 
     // Act & Assert
     ResponseStatusException e =
@@ -137,7 +137,7 @@ public class OrderServiceTests {
     customer.setRoleID(customerId);
 
     when(customerRepository.findByRoleID(customerId)).thenReturn(customer);
-    when(itemRepository.findItemsByCustomer(customer)).thenReturn(List.of());
+    when(itemRepository.findByCustomer(customer)).thenReturn(List.of());
 
     // Act & Assert
     ResponseStatusException e =
@@ -158,7 +158,7 @@ public class OrderServiceTests {
     item.setCustomer(customer);
 
     when(customerRepository.findByRoleID(customerId)).thenReturn(customer);
-    when(itemRepository.findItemsByCustomer(customer)).thenReturn(List.of(item));
+    when(itemRepository.findByCustomer(customer)).thenReturn(List.of(item));
 
     // Act & Assert
     ResponseStatusException e =
@@ -180,7 +180,7 @@ public class OrderServiceTests {
     Date tooSoon = Date.valueOf(LocalDate.now());
 
     when(customerRepository.findByRoleID(customerId)).thenReturn(customer);
-    when(itemRepository.findItemsByCustomer(customer)).thenReturn(List.of(item));
+    when(itemRepository.findByCustomer(customer)).thenReturn(List.of(item));
 
     // Act & Assert
     ResponseStatusException e =
@@ -208,7 +208,7 @@ public class OrderServiceTests {
     Date deliveryDate = Date.valueOf(LocalDate.now().plusDays(2));
 
     when(customerRepository.findByRoleID(customerId)).thenReturn(customer);
-    when(itemRepository.findItemsByCustomer(customer)).thenReturn(List.of(item));
+    when(itemRepository.findByCustomer(customer)).thenReturn(List.of(item));
 
     // Act & Assert
     ResponseStatusException e =
@@ -235,7 +235,7 @@ public class OrderServiceTests {
     Date deliveryDate = Date.valueOf(LocalDate.now().plusDays(2));
 
     when(customerRepository.findByRoleID(customerId)).thenReturn(customer);
-    when(itemRepository.findItemsByCustomer(customer)).thenReturn(List.of(item));
+    when(itemRepository.findByCustomer(customer)).thenReturn(List.of(item));
 
     // Act & Assert
     ResponseStatusException e =
@@ -265,7 +265,7 @@ public class OrderServiceTests {
     Date deliveryDate = Date.valueOf(LocalDate.now().plusDays(2));
 
     when(customerRepository.findByRoleID(customerId)).thenReturn(customer);
-    when(itemRepository.findItemsByCustomer(customer)).thenReturn(List.of(item));
+    when(itemRepository.findByCustomer(customer)).thenReturn(List.of(item));
 
     // Act & Assert
     ResponseStatusException e =
@@ -299,7 +299,7 @@ public class OrderServiceTests {
     employee.setPerson(person2);
 
     when(employeeRepository.findByRoleID(employeeId)).thenReturn(employee);
-    when(orderRepository.findOrderByOrderID(orderId)).thenReturn(order);
+    when(orderRepository.findByOrderID(orderId)).thenReturn(order);
     when(orderRepository.save(any(Order.class))).thenAnswer(i -> i.getArgument(0));
 
     // Act
@@ -329,7 +329,7 @@ public class OrderServiceTests {
     employee.setRoleID(employeeId);
     employee.setPerson(person1);
 
-    when(orderRepository.findOrderByOrderID(orderId)).thenReturn(order);
+    when(orderRepository.findByOrderID(orderId)).thenReturn(order);
     when(employeeRepository.findByRoleID(employeeId)).thenReturn(employee);
 
     // Act & Assert
@@ -346,7 +346,7 @@ public class OrderServiceTests {
     String orderId = "order1";
     String employeeId = "badEmp";
     Order order = new Order();
-    when(orderRepository.findOrderByOrderID(orderId)).thenReturn(order);
+    when(orderRepository.findByOrderID(orderId)).thenReturn(order);
     when(employeeRepository.findByRoleID(employeeId)).thenReturn(null);
 
     // Act & Assert
@@ -361,7 +361,7 @@ public class OrderServiceTests {
   public void testUpdateOrderWithInvalidOrderId() {
     // Arrange
     String orderId = "badOrder";
-    when(orderRepository.findOrderByOrderID(orderId)).thenReturn(null);
+    when(orderRepository.findByOrderID(orderId)).thenReturn(null);
 
     // Act & Assert
     ResponseStatusException e =
@@ -382,7 +382,7 @@ public class OrderServiceTests {
     order.setOrderID(orderId);
     Date newDate = Date.valueOf(LocalDate.now().plusDays(3));
 
-    when(orderRepository.findOrderByOrderID(orderId)).thenReturn(order);
+    when(orderRepository.findByOrderID(orderId)).thenReturn(order);
     when(orderRepository.save(any(Order.class))).thenAnswer(i -> i.getArgument(0));
 
     // Act
@@ -398,7 +398,7 @@ public class OrderServiceTests {
   public void testUpdateOrderDeliveryDateWithInvalidOrder() {
     // Arrange
     String orderId = "badOrder";
-    when(orderRepository.findOrderByOrderID(orderId)).thenReturn(null);
+    when(orderRepository.findByOrderID(orderId)).thenReturn(null);
 
     // Act & Assert
     ResponseStatusException e =
@@ -418,7 +418,7 @@ public class OrderServiceTests {
     order.setDeliveryDate(Date.valueOf(LocalDate.now().plusDays(5)));
     Date tooSoon = Date.valueOf(LocalDate.now());
 
-    when(orderRepository.findOrderByOrderID(orderId)).thenReturn(order);
+    when(orderRepository.findByOrderID(orderId)).thenReturn(order);
 
     // Act & Assert
     ResponseStatusException e =
@@ -437,7 +437,7 @@ public class OrderServiceTests {
     order.setDeliveryDate(Date.valueOf(LocalDate.now())); // delivery is today within 24 hours
     Date newDate = Date.valueOf(LocalDate.now().plusDays(3));
 
-    when(orderRepository.findOrderByOrderID(orderId)).thenReturn(order);
+    when(orderRepository.findByOrderID(orderId)).thenReturn(order);
 
     // Act & Assert
     ResponseStatusException e =
@@ -458,7 +458,7 @@ public class OrderServiceTests {
     Order order = new Order();
     order.setOrderID(orderId);
     order.setOrderStatus(Order.OrderStatus.Preparing);
-    when(orderRepository.findOrderByOrderID(orderId)).thenReturn(order);
+    when(orderRepository.findByOrderID(orderId)).thenReturn(order);
     when(orderRepository.save(any(Order.class))).thenAnswer(i -> i.getArgument(0));
 
     // Act
@@ -474,7 +474,7 @@ public class OrderServiceTests {
   public void testUpdateOrderStatusWithInvalidOrder() {
     // Arrange
     String orderId = "badOrder";
-    when(orderRepository.findOrderByOrderID(orderId)).thenReturn(null);
+    when(orderRepository.findByOrderID(orderId)).thenReturn(null);
 
     // Act & Assert
     ResponseStatusException e =
@@ -490,7 +490,7 @@ public class OrderServiceTests {
     String orderId = "order1";
     String invalidStatus = "Flying";
     Order order = new Order();
-    when(orderRepository.findOrderByOrderID(orderId)).thenReturn(order);
+    when(orderRepository.findByOrderID(orderId)).thenReturn(order);
 
     // Act & Assert
     ResponseStatusException e =
@@ -509,7 +509,7 @@ public class OrderServiceTests {
     order.setOrderStatus(Order.OrderStatus.Preparing);
     order.setDeliveryDate(Date.valueOf(LocalDate.now().plusDays(3)));
 
-    when(orderRepository.findOrderByOrderID(orderId)).thenReturn(order);
+    when(orderRepository.findByOrderID(orderId)).thenReturn(order);
     when(orderRepository.save(any(Order.class))).thenAnswer(i -> i.getArgument(0));
 
     // Act
@@ -530,7 +530,7 @@ public class OrderServiceTests {
     order.setOrderStatus(Order.OrderStatus.Delivered);
     order.setDeliveryDate(Date.valueOf(LocalDate.now().plusDays(3)));
 
-    when(orderRepository.findOrderByOrderID(orderId)).thenReturn(order);
+    when(orderRepository.findByOrderID(orderId)).thenReturn(order);
 
     // Act & Assert
     ResponseStatusException e =
@@ -549,7 +549,7 @@ public class OrderServiceTests {
     order.setOrderStatus(Order.OrderStatus.Preparing);
     order.setDeliveryDate(Date.valueOf(LocalDate.now())); // Delivery date within 24 hours
 
-    when(orderRepository.findOrderByOrderID(orderId)).thenReturn(order);
+    when(orderRepository.findByOrderID(orderId)).thenReturn(order);
 
     // Act & Assert
     ResponseStatusException e =
@@ -583,7 +583,7 @@ public class OrderServiceTests {
     // Arrange
     String orderId = "order1";
     Order order = new Order();
-    when(orderRepository.findOrderByOrderID(orderId)).thenReturn(order);
+    when(orderRepository.findByOrderID(orderId)).thenReturn(order);
 
     // Act
     Order result = orderService.getOrderByID(orderId);
@@ -596,7 +596,7 @@ public class OrderServiceTests {
   @Test
   public void testGetOrderByInvalidID() {
     String orderId = "badOrder";
-    when(orderRepository.findOrderByOrderID(orderId)).thenReturn(null);
+    when(orderRepository.findByOrderID(orderId)).thenReturn(null);
     ResponseStatusException e =
         assertThrows(ResponseStatusException.class, () -> orderService.getOrderByID(orderId));
     assertEquals("There is no order with id " + orderId + ".", e.getReason());

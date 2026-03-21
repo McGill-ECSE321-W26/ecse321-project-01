@@ -29,7 +29,7 @@ public class DataSeeder implements CommandLineRunner {
   @Override
   public void run(String... args) {
     // Skip if the manager account already exists
-    if (personRepository.findPersonByEmail(MANAGER_EMAIL) != null) {
+    if (personRepository.findByEmail(MANAGER_EMAIL) != null) {
       return;
     }
 

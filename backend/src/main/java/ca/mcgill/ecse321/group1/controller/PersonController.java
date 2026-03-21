@@ -73,11 +73,8 @@ public class PersonController {
     if (email != null) {
       return List.of(new PersonResponseDto(personService.getPersonByEmail(email)));
     }
-    List<PersonResponseDto> dtos = new ArrayList<>();
-    for (Person p : personService.getPeople()) {
-      dtos.add(new PersonResponseDto(p));
-    }
-    return dtos;
+
+    return personService.getPeople().stream().map(PersonResponseDto::new).toList();
   }
 
   @GetMapping("/{id}")

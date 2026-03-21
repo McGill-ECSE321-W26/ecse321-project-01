@@ -63,11 +63,7 @@ public class OrderController {
       orders = orderService.getOrdersByCustomerIDAndStatus(customerID, orderStatus);
     }
 
-    List<OrderResponseDto> ordersDTO = new ArrayList<>();
-    for (Order order : orders) {
-      ordersDTO.add(new OrderResponseDto(order));
-    }
-    return ordersDTO;
+    return orders.stream().map(OrderResponseDto::new).toList();
   }
 
   @GetMapping("/employee/{employeeID}")

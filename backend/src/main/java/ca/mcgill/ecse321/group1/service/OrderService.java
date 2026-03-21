@@ -45,7 +45,7 @@ public class OrderService {
   }
 
   private Order findOrder(String orderID) {
-    Order order = orderRepository.findOrderByOrderID(orderID);
+    Order order = orderRepository.findByOrderID(orderID);
     if (order == null) {
       throw new ResponseStatusException(
           HttpStatus.NOT_FOUND, "There is no order with id " + orderID + ".");
@@ -72,7 +72,7 @@ public class OrderService {
   }
 
   private void validateCartNotEmpty(Customer customer, String customerID) {
-    List<Item> items = itemRepository.findItemsByCustomer(customer);
+    List<Item> items = itemRepository.findByCustomer(customer);
     if (items == null || items.isEmpty()) {
       throw new ResponseStatusException(
           HttpStatus.BAD_REQUEST, "There are no items in the cart of customer " + customerID + ".");

@@ -79,11 +79,11 @@ public class PersonIntegrationTests {
   @AfterAll
   public void cleanup() {
     if (createdCustomerEmail != null) {
-      Person p = personRepository.findPersonByEmail(createdCustomerEmail);
+      Person p = personRepository.findByEmail(createdCustomerEmail);
       if (p != null) personRepository.delete(p);
     }
     if (createdEmployeeEmail != null) {
-      Person p = personRepository.findPersonByEmail(createdEmployeeEmail);
+      Person p = personRepository.findByEmail(createdEmployeeEmail);
       if (p != null) personRepository.delete(p);
     }
     personRepository.deleteById(managerPerson.getPersonID());
