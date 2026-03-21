@@ -49,3 +49,44 @@ npm run lint:fix
 ```
 
 ESLint is configured with TypeScript and Vue recommended rules. The CI pipeline will run `npm run lint` on every push and pull request to `main`.
+
+## Tailwind CSS
+
+This project uses [Tailwind CSS v4](https://tailwindcss.com/) for utility-first styling, integrated via the `@tailwindcss/vite` plugin. Tailwind is imported in `src/style.css`:
+
+```css
+@import "tailwindcss";
+```
+
+No separate `tailwind.config` file is needed — Tailwind v4 uses CSS-based configuration. Theme customizations (colors, radii, etc.) are defined directly in `src/style.css` using `@theme`.
+
+## shadcn-vue
+
+[shadcn-vue](https://www.shadcn-vue.com/) provides accessible, customizable UI components built on top of Tailwind CSS. The project is configured with the **new-york** style and **lucide** icons (see `components.json`).
+
+### Adding components
+
+To add a new shadcn-vue component:
+
+```bash
+npx shadcn-vue@latest add <component-name>
+```
+
+For example:
+
+```bash
+npx shadcn-vue@latest add button
+```
+
+Components are installed into `src/components/ui/` and can be freely customized. Utility functions used by shadcn-vue live in `src/lib/utils.ts`.
+
+### Path aliases
+
+The following aliases are configured for imports:
+
+| Alias | Path |
+|-------|------|
+| `@/components` | `src/components` |
+| `@/components/ui` | `src/components/ui` |
+| `@/lib` | `src/lib` |
+| `@/composables` | `src/composables` |
