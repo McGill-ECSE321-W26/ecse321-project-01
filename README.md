@@ -58,15 +58,15 @@ Following is a table containing an overview of our contributions (in hours) for 
 | Team Contract + Success Spectrum                    |    2     |  0.5   |  0.5   |  0.5  |  0.5  |  0.5  |  0.5  |   5   |
 | **Deliverable 1 Totals**                            |   8.5    |  6.5   |  6.5   |  8.5  |  6.5  |  6.5  |  7.5  | 50.5  |
 | **Deliverable 2**                                   |   ---    |  ---   |  ---   |  ---  |  ---  |  ---  |  ---  |  ---  |
-| API implementation (service and controller methods) |    5     |   5    |   5    |   6   |       |       |       |  21   |
+| API implementation (service and controller methods) |    5     |   5    |   5    |   7   |       |       |       |  22   |
 | QA plan and report                                  |          |        |        |       |   3   |       |   3   |   6   |
 | Unit testing of backend                             |    1     |   2    |   2    |   2   |   5   |   2   |   5   |  19   |
 | Integration testing                                 |    1     |   1    |   1    |   1   |   3   |   6   |   3   |  16   |
 | Gradle task for integration tests                   |          |        |        |       |       |   2   |       |   2   |
 | Project management + documentation                  |    3     |   2    |   1    |   2   |   2   |   1   |   1   |  12   |
-| **Deliverable 2 Totals**                            |    10    |   10   |   9    |  11   |  13   |  11   |  12   |  76   |
+| **Deliverable 2 Totals**                            |    10    |   10   |   9    |  12   |  13   |  11   |  12   |  76   |
 | **Deliverable 3**                                   |   ---    |  ---   |  ---   |  ---  |  ---  |  ---  |  ---  |  ---  |
-| **Grand Total**                                     |   18.5   |  16.5  |  15.5  | 19.5  | 19.5  | 17.5  | 19.5  | 126.5 |
+| **Grand Total**                                     |   18.5   |  16.5  |  15.5  | 20.5  | 19.5  | 17.5  | 19.5  | 127.5 |
 
 ## Project Deliverable 1 (12%)
 For all details regarding this deliverable, please refer to the [Deliverable 1 Wiki Page](https://github.com/McGill-ECSE321-W26/ecse321-project-01/wiki/Project-Deliverable-1).
