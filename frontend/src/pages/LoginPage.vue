@@ -11,17 +11,30 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
   <div class="max-w-md mx-auto py-12 px-4">
     <Card>
       <CardHeader>
-        <CardTitle class="text-3xl">Log In</CardTitle>
+        <CardTitle class="text-3xl">
+          Log In
+        </CardTitle>
       </CardHeader>
       <CardContent>
-        <form class="space-y-4" @submit.prevent>
+        <form
+          class="space-y-4"
+          @submit.prevent
+        >
           <div class="space-y-2">
             <Label for="email">Email</Label>
-            <Input id="email" type="email" placeholder="you@example.com" />
+            <Input
+              id="email"
+              type="email"
+              placeholder="you@example.com"
+            />
           </div>
           <div class="space-y-2">
             <Label for="password">Password</Label>
-            <Input id="password" type="password" placeholder="••••••••" />
+            <Input
+              id="password"
+              type="password"
+              placeholder="••••••••"
+            />
           </div>
           <div class="space-y-2">
             <Label>Role</Label>
@@ -30,19 +43,35 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
                 <SelectValue placeholder="Select a role" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="Customer">Customer</SelectItem>
-                <SelectItem value="Employee">Employee</SelectItem>
-                <SelectItem value="Manager">Manager</SelectItem>
+                <SelectItem value="Customer">
+                  Customer
+                </SelectItem>
+                <SelectItem value="Employee">
+                  Employee
+                </SelectItem>
+                <SelectItem value="Manager">
+                  Manager
+                </SelectItem>
               </SelectContent>
             </Select>
           </div>
-          <Button type="submit" class="w-full">Log In</Button>
+          <Button
+            type="submit"
+            class="w-full"
+          >
+            Log In
+          </Button>
         </form>
       </CardContent>
       <CardFooter>
         <p class="text-sm text-muted-foreground">
           Don't have an account?
-          <RouterLink to="/register" class="underline text-foreground">Sign up</RouterLink>
+          <RouterLink
+            to="/register"
+            class="underline text-foreground"
+          >
+            Sign up
+          </RouterLink>
         </p>
       </CardFooter>
     </Card>
