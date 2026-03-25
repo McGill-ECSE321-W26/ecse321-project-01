@@ -5,7 +5,7 @@ package ca.mcgill.ecse321.group1.model;
 import java.util.*;
 import jakarta.persistence.*;
 
-// line 66 "../../../../../model.ump"
+// line 69 "../../../../../model.ump"
 @Entity
 public class ClothingModel
 {
@@ -21,6 +21,7 @@ public class ClothingModel
   @Column(unique = true)
   private String name;
   private float price;
+  private String imagePath;
 
   //ClothingModel Associations
   @OneToMany(mappedBy = "model", cascade = {CascadeType.ALL}, orphanRemoval = true)
@@ -34,11 +35,12 @@ public class ClothingModel
     clothingVariants = new ArrayList<ClothingVariant>();
   }
 
-  public ClothingModel(String aClothingModelID, String aName, float aPrice)
+  public ClothingModel(String aClothingModelID, String aName, float aPrice, String aImagePath)
   {
     clothingModelID = aClothingModelID;
     name = aName;
     price = aPrice;
+    imagePath = aImagePath;
     clothingVariants = new ArrayList<ClothingVariant>();
   }
 
@@ -70,6 +72,14 @@ public class ClothingModel
     return wasSet;
   }
 
+  public boolean setImagePath(String aImagePath)
+  {
+    boolean wasSet = false;
+    imagePath = aImagePath;
+    wasSet = true;
+    return wasSet;
+  }
+
   public String getClothingModelID()
   {
     return clothingModelID;
@@ -83,6 +93,11 @@ public class ClothingModel
   public float getPrice()
   {
     return price;
+  }
+
+  public String getImagePath()
+  {
+    return imagePath;
   }
   /* Code from template association_GetMany */
   public ClothingVariant getClothingVariant(int index)
@@ -120,9 +135,9 @@ public class ClothingModel
     return 0;
   }
   /* Code from template association_AddManyToOne */
-  public ClothingVariant addClothingVariant(String aClothingVariantID, ClothingVariant.Size aSize, String aColor, int aStockQuantity)
+  public ClothingVariant addClothingVariant(String aClothingVariantID, ClothingVariant.Size aSize, String aColor, String aImagePath, int aStockQuantity)
   {
-    return new ClothingVariant(aClothingVariantID, aSize, aColor, aStockQuantity, this);
+    return new ClothingVariant(aClothingVariantID, aSize, aColor, aImagePath, aStockQuantity, this);
   }
 
   public boolean addClothingVariant(ClothingVariant aClothingVariant)
@@ -202,6 +217,7 @@ public class ClothingModel
     return super.toString() + "["+
             "clothingModelID" + ":" + getClothingModelID()+ "," +
             "name" + ":" + getName()+ "," +
-            "price" + ":" + getPrice()+ "]";
+            "price" + ":" + getPrice()+ "," +
+            "imagePath" + ":" + getImagePath()+ "]";
   }
 }
