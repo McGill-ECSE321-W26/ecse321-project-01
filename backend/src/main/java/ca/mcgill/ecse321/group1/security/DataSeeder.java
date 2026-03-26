@@ -5,15 +5,13 @@ import ca.mcgill.ecse321.group1.model.ClothingVariant.Size;
 import ca.mcgill.ecse321.group1.model.Order.OrderStatus;
 import ca.mcgill.ecse321.group1.repository.*;
 import java.sql.Date;
-import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 
-// Runs on every server startup and seeds the database with a default Manager account
-// and dummy data (customers, employees, clothing catalog, orders) for frontend testing.
-// If the manager email already exists, this entire seeder is skipped.
+// Seeds the database with a default Manager account and dummy data for frontend testing
+// Run via: ./gradlew seedDatabase
 @Component
-public class DataSeeder implements CommandLineRunner {
+public class DataSeeder {
 
   private static final String MANAGER_EMAIL = "manager@admin.com";
   private static final String MANAGER_PASSWORD = "manager123";
@@ -47,13 +45,7 @@ public class DataSeeder implements CommandLineRunner {
     this.itemRepository = itemRepository;
   }
 
-  @Override
-  public void run(String... args) {
-    // Skip entirely if the database already has any data
-    if (personRepository.count() > 0) {
-      return;
-    }
-
+  public void seed() {
     // Manager
     Person managerPerson = createPerson(MANAGER_EMAIL, MANAGER_PASSWORD);
     Manager manager = new Manager();

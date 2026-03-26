@@ -2,6 +2,7 @@ package ca.mcgill.ecse321.group1.security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -16,6 +17,7 @@ import org.springframework.web.cors.CorsConfiguration;
 // - Sessions are disabled (STATELESS) every request must carry its own JWT
 @Configuration
 @EnableMethodSecurity
+@Profile("!seed")
 public class SecurityConfig {
 
   private final JwtAuthenticationFilter jwtAuthenticationFilter;
