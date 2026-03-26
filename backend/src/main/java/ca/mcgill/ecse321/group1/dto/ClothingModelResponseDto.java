@@ -19,7 +19,10 @@ public class ClothingModelResponseDto {
     this.price = model.getPrice();
     this.imagePath = model.getImagePath();
     this.totalStockQuantity =
-        model.getClothingVariants().stream().mapToInt(ClothingVariant::getStockQuantity).sum();
+        model.getClothingVariants().stream()
+            .filter(v -> !v.getArchived())
+            .mapToInt(ClothingVariant::getStockQuantity)
+            .sum();
   }
 
   public String getClothingModelID() {

@@ -30,7 +30,7 @@ public class ClothingService {
   }
 
   private ClothingModel findModel(String modelId) {
-    ClothingModel model = clothingModelRepository.findByClothingModelID(modelId);
+    ClothingModel model = clothingModelRepository.findByClothingModelIDAndArchivedFalse(modelId);
     if (model == null) {
       throw new ResponseStatusException(
           HttpStatus.NOT_FOUND, String.format("Clothing model with ID %s not found", modelId));
@@ -39,7 +39,7 @@ public class ClothingService {
   }
 
   private ClothingVariant findVariant(String modelId, String variantId) {
-    ClothingVariant variant = clothingVariantRepository.findByClothingVariantID(variantId);
+    ClothingVariant variant = clothingVariantRepository.findByClothingVariantIDAndArchivedFalse(variantId);
     if (variant == null || !variant.getModel().getClothingModelID().equals(modelId)) {
       throw new ResponseStatusException(
           HttpStatus.NOT_FOUND,
@@ -64,7 +64,7 @@ public class ClothingService {
   // Checks name uniqueness, optionally excluding a model ID (used during updates to allow keeping
   // the same name)
   private void validateNameUniqueness(String name, String excludeModelId) {
-    ClothingModel existing = clothingModelRepository.findByName(name);
+    ClothingModel existing = clothingModelRepository.findByNameAndArchivedFalse(name);
     if (existing != null
         && (excludeModelId == null || !existing.getClothingModelID().equals(excludeModelId))) {
       throw new ResponseStatusException(
@@ -110,7 +110,7 @@ public class ClothingService {
   private void validateVariantUniqueness(
       ClothingModel model, ClothingVariant.Size size, String color) {
     if (model.getClothingVariants().stream()
-        .anyMatch(variant -> variant.getSize() == size && variant.getColor().equals(color))) {
+        .anyMatch(variant -> !variant.getArchived() && variant.getSize() == size && variant.getColor().equals(color))) {
       throw new ResponseStatusException(
           HttpStatus.CONFLICT,
           String.format(
@@ -129,7 +129,7 @@ public class ClothingService {
 
   @Transactional(readOnly = true)
   public List<ClothingModel> getAllClothingModels() {
-    return clothingModelRepository.findAll();
+    return clothingModelRepository.findByArchivedFalse();
   }
 
   @Transactional(readOnly = true)
@@ -177,11 +177,17 @@ public class ClothingService {
 
   @Transactional
   public void deleteClothingModel(String modelId) throws ResponseStatusException {
-    int deletedCount = clothingModelRepository.deleteByClothingModelID(modelId);
-    if (deletedCount == 0) {
-      throw new ResponseStatusException(
-          HttpStatus.NOT_FOUND, String.format("Clothing model with ID %s not found", modelId));
+    ClothingModel model = findModel(modelId);
+    // Archive model and all its variants
+    model.setArchived(true);
+    for (ClothingVariant variant : model.getClothingVariants()) {
+      variant.setArchived(true);
     }
+    // Must delete call Items that are in cart (not in order, since it was already checked out and paid for)
+    List<Item> cartItems =
+        itemRepository.findByClothingVariant_Model_ClothingModelIDAndOrderIsNull(modelId);
+    itemRepository.deleteAll(cartItems);
+    clothingModelRepository.save(model);
   }
 
   @Transactional(readOnly = true)
@@ -193,7 +199,7 @@ public class ClothingService {
   @Transactional(readOnly = true)
   public List<ClothingVariant> getVariantsByModel(String modelId) {
     ClothingModel model = findModel(modelId);
-    return model.getClothingVariants();
+    return model.getClothingVariants().stream().filter(v -> !v.getArchived()).toList();
   }
 
   @Transactional
@@ -221,12 +227,11 @@ public class ClothingService {
 
   @Transactional
   public void deleteVariant(String modelId, String variantId) throws ResponseStatusException {
-    int deletedCount = clothingVariantRepository.deleteByClothingVariantID(variantId);
-    if (deletedCount == 0) {
-      throw new ResponseStatusException(
-          HttpStatus.NOT_FOUND,
-          String.format(
-              "Clothing variant with ID %s not found under model %s", variantId, modelId));
-    }
+    ClothingVariant variant = findVariant(modelId, variantId);
+    variant.setArchived(true);
+    // Must delete call Items that are in cart (not in order, since it was already checked out and paid for)
+    List<Item> cartItems = itemRepository.findByClothingVariantAndOrderIsNull(variant);
+    itemRepository.deleteAll(cartItems);
+    clothingVariantRepository.save(variant);
   }
 }

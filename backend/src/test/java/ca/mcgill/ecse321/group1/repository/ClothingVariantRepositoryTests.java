@@ -37,7 +37,7 @@ public class ClothingVariantRepositoryTests {
 
     // Read clothing variant from database
     ClothingVariant clothingVariantTestFromDb =
-        clothingVariantRepository.findByClothingVariantID(id);
+        clothingVariantRepository.findByClothingVariantIDAndArchivedFalse(id);
 
     // Assert correct response
     assertNotNull(clothingVariantTestFromDb);
@@ -48,7 +48,7 @@ public class ClothingVariantRepositoryTests {
 
   @Test
   public void testFindClothingVariantByInvalidId() {
-    ClothingVariant result = clothingVariantRepository.findByClothingVariantID("nonexistent-id");
+    ClothingVariant result = clothingVariantRepository.findByClothingVariantIDAndArchivedFalse("nonexistent-id");
     assertNull(result);
   }
 
@@ -68,7 +68,7 @@ public class ClothingVariantRepositoryTests {
 
     // Read back and assert
     String id = variant.getClothingVariantID();
-    ClothingVariant updatedVariant = clothingVariantRepository.findByClothingVariantID(id);
+    ClothingVariant updatedVariant = clothingVariantRepository.findByClothingVariantIDAndArchivedFalse(id);
     assertNotNull(updatedVariant);
     assertEquals(ClothingVariant.Size.XL, updatedVariant.getSize());
     assertEquals("Blue", updatedVariant.getColor());
@@ -90,7 +90,7 @@ public class ClothingVariantRepositoryTests {
     clothingVariantRepository.delete(variant);
 
     // Assert it no longer exists
-    ClothingVariant deletedVariant = clothingVariantRepository.findByClothingVariantID(id);
+    ClothingVariant deletedVariant = clothingVariantRepository.findByClothingVariantIDAndArchivedFalse(id);
     assertNull(deletedVariant);
   }
 
@@ -133,7 +133,7 @@ public class ClothingVariantRepositoryTests {
     variant = clothingVariantRepository.save(variant);
     String id = variant.getClothingVariantID();
 
-    ClothingVariant fromDb = clothingVariantRepository.findByClothingVariantID(id);
+    ClothingVariant fromDb = clothingVariantRepository.findByClothingVariantIDAndArchivedFalse(id);
     assertNotNull(fromDb);
     assertEquals(0, fromDb.getStockQuantity());
   }
@@ -149,36 +149,23 @@ public class ClothingVariantRepositoryTests {
       variant = clothingVariantRepository.save(variant);
 
       ClothingVariant fromDb =
-          clothingVariantRepository.findByClothingVariantID(variant.getClothingVariantID());
+          clothingVariantRepository.findByClothingVariantIDAndArchivedFalse(variant.getClothingVariantID());
       assertNotNull(fromDb);
       assertEquals(size, fromDb.getSize());
     }
   }
 
   @Test
-  @Transactional
-  public void testDeleteByClothingVariantID() {
+  public void testFindByIdAndArchivedFalseReturnsNullForArchived() {
     ClothingVariant variant = new ClothingVariant();
     variant.setSize(ClothingVariant.Size.L);
     variant.setColor("Beige");
     variant.setStockQuantity(67);
+    variant.setArchived(true);
     variant = clothingVariantRepository.save(variant);
     String id = variant.getClothingVariantID();
 
-    // Delete by ID and assert delete count is 1
-    int deleteCount = clothingVariantRepository.deleteByClothingVariantID(id);
-    assertEquals(1, deleteCount);
-
-    // Assert no exist
-    assertNull(clothingVariantRepository.findByClothingVariantID(id));
-  }
-
-  @Test
-  @Transactional
-  public void testDeleteClothingVariantByNonExistentID() {
-    // Deleting a non-existent ID should return 0
-    int deleteCount = clothingVariantRepository.deleteByClothingVariantID("randomID123");
-    assertEquals(0, deleteCount);
+    assertNull(clothingVariantRepository.findByClothingVariantIDAndArchivedFalse(id));
   }
 
   @Test

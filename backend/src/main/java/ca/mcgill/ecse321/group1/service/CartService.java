@@ -94,10 +94,15 @@ public class CartService {
   @Transactional
   public Item addItem(String clothingVariantID, String customerID, int quantity) {
     ClothingVariant clothingVariant =
-        clothingVariantRepository.findByClothingVariantID(clothingVariantID);
+        clothingVariantRepository.findByClothingVariantIDAndArchivedFalse(clothingVariantID);
     Customer customer = customerRepository.findByRoleID(customerID);
     validateCustomerExists(customer, customerID);
     validateClothingVariantExists(clothingVariant, clothingVariantID);
+    if (clothingVariant.getModel().getArchived()) {
+      throw new ResponseStatusException(
+          HttpStatus.NOT_FOUND,
+          "There is no clothing variant with id " + clothingVariantID + ".");
+    }
     validateQuantity(quantity);
     validateStock(quantity, clothingVariant.getStockQuantity());
 

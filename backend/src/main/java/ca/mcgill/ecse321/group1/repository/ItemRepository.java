@@ -1,5 +1,6 @@
 package ca.mcgill.ecse321.group1.repository;
 
+import ca.mcgill.ecse321.group1.model.ClothingVariant;
 import ca.mcgill.ecse321.group1.model.Customer;
 import ca.mcgill.ecse321.group1.model.Item;
 import java.util.List;
@@ -10,6 +11,8 @@ public interface ItemRepository extends ListCrudRepository<Item, String> {
 
   // Find Items linked to a specific model that are in a cart
   List<Item> findByClothingVariant_Model_ClothingModelIDAndOrderIsNull(String modelId);
+
+  List<Item> findByClothingVariantAndOrderIsNull(ClothingVariant variant);
 
   List<Item> findByCustomer(Customer customer);
 
