@@ -41,7 +41,7 @@ public class ClothingServiceTests {
     // Arrange
     ClothingModel model1 = new ClothingModel(null, "Summer Jacket", 79.99f, VALID_MODEL_IMAGE);
     ClothingModel model2 = new ClothingModel(null, "Winter Coat", 149.99f, VALID_MODEL_IMAGE);
-    when(clothingModelRepository.findAll()).thenReturn(List.of(model1, model2));
+    when(clothingModelRepository.findByArchivedFalse()).thenReturn(List.of(model1, model2));
 
     // Act
     List<ClothingModel> result = clothingService.getAllClothingModels();
@@ -60,7 +60,7 @@ public class ClothingServiceTests {
     String name = "Summer Jacket";
     Float price = 79.99f;
     ClothingModel model = new ClothingModel(modelId, name, price, VALID_MODEL_IMAGE);
-    when(clothingModelRepository.findByClothingModelID(modelId)).thenReturn(model);
+    when(clothingModelRepository.findByClothingModelIDAndArchivedFalse(modelId)).thenReturn(model);
 
     // Act
     ClothingModel result = clothingService.getClothingModel(modelId);
@@ -76,7 +76,7 @@ public class ClothingServiceTests {
   public void testGetClothingModelByInvalidId() {
     // Assert
     String modelId = "badModel";
-    when(clothingModelRepository.findByClothingModelID(modelId)).thenReturn(null);
+    when(clothingModelRepository.findByClothingModelIDAndArchivedFalse(modelId)).thenReturn(null);
     ResponseStatusException e =
         assertThrows(
             ResponseStatusException.class, () -> clothingService.getClothingModel(modelId));
@@ -123,7 +123,7 @@ public class ClothingServiceTests {
     String name = "Summer Jacket";
     float price = 79.99f;
     ClothingModel saved = new ClothingModel(null, name, price, VALID_MODEL_IMAGE);
-    when(clothingModelRepository.findByName(name)).thenReturn(saved);
+    when(clothingModelRepository.findByNameAndArchivedFalse(name)).thenReturn(saved);
 
     // Act & Assert
     ResponseStatusException e =
@@ -162,7 +162,7 @@ public class ClothingServiceTests {
     // Arrange
     String name = "Summer Jacket";
     float price = 79.99f;
-    when(clothingModelRepository.findByName(name)).thenReturn(null);
+    when(clothingModelRepository.findByNameAndArchivedFalse(name)).thenReturn(null);
 
     // Act & Assert
     ResponseStatusException e =
@@ -177,7 +177,7 @@ public class ClothingServiceTests {
     // Arrange
     String name = "Summer Jacket";
     float price = 79.99f;
-    when(clothingModelRepository.findByName(name)).thenReturn(null);
+    when(clothingModelRepository.findByNameAndArchivedFalse(name)).thenReturn(null);
 
     // Act & Assert
     ResponseStatusException e =
@@ -204,7 +204,7 @@ public class ClothingServiceTests {
     Item item = new Item(id, 1, 1f, variant);
     when(itemRepository.findByClothingVariant_Model_ClothingModelIDAndOrderIsNull(id))
         .thenReturn(List.of(item));
-    when(clothingModelRepository.findByClothingModelID(id)).thenReturn(model);
+    when(clothingModelRepository.findByClothingModelIDAndArchivedFalse(id)).thenReturn(model);
     when(clothingModelRepository.save(any(ClothingModel.class))).thenAnswer(i -> i.getArgument(0));
 
     // Act
@@ -223,7 +223,7 @@ public class ClothingServiceTests {
   public void testUpdateClothingModelWithInvalidId() {
     // Arrange
     String id = "badId";
-    when(clothingModelRepository.findByClothingModelID(id)).thenReturn(null);
+    when(clothingModelRepository.findByClothingModelIDAndArchivedFalse(id)).thenReturn(null);
 
     // Act & Assert
     ResponseStatusException e =
@@ -238,7 +238,7 @@ public class ClothingServiceTests {
     // Arrange
     String id = "1";
     ClothingModel model = new ClothingModel(id, "Summer Jacket", 79.99f, VALID_MODEL_IMAGE);
-    when(clothingModelRepository.findByClothingModelID(id)).thenReturn(model);
+    when(clothingModelRepository.findByClothingModelIDAndArchivedFalse(id)).thenReturn(model);
 
     // Act & Assert
     ResponseStatusException e =
@@ -256,8 +256,8 @@ public class ClothingServiceTests {
     float price = 79.99f;
     ClothingModel saved = new ClothingModel(id, "Summer Jacket", price, VALID_MODEL_IMAGE);
     ClothingModel exist = new ClothingModel("2", newName, price, VALID_MODEL_IMAGE);
-    when(clothingModelRepository.findByClothingModelID(id)).thenReturn(saved);
-    when(clothingModelRepository.findByName(newName)).thenReturn(exist);
+    when(clothingModelRepository.findByClothingModelIDAndArchivedFalse(id)).thenReturn(saved);
+    when(clothingModelRepository.findByNameAndArchivedFalse(newName)).thenReturn(exist);
 
     // Act & Assert
     ResponseStatusException e =
@@ -274,7 +274,7 @@ public class ClothingServiceTests {
     // Arrange
     String id = "1";
     ClothingModel model = new ClothingModel(id, "Summer Jacket", 79.99f, VALID_MODEL_IMAGE);
-    when(clothingModelRepository.findByClothingModelID(id)).thenReturn(model);
+    when(clothingModelRepository.findByClothingModelIDAndArchivedFalse(id)).thenReturn(model);
 
     // Act & Assert
     ResponseStatusException e =
@@ -289,7 +289,7 @@ public class ClothingServiceTests {
     // Arrange
     String id = "1";
     ClothingModel model = new ClothingModel(id, "Summer Jacket", 79.99f, VALID_MODEL_IMAGE);
-    when(clothingModelRepository.findByClothingModelID(id)).thenReturn(model);
+    when(clothingModelRepository.findByClothingModelIDAndArchivedFalse(id)).thenReturn(model);
 
     // Act & Assert
     ResponseStatusException e =
@@ -304,7 +304,7 @@ public class ClothingServiceTests {
     // Arrange
     String id = "1";
     ClothingModel model = new ClothingModel(id, "Summer Jacket", 79.99f, VALID_MODEL_IMAGE);
-    when(clothingModelRepository.findByClothingModelID(id)).thenReturn(model);
+    when(clothingModelRepository.findByClothingModelIDAndArchivedFalse(id)).thenReturn(model);
 
     // Act & Assert
     ResponseStatusException e =
@@ -322,19 +322,27 @@ public class ClothingServiceTests {
   public void testDeleteValidClothingModel() {
     // Arrange
     String modelId = "model1";
-    when(clothingModelRepository.deleteByClothingModelID(modelId)).thenReturn(1);
+    ClothingModel model = new ClothingModel(modelId, "Summer Jacket", 79.99f, VALID_MODEL_IMAGE);
+    ClothingVariant variant =
+        new ClothingVariant("v1", ClothingVariant.Size.M, "Red", VALID_VARIANT_IMAGE, 10, model);
+    when(clothingModelRepository.findByClothingModelIDAndArchivedFalse(modelId)).thenReturn(model);
+    when(itemRepository.findByClothingVariant_Model_ClothingModelIDAndOrderIsNull(modelId))
+        .thenReturn(List.of());
+    when(clothingModelRepository.save(any(ClothingModel.class))).thenAnswer(i -> i.getArgument(0));
 
     // Act
     clothingService.deleteClothingModel(modelId);
 
     // Assert
-    verify(clothingModelRepository, times(1)).deleteByClothingModelID(modelId);
+    assertEquals(true, model.getArchived());
+    assertEquals(true, variant.getArchived());
+    verify(clothingModelRepository, times(1)).save(model);
   }
 
   @Test
   public void testDeleteClothingModelWithInvalidId() {
     String modelId = "badModel";
-    when(clothingModelRepository.deleteByClothingModelID(modelId)).thenReturn(0);
+    when(clothingModelRepository.findByClothingModelIDAndArchivedFalse(modelId)).thenReturn(null);
     ResponseStatusException e =
         assertThrows(
             ResponseStatusException.class, () -> clothingService.deleteClothingModel(modelId));
@@ -353,7 +361,8 @@ public class ClothingServiceTests {
     ClothingVariant variant =
         new ClothingVariant(
             variantId, ClothingVariant.Size.M, "Red", VALID_VARIANT_IMAGE, 10, model);
-    when(clothingVariantRepository.findByClothingVariantID(variantId)).thenReturn(variant);
+    when(clothingVariantRepository.findByClothingVariantIDAndArchivedFalse(variantId))
+        .thenReturn(variant);
 
     // Act
     ClothingVariant result = clothingService.getVariant(modelId, variantId);
@@ -371,7 +380,8 @@ public class ClothingServiceTests {
     // Arrange
     String modelId = "model1";
     String variantId = "badVariant";
-    when(clothingVariantRepository.findByClothingVariantID(variantId)).thenReturn(null);
+    when(clothingVariantRepository.findByClothingVariantIDAndArchivedFalse(variantId))
+        .thenReturn(null);
 
     // Act & Assert
     ResponseStatusException e =
@@ -395,7 +405,7 @@ public class ClothingServiceTests {
     ClothingModel model =
         new ClothingModel(correctModelId, "Summer Jacket", 79.99f, VALID_MODEL_IMAGE);
     new ClothingVariant(variantId, ClothingVariant.Size.M, "Red", VALID_VARIANT_IMAGE, 10, model);
-    when(clothingVariantRepository.findByClothingVariantID(variantId))
+    when(clothingVariantRepository.findByClothingVariantIDAndArchivedFalse(variantId))
         .thenReturn(
             new ClothingVariant(
                 variantId, ClothingVariant.Size.M, "Red", VALID_VARIANT_IMAGE, 10, model));
@@ -424,7 +434,7 @@ public class ClothingServiceTests {
     ClothingVariant variant =
         new ClothingVariant(
             "variant1", ClothingVariant.Size.M, "Red", VALID_VARIANT_IMAGE, 10, model);
-    when(clothingModelRepository.findByClothingModelID(modelId)).thenReturn(model);
+    when(clothingModelRepository.findByClothingModelIDAndArchivedFalse(modelId)).thenReturn(model);
 
     // Act
     List<ClothingVariant> result = clothingService.getVariantsByModel(modelId);
@@ -439,7 +449,7 @@ public class ClothingServiceTests {
   public void testGetVariantsByInvalidModel() {
     // Arrange
     String modelId = "badModel";
-    when(clothingModelRepository.findByClothingModelID(modelId)).thenReturn(null);
+    when(clothingModelRepository.findByClothingModelIDAndArchivedFalse(modelId)).thenReturn(null);
 
     // Act & Assert
     ResponseStatusException e =
@@ -464,7 +474,7 @@ public class ClothingServiceTests {
             VALID_VARIANT_IMAGE,
             5,
             new ClothingModel(modelId, "Summer Jacket", 79.99f, VALID_MODEL_IMAGE));
-    when(clothingModelRepository.findByClothingModelID(modelId)).thenReturn(model);
+    when(clothingModelRepository.findByClothingModelIDAndArchivedFalse(modelId)).thenReturn(model);
     when(clothingVariantRepository.save(any(ClothingVariant.class))).thenReturn(saved);
 
     // Act
@@ -485,7 +495,7 @@ public class ClothingServiceTests {
   public void testCreateVariantWithInvalidModel() {
     // Arrange
     String modelId = "badModel";
-    when(clothingModelRepository.findByClothingModelID(modelId)).thenReturn(null);
+    when(clothingModelRepository.findByClothingModelIDAndArchivedFalse(modelId)).thenReturn(null);
 
     // Act & Assert
     ResponseStatusException e =
@@ -503,7 +513,7 @@ public class ClothingServiceTests {
     // Arrange
     String modelId = "model1";
     ClothingModel model = new ClothingModel(modelId, "Summer Jacket", 79.99f, VALID_MODEL_IMAGE);
-    when(clothingModelRepository.findByClothingModelID(modelId)).thenReturn(model);
+    when(clothingModelRepository.findByClothingModelIDAndArchivedFalse(modelId)).thenReturn(model);
 
     // Act & Assert
     ResponseStatusException e =
@@ -518,7 +528,7 @@ public class ClothingServiceTests {
     // Arrange
     String modelId = "model1";
     ClothingModel model = new ClothingModel(modelId, "Summer Jacket", 79.99f, VALID_MODEL_IMAGE);
-    when(clothingModelRepository.findByClothingModelID(modelId)).thenReturn(model);
+    when(clothingModelRepository.findByClothingModelIDAndArchivedFalse(modelId)).thenReturn(model);
 
     // Act & Assert
     ResponseStatusException e =
@@ -535,7 +545,7 @@ public class ClothingServiceTests {
     // Arrange
     String modelId = "model1";
     ClothingModel model = new ClothingModel(modelId, "Summer Jacket", 79.99f, VALID_MODEL_IMAGE);
-    when(clothingModelRepository.findByClothingModelID(modelId)).thenReturn(model);
+    when(clothingModelRepository.findByClothingModelIDAndArchivedFalse(modelId)).thenReturn(model);
 
     // Act & Assert
     ResponseStatusException e =
@@ -552,7 +562,7 @@ public class ClothingServiceTests {
     // Arrange
     String modelId = "model1";
     ClothingModel model = new ClothingModel(modelId, "Summer Jacket", 79.99f, VALID_MODEL_IMAGE);
-    when(clothingModelRepository.findByClothingModelID(modelId)).thenReturn(model);
+    when(clothingModelRepository.findByClothingModelIDAndArchivedFalse(modelId)).thenReturn(model);
 
     // Act & Assert
     ResponseStatusException e =
@@ -567,7 +577,7 @@ public class ClothingServiceTests {
     // Arrange
     String modelId = "model1";
     ClothingModel model = new ClothingModel(modelId, "Summer Jacket", 79.99f, VALID_MODEL_IMAGE);
-    when(clothingModelRepository.findByClothingModelID(modelId)).thenReturn(model);
+    when(clothingModelRepository.findByClothingModelIDAndArchivedFalse(modelId)).thenReturn(model);
 
     // Act & Assert
     ResponseStatusException e =
@@ -588,7 +598,7 @@ public class ClothingServiceTests {
     ClothingModel model = new ClothingModel(modelId, "Summer Jacket", 79.99f, VALID_MODEL_IMAGE);
     // Adding a variant to the model creates the duplicate
     new ClothingVariant("existing", ClothingVariant.Size.M, "Red", VALID_VARIANT_IMAGE, 10, model);
-    when(clothingModelRepository.findByClothingModelID(modelId)).thenReturn(model);
+    when(clothingModelRepository.findByClothingModelIDAndArchivedFalse(modelId)).thenReturn(model);
 
     // Act & Assert
     ResponseStatusException e =
@@ -609,13 +619,22 @@ public class ClothingServiceTests {
     // Arrange
     String modelId = "model1";
     String variantId = "variant1";
-    when(clothingVariantRepository.deleteByClothingVariantID(variantId)).thenReturn(1);
+    ClothingModel model = new ClothingModel(modelId, "Summer Jacket", 79.99f, VALID_MODEL_IMAGE);
+    ClothingVariant variant =
+        new ClothingVariant(
+            variantId, ClothingVariant.Size.M, "Red", VALID_VARIANT_IMAGE, 10, model);
+    when(clothingVariantRepository.findByClothingVariantIDAndArchivedFalse(variantId))
+        .thenReturn(variant);
+    when(itemRepository.findByClothingVariantAndOrderIsNull(variant)).thenReturn(List.of());
+    when(clothingVariantRepository.save(any(ClothingVariant.class)))
+        .thenAnswer(i -> i.getArgument(0));
 
     // Act
     clothingService.deleteVariant(modelId, variantId);
 
     // Assert
-    verify(clothingVariantRepository, times(1)).deleteByClothingVariantID(variantId);
+    assertEquals(true, variant.getArchived());
+    verify(clothingVariantRepository, times(1)).save(variant);
   }
 
   @Test
@@ -623,6 +642,8 @@ public class ClothingServiceTests {
     // Arrange
     String modelId = "model1";
     String variantId = "badVariant";
+    when(clothingVariantRepository.findByClothingVariantIDAndArchivedFalse(variantId))
+        .thenReturn(null);
 
     // Act & Assert
     ResponseStatusException e =
@@ -648,7 +669,8 @@ public class ClothingServiceTests {
     ClothingVariant variant =
         new ClothingVariant(
             variantId, ClothingVariant.Size.M, "Red", VALID_VARIANT_IMAGE, 10, model);
-    when(clothingVariantRepository.findByClothingVariantID(variantId)).thenReturn(variant);
+    when(clothingVariantRepository.findByClothingVariantIDAndArchivedFalse(variantId))
+        .thenReturn(variant);
     when(clothingVariantRepository.save(any(ClothingVariant.class)))
         .thenAnswer(i -> i.getArgument(0));
 
@@ -666,7 +688,8 @@ public class ClothingServiceTests {
     // Arrange
     String modelId = "model1";
     String variantId = "badVariant";
-    when(clothingVariantRepository.findByClothingVariantID(variantId)).thenReturn(null);
+    when(clothingVariantRepository.findByClothingVariantIDAndArchivedFalse(variantId))
+        .thenReturn(null);
 
     // Act & Assert
     ResponseStatusException e =
@@ -691,7 +714,8 @@ public class ClothingServiceTests {
     ClothingVariant variant =
         new ClothingVariant(
             variantId, ClothingVariant.Size.M, "Red", VALID_VARIANT_IMAGE, 10, model);
-    when(clothingVariantRepository.findByClothingVariantID(variantId)).thenReturn(variant);
+    when(clothingVariantRepository.findByClothingVariantIDAndArchivedFalse(variantId))
+        .thenReturn(variant);
 
     // Act & Assert
     ResponseStatusException e =

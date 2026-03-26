@@ -204,7 +204,8 @@ public class CartServiceTests {
     int quantity = 5;
     ClothingVariant variant = buildVariant(variantId, 100f, 10);
     Customer customer = new Customer();
-    when(clothingVariantRepository.findByClothingVariantID(variantId)).thenReturn(variant);
+    when(clothingVariantRepository.findByClothingVariantIDAndArchivedFalse(variantId))
+        .thenReturn(variant);
     when(customerRepository.findByRoleID(customerId)).thenReturn(customer);
     when(itemRepository.save(any(Item.class))).thenAnswer(i -> i.getArgument(0));
 
@@ -230,7 +231,8 @@ public class CartServiceTests {
     int stock = 5;
     ClothingVariant variant = buildVariant(variantId, 50f, stock);
     Customer customer = new Customer();
-    when(clothingVariantRepository.findByClothingVariantID(variantId)).thenReturn(variant);
+    when(clothingVariantRepository.findByClothingVariantIDAndArchivedFalse(variantId))
+        .thenReturn(variant);
     when(customerRepository.findByRoleID(customerId)).thenReturn(customer);
     when(itemRepository.save(any(Item.class))).thenAnswer(i -> i.getArgument(0));
 
@@ -247,7 +249,8 @@ public class CartServiceTests {
     String variantId = "variant1";
     String customerId = "badCustomer";
     ClothingVariant variant = buildVariant(variantId, 100f, 10);
-    when(clothingVariantRepository.findByClothingVariantID(variantId)).thenReturn(variant);
+    when(clothingVariantRepository.findByClothingVariantIDAndArchivedFalse(variantId))
+        .thenReturn(variant);
     when(customerRepository.findByRoleID(customerId)).thenReturn(null);
 
     // Act & Assert
@@ -265,7 +268,8 @@ public class CartServiceTests {
     String variantId = "badVariant";
     String customerId = "customer1";
     Customer customer = new Customer();
-    when(clothingVariantRepository.findByClothingVariantID(variantId)).thenReturn(null);
+    when(clothingVariantRepository.findByClothingVariantIDAndArchivedFalse(variantId))
+        .thenReturn(null);
     when(customerRepository.findByRoleID(customerId)).thenReturn(customer);
 
     // Act & Assert
@@ -287,7 +291,8 @@ public class CartServiceTests {
     int quantity = 10;
     ClothingVariant variant = buildVariant(variantId, 100f, stock);
     Customer customer = new Customer();
-    when(clothingVariantRepository.findByClothingVariantID(variantId)).thenReturn(variant);
+    when(clothingVariantRepository.findByClothingVariantIDAndArchivedFalse(variantId))
+        .thenReturn(variant);
     when(customerRepository.findByRoleID(customerId)).thenReturn(customer);
 
     // Act & Assert
@@ -311,7 +316,8 @@ public class CartServiceTests {
     String customerId = "customer1";
     ClothingVariant variant = buildVariant(variantId, 50f, 5);
     Customer customer = new Customer();
-    when(clothingVariantRepository.findByClothingVariantID(variantId)).thenReturn(variant);
+    when(clothingVariantRepository.findByClothingVariantIDAndArchivedFalse(variantId))
+        .thenReturn(variant);
     when(customerRepository.findByRoleID(customerId)).thenReturn(customer);
     ResponseStatusException e =
         assertThrows(

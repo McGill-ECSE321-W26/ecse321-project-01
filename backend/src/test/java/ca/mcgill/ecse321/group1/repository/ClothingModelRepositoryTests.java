@@ -8,7 +8,6 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.transaction.annotation.Transactional;
 
 @SpringBootTest
 public class ClothingModelRepositoryTests {
@@ -34,7 +33,8 @@ public class ClothingModelRepositoryTests {
     String id = clothingModelTest.getClothingModelID();
 
     // Read ClothingModel from database
-    ClothingModel clothingModelTestFromDb = clothingModelRepository.findByClothingModelID(id);
+    ClothingModel clothingModelTestFromDb =
+        clothingModelRepository.findByClothingModelIDAndArchivedFalse(id);
 
     // Assert correct response
     assertNotNull(clothingModelTestFromDb);
@@ -45,7 +45,8 @@ public class ClothingModelRepositoryTests {
   @Test
   public void testFindClothingModelByInvalidId() {
     // Attempt to find a model with a non-existent ID
-    ClothingModel result = clothingModelRepository.findByClothingModelID("nonexistent");
+    ClothingModel result =
+        clothingModelRepository.findByClothingModelIDAndArchivedFalse("nonexistent");
 
     // Assert nothing is returned
     assertNull(result);
@@ -65,7 +66,7 @@ public class ClothingModelRepositoryTests {
 
     // Read back and assert updated values
     String id = model.getClothingModelID();
-    ClothingModel updatedModel = clothingModelRepository.findByClothingModelID(id);
+    ClothingModel updatedModel = clothingModelRepository.findByClothingModelIDAndArchivedFalse(id);
     assertNotNull(updatedModel);
 
     assertEquals("Gucci Updated", updatedModel.getName());
@@ -85,7 +86,7 @@ public class ClothingModelRepositoryTests {
     clothingModelRepository.delete(model);
 
     // Assert it no longer exists
-    ClothingModel deletedModel = clothingModelRepository.findByClothingModelID(id);
+    ClothingModel deletedModel = clothingModelRepository.findByClothingModelIDAndArchivedFalse(id);
     assertNull(deletedModel);
   }
 
@@ -124,7 +125,7 @@ public class ClothingModelRepositoryTests {
     model = clothingModelRepository.save(model);
     String id = model.getClothingModelID();
 
-    ClothingModel fromDb = clothingModelRepository.findByClothingModelID(id);
+    ClothingModel fromDb = clothingModelRepository.findByClothingModelIDAndArchivedFalse(id);
 
     assertNotNull(fromDb);
     assertEquals("FreeBrand", fromDb.getName());
@@ -140,7 +141,7 @@ public class ClothingModelRepositoryTests {
     model = clothingModelRepository.save(model);
     String id = model.getClothingModelID();
 
-    ClothingModel fromDb = clothingModelRepository.findByClothingModelID(id);
+    ClothingModel fromDb = clothingModelRepository.findByClothingModelIDAndArchivedFalse(id);
 
     assertNotNull(fromDb);
     assertEquals("LuxuryBrand", fromDb.getName());
@@ -148,28 +149,44 @@ public class ClothingModelRepositoryTests {
   }
 
   @Test
-  @Transactional
-  public void testDeleteByClothingModelID() {
-    ClothingModel model = new ClothingModel();
-    model.setName("Balenciaga");
-    model.setPrice(1400f);
-    model = clothingModelRepository.save(model);
-    String id = model.getClothingModelID();
+  public void testFindByArchivedFalseExcludesArchived() {
+    ClothingModel model1 = new ClothingModel();
+    model1.setName("Active");
+    model1.setPrice(100f);
+    clothingModelRepository.save(model1);
 
-    // Delete by ID and assert delete count is 1
-    int deleteCount = clothingModelRepository.deleteByClothingModelID(id);
-    assertEquals(1, deleteCount);
+    ClothingModel model2 = new ClothingModel();
+    model2.setName("Archived");
+    model2.setPrice(200f);
+    model2.setArchived(true);
+    clothingModelRepository.save(model2);
 
-    // Assert no exist
-    assertNull(clothingModelRepository.findByClothingModelID(id));
+    List<ClothingModel> result = clothingModelRepository.findByArchivedFalse();
+    assertEquals(1, result.size());
+    assertEquals("Active", result.get(0).getName());
   }
 
   @Test
-  @Transactional
-  public void testDeleteClothingModelByNonExistentID() {
-    // Deleting a non-existent ID should return 0 deleted items
-    int deleteCount = clothingModelRepository.deleteByClothingModelID("NonexistentID");
-    assertEquals(0, deleteCount);
+  public void testFindByIdAndArchivedFalseReturnsNullForArchived() {
+    ClothingModel model = new ClothingModel();
+    model.setName("ArchivedModel");
+    model.setPrice(100f);
+    model.setArchived(true);
+    model = clothingModelRepository.save(model);
+    String id = model.getClothingModelID();
+
+    assertNull(clothingModelRepository.findByClothingModelIDAndArchivedFalse(id));
+  }
+
+  @Test
+  public void testFindByNameAndArchivedFalseReturnsNullForArchived() {
+    ClothingModel model = new ClothingModel();
+    model.setName("ArchivedName");
+    model.setPrice(100f);
+    model.setArchived(true);
+    clothingModelRepository.save(model);
+
+    assertNull(clothingModelRepository.findByNameAndArchivedFalse("ArchivedName"));
   }
 
   @Test

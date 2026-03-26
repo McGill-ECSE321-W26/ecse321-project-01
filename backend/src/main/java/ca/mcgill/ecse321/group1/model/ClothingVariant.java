@@ -29,6 +29,8 @@ public class ClothingVariant
   private String color;
   private String imagePath;
   private int stockQuantity;
+  @Column(columnDefinition = "boolean default false")
+  private boolean archived;
 
   //ClothingVariant Associations
   @ManyToOne
@@ -47,6 +49,7 @@ public class ClothingVariant
     color = aColor;
     imagePath = aImagePath;
     stockQuantity = aStockQuantity;
+    archived = false;
     boolean didAddModel = setModel(aModel);
     if (!didAddModel)
     {
@@ -98,6 +101,14 @@ public class ClothingVariant
     return wasSet;
   }
 
+  public boolean setArchived(boolean aArchived)
+  {
+    boolean wasSet = false;
+    archived = aArchived;
+    wasSet = true;
+    return wasSet;
+  }
+
   public String getClothingVariantID()
   {
     return clothingVariantID;
@@ -121,6 +132,11 @@ public class ClothingVariant
   public int getStockQuantity()
   {
     return stockQuantity;
+  }
+
+  public boolean getArchived()
+  {
+    return archived;
   }
   /* Code from template association_GetOne */
   public ClothingModel getModel()
@@ -164,7 +180,8 @@ public class ClothingVariant
             "clothingVariantID" + ":" + getClothingVariantID()+ "," +
             "color" + ":" + getColor()+ "," +
             "imagePath" + ":" + getImagePath()+ "," +
-            "stockQuantity" + ":" + getStockQuantity()+ "]" + System.getProperties().getProperty("line.separator") +
+            "stockQuantity" + ":" + getStockQuantity()+ "," +
+            "archived" + ":" + getArchived()+ "]" + System.getProperties().getProperty("line.separator") +
             "  " + "size" + "=" + (getSize() != null ? !getSize().equals(this)  ? getSize().toString().replaceAll("  ","    ") : "this" : "null") + System.getProperties().getProperty("line.separator") +
             "  " + "model = "+(getModel()!=null?Integer.toHexString(System.identityHashCode(getModel())):"null");
   }

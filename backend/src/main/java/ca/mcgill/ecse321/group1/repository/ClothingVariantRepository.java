@@ -5,7 +5,5 @@ import org.springframework.data.repository.CrudRepository;
 
 public interface ClothingVariantRepository extends CrudRepository<ClothingVariant, String> {
 
-  ClothingVariant findByClothingVariantID(String id);
-
-  int deleteByClothingVariantID(String clothingVariantID);
+  ClothingVariant findByClothingVariantIDAndArchivedFalse(String id);
 }

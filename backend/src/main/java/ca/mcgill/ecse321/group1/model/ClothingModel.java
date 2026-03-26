@@ -5,7 +5,7 @@ package ca.mcgill.ecse321.group1.model;
 import java.util.*;
 import jakarta.persistence.*;
 
-// line 69 "../../../../../model.ump"
+// line 70 "../../../../../model.ump"
 @Entity
 public class ClothingModel
 {
@@ -22,6 +22,8 @@ public class ClothingModel
   private String name;
   private float price;
   private String imagePath;
+  @Column(columnDefinition = "boolean default false")
+  private boolean archived;
 
   //ClothingModel Associations
   @OneToMany(mappedBy = "model", cascade = {CascadeType.ALL}, orphanRemoval = true)
@@ -41,6 +43,7 @@ public class ClothingModel
     name = aName;
     price = aPrice;
     imagePath = aImagePath;
+    archived = false;
     clothingVariants = new ArrayList<ClothingVariant>();
   }
 
@@ -80,6 +83,14 @@ public class ClothingModel
     return wasSet;
   }
 
+  public boolean setArchived(boolean aArchived)
+  {
+    boolean wasSet = false;
+    archived = aArchived;
+    wasSet = true;
+    return wasSet;
+  }
+
   public String getClothingModelID()
   {
     return clothingModelID;
@@ -98,6 +109,11 @@ public class ClothingModel
   public String getImagePath()
   {
     return imagePath;
+  }
+
+  public boolean getArchived()
+  {
+    return archived;
   }
   /* Code from template association_GetMany */
   public ClothingVariant getClothingVariant(int index)
@@ -218,6 +234,7 @@ public class ClothingModel
             "clothingModelID" + ":" + getClothingModelID()+ "," +
             "name" + ":" + getName()+ "," +
             "price" + ":" + getPrice()+ "," +
-            "imagePath" + ":" + getImagePath()+ "]";
+            "imagePath" + ":" + getImagePath()+ "," +
+            "archived" + ":" + getArchived()+ "]";
   }
 }
