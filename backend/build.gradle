@@ -1,5 +1,6 @@
 import com.github.spotbugs.snom.Effort
 import com.github.spotbugs.snom.Confidence
+import com.github.spotbugs.snom.SpotBugsTask
 
 plugins {
     id 'java'
@@ -67,7 +68,7 @@ spotbugs {
     includeFilter = file('config/spotbugs/spotbugs-include.xml')
 }
 
-tasks.withType(com.github.spotbugs.snom.SpotBugsTask) {
+tasks.withType(SpotBugsTask) {
     reports {
         html.required = true
         xml.required = false
@@ -81,6 +82,14 @@ tasks.named('test') {
         events "passed", "failed"
     }
     finalizedBy jacocoTestReport
+}
+
+tasks.register('seedDatabase', JavaExec) {
+    group = 'application'
+    description = 'Drops and recreates all tables, then seeds the database with dummy data'
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = 'ca.mcgill.ecse321.group1.BackendApplication'
+    args '--spring.profiles.active=seed'
 }
 
 tasks.register('integrationTest', Test) {
