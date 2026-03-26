@@ -8,7 +8,6 @@ import ca.mcgill.ecse321.group1.repository.ClothingVariantRepository;
 import ca.mcgill.ecse321.group1.repository.ItemRepository;
 import java.util.List;
 import java.util.Set;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -67,14 +66,15 @@ public class ClothingService {
   private void validateNameUniqueness(String name, String excludeModelId) {
     ClothingModel existing = clothingModelRepository.findByName(name);
     if (existing != null
-        && (!existing.getClothingModelID().equals(excludeModelId))) {
+        && (excludeModelId == null || !existing.getClothingModelID().equals(excludeModelId))) {
       throw new ResponseStatusException(
           HttpStatus.CONFLICT,
           String.format("A clothing model with name '%s' already exists", name));
     }
   }
 
-  private void validateVariantFields(ClothingVariant.Size size, String color, int stockQuantity, String imagePath) {
+  private void validateVariantFields(
+      ClothingVariant.Size size, String color, int stockQuantity, String imagePath) {
     if (size == null) {
       throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Size must be specified");
     }
@@ -150,7 +150,8 @@ public class ClothingService {
   }
 
   @Transactional
-  public ClothingModel updateClothingModel(String modelId, String name, float price, String imagePath) {
+  public ClothingModel updateClothingModel(
+      String modelId, String name, float price, String imagePath) {
     ClothingModel model = findModel(modelId);
     validateName(name);
     validatePrice(price);
@@ -203,7 +204,8 @@ public class ClothingService {
     validateVariantFields(size, color, stockQuantity, imagePath);
     validateVariantUniqueness(model, size, color);
 
-    ClothingVariant variant = new ClothingVariant(null, size, color, imagePath, stockQuantity, model);
+    ClothingVariant variant =
+        new ClothingVariant(null, size, color, imagePath, stockQuantity, model);
     return clothingVariantRepository.save(variant);
   }
 

@@ -65,7 +65,7 @@ public class ItemRepositoryTests {
     // Assert correct response
     assertNotNull(itemTestFromDb);
     assertEquals(price, itemTestFromDb.getPrice());
-    assertEquals(itemTestFromDb.getQuantity(), quantity);
+    assertEquals(quantity, itemTestFromDb.getQuantity());
   }
 
   @Test
@@ -312,11 +312,12 @@ public class ItemRepositoryTests {
   @Test
   public void testFindCartItemsByModelId_returnsCartItems() {
     // Create model and variant
-    ClothingModel model = new ClothingModel(null, "Test Jacket", 99.99f);
+    ClothingModel model = new ClothingModel(null, "Test Jacket", 99.99f, "model.jpg");
     clothingModelRepository.save(model);
     String modelId = model.getClothingModelID();
 
-    ClothingVariant variant = new ClothingVariant(null, ClothingVariant.Size.M, "Blue", 10, model);
+    ClothingVariant variant =
+        new ClothingVariant(null, ClothingVariant.Size.M, "Blue", "variant.png", 10, model);
     clothingVariantRepository.save(variant);
 
     // Items in the cart (no order)
@@ -347,11 +348,12 @@ public class ItemRepositoryTests {
   @Test
   public void testFindCartItemsByModelId_excludesOrderedItems() {
     // Create model and variant
-    ClothingModel model = new ClothingModel(null, "Test Shirt", 49.99f);
+    ClothingModel model = new ClothingModel(null, "Test Shirt", 49.99f, "model.jpg");
     clothingModelRepository.save(model);
     String modelId = model.getClothingModelID();
 
-    ClothingVariant variant = new ClothingVariant(null, ClothingVariant.Size.S, "Red", 5, model);
+    ClothingVariant variant =
+        new ClothingVariant(null, ClothingVariant.Size.S, "Red", "variant.png", 5, model);
     clothingVariantRepository.save(variant);
 
     // Set up an order
@@ -411,19 +413,19 @@ public class ItemRepositoryTests {
   @Test
   public void testFindCartItemsByModelId_excludesDifferentModel() {
     // Create two models, each with a variant and a cart item
-    ClothingModel model1 = new ClothingModel(null, "Pants", 79.99f);
+    ClothingModel model1 = new ClothingModel(null, "Pants", 79.99f, "model.jpg");
     clothingModelRepository.save(model1);
     String model1Id = model1.getClothingModelID();
 
-    ClothingModel model2 = new ClothingModel(null, "Hat", 29.99f);
+    ClothingModel model2 = new ClothingModel(null, "Hat", 29.99f, "model.jpg");
     clothingModelRepository.save(model2);
 
     ClothingVariant variant1 =
-        new ClothingVariant(null, ClothingVariant.Size.L, "Black", 8, model1);
+        new ClothingVariant(null, ClothingVariant.Size.L, "Black", "variant.png", 8, model1);
     variant1 = clothingVariantRepository.save(variant1);
 
     ClothingVariant variant2 =
-        new ClothingVariant(null, ClothingVariant.Size.M, "White", 3, model2);
+        new ClothingVariant(null, ClothingVariant.Size.M, "White", "variant.png", 3, model2);
     variant2 = clothingVariantRepository.save(variant2);
 
     // Cart item for model1

@@ -37,14 +37,16 @@ public class ClothingController {
   public ClothingModelResponseDto createClothingModel(
       @RequestBody ClothingModelCreateRequestDto request) {
     return new ClothingModelResponseDto(
-        clothingService.createClothingModel(request.getName(), request.getPrice(), request.getImagePath()));
+        clothingService.createClothingModel(
+            request.getName(), request.getPrice(), request.getImagePath()));
   }
 
   @PutMapping("/{modelId}")
   public ClothingModelResponseDto updateClothingModel(
       @PathVariable String modelId, @RequestBody ClothingModelCreateRequestDto request) {
     return new ClothingModelResponseDto(
-        clothingService.updateClothingModel(modelId, request.getName(), request.getPrice(), request.getImagePath()));
+        clothingService.updateClothingModel(
+            modelId, request.getName(), request.getPrice(), request.getImagePath()));
   }
 
   @DeleteMapping("/{modelId}")
@@ -72,7 +74,11 @@ public class ClothingController {
       @PathVariable String modelId, @RequestBody ClothingVariantCreateRequestDto request) {
     return new ClothingVariantResponseDto(
         clothingService.createVariant(
-            modelId, request.getSize(), request.getColor(), request.getImagePath(), request.getStockQuantity()));
+            modelId,
+            request.getSize(),
+            request.getColor(),
+            request.getImagePath(),
+            request.getStockQuantity()));
   }
 
   @PatchMapping("/{modelId}/variants/{variantId}")
