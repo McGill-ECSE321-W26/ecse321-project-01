@@ -361,7 +361,8 @@ public class ClothingServiceTests {
     ClothingVariant variant =
         new ClothingVariant(
             variantId, ClothingVariant.Size.M, "Red", VALID_VARIANT_IMAGE, 10, model);
-    when(clothingVariantRepository.findByClothingVariantIDAndArchivedFalse(variantId)).thenReturn(variant);
+    when(clothingVariantRepository.findByClothingVariantIDAndArchivedFalse(variantId))
+        .thenReturn(variant);
 
     // Act
     ClothingVariant result = clothingService.getVariant(modelId, variantId);
@@ -379,7 +380,8 @@ public class ClothingServiceTests {
     // Arrange
     String modelId = "model1";
     String variantId = "badVariant";
-    when(clothingVariantRepository.findByClothingVariantIDAndArchivedFalse(variantId)).thenReturn(null);
+    when(clothingVariantRepository.findByClothingVariantIDAndArchivedFalse(variantId))
+        .thenReturn(null);
 
     // Act & Assert
     ResponseStatusException e =
@@ -667,7 +669,8 @@ public class ClothingServiceTests {
     ClothingVariant variant =
         new ClothingVariant(
             variantId, ClothingVariant.Size.M, "Red", VALID_VARIANT_IMAGE, 10, model);
-    when(clothingVariantRepository.findByClothingVariantIDAndArchivedFalse(variantId)).thenReturn(variant);
+    when(clothingVariantRepository.findByClothingVariantIDAndArchivedFalse(variantId))
+        .thenReturn(variant);
     when(clothingVariantRepository.save(any(ClothingVariant.class)))
         .thenAnswer(i -> i.getArgument(0));
 
@@ -685,7 +688,8 @@ public class ClothingServiceTests {
     // Arrange
     String modelId = "model1";
     String variantId = "badVariant";
-    when(clothingVariantRepository.findByClothingVariantIDAndArchivedFalse(variantId)).thenReturn(null);
+    when(clothingVariantRepository.findByClothingVariantIDAndArchivedFalse(variantId))
+        .thenReturn(null);
 
     // Act & Assert
     ResponseStatusException e =
@@ -710,7 +714,8 @@ public class ClothingServiceTests {
     ClothingVariant variant =
         new ClothingVariant(
             variantId, ClothingVariant.Size.M, "Red", VALID_VARIANT_IMAGE, 10, model);
-    when(clothingVariantRepository.findByClothingVariantIDAndArchivedFalse(variantId)).thenReturn(variant);
+    when(clothingVariantRepository.findByClothingVariantIDAndArchivedFalse(variantId))
+        .thenReturn(variant);
 
     // Act & Assert
     ResponseStatusException e =

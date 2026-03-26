@@ -8,7 +8,6 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.transaction.annotation.Transactional;
 
 @SpringBootTest
 public class ClothingModelRepositoryTests {
@@ -34,7 +33,8 @@ public class ClothingModelRepositoryTests {
     String id = clothingModelTest.getClothingModelID();
 
     // Read ClothingModel from database
-    ClothingModel clothingModelTestFromDb = clothingModelRepository.findByClothingModelIDAndArchivedFalse(id);
+    ClothingModel clothingModelTestFromDb =
+        clothingModelRepository.findByClothingModelIDAndArchivedFalse(id);
 
     // Assert correct response
     assertNotNull(clothingModelTestFromDb);
@@ -45,7 +45,8 @@ public class ClothingModelRepositoryTests {
   @Test
   public void testFindClothingModelByInvalidId() {
     // Attempt to find a model with a non-existent ID
-    ClothingModel result = clothingModelRepository.findByClothingModelIDAndArchivedFalse("nonexistent");
+    ClothingModel result =
+        clothingModelRepository.findByClothingModelIDAndArchivedFalse("nonexistent");
 
     // Assert nothing is returned
     assertNull(result);

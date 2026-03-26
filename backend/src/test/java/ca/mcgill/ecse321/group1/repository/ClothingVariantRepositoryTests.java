@@ -8,7 +8,6 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.transaction.annotation.Transactional;
 
 @SpringBootTest
 public class ClothingVariantRepositoryTests {
@@ -48,7 +47,8 @@ public class ClothingVariantRepositoryTests {
 
   @Test
   public void testFindClothingVariantByInvalidId() {
-    ClothingVariant result = clothingVariantRepository.findByClothingVariantIDAndArchivedFalse("nonexistent-id");
+    ClothingVariant result =
+        clothingVariantRepository.findByClothingVariantIDAndArchivedFalse("nonexistent-id");
     assertNull(result);
   }
 
@@ -68,7 +68,8 @@ public class ClothingVariantRepositoryTests {
 
     // Read back and assert
     String id = variant.getClothingVariantID();
-    ClothingVariant updatedVariant = clothingVariantRepository.findByClothingVariantIDAndArchivedFalse(id);
+    ClothingVariant updatedVariant =
+        clothingVariantRepository.findByClothingVariantIDAndArchivedFalse(id);
     assertNotNull(updatedVariant);
     assertEquals(ClothingVariant.Size.XL, updatedVariant.getSize());
     assertEquals("Blue", updatedVariant.getColor());
@@ -90,7 +91,8 @@ public class ClothingVariantRepositoryTests {
     clothingVariantRepository.delete(variant);
 
     // Assert it no longer exists
-    ClothingVariant deletedVariant = clothingVariantRepository.findByClothingVariantIDAndArchivedFalse(id);
+    ClothingVariant deletedVariant =
+        clothingVariantRepository.findByClothingVariantIDAndArchivedFalse(id);
     assertNull(deletedVariant);
   }
 
@@ -149,7 +151,8 @@ public class ClothingVariantRepositoryTests {
       variant = clothingVariantRepository.save(variant);
 
       ClothingVariant fromDb =
-          clothingVariantRepository.findByClothingVariantIDAndArchivedFalse(variant.getClothingVariantID());
+          clothingVariantRepository.findByClothingVariantIDAndArchivedFalse(
+              variant.getClothingVariantID());
       assertNotNull(fromDb);
       assertEquals(size, fromDb.getSize());
     }

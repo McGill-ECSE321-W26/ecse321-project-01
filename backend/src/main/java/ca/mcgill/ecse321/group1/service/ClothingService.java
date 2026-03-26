@@ -39,7 +39,8 @@ public class ClothingService {
   }
 
   private ClothingVariant findVariant(String modelId, String variantId) {
-    ClothingVariant variant = clothingVariantRepository.findByClothingVariantIDAndArchivedFalse(variantId);
+    ClothingVariant variant =
+        clothingVariantRepository.findByClothingVariantIDAndArchivedFalse(variantId);
     if (variant == null || !variant.getModel().getClothingModelID().equals(modelId)) {
       throw new ResponseStatusException(
           HttpStatus.NOT_FOUND,
@@ -110,7 +111,11 @@ public class ClothingService {
   private void validateVariantUniqueness(
       ClothingModel model, ClothingVariant.Size size, String color) {
     if (model.getClothingVariants().stream()
-        .anyMatch(variant -> !variant.getArchived() && variant.getSize() == size && variant.getColor().equals(color))) {
+        .anyMatch(
+            variant ->
+                !variant.getArchived()
+                    && variant.getSize() == size
+                    && variant.getColor().equals(color))) {
       throw new ResponseStatusException(
           HttpStatus.CONFLICT,
           String.format(
@@ -183,7 +188,8 @@ public class ClothingService {
     for (ClothingVariant variant : model.getClothingVariants()) {
       variant.setArchived(true);
     }
-    // Must delete call Items that are in cart (not in order, since it was already checked out and paid for)
+    // Must delete call Items that are in cart (not in order, since it was already checked out and
+    // paid for)
     List<Item> cartItems =
         itemRepository.findByClothingVariant_Model_ClothingModelIDAndOrderIsNull(modelId);
     itemRepository.deleteAll(cartItems);
@@ -229,7 +235,8 @@ public class ClothingService {
   public void deleteVariant(String modelId, String variantId) throws ResponseStatusException {
     ClothingVariant variant = findVariant(modelId, variantId);
     variant.setArchived(true);
-    // Must delete call Items that are in cart (not in order, since it was already checked out and paid for)
+    // Must delete call Items that are in cart (not in order, since it was already checked out and
+    // paid for)
     List<Item> cartItems = itemRepository.findByClothingVariantAndOrderIsNull(variant);
     itemRepository.deleteAll(cartItems);
     clothingVariantRepository.save(variant);

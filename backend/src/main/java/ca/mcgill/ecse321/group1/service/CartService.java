@@ -100,8 +100,7 @@ public class CartService {
     validateClothingVariantExists(clothingVariant, clothingVariantID);
     if (clothingVariant.getModel().getArchived()) {
       throw new ResponseStatusException(
-          HttpStatus.NOT_FOUND,
-          "There is no clothing variant with id " + clothingVariantID + ".");
+          HttpStatus.NOT_FOUND, "There is no clothing variant with id " + clothingVariantID + ".");
     }
     validateQuantity(quantity);
     validateStock(quantity, clothingVariant.getStockQuantity());
