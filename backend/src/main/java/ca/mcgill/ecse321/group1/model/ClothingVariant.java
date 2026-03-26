@@ -5,7 +5,7 @@ package ca.mcgill.ecse321.group1.model;
 
 import jakarta.persistence.*;
 
-// line 52 "../../../../../model.ump"
+// line 54 "../../../../../model.ump"
 @Entity
 public class ClothingVariant
 {
@@ -27,6 +27,7 @@ public class ClothingVariant
   @Enumerated(EnumType.STRING)
   private Size size;
   private String color;
+  private String imagePath;
   private int stockQuantity;
 
   //ClothingVariant Associations
@@ -39,11 +40,12 @@ public class ClothingVariant
 
   public ClothingVariant() {}
 
-  public ClothingVariant(String aClothingVariantID, Size aSize, String aColor, int aStockQuantity, ClothingModel aModel)
+  public ClothingVariant(String aClothingVariantID, Size aSize, String aColor, String aImagePath, int aStockQuantity, ClothingModel aModel)
   {
     clothingVariantID = aClothingVariantID;
     size = aSize;
     color = aColor;
+    imagePath = aImagePath;
     stockQuantity = aStockQuantity;
     boolean didAddModel = setModel(aModel);
     if (!didAddModel)
@@ -80,6 +82,14 @@ public class ClothingVariant
     return wasSet;
   }
 
+  public boolean setImagePath(String aImagePath)
+  {
+    boolean wasSet = false;
+    imagePath = aImagePath;
+    wasSet = true;
+    return wasSet;
+  }
+
   public boolean setStockQuantity(int aStockQuantity)
   {
     boolean wasSet = false;
@@ -101,6 +111,11 @@ public class ClothingVariant
   public String getColor()
   {
     return color;
+  }
+
+  public String getImagePath()
+  {
+    return imagePath;
   }
 
   public int getStockQuantity()
@@ -148,6 +163,7 @@ public class ClothingVariant
     return super.toString() + "["+
             "clothingVariantID" + ":" + getClothingVariantID()+ "," +
             "color" + ":" + getColor()+ "," +
+            "imagePath" + ":" + getImagePath()+ "," +
             "stockQuantity" + ":" + getStockQuantity()+ "]" + System.getProperties().getProperty("line.separator") +
             "  " + "size" + "=" + (getSize() != null ? !getSize().equals(this)  ? getSize().toString().replaceAll("  ","    ") : "this" : "null") + System.getProperties().getProperty("line.separator") +
             "  " + "model = "+(getModel()!=null?Integer.toHexString(System.identityHashCode(getModel())):"null");

@@ -8,6 +8,7 @@ public class ClothingModelResponseDto {
   private String clothingModelID;
   private String name;
   private float price;
+  private String imagePath;
   private int totalStockQuantity;
 
   public ClothingModelResponseDto() {}
@@ -16,6 +17,7 @@ public class ClothingModelResponseDto {
     this.clothingModelID = model.getClothingModelID();
     this.name = model.getName();
     this.price = model.getPrice();
+    this.imagePath = model.getImagePath();
     this.totalStockQuantity =
         model.getClothingVariants().stream().mapToInt(ClothingVariant::getStockQuantity).sum();
   }
@@ -42,6 +44,14 @@ public class ClothingModelResponseDto {
 
   public void setPrice(float price) {
     this.price = price;
+  }
+
+  public String getImagePath() {
+    return imagePath;
+  }
+
+  public void setImagePath(String imagePath) {
+    this.imagePath = imagePath;
   }
 
   public int getTotalStockQuantity() {

@@ -61,6 +61,7 @@ class ClothingVariant {
   }
   Size size;
   color;
+  imagePath;
   int stockQuantity;
   * -- 1 ClothingModel model;
 }
@@ -69,4 +70,5 @@ class ClothingModel {
   clothingModelID;
   name;
   float price;
+  imagePath;
 }
