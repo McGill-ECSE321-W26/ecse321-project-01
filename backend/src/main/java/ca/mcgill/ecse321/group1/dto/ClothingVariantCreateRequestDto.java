@@ -6,14 +6,16 @@ public class ClothingVariantCreateRequestDto {
 
   private ClothingVariant.Size size;
   private String color;
+  private String imagePath;
   private int stockQuantity;
 
   public ClothingVariantCreateRequestDto() {}
 
   public ClothingVariantCreateRequestDto(
-      ClothingVariant.Size size, String color, int stockQuantity) {
+      ClothingVariant.Size size, String color, String imagePath, int stockQuantity) {
     this.size = size;
     this.color = color;
+    this.imagePath = imagePath;
     this.stockQuantity = stockQuantity;
   }
 
@@ -31,6 +33,14 @@ public class ClothingVariantCreateRequestDto {
 
   public void setColor(String color) {
     this.color = color;
+  }
+
+  public String getImagePath() {
+    return imagePath;
+  }
+
+  public void setImagePath(String imagePath) {
+    this.imagePath = imagePath;
   }
 
   public int getStockQuantity() {

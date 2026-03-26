@@ -7,6 +7,8 @@ import ca.mcgill.ecse321.group1.repository.ClothingModelRepository;
 import ca.mcgill.ecse321.group1.repository.ClothingVariantRepository;
 import ca.mcgill.ecse321.group1.repository.ItemRepository;
 import java.util.List;
+import java.util.Set;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -65,28 +67,43 @@ public class ClothingService {
   private void validateNameUniqueness(String name, String excludeModelId) {
     ClothingModel existing = clothingModelRepository.findByName(name);
     if (existing != null
-        && (excludeModelId == null || !existing.getClothingModelID().equals(excludeModelId))) {
+        && (!existing.getClothingModelID().equals(excludeModelId))) {
       throw new ResponseStatusException(
           HttpStatus.CONFLICT,
           String.format("A clothing model with name '%s' already exists", name));
     }
   }
 
-  private void validateVariantFields(ClothingVariant.Size size, String color, int stockQuantity) {
+  private void validateVariantFields(ClothingVariant.Size size, String color, int stockQuantity, String imagePath) {
     if (size == null) {
       throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Size must be specified");
     }
     if (color == null || color.isBlank()) {
       throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Color must not be blank");
     }
-    if (stockQuantity < 0) {
-      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Stock quantity must be >= 0");
-    }
+    validateStockQuantity(stockQuantity);
+    validateImagePath(imagePath);
   }
 
   private void validateStockQuantity(int stockQuantity) {
     if (stockQuantity < 0) {
       throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Stock quantity must be >= 0");
+    }
+  }
+
+  private static final java.util.Set<String> ALLOWED_IMAGE_EXTENSIONS =
+      Set.of(".jpg", ".jpeg", ".png", ".gif", ".webp", ".svg");
+
+  private void validateImagePath(String imagePath) {
+    if (imagePath == null || imagePath.isBlank()) {
+      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Image path must not be blank");
+    }
+    String lower = imagePath.toLowerCase();
+    boolean valid = ALLOWED_IMAGE_EXTENSIONS.stream().anyMatch(lower::endsWith);
+    if (!valid) {
+      throw new ResponseStatusException(
+          HttpStatus.BAD_REQUEST,
+          "Image path must end with a valid image extension (.jpg, .jpeg, .png, .gif, .webp, .svg)");
     }
   }
 
@@ -121,21 +138,23 @@ public class ClothingService {
   }
 
   @Transactional
-  public ClothingModel createClothingModel(String name, float price)
+  public ClothingModel createClothingModel(String name, float price, String imagePath)
       throws ResponseStatusException {
     validateName(name);
     validatePrice(price);
     validateNameUniqueness(name, null);
+    validateImagePath(imagePath);
 
-    ClothingModel model = new ClothingModel(null, name, price);
+    ClothingModel model = new ClothingModel(null, name, price, imagePath);
     return clothingModelRepository.save(model);
   }
 
   @Transactional
-  public ClothingModel updateClothingModel(String modelId, String name, float price) {
+  public ClothingModel updateClothingModel(String modelId, String name, float price, String imagePath) {
     ClothingModel model = findModel(modelId);
     validateName(name);
     validatePrice(price);
+    validateImagePath(imagePath);
 
     // Only validate uniqueness and update if the name actually changed
     if (!name.equals(model.getName())) {
@@ -148,6 +167,8 @@ public class ClothingService {
       model.setPrice(price);
       updateCartItemPrices(modelId, price);
     }
+
+    model.setImagePath(imagePath);
 
     clothingModelRepository.save(model);
     return model;
@@ -176,13 +197,13 @@ public class ClothingService {
 
   @Transactional
   public ClothingVariant createVariant(
-      String modelId, ClothingVariant.Size size, String color, int stockQuantity)
+      String modelId, ClothingVariant.Size size, String color, String imagePath, int stockQuantity)
       throws ResponseStatusException {
     ClothingModel model = findModel(modelId);
-    validateVariantFields(size, color, stockQuantity);
+    validateVariantFields(size, color, stockQuantity, imagePath);
     validateVariantUniqueness(model, size, color);
 
-    ClothingVariant variant = new ClothingVariant(null, size, color, stockQuantity, model);
+    ClothingVariant variant = new ClothingVariant(null, size, color, imagePath, stockQuantity, model);
     return clothingVariantRepository.save(variant);
   }
 

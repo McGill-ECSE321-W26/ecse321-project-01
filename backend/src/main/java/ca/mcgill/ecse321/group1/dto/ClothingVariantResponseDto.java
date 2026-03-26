@@ -7,6 +7,7 @@ public class ClothingVariantResponseDto {
   private String clothingVariantID;
   private ClothingVariant.Size size;
   private String color;
+  private String imagePath;
   private int stockQuantity;
   private String modelId;
 
@@ -16,6 +17,7 @@ public class ClothingVariantResponseDto {
     this.clothingVariantID = variant.getClothingVariantID();
     this.size = variant.getSize();
     this.color = variant.getColor();
+    this.imagePath = variant.getImagePath();
     this.stockQuantity = variant.getStockQuantity();
     this.modelId = variant.getModel().getClothingModelID();
   }
@@ -42,6 +44,14 @@ public class ClothingVariantResponseDto {
 
   public void setColor(String color) {
     this.color = color;
+  }
+
+  public String getImagePath() {
+    return imagePath;
+  }
+
+  public void setImagePath(String imagePath) {
+    this.imagePath = imagePath;
   }
 
   public int getStockQuantity() {
