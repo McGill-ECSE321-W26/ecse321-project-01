@@ -1,14 +1,23 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import { RouterLink } from 'vue-router'
-import { User, ShoppingCart, Menu, Store, Package } from 'lucide-vue-next'
+import { RouterLink, useRouter } from 'vue-router'
+import { User, ShoppingCart, Menu, Store, Package, LogOut } from 'lucide-vue-next'
 import { Button } from '@/components/ui/button'
 import {
   Drawer,
   DrawerContent,
 } from '@/components/ui/drawer'
+import { useAuthStore } from '@/stores/auth'
 
 const sidebarOpen = ref(false)
+const router = useRouter()
+const auth = useAuthStore()
+
+function handleLogout() {
+  sidebarOpen.value = false
+  auth.logout()
+  router.push('/')
+}
 </script>
 
 <template>
@@ -95,6 +104,15 @@ const sidebarOpen = ref(false)
                 <User class="size-5" />
                 Profile
               </RouterLink>
+            </Button>
+            <hr class="my-2">
+            <Button
+              variant="ghost"
+              class="justify-start gap-3 text-red-600 hover:text-red-700 hover:bg-red-50"
+              @click="handleLogout"
+            >
+              <LogOut class="size-5" />
+              Log Out
             </Button>
           </nav>
         </DrawerContent>
