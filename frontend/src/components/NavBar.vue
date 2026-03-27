@@ -21,7 +21,7 @@ function handleLogout() {
 </script>
 
 <template>
-  <nav class="sticky top-0 z-50 w-full">
+  <nav class="fixed top-0 right-0 z-50">
     <div class="flex justify-end items-center gap-4 px-8 h-16">
       <Button
         variant="ghost"

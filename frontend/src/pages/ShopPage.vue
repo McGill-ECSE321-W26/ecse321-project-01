@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import { Heart } from 'lucide-vue-next'
 import { Button } from '@/components/ui/button'
 import {
   Select,
@@ -18,9 +17,9 @@ const sortBy = ref('newest')
 <template>
   <div class="shop-page min-h-screen">
     <!-- Catalogue Header -->
-    <div class="max-w-[1400px] mx-auto px-5 md:px-10 pt-8 md:pt-12">
+    <div class="max-w-350 mx-auto px-5 md:px-10 pt-16 md:pt-24">
       <h1 class="shop-heading text-[32px] md:text-[42px] lg:text-[56px] font-normal tracking-tight leading-tight">
-        Full <em class="italic text-[var(--shop-text-muted)]">Catalogue</em>
+        The Complete <em class="italic text-[var(--shop-text-muted)]">Catalogue</em>
       </h1>
       <div class="flex items-center justify-between mt-5 pb-8 border-b border-[var(--shop-border)]">
         <p class="text-sm font-light text-[var(--shop-text-muted)]">
@@ -78,29 +77,6 @@ const sortBy = ref('newest')
       >
         <!-- Image -->
         <div class="aspect-[3/4] bg-[var(--shop-card-bg)] overflow-hidden relative">
-          <!-- Tag -->
-          <span
-            v-if="product.tag === 'new'"
-            class="absolute top-3 left-3 z-10 px-2.5 py-1 text-[10px] font-medium uppercase tracking-wider bg-[var(--shop-text)] text-[var(--shop-white)]"
-          >
-            New
-          </span>
-          <span
-            v-else-if="product.tag === 'low'"
-            class="absolute top-3 left-3 z-10 px-2.5 py-1 text-[10px] font-medium uppercase tracking-wider bg-[var(--shop-tag-bg)] text-[var(--shop-text-muted)]"
-          >
-            Low Stock
-          </span>
-
-          <!-- Wishlist -->
-          <Button
-            variant="ghost"
-            size="icon-sm"
-            class="absolute top-3 right-3 z-10 rounded-full bg-[rgba(255,255,250,0.85)] backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity hover:bg-[rgba(255,255,250,1)]"
-          >
-            <Heart class="size-4 stroke-[var(--shop-text)]" :stroke-width="1.5" />
-          </Button>
-
           <!-- Product Image -->
           <img
             :src="product.img"
@@ -139,7 +115,6 @@ const sortBy = ref('newest')
 <style scoped>
 .shop-page {
   --shop-bg: #FFFCF2;
-  --shop-bg-warm: #eae5db;
   --shop-text: #1a1a18;
   --shop-text-muted: #6b6860;
   --shop-text-light: #9a958b;
@@ -147,7 +122,6 @@ const sortBy = ref('newest')
   --shop-card-hover: #e4e0d8;
   --shop-white: #fffef9;
   --shop-border: #d4cfc5;
-  --shop-tag-bg: #ddd8ce;
 
   background-color: var(--shop-bg);
   color: var(--shop-text);
