@@ -12,8 +12,6 @@ public class PersonResponseDto {
   private String id;
   private String email;
   private List<String> roleTypes;
-  private String customerRoleId;
-  private String employeeRoleId;
   private String address;
   private Integer loyaltyPoints;
 
@@ -27,14 +25,12 @@ public class PersonResponseDto {
     for (PersonRole role : model.getRoles()) {
       if (role instanceof Customer customer) {
         this.roleTypes.add("Customer");
-        this.customerRoleId = customer.getRoleID();
         this.address = customer.getAddress();
         this.loyaltyPoints = customer.getLoyaltyPoints();
       } else if (role instanceof Manager) {
         this.roleTypes.add("Manager");
-      } else if (role instanceof Employee employee) {
+      } else if (role instanceof Employee) {
         this.roleTypes.add("Employee");
-        this.employeeRoleId = employee.getRoleID();
       }
     }
   }
@@ -49,14 +45,6 @@ public class PersonResponseDto {
 
   public List<String> getRoleTypes() {
     return roleTypes;
-  }
-
-  public String getCustomerRoleId() {
-    return customerRoleId;
-  }
-
-  public String getEmployeeRoleId() {
-    return employeeRoleId;
   }
 
   public String getAddress() {
@@ -77,14 +65,6 @@ public class PersonResponseDto {
 
   public void setRoleTypes(List<String> roleTypes) {
     this.roleTypes = roleTypes;
-  }
-
-  public void setCustomerRoleId(String customerRoleId) {
-    this.customerRoleId = customerRoleId;
-  }
-
-  public void setEmployeeRoleId(String employeeRoleId) {
-    this.employeeRoleId = employeeRoleId;
   }
 
   public void setAddress(String address) {

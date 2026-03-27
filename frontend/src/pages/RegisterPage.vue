@@ -1,9 +1,42 @@
 <script setup lang="ts">
-import { RouterLink } from 'vue-router'
+import { ref } from 'vue'
+import { RouterLink, useRouter } from 'vue-router'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { useAuthStore } from '@/stores/auth'
+import { ApiError } from '@/api/client'
+
+const router = useRouter()
+const auth = useAuthStore()
+
+const email = ref('')
+const password = ref('')
+const address = ref('')
+const error = ref('')
+const loading = ref(false)
+
+async function handleSubmit() {
+  error.value = ''
+
+  if (!email.value || !password.value || !address.value) {
+    error.value = 'Please fill in all fields.'
+    return
+  }
+
+  loading.value = true
+  try {
+    await auth.register(email.value, password.value, address.value)
+    await router.push({path: '/login', query: {registered: 'true'}})
+  }
+  catch (e) {
+    error.value = e instanceof ApiError ? e.message : 'Something went wrong. Please try again.'
+  }
+  finally {
+    loading.value = false
+  }
+}
 </script>
 
 <template>
@@ -15,14 +48,21 @@ import { Label } from '@/components/ui/label'
         </CardTitle>
       </CardHeader>
       <CardContent>
+        <div
+          v-if="error"
+          class="mb-4 rounded-md bg-red-50 border border-red-200 p-3 text-sm text-red-800"
+        >
+          {{ error }}
+        </div>
         <form
           class="space-y-4"
-          @submit.prevent
+          @submit.prevent="handleSubmit"
         >
           <div class="space-y-2">
             <Label for="email">Email</Label>
             <Input
               id="email"
+              v-model="email"
               type="email"
               placeholder="you@example.com"
             />
@@ -31,6 +71,7 @@ import { Label } from '@/components/ui/label'
             <Label for="password">Password</Label>
             <Input
               id="password"
+              v-model="password"
               type="password"
               placeholder="Min. 8 characters"
             />
@@ -39,6 +80,7 @@ import { Label } from '@/components/ui/label'
             <Label for="address">Address</Label>
             <Input
               id="address"
+              v-model="address"
               type="text"
               placeholder="123 Main St"
             />
@@ -46,8 +88,9 @@ import { Label } from '@/components/ui/label'
           <Button
             type="submit"
             class="w-full"
+            :disabled="loading"
           >
-            Sign Up
+            {{ loading ? 'Creating account...' : 'Sign Up' }}
           </Button>
         </form>
       </CardContent>
