@@ -19,13 +19,13 @@ const sortBy = ref('newest')
     <!-- Catalogue Header -->
     <div class="max-w-350 mx-auto px-5 md:px-10 pt-16 md:pt-24">
       <h1 class="shop-heading text-[32px] md:text-[42px] lg:text-[56px] font-normal tracking-tight leading-tight">
-        The Complete <em class="italic text-[var(--shop-text-muted)]">Catalogue</em>
+        The Complete <em class="italic text-(--text-muted)">Catalogue</em>
       </h1>
-      <div class="flex items-center justify-between mt-5 pb-8 border-b border-[var(--shop-border)]">
-        <p class="text-sm font-light text-[var(--shop-text-muted)]">
+      <div class="flex items-center justify-between mt-5 pb-8 border-b border-[var(--border)]">
+        <p class="text-sm font-light text-(--text-muted)">
           Browse our full collection of clothing and accessories.
         </p>
-        <span class="text-[13px] text-[var(--shop-text-light)] tracking-wide hidden sm:inline">
+        <span class="text-[13px] text-(--text-light) tracking-wide hidden sm:inline">
           Showing {{ products.length }} of 48 items
         </span>
       </div>
@@ -38,11 +38,11 @@ const sortBy = ref('newest')
         :key="cat"
         :variant="activeCategory === cat ? 'default' : 'outline'"
         size="sm"
-        class="rounded-none border-[var(--shop-border)] text-[13px] tracking-wide"
+        class="rounded-none border-[var(--border)] text-[13px] tracking-wide"
         :class="
           activeCategory === cat
-            ? 'bg-[var(--shop-text)] text-[var(--shop-white)] border-[var(--shop-text)] hover:bg-[var(--shop-text)]/90'
-            : 'bg-transparent text-[var(--shop-text-muted)] hover:bg-[var(--shop-card-hover)] hover:border-[var(--shop-text-muted)]'
+            ? 'bg-[var(--text)] text-[var(--bg)] border-[var(--text)] hover:bg-[var(--text)]/90'
+            : 'bg-transparent text-[var(--text-muted)] hover:bg-[var(--card-hover)] hover:border-[var(--text-muted)]'
         "
         @click="activeCategory = cat"
       >
@@ -51,15 +51,18 @@ const sortBy = ref('newest')
 
       <Select v-model="sortBy">
         <SelectTrigger
-          class="ml-auto w-auto rounded-none border-[var(--shop-border)] bg-transparent text-[13px] text-[var(--shop-text-muted)] px-4 pr-8 h-8"
+          class="ml-auto w-auto rounded-none border-[var(--border)] bg-transparent text-[13px] text-[var(--text-muted)] px-4 pr-8 h-8 shadow-none focus-visible:ring-0 focus-visible:border-[var(--text-muted)] [&_svg]:text-[var(--text-light)]!"
         >
           <SelectValue placeholder="Sort by: Newest" />
         </SelectTrigger>
-        <SelectContent>
+        <SelectContent
+          class="rounded-none border-[#d4cfc5] bg-[#FFFCF2]! text-[#252422] shadow-sm"
+        >
           <SelectItem
             v-for="opt in sortOptions"
             :key="opt.value"
             :value="opt.value"
+            class="rounded-none text-[13px] text-[#6b6860] focus:bg-[#e4e0d8]! focus:text-[#252422] data-[state=checked]:text-[#252422] data-[state=checked]:font-medium"
           >
             {{ opt.label }}
           </SelectItem>
@@ -76,7 +79,7 @@ const sortBy = ref('newest')
         :style="{ animationDelay: `${index * 0.05}s` }"
       >
         <!-- Image -->
-        <div class="aspect-[3/4] bg-[var(--shop-card-bg)] overflow-hidden relative">
+        <div class="aspect-3/4 overflow-hidden relative">
           <!-- Product Image -->
           <img
             :src="product.img"
@@ -89,20 +92,20 @@ const sortBy = ref('newest')
 
         <!-- Product Info -->
         <div class="pt-3.5 px-1">
-          <p class="text-[11px] text-[var(--shop-text-light)] uppercase tracking-widest mb-1">
+          <p class="text-[11px] text-[var(--text-light)] uppercase tracking-widest mb-1">
             {{ product.brand }}
           </p>
-          <p class="text-sm text-[var(--shop-text)] leading-snug mb-1.5">
+          <p class="text-sm text-[var(--text)] leading-snug mb-1.5">
             {{ product.name }}
           </p>
-          <p class="text-sm font-medium text-[var(--shop-text)]">
+          <p class="text-sm font-medium text-[var(--text)]">
             ${{ product.price }}
           </p>
           <div class="flex gap-1.5 mt-2">
             <div
               v-for="(color, ci) in product.colors"
               :key="ci"
-              class="w-3.5 h-3.5 rounded-full border-[1.5px] border-[var(--shop-border)] cursor-pointer hover:border-[var(--shop-text)] transition-colors"
+              class="w-3.5 h-3.5 rounded-full border-[1.5px] border-[var(--border)] cursor-pointer hover:border-[var(--text)] transition-colors"
               :style="{ backgroundColor: color }"
             />
           </div>
@@ -114,17 +117,15 @@ const sortBy = ref('newest')
 
 <style scoped>
 .shop-page {
-  --shop-bg: #FFFCF2;
-  --shop-text: #1a1a18;
-  --shop-text-muted: #6b6860;
-  --shop-text-light: #9a958b;
-  --shop-card-bg: #edeae4;
-  --shop-card-hover: #e4e0d8;
-  --shop-white: #fffef9;
-  --shop-border: #d4cfc5;
+  --bg: #FFFCF2;
+  --text: #252422;
+  --text-muted: #6b6860;
+  --text-light: #9a958b;
+  --card-hover: #e4e0d8;
+  --border: #d4cfc5;
 
-  background-color: var(--shop-bg);
-  color: var(--shop-text);
+  background-color: var(--bg);
+  color: var(--text);
   font-family: 'Lexend Deca', sans-serif;
   -webkit-font-smoothing: antialiased;
 }

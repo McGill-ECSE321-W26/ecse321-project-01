@@ -124,9 +124,7 @@ export const products: Product[] = [
   },
 ]
 
-export const categories = ['All', 'Tops', 'Bottoms', 'Outerwear', 'Accessories', 'Footwear', 'Bags', 'Hats'] as const
-
-export const priceRanges = ['Under $75', '$75 – $150', '$150+'] as const
+export const categories = ['All', 'Tops', 'Bottoms', 'Outerwear', 'Accessories'] as const
 
 export const sortOptions = [
   { label: 'Newest', value: 'newest' },
