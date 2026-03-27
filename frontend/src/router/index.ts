@@ -5,6 +5,8 @@ import RegisterPage from '../pages/RegisterPage.vue'
 import NotFoundPage from '../pages/NotFoundPage.vue'
 import AccountPage from '../pages/AccountPage.vue'
 import CartPage from '../pages/CartPage.vue'
+import ShopPage from '../pages/ShopPage.vue'
+import OrdersPage from '../pages/OrdersPage.vue'
 
 const router = createRouter({
   history: createWebHistory(),
@@ -14,6 +16,8 @@ const router = createRouter({
     { path: '/register', name: 'register', component: RegisterPage },
     { path: '/account', name: 'account', component: AccountPage },
     { path: '/cart', name: 'cart', component: CartPage },
+    { path: '/shop', name: 'shop', component: ShopPage },
+    { path: '/orders', name: 'orders', component: OrdersPage },
     { path: '/:pathMatch(.*)*', name: 'not-found', component: NotFoundPage },
   ],
 })
