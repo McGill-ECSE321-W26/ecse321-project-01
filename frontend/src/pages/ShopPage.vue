@@ -56,7 +56,7 @@ const sortBy = ref('newest')
           <SelectValue placeholder="Sort by: Newest" />
         </SelectTrigger>
         <SelectContent
-          class="rounded-none border-(--shop-page-border) bg-(--bg)! text-(--text) shadow-sm"
+          class="rounded-none border-(--border) bg-(--bg)! text-(--text) shadow-sm"
         >
           <SelectItem
             v-for="opt in sortOptions"
