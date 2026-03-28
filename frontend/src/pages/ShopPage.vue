@@ -119,8 +119,8 @@ const sortBy = ref('newest')
   --bg: #FFFCF2;
   --text: #252422;
   --text-muted: #6b6860;
-  --text-light: #9a958b;
-  --card-hover: #e4e0d8;
+  --text-light: #9a958a;
+  --card-hover: #e4dfd3;
   --border: #d4cfc5;
 
   background-color: var(--bg);
