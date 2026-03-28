@@ -41,7 +41,7 @@ const sortBy = ref('newest')
         class="rounded-none border-border text-[13px] tracking-wide"
         :class="
           activeCategory === cat
-            ? 'bg-(--text) text-(--bg) hover:bg-(--text)/90'
+            ? 'bg-(--text) text-(--bg)'
             : 'bg-transparent text-(--text-muted) hover:bg-(--card-hover) hover:border-(--text-muted)'
         "
         @click="activeCategory = cat"
@@ -56,13 +56,13 @@ const sortBy = ref('newest')
           <SelectValue placeholder="Sort by: Newest" />
         </SelectTrigger>
         <SelectContent
-          class="rounded-none border-[#d4cfc5] bg-[#FFFCF2]! text-[#252422] shadow-sm"
+          class="rounded-none border-[#cfcac0] bg-[#FFFCF2]! text-[#252422] shadow-sm"
         >
           <SelectItem
             v-for="opt in sortOptions"
             :key="opt.value"
             :value="opt.value"
-            class="rounded-none text-[13px] text-[#6b6860] focus:bg-[#e4e0d8]! focus:text-[#252422] data-[state=checked]:text-[#252422] data-[state=checked]:font-medium"
+            class="rounded-none text-[13px] text-[#6b6860] focus:bg-[#e4dfd3]! focus:text-[#252422] data-[state=checked]:text-[#252422] data-[state=checked]:font-medium"
           >
             {{ opt.label }}
           </SelectItem>
@@ -121,7 +121,7 @@ const sortBy = ref('newest')
   --text-muted: #6b6860;
   --text-light: #9a958a;
   --card-hover: #e4dfd3;
-  --border: #d4cfc5;
+  --border: #cfcac0;
 
   background-color: var(--bg);
   color: var(--text);
