@@ -16,12 +16,12 @@ const sortBy = ref('newest')
 
 <template>
   <div class="shop-page min-h-screen">
-    <!-- Catalogue Header -->
+    <!-- Header -->
     <div class="max-w-350 mx-auto px-5 md:px-10 pt-16 md:pt-24">
       <h1 class="shop-heading text-[32px] md:text-[42px] lg:text-[56px] font-normal tracking-tight leading-tight">
         The Complete <em class="italic text-(--text-muted)">Catalogue</em>
       </h1>
-      <div class="flex items-center justify-between mt-5 pb-8 border-b border-[var(--border)]">
+      <div class="flex items-center justify-between mt-5 pb-8 border-b border-border">
         <p class="text-sm font-light text-(--text-muted)">
           Browse our full collection of clothing and accessories.
         </p>
@@ -32,17 +32,17 @@ const sortBy = ref('newest')
     </div>
 
     <!-- Filter Bar -->
-    <div class="max-w-[1400px] mx-auto px-5 md:px-10 py-6 flex items-center gap-3 flex-wrap">
+    <div class="max-w-350 mx-auto px-5 md:px-10 py-6 flex items-center gap-3 flex-wrap">
       <Button
         v-for="cat in categories"
         :key="cat"
         :variant="activeCategory === cat ? 'default' : 'outline'"
         size="sm"
-        class="rounded-none border-[var(--border)] text-[13px] tracking-wide"
+        class="rounded-none border-border text-[13px] tracking-wide"
         :class="
           activeCategory === cat
-            ? 'bg-[var(--text)] text-[var(--bg)] border-[var(--text)] hover:bg-[var(--text)]/90'
-            : 'bg-transparent text-[var(--text-muted)] hover:bg-[var(--card-hover)] hover:border-[var(--text-muted)]'
+            ? 'bg-(--text) text-(--bg) hover:bg-(--text)/90'
+            : 'bg-transparent text-(--text-muted) hover:bg-(--card-hover) hover:border-(--text-muted)'
         "
         @click="activeCategory = cat"
       >
@@ -51,7 +51,7 @@ const sortBy = ref('newest')
 
       <Select v-model="sortBy">
         <SelectTrigger
-          class="ml-auto w-auto rounded-none border-[var(--border)] bg-transparent text-[13px] text-[var(--text-muted)] px-4 pr-8 h-8 shadow-none focus-visible:ring-0 focus-visible:border-[var(--text-muted)] [&_svg]:text-[var(--text-light)]!"
+          class="ml-auto w-auto rounded-none border-border bg-transparent text-[13px] text-(--text-muted) px-4 pr-8 h-8 shadow-none focus-visible:ring-0 focus-visible:border-(--text-muted) [&_svg]:text-(--text-light)!"
         >
           <SelectValue placeholder="Sort by: Newest" />
         </SelectTrigger>
@@ -69,9 +69,8 @@ const sortBy = ref('newest')
         </SelectContent>
       </Select>
     </div>
-
     <!-- Product Grid -->
-    <div class="max-w-[1400px] mx-auto px-5 md:px-10 pb-20 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
+    <div class="max-w-350 mx-auto px-5 md:px-10 pb-20 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
       <div
         v-for="(product, index) in products"
         :key="product.id"
@@ -92,20 +91,20 @@ const sortBy = ref('newest')
 
         <!-- Product Info -->
         <div class="pt-3.5 px-1">
-          <p class="text-[11px] text-[var(--text-light)] uppercase tracking-widest mb-1">
+          <p class="text-[11px] text-(--text-light) uppercase tracking-widest mb-1">
             {{ product.brand }}
           </p>
-          <p class="text-sm text-[var(--text)] leading-snug mb-1.5">
+          <p class="text-sm text-(--text) leading-snug mb-1.5">
             {{ product.name }}
           </p>
-          <p class="text-sm font-medium text-[var(--text)]">
+          <p class="text-sm font-medium text-(--text)">
             ${{ product.price }}
           </p>
           <div class="flex gap-1.5 mt-2">
             <div
               v-for="(color, ci) in product.colors"
               :key="ci"
-              class="w-3.5 h-3.5 rounded-full border-[1.5px] border-[var(--border)] cursor-pointer hover:border-[var(--text)] transition-colors"
+              class="w-3.5 h-3.5 rounded-full border-[1.5px] border-border cursor-pointer hover:border-(--text) transition-colors"
               :style="{ backgroundColor: color }"
             />
           </div>
