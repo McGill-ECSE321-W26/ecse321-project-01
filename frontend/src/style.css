@@ -42,6 +42,13 @@
 }
 
 :root {
+  --bg: #FFFCF2;
+  --text: #252422;
+  --text-muted: #6b6860;
+  --text-light: #9a958a;
+  --card-hover: #e4dfd3;
+  --shop-page-border: #cfcac0;
+
   --radius: 0.625rem;
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);

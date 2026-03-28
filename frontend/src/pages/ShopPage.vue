@@ -56,13 +56,13 @@ const sortBy = ref('newest')
           <SelectValue placeholder="Sort by: Newest" />
         </SelectTrigger>
         <SelectContent
-          class="rounded-none border-[#cfcac0] bg-[#FFFCF2]! text-[#252422] shadow-sm"
+          class="rounded-none border-(--shop-page-border) bg-(--bg)! text-(--text) shadow-sm"
         >
           <SelectItem
             v-for="opt in sortOptions"
             :key="opt.value"
             :value="opt.value"
-            class="rounded-none text-[13px] text-[#6b6860] focus:bg-[#e4dfd3]! focus:text-[#252422] data-[state=checked]:text-[#252422] data-[state=checked]:font-medium"
+            class="rounded-none text-[13px] text-(--text-muted) focus:bg-(--card-hover)! focus:text-(--text) data-[state=checked]:text-(--text) data-[state=checked]:font-medium"
           >
             {{ opt.label }}
           </SelectItem>
@@ -116,13 +116,6 @@ const sortBy = ref('newest')
 
 <style scoped>
 .shop-page {
-  --bg: #FFFCF2;
-  --text: #252422;
-  --text-muted: #6b6860;
-  --text-light: #9a958a;
-  --card-hover: #e4dfd3;
-  --border: #cfcac0;
-
   background-color: var(--bg);
   color: var(--text);
   font-family: 'Lexend Deca', sans-serif;
