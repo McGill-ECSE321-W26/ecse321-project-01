@@ -102,127 +102,127 @@ async function handleAddressUpdate() {
     </div>
 
     <div class="border border-(--card-hover) rounded-xl px-4 pt-3 pb-4 space-y-4">
-        <div class="flex items-center justify-between">
-          <div>
-            <p class="text-xs text-(--text-muted) uppercase tracking-wide mb-1">
-              Address
-            </p>
-            <p class="text-sm">
-              {{ person?.address ?? 'N/A' }}
-            </p>
-          </div>
-          <Dialog v-model:open="addressDialogOpen">
-            <DialogTrigger as-child>
-              <Button
-                variant="ghost"
-                size="icon"
-              >
-                <Pencil class="w-4 h-4" />
-              </Button>
-            </DialogTrigger>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>Update Address</DialogTitle>
-              </DialogHeader>
-              <div class="space-y-4">
-                <div
-                  v-if="addressError"
-                  class="rounded-md bg-red-50 border border-red-200 p-3 text-sm text-red-800"
-                >
-                  {{ addressError }}
-                </div>
-                <div class="space-y-2">
-                  <Label for="address">New Address</Label>
-                  <Input
-                    id="address"
-                    v-model="newAddress"
-                    type="text"
-                    placeholder=""
-                  />
-                </div>
-              </div>
-              <DialogFooter>
-                <DialogClose as-child>
-                  <Button variant="outline">
-                    Cancel
-                  </Button>
-                </DialogClose>
-                <Button @click="handleAddressUpdate">
-                  Save Address
-                </Button>
-              </DialogFooter>
-            </DialogContent>
-          </Dialog>
-        </div>
-
+      <div class="flex items-center justify-between">
         <div>
           <p class="text-xs text-(--text-muted) uppercase tracking-wide mb-1">
-            Loyalty Points
+            Address
           </p>
           <p class="text-sm">
-            {{ person?.loyaltyPoints ?? 0 }}
+            {{ person?.address ?? 'N/A' }}
           </p>
         </div>
-
-        <div class="pt-2">
-          <Dialog v-model:open="passwordDialogOpen">
-            <DialogTrigger as-child>
-              <Button size="sm">
-                Change Password
-              </Button>
-            </DialogTrigger>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>Change Password</DialogTitle>
-              </DialogHeader>
-              <div class="space-y-4">
-                <div
-                  v-if="passwordError"
-                  class="rounded-md bg-red-50 border border-red-200 p-3 text-sm text-red-800"
-                >
-                  {{ passwordError }}
-                </div>
-                <div class="space-y-2">
-                  <Label for="old-password">Current Password</Label>
-                  <Input
-                    id="old-password"
-                    v-model="oldPassword"
-                    type="password"
-                    placeholder=""
-                  />
-                </div>
-                <div class="space-y-2">
-                  <Label for="new-password">New Password</Label>
-                  <Input
-                    id="new-password"
-                    v-model="newPassword"
-                    type="password"
-                    placeholder=""
-                  />
-                </div>
-                <div class="space-y-2">
-                  <Label for="confirm-password">Confirm New Password</Label>
-                  <Input
-                    id="confirm-password"
-                    v-model="confirmPassword"
-                    type="password"
-                    placeholder=""
-                  />
-                </div>
+        <Dialog v-model:open="addressDialogOpen">
+          <DialogTrigger as-child>
+            <Button
+              variant="ghost"
+              size="icon"
+            >
+              <Pencil class="w-4 h-4" />
+            </Button>
+          </DialogTrigger>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Update Address</DialogTitle>
+            </DialogHeader>
+            <div class="space-y-4">
+              <div
+                v-if="addressError"
+                class="rounded-md bg-red-50 border border-red-200 p-3 text-sm text-red-800"
+              >
+                {{ addressError }}
               </div>
-              <DialogFooter>
-                <DialogClose as-child>
-                  <Button variant="outline">
-                    Cancel
-                  </Button>
-                </DialogClose>
-                <Button @click="handlePasswordUpdate">
-                  Save Password
+              <div class="space-y-2">
+                <Label for="address">New Address</Label>
+                <Input
+                  id="address"
+                  v-model="newAddress"
+                  type="text"
+                  placeholder=""
+                />
+              </div>
+            </div>
+            <DialogFooter>
+              <DialogClose as-child>
+                <Button variant="outline">
+                  Cancel
                 </Button>
-              </DialogFooter>
-            </DialogContent>
-          </Dialog>
-        </div>
+              </DialogClose>
+              <Button @click="handleAddressUpdate">
+                Save Address
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      </div>
+
+      <div>
+        <p class="text-xs text-(--text-muted) uppercase tracking-wide mb-1">
+          Loyalty Points
+        </p>
+        <p class="text-sm">
+          {{ person?.loyaltyPoints ?? 0 }}
+        </p>
+      </div>
+
+      <div class="pt-2">
+        <Dialog v-model:open="passwordDialogOpen">
+          <DialogTrigger as-child>
+            <Button size="sm">
+              Change Password
+            </Button>
+          </DialogTrigger>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Change Password</DialogTitle>
+            </DialogHeader>
+            <div class="space-y-4">
+              <div
+                v-if="passwordError"
+                class="rounded-md bg-red-50 border border-red-200 p-3 text-sm text-red-800"
+              >
+                {{ passwordError }}
+              </div>
+              <div class="space-y-2">
+                <Label for="old-password">Current Password</Label>
+                <Input
+                  id="old-password"
+                  v-model="oldPassword"
+                  type="password"
+                  placeholder=""
+                />
+              </div>
+              <div class="space-y-2">
+                <Label for="new-password">New Password</Label>
+                <Input
+                  id="new-password"
+                  v-model="newPassword"
+                  type="password"
+                  placeholder=""
+                />
+              </div>
+              <div class="space-y-2">
+                <Label for="confirm-password">Confirm New Password</Label>
+                <Input
+                  id="confirm-password"
+                  v-model="confirmPassword"
+                  type="password"
+                  placeholder=""
+                />
+              </div>
+            </div>
+            <DialogFooter>
+              <DialogClose as-child>
+                <Button variant="outline">
+                  Cancel
+                </Button>
+              </DialogClose>
+              <Button @click="handlePasswordUpdate">
+                Save Password
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      </div>
     </div>
   </div>
 </template>
