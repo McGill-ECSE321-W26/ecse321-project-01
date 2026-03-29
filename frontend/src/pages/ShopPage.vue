@@ -19,7 +19,7 @@ const sortBy = ref('newest')
     <!-- Header -->
     <div class="max-w-350 mx-auto px-5 md:px-10 pt-16 md:pt-24">
       <h1 class="shop-heading text-[32px] md:text-[42px] lg:text-[56px] font-normal tracking-tight leading-tight">
-        The Complete <em class="italic text-(--text-muted)">Catalogue</em>
+        The <span class="text-(--text-muted)">Complete</span> <em class="text-(--text-light)">Catalogue</em>
       </h1>
       <div class="flex items-center justify-between mt-5 pb-8 border-b border-(--text-light)">
         <p class="text-sm font-light text-(--text-muted)">
@@ -98,7 +98,7 @@ const sortBy = ref('newest')
             {{ product.name }}
           </p>
           <p class="text-sm font-extrabold text-(--text)">
-            ${{ product.price }}
+            ${{ product.price }} CAD
           </p>
           <div class="flex gap-1.5 mt-2">
             <div

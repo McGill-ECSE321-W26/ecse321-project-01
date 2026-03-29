@@ -9,7 +9,7 @@ export interface Product {
   category: 'tops' | 'bottoms' | 'outerwear' | 'accessories'
 }
 
-// Temporary data to replace backend atm
+// !DO NOT TOUCH! TEMPORARY DATA TO REPLACE BACKEND CALLS (DOMAIN MODEL DOES NOT HAVE CATEGORY (filtering), DATES (sorting), BRAND, DEFAULT COLOR SELECTED
 
 export const products: Product[] = [
   {
