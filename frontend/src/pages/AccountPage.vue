@@ -2,7 +2,6 @@
 import {onMounted, ref} from 'vue'
 import {Pencil, UserCircle} from 'lucide-vue-next'
 import {Button} from '@/components/ui/button'
-import {Card, CardContent} from '@/components/ui/card'
 import {
   Dialog,
   DialogClose,
@@ -96,17 +95,16 @@ async function handleAddressUpdate() {
 <template>
   <div class="max-w-2xl mx-auto py-6 px-4 space-y-6">
     <div class="flex items-center gap-3">
-      <UserCircle class="w-10 h-10 text-muted-foreground" />
+      <UserCircle class="w-10 h-10 text-(--text-muted)" />
       <h1 class="text-3xl font-bold">
         {{ person?.email ?? auth.person?.email }}
       </h1>
     </div>
 
-    <Card>
-      <CardContent class="pt-3 space-y-4">
+    <div class="border border-(--card-hover) rounded-xl px-4 pt-3 pb-4 space-y-4">
         <div class="flex items-center justify-between">
           <div>
-            <p class="text-xs text-muted-foreground uppercase tracking-wide mb-1">
+            <p class="text-xs text-(--text-muted) uppercase tracking-wide mb-1">
               Address
             </p>
             <p class="text-sm">
@@ -158,7 +156,7 @@ async function handleAddressUpdate() {
         </div>
 
         <div>
-          <p class="text-xs text-muted-foreground uppercase tracking-wide mb-1">
+          <p class="text-xs text-(--text-muted) uppercase tracking-wide mb-1">
             Loyalty Points
           </p>
           <p class="text-sm">
@@ -225,7 +223,6 @@ async function handleAddressUpdate() {
             </DialogContent>
           </Dialog>
         </div>
-      </CardContent>
-    </Card>
+    </div>
   </div>
 </template>
