@@ -124,5 +124,11 @@
   }
   body {
     @apply bg-background text-foreground;
+    /* Custom styling from figma design */
+    background-color: var(--bg);
+    color: var(--text);
+    font-family: 'Lexend Deca', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    /* Custom styling from figma design */
   }
 }

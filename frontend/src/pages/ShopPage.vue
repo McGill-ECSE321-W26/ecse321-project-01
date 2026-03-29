@@ -15,7 +15,7 @@ const sortBy = ref('newest')
 </script>
 
 <template>
-  <div class="shop-page min-h-screen">
+  <div class="min-h-screen">
     <!-- Header -->
     <div class="max-w-350 mx-auto px-5 md:px-10 pt-16 md:pt-24">
       <h1 class="shop-heading text-[32px] md:text-[42px] lg:text-[56px] font-normal tracking-tight leading-tight">
@@ -115,13 +115,6 @@ const sortBy = ref('newest')
 </template>
 
 <style scoped>
-.shop-page {
-  background-color: var(--bg);
-  color: var(--text);
-  font-family: 'Lexend Deca', sans-serif;
-  -webkit-font-smoothing: antialiased;
-}
-
 .shop-heading {
   font-family: 'Playfair Display', serif;
   letter-spacing: -1.5px;
