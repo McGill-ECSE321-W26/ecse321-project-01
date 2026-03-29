@@ -51,7 +51,7 @@ const sortBy = ref('newest')
 
       <Select v-model="sortBy">
         <SelectTrigger
-          class="ml-auto w-auto rounded-none border-border bg-transparent text-[13px] text-(--text-muted) px-4 pr-8 h-8 shadow-none focus-visible:ring-0 focus-visible:border-(--text-muted) [&_svg]:text-(--text-light)!"
+          class="ml-auto w-auto rounded-none border-border text-[13px] text-(--text-muted) px-4 h-8 shadow-none focus-visible:ring-0 transition-all hover:bg-(--card-hover) hover:border-(--text-muted)"
         >
           <SelectValue placeholder="Sort by: Newest" />
         </SelectTrigger>
