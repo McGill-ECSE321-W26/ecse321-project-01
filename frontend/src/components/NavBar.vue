@@ -21,11 +21,12 @@ function handleLogout() {
 </script>
 
 <template>
-  <nav class="sticky top-0 z-50 w-full">
+  <nav class="fixed top-0 right-0 z-50">
     <div class="flex justify-end items-center gap-4 px-8 h-16">
       <Button
         variant="ghost"
         size="icon"
+        class="hover:bg-(--card-hover)"
         as-child
       >
         <RouterLink
@@ -38,6 +39,7 @@ function handleLogout() {
       <Button
         variant="ghost"
         size="icon"
+        class="hover:bg-(--card-hover)"
         as-child
       >
         <RouterLink
@@ -54,6 +56,7 @@ function handleLogout() {
         <Button
           variant="ghost"
           size="icon"
+          class="hover:bg-(--card-hover)"
           aria-label="Open menu"
           @click="sidebarOpen = true"
         >
