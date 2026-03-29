@@ -21,7 +21,7 @@ const sortBy = ref('newest')
       <h1 class="shop-heading text-[32px] md:text-[42px] lg:text-[56px] font-normal tracking-tight leading-tight">
         The Complete <em class="italic text-(--text-muted)">Catalogue</em>
       </h1>
-      <div class="flex items-center justify-between mt-5 pb-8 border-b border-border">
+      <div class="flex items-center justify-between mt-5 pb-8 border-b border-(--text-light)">
         <p class="text-sm font-light text-(--text-muted)">
           Browse our full collection of clothing and accessories.
         </p>
@@ -38,7 +38,7 @@ const sortBy = ref('newest')
         :key="cat"
         :variant="activeCategory === cat ? 'default' : 'outline'"
         size="sm"
-        class="rounded-none border-border text-[13px] tracking-wide"
+        class="rounded-none border-(--text-light) text-[13px] tracking-wide"
         :class="
           activeCategory === cat
             ? 'bg-(--text) text-(--bg)'
@@ -51,12 +51,12 @@ const sortBy = ref('newest')
 
       <Select v-model="sortBy">
         <SelectTrigger
-          class="ml-auto w-auto rounded-none border-border text-[13px] text-(--text-muted) px-4 h-8 shadow-none focus-visible:ring-0 transition-all hover:bg-(--card-hover) hover:border-(--text-muted)"
+          class="ml-auto w-auto rounded-none border-(--text-light) text-[13px] text-(--text-muted) px-4 h-8 shadow-none focus-visible:ring-0 transition-all hover:bg-(--card-hover) hover:border-(--text-muted)"
         >
           <SelectValue placeholder="Sort by: Newest" />
         </SelectTrigger>
         <SelectContent
-          class="rounded-none border-(--border) bg-(--bg)! text-(--text) shadow-sm"
+          class="rounded-none border-(--text-light) bg-(--bg)! text-(--text) shadow-sm"
         >
           <SelectItem
             v-for="opt in sortOptions"
@@ -97,14 +97,14 @@ const sortBy = ref('newest')
           <p class="text-sm text-(--text) leading-snug mb-1.5">
             {{ product.name }}
           </p>
-          <p class="text-sm font-medium text-(--text)">
+          <p class="text-sm font-extrabold text-(--text)">
             ${{ product.price }}
           </p>
           <div class="flex gap-1.5 mt-2">
             <div
               v-for="(color, ci) in product.colors"
               :key="ci"
-              class="w-3.5 h-3.5 rounded-full border-[1.5px] border-border cursor-pointer hover:border-(--text) transition-colors"
+              class="w-3.5 h-3.5 rounded-full border-[1.5px] border-(--text-light) cursor-pointer hover:border-(--text) transition-colors"
               :style="{ backgroundColor: color }"
             />
           </div>
