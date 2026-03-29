@@ -26,6 +26,7 @@ function handleLogout() {
       <Button
         variant="ghost"
         size="icon"
+        class="hover:bg-(--card-hover)"
         as-child
       >
         <RouterLink
@@ -38,6 +39,7 @@ function handleLogout() {
       <Button
         variant="ghost"
         size="icon"
+        class="hover:bg-(--card-hover)"
         as-child
       >
         <RouterLink
@@ -54,6 +56,7 @@ function handleLogout() {
         <Button
           variant="ghost"
           size="icon"
+          class="hover:bg-(--card-hover)"
           aria-label="Open menu"
           @click="sidebarOpen = true"
         >
