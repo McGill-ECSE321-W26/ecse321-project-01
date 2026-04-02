@@ -75,23 +75,11 @@ public class PersonResponseDto {
     this.email = email;
   }
 
-  public void setRoleTypes(List<String> roleTypes) {
-    this.roleTypes = roleTypes;
-  }
-
   public void setAddress(String address) {
     this.address = address;
   }
 
   public void setLoyaltyPoints(Integer loyaltyPoints) {
     this.loyaltyPoints = loyaltyPoints;
-  }
-
-  public void setEmployeeRoleId(String employeeRoleId) {
-    this.employeeRoleId = employeeRoleId;
-  }
-
-  public void setCustomerRoleId(String customerRoleId) {
-    this.customerRoleId = customerRoleId;
   }
 }
