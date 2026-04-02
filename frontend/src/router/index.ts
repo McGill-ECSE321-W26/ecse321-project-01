@@ -7,6 +7,7 @@ import AccountPage from '../pages/AccountPage.vue'
 import CartPage from '../pages/CartPage.vue'
 import ShopPage from '../pages/ShopPage.vue'
 import OrdersPage from '../pages/OrdersPage.vue'
+import ManagerDashboardPage from '../pages/ManagerDashboardPage.vue'
 
 // List of routes that do not require auth
 const publicRoutes = ['home', 'login', 'register', 'not-found']
@@ -20,7 +21,8 @@ const router = createRouter({
     { path: '/account', name: 'account', component: AccountPage },
     { path: '/cart', name: 'cart', component: CartPage },
     { path: '/shop', name: 'shop', component: ShopPage },
-    { path: '/orders', name: 'orders', component: OrdersPage },
+    { path: '/manager', name: 'manager-dashboard', component: ManagerDashboardPage },
+    { path: '/manager/orders', name: 'manager-orders', component: OrdersPage },
     { path: '/:pathMatch(.*)*', name: 'not-found', component: NotFoundPage },
   ],
 })
@@ -31,10 +33,14 @@ router.beforeEach((to, _from, next) => {
   // Boolean to check if JWT token exists in local storage. !! to convert to bool
   const isAuthenticated = !!localStorage.getItem('token')
   // Boolean to check if destination route matches by name
-  const isRoutePublic = publicRoutes.includes(to.name as string)
+  const isRoutePublic = publicRoutes.includes(to.name as string);
+  const role = localStorage.getItem('role');
 
-  // Redirect to login page if trying to access protected route
-  if (!isAuthenticated && !isRoutePublic) {
+  // All /manager/* routes are manager-only
+  if (to.path.startsWith('/manager') && role !== 'Manager') {
+    next({ name: 'not-found' });
+  }
+  else if (!isAuthenticated && !isRoutePublic) {
     next({ name: 'login' })
   }
   else if (isAuthenticated && (to.name === 'login' || to.name === 'register')) {

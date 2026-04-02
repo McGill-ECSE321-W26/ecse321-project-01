@@ -14,6 +14,8 @@ public class PersonResponseDto {
   private List<String> roleTypes;
   private String address;
   private Integer loyaltyPoints;
+  private String employeeRoleId;
+  private String customerRoleId;
 
   @SuppressWarnings("unused")
   private PersonResponseDto() {}
@@ -27,10 +29,12 @@ public class PersonResponseDto {
         this.roleTypes.add("Customer");
         this.address = customer.getAddress();
         this.loyaltyPoints = customer.getLoyaltyPoints();
+        this.customerRoleId = customer.getRoleID();
       } else if (role instanceof Manager) {
         this.roleTypes.add("Manager");
-      } else if (role instanceof Employee) {
+      } else if (role instanceof Employee employee) {
         this.roleTypes.add("Employee");
+        this.employeeRoleId = employee.getRoleID();
       }
     }
   }
@@ -55,6 +59,14 @@ public class PersonResponseDto {
     return loyaltyPoints;
   }
 
+  public String getEmployeeRoleId() {
+    return employeeRoleId;
+  }
+
+  public String getCustomerRoleId() {
+    return customerRoleId;
+  }
+
   public void setId(String id) {
     this.id = id;
   }
@@ -73,5 +85,13 @@ public class PersonResponseDto {
 
   public void setLoyaltyPoints(Integer loyaltyPoints) {
     this.loyaltyPoints = loyaltyPoints;
+  }
+
+  public void setEmployeeRoleId(String employeeRoleId) {
+    this.employeeRoleId = employeeRoleId;
+  }
+
+  public void setCustomerRoleId(String customerRoleId) {
+    this.customerRoleId = customerRoleId;
   }
 }

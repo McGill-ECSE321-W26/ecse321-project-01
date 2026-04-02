@@ -62,6 +62,16 @@ public class PersonService {
   }
 
   @Transactional(readOnly = true)
+  public List<Person> getEmployees() {
+      return employeeRepository.findAll().stream().map(Employee::getPerson).toList();
+  }
+
+  @Transactional(readOnly = true)
+  public List<Person> getCustomers() {
+    return customerRepository.findAll().stream().map(Customer::getPerson).toList();
+  }
+
+  @Transactional(readOnly = true)
   public Person getPersonById(String id) {
     return findPersonOrThrow(id);
   }
@@ -235,4 +245,5 @@ public class PersonService {
     }
     return person;
   }
+
 }

@@ -67,6 +67,16 @@ public class PersonController {
     return new AuthResponseDto(token, new PersonResponseDto(p));
   }
 
+  @GetMapping("/employees")
+  public List<PersonResponseDto> getEmployees() {
+    return personService.getEmployees().stream().map(PersonResponseDto::new).toList();
+  }
+
+  @GetMapping("/customers")
+  public List<PersonResponseDto> getCustomers() {
+    return personService.getCustomers().stream().map(PersonResponseDto::new).toList();
+  }
+
   @GetMapping
   public List<PersonResponseDto> getPeople(@RequestParam(required = false) String email) {
     if (email != null) {

@@ -868,4 +868,90 @@ public class PersonIntegrationTests {
     createdEmployeeId = null;
     createdEmployeeEmail = null;
   }
+
+  // ==== GET /api/persons/employees ====
+
+  @Test
+  @Order(34)
+  public void testGetEmployeesUnauthorized() {
+    // Arrange
+    RestClient customerClient =
+        RestClient.builder()
+            .baseUrl("http://localhost:" + port)
+            .defaultHeader("Authorization", "Bearer " + customerToken)
+            .defaultStatusHandler(HttpStatusCode::isError, (req, res) -> {})
+            .build();
+
+    // Act
+    ResponseEntity<String> response =
+        customerClient.get().uri("/api/persons/employees").retrieve().toEntity(String.class);
+
+    // Assert
+    assertNotNull(response);
+    assertEquals(HttpStatus.FORBIDDEN, response.getStatusCode());
+  }
+
+  @Test
+  @Order(35)
+  public void testGetEmployeesValid() {
+    // Act
+    ResponseEntity<List<PersonResponseDto>> response =
+        managerClient
+            .get()
+            .uri("/api/persons/employees")
+            .retrieve()
+            .toEntity(new ParameterizedTypeReference<>() {});
+
+    // Assert
+    assertNotNull(response);
+    assertEquals(HttpStatus.OK, response.getStatusCode());
+    List<PersonResponseDto> body = response.getBody();
+    assertNotNull(body);
+    assertTrue(body.stream().allMatch(p -> p.getRoleTypes().contains("Employee")));
+  }
+
+  // ==== GET /api/persons/customers ====
+
+  @Test
+  @Order(36)
+  public void testGetCustomersUnauthorized() {
+    // Arrange
+    RestClient customerClient =
+        RestClient.builder()
+            .baseUrl("http://localhost:" + port)
+            .defaultHeader("Authorization", "Bearer " + customerToken)
+            .defaultStatusHandler(HttpStatusCode::isError, (req, res) -> {})
+            .build();
+
+    // Act
+    ResponseEntity<String> response =
+        customerClient.get().uri("/api/persons/customers").retrieve().toEntity(String.class);
+
+    // Assert
+    assertNotNull(response);
+    assertEquals(HttpStatus.FORBIDDEN, response.getStatusCode());
+  }
+
+  @Test
+  @Order(37)
+  public void testGetCustomersValid() {
+    // Act
+    ResponseEntity<List<PersonResponseDto>> response =
+        managerClient
+            .get()
+            .uri("/api/persons/customers")
+            .retrieve()
+            .toEntity(new ParameterizedTypeReference<>() {});
+
+    // Assert
+    assertNotNull(response);
+    assertEquals(HttpStatus.OK, response.getStatusCode());
+    List<PersonResponseDto> body = response.getBody();
+    assertNotNull(body);
+    assertFalse(body.isEmpty());
+    assertTrue(body.stream().anyMatch(p -> createdCustomerEmail.equals(p.getEmail())));
+    assertTrue(body.stream().allMatch(p -> p.getRoleTypes().contains("Customer")));
+    assertTrue(body.stream().filter(p -> createdCustomerEmail.equals(p.getEmail()))
+        .allMatch(p -> p.getCustomerRoleId() != null));
+  }
 }

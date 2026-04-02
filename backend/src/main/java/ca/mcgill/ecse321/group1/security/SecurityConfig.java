@@ -78,8 +78,12 @@ public class SecurityConfig {
                     .hasRole("Manager")
                     .requestMatchers(HttpMethod.PATCH, "/api/clothing/**")
                     .hasRole("Manager")
-                    // Only managers can list all people
+                    // Only managers can list all people, employees, or customers
                     .requestMatchers(HttpMethod.GET, "/api/persons")
+                    .hasRole("Manager")
+                    .requestMatchers(HttpMethod.GET, "/api/persons/employees")
+                    .hasRole("Manager")
+                    .requestMatchers(HttpMethod.GET, "/api/persons/customers")
                     .hasRole("Manager")
 
                     // --- Customer-only endpoints ---
