@@ -3,11 +3,14 @@ package ca.mcgill.ecse321.group1.controller;
 import ca.mcgill.ecse321.group1.dto.AddressDto;
 import ca.mcgill.ecse321.group1.dto.AuthResponseDto;
 import ca.mcgill.ecse321.group1.dto.CustomerCreateRequestDto;
+import ca.mcgill.ecse321.group1.dto.CustomerResponseDto;
 import ca.mcgill.ecse321.group1.dto.EmployeeCreateRequestDto;
+import ca.mcgill.ecse321.group1.dto.EmployeeResponseDto;
 import ca.mcgill.ecse321.group1.dto.LoginRequestDto;
 import ca.mcgill.ecse321.group1.dto.PersonPasswordUpdateRequestDto;
 import ca.mcgill.ecse321.group1.dto.PersonResponseDto;
 import ca.mcgill.ecse321.group1.model.Customer;
+import ca.mcgill.ecse321.group1.model.Employee;
 import ca.mcgill.ecse321.group1.model.Person;
 import ca.mcgill.ecse321.group1.security.JwtUtil;
 import ca.mcgill.ecse321.group1.service.PersonService;
@@ -30,16 +33,16 @@ public class PersonController {
 
   @PostMapping("/customers")
   @ResponseStatus(HttpStatus.CREATED)
-  public PersonResponseDto createCustomer(@RequestBody CustomerCreateRequestDto dto) {
-    Person p = personService.createCustomer(dto.getEmail(), dto.getPassword(), dto.getAddress());
-    return new PersonResponseDto(p);
+  public CustomerResponseDto createCustomer(@RequestBody CustomerCreateRequestDto dto) {
+    Customer c = personService.createCustomer(dto.getEmail(), dto.getPassword(), dto.getAddress());
+    return new CustomerResponseDto(c);
   }
 
   @PostMapping("/employees")
   @ResponseStatus(HttpStatus.CREATED)
-  public PersonResponseDto createEmployee(@RequestBody EmployeeCreateRequestDto dto) {
-    Person p = personService.createEmployee(dto.getEmail(), dto.getPassword());
-    return new PersonResponseDto(p);
+  public EmployeeResponseDto createEmployee(@RequestBody EmployeeCreateRequestDto dto) {
+    Employee e = personService.createEmployee(dto.getEmail(), dto.getPassword());
+    return new EmployeeResponseDto(e);
   }
 
   @PostMapping("/{id}/roles/customer")
@@ -68,13 +71,13 @@ public class PersonController {
   }
 
   @GetMapping("/employees")
-  public List<PersonResponseDto> getEmployees() {
-    return personService.getEmployees().stream().map(PersonResponseDto::new).toList();
+  public List<EmployeeResponseDto> getEmployees() {
+    return personService.getEmployees().stream().map(EmployeeResponseDto::new).toList();
   }
 
   @GetMapping("/customers")
-  public List<PersonResponseDto> getCustomers() {
-    return personService.getCustomers().stream().map(PersonResponseDto::new).toList();
+  public List<CustomerResponseDto> getCustomers() {
+    return personService.getCustomers().stream().map(CustomerResponseDto::new).toList();
   }
 
   @GetMapping
@@ -99,10 +102,10 @@ public class PersonController {
   }
 
   @PatchMapping("/{id}/address")
-  public PersonResponseDto updateCustomerAddress(
+  public CustomerResponseDto updateCustomerAddress(
       @PathVariable String id, @RequestBody AddressDto dto) {
     Customer c = personService.updateCustomerAddress(id, dto.getAddress());
-    return new PersonResponseDto(c.getPerson());
+    return new CustomerResponseDto(c);
   }
 
   @DeleteMapping("/{id}")

@@ -7,7 +7,7 @@ import {
 } from 'lucide-vue-next'
 import { api } from '@/api/client'
 import type { OrderResponseDto } from '@/api/types/order'
-import type {EmployeeResponseDto} from '@/api/types/employee'
+import type {EmployeeResponseDto} from '@/api/types/person'
 
 const route = useRoute()
 
@@ -73,7 +73,7 @@ async function assignEmployee(employee: EmployeeResponseDto) {
     const idx = orders.value.findIndex(o => o.orderID === updated.orderID)
     if (idx !== -1) orders.value[idx] = updated
     assigningOrder.value = null
-  } catch (e: any) {
+  } catch (e) {
     assignError.value = e?.message ?? 'Failed to assign employee.'
   } finally {
     assigning.value = false
@@ -82,7 +82,6 @@ async function assignEmployee(employee: EmployeeResponseDto) {
 
 async function updateStatus(order: OrderResponseDto, status: string) {
   updatingStatus.value = order.orderID
-  console.log(order)
   try {
     const updated = await api<OrderResponseDto>(`/orders/${order.orderID}`, {
       method: 'PATCH',
@@ -135,7 +134,10 @@ const activeSection = computed(() => {
       </div>
 
       <nav class="flex flex-col gap-0 px-0 pt-2">
-        <template v-for="item in navItems" :key="item.key">
+        <template
+          v-for="item in navItems"
+          :key="item.key"
+        >
           <component
             :is="item.to ? RouterLink : 'button'"
             v-bind="item.to ? { to: item.to } : {}"
@@ -146,7 +148,10 @@ const activeSection = computed(() => {
                 : 'text-(--text-muted) hover:bg-(--card-hover) hover:text-(--text)'
             "
           >
-            <component :is="item.icon" class="w-4 h-4 shrink-0" />
+            <component
+              :is="item.icon"
+              class="w-4 h-4 shrink-0"
+            />
             {{ item.label }}
           </component>
         </template>
@@ -155,35 +160,61 @@ const activeSection = computed(() => {
 
     <!-- Main -->
     <main class="flex-1 px-10 pt-16 pb-20">
-
       <!-- Heading -->
       <h1 class="orders-heading text-[40px] lg:text-[52px] font-normal tracking-tight leading-tight mb-2">
         <span class="text-(--text-muted)">Order</span>
         <em class="text-(--text-light)"> Management</em>
       </h1>
       <div class="flex items-center justify-between mb-10 pb-6 border-b border-(--text-light)">
-        <p class="text-sm font-light text-(--text-muted)">Assign employees and track every order.</p>
+        <p class="text-sm font-light text-(--text-muted)">
+          Assign employees and track every order.
+        </p>
         <span class="text-[12px] text-(--text-light) uppercase tracking-widest hidden sm:inline">Orders</span>
       </div>
 
       <!-- Stats -->
       <div class="grid grid-cols-3 gap-0 border border-(--text-light) mb-10">
-        <div class="stat-card p-7 border-r border-(--text-light)" style="animation-delay: 0s">
-          <p class="text-[10px] uppercase tracking-[0.2em] text-(--text-light) mb-3">Total Orders</p>
-          <p class="text-[44px] font-light text-(--text) leading-none">{{ loading ? '—' : totalOrders }}</p>
+        <div
+          class="stat-card p-7 border-r border-(--text-light)"
+          style="animation-delay: 0s"
+        >
+          <p class="text-[10px] uppercase tracking-[0.2em] text-(--text-light) mb-3">
+            Total Orders
+          </p>
+          <p class="text-[44px] font-light text-(--text) leading-none">
+            {{ loading ? '—' : totalOrders }}
+          </p>
         </div>
-        <div class="stat-card p-7 border-r border-(--text-light)" style="animation-delay: 0.1s">
-          <p class="text-[10px] uppercase tracking-[0.2em] text-(--text-light) mb-3">Not Assigned</p>
-          <p class="text-[44px] font-light text-(--text) leading-none">{{ loading ? '—' : notAssigned }}</p>
+        <div
+          class="stat-card p-7 border-r border-(--text-light)"
+          style="animation-delay: 0.1s"
+        >
+          <p class="text-[10px] uppercase tracking-[0.2em] text-(--text-light) mb-3">
+            Not Assigned
+          </p>
+          <p class="text-[44px] font-light text-(--text) leading-none">
+            {{ loading ? '—' : notAssigned }}
+          </p>
         </div>
-        <div class="stat-card p-7" style="animation-delay: 0.2s">
-          <p class="text-[10px] uppercase tracking-[0.2em] text-(--text-light) mb-3">Completed</p>
-          <p class="text-[44px] font-light text-(--text) leading-none">{{ loading ? '—' : completed }}</p>
+        <div
+          class="stat-card p-7"
+          style="animation-delay: 0.2s"
+        >
+          <p class="text-[10px] uppercase tracking-[0.2em] text-(--text-light) mb-3">
+            Completed
+          </p>
+          <p class="text-[44px] font-light text-(--text) leading-none">
+            {{ loading ? '—' : completed }}
+          </p>
         </div>
       </div>
 
       <!-- Order table view -->
-      <div v-if="!assigningOrder" class="stat-card border border-(--text-light)" style="animation-delay: 0.3s">
+      <div
+        v-if="!assigningOrder"
+        class="stat-card border border-(--text-light)"
+        style="animation-delay: 0.3s"
+      >
         <!-- Filter tabs -->
         <div class="flex items-center border-b border-(--text-light)">
           <button
@@ -216,10 +247,18 @@ const activeSection = computed(() => {
         </div>
 
         <!-- Loading -->
-        <div v-if="loading" class="px-6 py-10 text-[13px] text-(--text-light)">Loading orders…</div>
+        <div
+          v-if="loading"
+          class="px-6 py-10 text-[13px] text-(--text-light)"
+        >
+          Loading orders…
+        </div>
 
         <!-- Empty -->
-        <div v-else-if="filteredOrders.length === 0" class="px-6 py-10 text-[13px] text-(--text-light)">
+        <div
+          v-else-if="filteredOrders.length === 0"
+          class="px-6 py-10 text-[13px] text-(--text-light)"
+        >
           No orders found.
         </div>
 
@@ -244,7 +283,10 @@ const activeSection = computed(() => {
             {{ order.orderStatus }}
           </span>
           <div>
-            <span v-if="order.employeeID" class="text-[12px] text-(--text-muted) tracking-wide">
+            <span
+              v-if="order.employeeID"
+              class="text-[12px] text-(--text-muted) tracking-wide"
+            >
               #{{ order.employeeID.slice(0, 8) }}…
             </span>
             <button
@@ -277,7 +319,11 @@ const activeSection = computed(() => {
       </div>
 
       <!-- Assign employee panel -->
-      <div v-else class="stat-card border border-(--text-light)" style="animation-delay: 0.3s">
+      <div
+        v-else
+        class="stat-card border border-(--text-light)"
+        style="animation-delay: 0.3s"
+      >
         <!-- Header -->
         <div class="flex items-center gap-4 px-8 py-5 border-b border-(--text-light)">
           <button
@@ -293,13 +339,23 @@ const activeSection = computed(() => {
 
         <!-- Section label -->
         <div class="px-8 pt-8 pb-4">
-          <p class="text-[10px] uppercase tracking-[0.2em] text-(--text-light) mb-6">Available Employees</p>
+          <p class="text-[10px] uppercase tracking-[0.2em] text-(--text-light) mb-6">
+            Available Employees
+          </p>
 
           <!-- Error -->
-          <p v-if="assignError" class="text-[12px] text-red-400 mb-4">{{ assignError }}</p>
+          <p
+            v-if="assignError"
+            class="text-[12px] text-red-400 mb-4"
+          >
+            {{ assignError }}
+          </p>
 
           <!-- Employee grid -->
-          <div v-if="employees.length === 0" class="text-[13px] text-(--text-light) py-6">
+          <div
+            v-if="employees.length === 0"
+            class="text-[13px] text-(--text-light) py-6"
+          >
             No employees found.
           </div>
           <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 pb-8">
@@ -315,8 +371,12 @@ const activeSection = computed(() => {
                 <User class="w-6 h-6 text-(--text-muted)" />
               </div>
               <div>
-                <p class="text-[12px] text-(--text) leading-snug break-all">{{ emp.email }}</p>
-                <p class="text-[8px] uppercase tracking-widest text-(--text-light) mt-1">Click to select</p>
+                <p class="text-[12px] text-(--text) leading-snug break-all">
+                  {{ emp.email }}
+                </p>
+                <p class="text-[8px] uppercase tracking-widest text-(--text-light) mt-1">
+                  Click to select
+                </p>
               </div>
             </button>
           </div>

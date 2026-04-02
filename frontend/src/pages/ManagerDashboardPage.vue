@@ -2,12 +2,10 @@
 import { ref, computed, onMounted } from 'vue'
 import { RouterLink } from 'vue-router'
 import { ShoppingBag, Boxes, Users, UserCog, LayoutDashboard, ShieldCheck, ArrowRight } from 'lucide-vue-next'
-import { useAuthStore } from '@/stores/auth'
 import { api } from '@/api/client'
 import type {PersonResponseDto} from '@api/types/type'
 import type { OrderResponseDto } from '@/api/types/order'
 
-const auth = useAuthStore()
 const activeSection = ref('dashboard')
 
 const totalOrders = ref<number | null>(null)
@@ -162,7 +160,10 @@ const statCards = computed(() => [
       <!-- Charts + Actions row -->
       <div class="grid grid-cols-2 gap-0 border border-(--text-light)">
         <!-- Pie chart -->
-        <div class="stat-card p-8 border-r border-(--text-light)" style="animation-delay: 0.3s">
+        <div
+          class="stat-card p-8 border-r border-(--text-light)"
+          style="animation-delay: 0.3s"
+        >
           <p class="text-[10px] uppercase tracking-[0.2em] text-(--text-light) mb-6">
             Order Completion
           </p>
@@ -221,22 +222,34 @@ const statCards = computed(() => [
               <div class="flex items-center gap-3">
                 <span class="inline-block w-3 h-3 bg-chart-4" />
                 <div>
-                  <p class="text-(--text) font-medium">{{ completedOrders }}</p>
-                  <p class="text-(--text-light) uppercase tracking-wide text-[10px]">Completed</p>
+                  <p class="text-(--text) font-medium">
+                    {{ completedOrders }}
+                  </p>
+                  <p class="text-(--text-light) uppercase tracking-wide text-[10px]">
+                    Completed
+                  </p>
                 </div>
               </div>
               <div class="flex items-center gap-3">
                 <span class="inline-block w-3 h-3 border border-(--text-light)" />
                 <div>
-                  <p class="text-(--text) font-medium">{{ pendingOrders }}</p>
-                  <p class="text-(--text-light) uppercase tracking-wide text-[10px]">Pending</p>
+                  <p class="text-(--text) font-medium">
+                    {{ pendingOrders }}
+                  </p>
+                  <p class="text-(--text-light) uppercase tracking-wide text-[10px]">
+                    Pending
+                  </p>
                 </div>
               </div>
               <div class="flex items-center gap-3">
                 <span class="inline-block w-3 h-3 bg-destructive" />
                 <div>
-                  <p class="text-(--text) font-medium">{{ cancelOrders }}</p>
-                  <p class="text-(--text-light) uppercase tracking-wide text-[10px]">Cancelled</p>
+                  <p class="text-(--text) font-medium">
+                    {{ cancelOrders }}
+                  </p>
+                  <p class="text-(--text-light) uppercase tracking-wide text-[10px]">
+                    Cancelled
+                  </p>
                 </div>
               </div>
             </div>
@@ -244,7 +257,10 @@ const statCards = computed(() => [
         </div>
 
         <!-- Quick actions -->
-        <div class="stat-card p-8" style="animation-delay: 0.4s">
+        <div
+          class="stat-card p-8"
+          style="animation-delay: 0.4s"
+        >
           <p class="text-[10px] uppercase tracking-[0.2em] text-(--text-light) mb-6">
             Quick Actions
           </p>
@@ -313,7 +329,10 @@ const statCards = computed(() => [
           <span class="text-[10px] uppercase tracking-[0.18em] text-(--text-light)">Status</span>
         </div>
 
-        <div v-if="recentOrders.length === 0" class="px-8 py-6 text-[13px] text-(--text-light)">
+        <div
+          v-if="recentOrders.length === 0"
+          class="px-8 py-6 text-[13px] text-(--text-light)"
+        >
           No orders yet.
         </div>
 
