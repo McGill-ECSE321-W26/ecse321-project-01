@@ -73,7 +73,7 @@ async function assignEmployee(employee: EmployeeResponseDto) {
     const idx = orders.value.findIndex(o => o.orderID === updated.orderID)
     if (idx !== -1) orders.value[idx] = updated
     assigningOrder.value = null
-  } catch (e) {
+  } catch (e: Error) {
     assignError.value = e?.message ?? 'Failed to assign employee.'
   } finally {
     assigning.value = false

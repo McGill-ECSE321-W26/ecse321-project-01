@@ -3,7 +3,7 @@ import { ref, computed, onMounted } from 'vue'
 import { RouterLink } from 'vue-router'
 import { ShoppingBag, Boxes, Users, UserCog, LayoutDashboard, ShieldCheck, ArrowRight } from 'lucide-vue-next'
 import { api } from '@/api/client'
-import type {PersonResponseDto} from '@api/types/type'
+import type {PersonResponseDto} from '@api/types/types'
 import type { OrderResponseDto } from '@/api/types/order'
 
 const activeSection = ref('dashboard')

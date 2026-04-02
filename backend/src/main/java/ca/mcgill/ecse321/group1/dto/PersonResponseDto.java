@@ -29,7 +29,7 @@ public class PersonResponseDto {
         this.loyaltyPoints = customer.getLoyaltyPoints();
       } else if (role instanceof Manager) {
         this.roleTypes.add("Manager");
-      } else if (role instanceof Employee employee) {
+      } else if (role instanceof Employee) {
         this.roleTypes.add("Employee");
       }
     }
