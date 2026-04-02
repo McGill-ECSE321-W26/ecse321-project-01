@@ -4,7 +4,8 @@ import { RouterLink } from 'vue-router'
 import { ShoppingBag, Boxes, Users, UserCog, LayoutDashboard, ShieldCheck, ArrowRight } from 'lucide-vue-next'
 import { useAuthStore } from '@/stores/auth'
 import { api } from '@/api/client'
-import type { PersonResponseDto, OrderResponseDto } from '@/api/types'
+import type {PersonResponseDto} from '@api/types/type'
+import type { OrderResponseDto } from '@/api/types/order'
 
 const auth = useAuthStore()
 const activeSection = ref('dashboard')
@@ -14,6 +15,7 @@ const totalCustomers = ref<number | null>(null)
 const totalEmployees = ref<number | null>(null)
 const completedOrders = ref(0)
 const pendingOrders = ref(0)
+const cancelOrders = ref(0)
 const recentOrders = ref<OrderResponseDto[]>([])
 
 onMounted(async () => {
@@ -29,10 +31,11 @@ onMounted(async () => {
   try {
     const orders = await api<OrderResponseDto[]>('/orders')
     totalOrders.value = orders.length
+    
     completedOrders.value = orders.filter(o => o.orderStatus === 'Delivered').length
-    pendingOrders.value = orders.length - completedOrders.value
+    cancelOrders.value = orders.filter(o => o.orderStatus === 'Cancelled').length
+    pendingOrders.value = orders.filter(o => o.orderStatus === 'Preparing').length
     recentOrders.value = orders.slice(-6).reverse()
-    console.log(recentOrders.value)
   } catch {
     totalOrders.value = 0
   }
@@ -42,23 +45,33 @@ const PIE_R = 60
 const PIE_CX = 80
 const PIE_CY = 80
 
-const completedFraction = computed(() => {
-  const total = completedOrders.value + pendingOrders.value
-  return total === 0 ? 0 : completedOrders.value / total
-})
+const totalOrdersForChart = computed(() =>
+  completedOrders.value + pendingOrders.value + cancelOrders.value
+)
+
+const completedFraction = computed(() =>
+  totalOrdersForChart.value === 0 ? 0 : completedOrders.value / totalOrdersForChart.value
+)
+
+const cancelledFraction = computed(() =>
+  totalOrdersForChart.value === 0 ? 0 : cancelOrders.value / totalOrdersForChart.value
+)
 
 function polarToCartesian(cx: number, cy: number, r: number, angleDeg: number) {
   const rad = ((angleDeg - 90) * Math.PI) / 180
   return { x: cx + r * Math.cos(rad), y: cy + r * Math.sin(rad) }
 }
 
-function slicePath(cx: number, cy: number, r: number, fraction: number) {
-  if (fraction <= 0) return ''
-  if (fraction >= 1) return `M ${cx},${cy - r} A ${r},${r} 0 1,1 ${cx - 0.001},${cy - r} Z`
-  const angle = fraction * 360
-  const end = polarToCartesian(cx, cy, r, angle)
-  const large = angle > 180 ? 1 : 0
-  return `M ${cx},${cy} L ${cx},${cy - r} A ${r},${r} 0 ${large},1 ${end.x},${end.y} Z`
+function slicePath(cx: number, cy: number, r: number, startFraction: number, endFraction: number) {
+  const span = endFraction - startFraction
+  if (span <= 0) return ''
+  if (span >= 1) return `M ${cx},${cy - r} A ${r},${r} 0 1,1 ${cx - 0.001},${cy - r} Z`
+  const startAngle = startFraction * 360
+  const endAngle = endFraction * 360
+  const start = polarToCartesian(cx, cy, r, startAngle)
+  const end = polarToCartesian(cx, cy, r, endAngle)
+  const large = (endAngle - startAngle) > 180 ? 1 : 0
+  return `M ${cx},${cy} L ${start.x},${start.y} A ${r},${r} 0 ${large},1 ${end.x},${end.y} Z`
 }
 
 const navItems = [
@@ -117,8 +130,8 @@ const statCards = computed(() => [
     <main class="flex-1 px-10 pt-16 pb-20">
       <!-- Page heading -->
       <h1 class="dashboard-heading text-[40px] lg:text-[52px] font-normal tracking-tight leading-tight mb-2">
-        <span class="text-(--text-muted)">Welcome,</span>
-        <em class="text-(--text-light)"> {{ auth.person?.email?.split('@')[0] ?? 'Manager' }}</em>
+        <span class="text-(--text-muted)">Welcome Back,</span>
+        <em class="text-(--text-light)">  Manager </em>
       </h1>
       <div class="flex items-center justify-between mb-10 pb-6 border-b border-(--text-light)">
         <p class="text-sm font-light text-(--text-muted)">
@@ -169,21 +182,34 @@ const statCards = computed(() => [
               />
               <path
                 v-if="completedFraction > 0"
-                :d="slicePath(PIE_CX, PIE_CY, PIE_R, completedFraction)"
-                fill="var(--text)"
+                :d="slicePath(PIE_CX, PIE_CY, PIE_R, 0, completedFraction)"
+                fill="var(--chart-4)"
                 opacity="0.15"
               />
               <path
                 v-if="completedFraction > 0"
-                :d="slicePath(PIE_CX, PIE_CY, PIE_R, completedFraction)"
-                fill="var(--text)"
+                :d="slicePath(PIE_CX, PIE_CY, PIE_R, 0, completedFraction)"
+                fill="var(--chart-4)"
+                opacity="0.75"
+                style="mix-blend-mode: multiply"
+              />
+              <path
+                v-if="cancelledFraction > 0"
+                :d="slicePath(PIE_CX, PIE_CY, PIE_R, completedFraction, completedFraction + cancelledFraction)"
+                fill="var(--destructive)"
+                opacity="0.15"
+              />
+              <path
+                v-if="cancelledFraction > 0"
+                :d="slicePath(PIE_CX, PIE_CY, PIE_R, completedFraction, completedFraction + cancelledFraction)"
+                fill="var(--destructive)"
                 opacity="0.75"
                 style="mix-blend-mode: multiply"
               />
               <text
                 :x="PIE_CX"
                 :y="PIE_CY + 5"
-                text-anchor="middle"
+                text-anchor="bottom"
                 font-size="14"
                 font-weight="300"
                 fill="var(--text)"
@@ -193,7 +219,7 @@ const statCards = computed(() => [
             </svg>
             <div class="space-y-4 text-[12px]">
               <div class="flex items-center gap-3">
-                <span class="inline-block w-3 h-3 bg-(--text)" />
+                <span class="inline-block w-3 h-3 bg-chart-4" />
                 <div>
                   <p class="text-(--text) font-medium">{{ completedOrders }}</p>
                   <p class="text-(--text-light) uppercase tracking-wide text-[10px]">Completed</p>
@@ -204,6 +230,13 @@ const statCards = computed(() => [
                 <div>
                   <p class="text-(--text) font-medium">{{ pendingOrders }}</p>
                   <p class="text-(--text-light) uppercase tracking-wide text-[10px]">Pending</p>
+                </div>
+              </div>
+              <div class="flex items-center gap-3">
+                <span class="inline-block w-3 h-3 bg-destructive" />
+                <div>
+                  <p class="text-(--text) font-medium">{{ cancelOrders }}</p>
+                  <p class="text-(--text-light) uppercase tracking-wide text-[10px]">Cancelled</p>
                 </div>
               </div>
             </div>

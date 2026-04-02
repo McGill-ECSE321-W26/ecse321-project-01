@@ -2,7 +2,7 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import { api } from '@/api/client'
-import type { AuthResponseDto, PersonResponseDto } from '@/api/types'
+import type { AuthResponseDto, PersonResponseDto } from '@/api/types/types.ts'
 
 export const useAuthStore = defineStore('auth', () => {
   const token = ref<string | null>(localStorage.getItem('token'))

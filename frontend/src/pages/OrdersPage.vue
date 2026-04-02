@@ -6,13 +6,14 @@ import {
   ShieldCheck, ArrowLeft, User,
 } from 'lucide-vue-next'
 import { api } from '@/api/client'
-import type { OrderResponseDto, PersonResponseDto } from '@/api/types'
+import type { OrderResponseDto } from '@/api/types/order'
+import type {EmployeeResponseDto} from '@/api/types/employee'
 
 const route = useRoute()
 
 // ── Data ────────────────────────────────────────────────────────────────────
 const orders = ref<OrderResponseDto[]>([])
-const employees = ref<PersonResponseDto[]>([])
+const employees = ref<EmployeeResponseDto[]>([])
 const loading = ref(true)
 const assigningOrder = ref<OrderResponseDto | null>(null)
 const assigning = ref(false)
@@ -24,7 +25,7 @@ onMounted(async () => {
   try {
     const [ordersData, employeesData] = await Promise.all([
       api<OrderResponseDto[]>('/orders'),
-      api<PersonResponseDto[]>('/persons/employees'),
+      api<EmployeeResponseDto[]>('/persons/employees'),
     ])
     orders.value = ordersData
     employees.value = employeesData
@@ -57,7 +58,7 @@ function cancelAssign() {
   assignError.value = null
 }
 
-async function assignEmployee(employee: PersonResponseDto) {
+async function assignEmployee(employee: EmployeeResponseDto) {
   if (!assigningOrder.value) return
   assigning.value = true
   assignError.value = null
@@ -65,7 +66,7 @@ async function assignEmployee(employee: PersonResponseDto) {
     const updated = await api<OrderResponseDto>(`/orders/${assigningOrder.value.orderID}`, {
       method: 'PATCH',
       body: JSON.stringify({ 
-        employeeID: employee.employeeRoleId,
+        employeeID: employee.id,
         orderStatus: "Preparing",
       }),
     })
@@ -266,7 +267,7 @@ const activeSection = computed(() => {
             <button
               v-if="order.orderStatus !== 'Cancelled' && order.orderStatus !== 'Delivered'"
               :disabled="updatingStatus === order.orderID"
-              class="text-[11px] uppercase tracking-widest border border-(--text-light) px-3 py-1.5 text-(--text-light) hover:border-red-400 hover:text-red-400 transition-colors disabled:opacity-40"
+              class="text-[11px] uppercase tracking-widest border border-(--text-light) px-3 py-1.5 text-(--text)   hover:bg-destructive hover:text-(--bg) transition-colors disabled:opacity-40"
               @click="updateStatus(order, 'Cancelled')"
             >
               Cancel
@@ -315,13 +316,8 @@ const activeSection = computed(() => {
               </div>
               <div>
                 <p class="text-[12px] text-(--text) leading-snug break-all">{{ emp.email }}</p>
-                <p class="text-[10px] uppercase tracking-widest text-(--text-light) mt-1">Employee</p>
+                <p class="text-[8px] uppercase tracking-widest text-(--text-light) mt-1">Click to select</p>
               </div>
-              <span
-                class="text-[10px] uppercase tracking-widest border border-(--text-light) px-2.5 py-1 group-hover:border-(--text-muted) group-hover:text-(--text-muted) text-(--text-light) transition-colors"
-              >
-                Select
-              </span>
             </button>
           </div>
         </div>
