@@ -4,7 +4,7 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "predev": "docker compose -f ../backend/docker-compose.yml up -d",
+    "predev1": "docker compose -f ../backend/docker-compose.yml up -d",
     "dev1": "concurrently \"vite\" \"cd ../backend && gradlew bootRun\"",
     "dev": "vite",
     "build": "vue-tsc -b && vite build",
