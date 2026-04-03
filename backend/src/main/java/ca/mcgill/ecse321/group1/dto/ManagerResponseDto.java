@@ -1,19 +1,19 @@
 package ca.mcgill.ecse321.group1.dto;
 
-import ca.mcgill.ecse321.group1.model.Employee;
+import ca.mcgill.ecse321.group1.model.Manager;
 
-public class EmployeeResponseDto {
-  private final String role = "Employee";
+public class ManagerResponseDto {
+  private final String role = "Manager";
   private String id;
-  private String email;
   private String personId;
+  private String email;
 
-  public EmployeeResponseDto() {}
+  public ManagerResponseDto() {}
 
-  public EmployeeResponseDto(Employee employee) {
-    this.id = employee.getRoleID();
-    this.personId = employee.getPerson().getPersonID();
-    this.email = employee.getPerson().getEmail();
+  public ManagerResponseDto(Manager manager) {
+    this.id = manager.getRoleID();
+    this.personId = manager.getPerson().getPersonID();
+    this.email = manager.getPerson().getEmail();
   }
 
   public String getRole() {

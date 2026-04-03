@@ -3,6 +3,7 @@ package ca.mcgill.ecse321.group1.dto;
 import ca.mcgill.ecse321.group1.model.Customer;
 
 public class CustomerResponseDto {
+  private final String role = "Customer";
   private String id;
   private String personId;
   private String email;
@@ -17,6 +18,10 @@ public class CustomerResponseDto {
     this.email = customer.getPerson().getEmail();
     this.address = customer.getAddress();
     this.loyaltyPoints = customer.getLoyaltyPoints();
+  }
+
+  public String getRole() {
+    return role;
   }
 
   public String getId() {

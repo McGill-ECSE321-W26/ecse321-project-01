@@ -2,11 +2,12 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import { api } from '@/api/client'
-import type { AuthResponseDto, PersonResponseDto } from '@/api/types/types.ts'
+import type { AuthResponseDto, RoleResponseDto } from '@/api/types/types.ts'
+import type { CustomerCreateRequestDto } from '@/api/types/person.ts'
 
 export const useAuthStore = defineStore('auth', () => {
   const token = ref<string | null>(localStorage.getItem('token'))
-  const person = ref<PersonResponseDto | null>(
+  const person = ref<RoleResponseDto | null>(
     JSON.parse(localStorage.getItem('person') ?? 'null'),
   )
   const role = ref<string | null>(localStorage.getItem('role'))
@@ -14,7 +15,7 @@ export const useAuthStore = defineStore('auth', () => {
   // Reactive computed values based on 3 refs above (https://vuejs.org/guide/essentials/computed)
   const isAuthenticated = computed(() => !!token.value)
   const currentRole = computed(() => role.value)
-  const personId = computed(() => person.value?.id ?? null)
+  const personId = computed(() => person.value?.personId ?? null)
 
   // Sends POST /api/persons/sessions and updates local storage
   async function login(email: string, password: string, selectedRole: string) {
@@ -34,7 +35,7 @@ export const useAuthStore = defineStore('auth', () => {
 
   // Sends POST /api/persons/customers
   async function register(email: string, password: string, address: string) {
-    await api<PersonResponseDto>('/persons/customers', {
+    await api<CustomerCreateRequestDto>('/persons/customers', {
       method: 'POST',
       body: JSON.stringify({ email, password, address }),
     })

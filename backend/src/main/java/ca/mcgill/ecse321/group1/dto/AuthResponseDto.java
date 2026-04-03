@@ -1,14 +1,14 @@
 package ca.mcgill.ecse321.group1.dto;
 
-public class AuthResponseDto {
+public class AuthResponseDto<T> {
 
   private String token;
-  private PersonResponseDto person;
+  private T person;
 
   @SuppressWarnings("unused")
   private AuthResponseDto() {}
 
-  public AuthResponseDto(String token, PersonResponseDto person) {
+  public AuthResponseDto(String token, T person) {
     this.token = token;
     this.person = person;
   }
@@ -17,7 +17,7 @@ public class AuthResponseDto {
     return token;
   }
 
-  public PersonResponseDto getPerson() {
+  public T getPerson() {
     return person;
   }
 
@@ -25,7 +25,8 @@ public class AuthResponseDto {
     this.token = token;
   }
 
-  public void setPerson(PersonResponseDto person) {
+  public void setPerson(T person) {
     this.person = person;
   }
 }
+

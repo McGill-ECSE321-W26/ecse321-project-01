@@ -1,16 +1,11 @@
 // API response types matching the backend DTOs
-export interface PersonResponseDto {
-  id: string
-  email: string
-  roleTypes: string[]
-  address: string | null
-  loyaltyPoints: number | null
-  employeeRoleId: string | null
-  customerRoleId: string | null
-}
+import type { CustomerResponseDto, EmployeeResponseDto, ManagerResponseDto } from './person'
+
+export type { CustomerResponseDto, EmployeeResponseDto, ManagerResponseDto }
+
+export type RoleResponseDto = CustomerResponseDto | EmployeeResponseDto | ManagerResponseDto
 
 export interface AuthResponseDto {
   token: string
-  person: PersonResponseDto
+  person: RoleResponseDto
 }
-

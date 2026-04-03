@@ -7,16 +7,18 @@ import ca.mcgill.ecse321.group1.dto.CustomerResponseDto;
 import ca.mcgill.ecse321.group1.dto.EmployeeCreateRequestDto;
 import ca.mcgill.ecse321.group1.dto.EmployeeResponseDto;
 import ca.mcgill.ecse321.group1.dto.LoginRequestDto;
+import ca.mcgill.ecse321.group1.dto.ManagerResponseDto;
 import ca.mcgill.ecse321.group1.dto.PersonPasswordUpdateRequestDto;
-import ca.mcgill.ecse321.group1.dto.PersonResponseDto;
 import ca.mcgill.ecse321.group1.model.Customer;
 import ca.mcgill.ecse321.group1.model.Employee;
+import ca.mcgill.ecse321.group1.model.Manager;
 import ca.mcgill.ecse321.group1.model.Person;
 import ca.mcgill.ecse321.group1.security.JwtUtil;
 import ca.mcgill.ecse321.group1.service.PersonService;
 import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 @RequestMapping("/api/persons")
 @RestController
@@ -47,27 +49,69 @@ public class PersonController {
 
   @PostMapping("/{id}/roles/customer")
   @ResponseStatus(HttpStatus.CREATED)
-  public PersonResponseDto addCustomerRoleToEmployee(
+  public CustomerResponseDto addCustomerRoleToEmployee(
       @PathVariable String id, @RequestBody AddressDto dto) {
     Person p = personService.addCustomerRoleToEmployee(id, dto.getAddress());
-    return new PersonResponseDto(p);
+    Customer c =
+        p.getRoles().stream()
+            .filter(r -> r instanceof Customer)
+            .map(r -> (Customer) r)
+            .findFirst()
+            .orElseThrow();
+    return new CustomerResponseDto(c);
   }
 
   @PostMapping("/{id}/roles/employee")
   @ResponseStatus(HttpStatus.CREATED)
-  public PersonResponseDto addEmployeeRoleToCustomer(@PathVariable String id) {
+  public EmployeeResponseDto addEmployeeRoleToCustomer(@PathVariable String id) {
     Person p = personService.addEmployeeRoleToCustomer(id);
-    return new PersonResponseDto(p);
+    Employee e =
+        p.getRoles().stream()
+            .filter(r -> r instanceof Employee)
+            .map(r -> (Employee) r)
+            .findFirst()
+            .orElseThrow();
+    return new EmployeeResponseDto(e);
   }
 
   // Login endpoint validates credentials via PersonService, then generates a JWT token
   // containing the person's ID and the requested role. Returns both the token (for the client
-  // to store and send on future requests) and the person data
+  // to store and send on future requests) and the role-specific person data
   @PostMapping("/sessions")
-  public AuthResponseDto logIn(@RequestBody LoginRequestDto dto) {
+  public AuthResponseDto<?> logIn(@RequestBody LoginRequestDto dto) {
     Person p = personService.logIn(dto.getEmail(), dto.getPassword(), dto.getRole());
     String token = jwtUtil.generateToken(p, dto.getRole());
-    return new AuthResponseDto(token, new PersonResponseDto(p));
+    return switch (dto.getRole()) {
+      case "Customer" -> {
+        Customer c =
+            p.getRoles().stream()
+                .filter(r -> r instanceof Customer)
+                .map(r -> (Customer) r)
+                .findFirst()
+                .orElseThrow();
+        yield new AuthResponseDto<>(token, new CustomerResponseDto(c));
+      }
+      case "Employee" -> {
+        Employee e =
+            p.getRoles().stream()
+                .filter(r -> r instanceof Employee)
+                .map(r -> (Employee) r)
+                .findFirst()
+                .orElseThrow();
+        yield new AuthResponseDto<>(token, new EmployeeResponseDto(e));
+      }
+      case "Manager" -> {
+        Manager m =
+            p.getRoles().stream()
+                .filter(r -> r instanceof Manager)
+                .map(r -> (Manager) r)
+                .findFirst()
+                .orElseThrow();
+        yield new AuthResponseDto<>(token, new ManagerResponseDto(m));
+      }
+      default -> throw new ResponseStatusException(
+          HttpStatus.BAD_REQUEST, "Unknown role: " + dto.getRole());
+    };
   }
 
   @GetMapping("/employees")
@@ -80,25 +124,11 @@ public class PersonController {
     return personService.getCustomers().stream().map(CustomerResponseDto::new).toList();
   }
 
-  @GetMapping
-  public List<PersonResponseDto> getPeople(@RequestParam(required = false) String email) {
-    if (email != null) {
-      return List.of(new PersonResponseDto(personService.getPersonByEmail(email)));
-    }
-
-    return personService.getPeople().stream().map(PersonResponseDto::new).toList();
-  }
-
-  @GetMapping("/{id}")
-  public PersonResponseDto getPersonById(@PathVariable String id) {
-    return new PersonResponseDto(personService.getPersonById(id));
-  }
-
   @PatchMapping("/{id}/password")
-  public PersonResponseDto updatePassword(
+  @ResponseStatus(HttpStatus.NO_CONTENT)
+  public void updatePassword(
       @PathVariable String id, @RequestBody PersonPasswordUpdateRequestDto dto) {
-    Person p = personService.updatePassword(id, dto.getOldPassword(), dto.getNewPassword());
-    return new PersonResponseDto(p);
+    personService.updatePassword(id, dto.getOldPassword(), dto.getNewPassword());
   }
 
   @PatchMapping("/{id}/address")

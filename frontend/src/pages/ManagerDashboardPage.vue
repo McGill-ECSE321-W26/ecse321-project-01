@@ -3,7 +3,7 @@ import { ref, computed, onMounted } from 'vue'
 import { RouterLink } from 'vue-router'
 import { ShoppingBag, Boxes, Users, UserCog, LayoutDashboard, ShieldCheck, ArrowRight } from 'lucide-vue-next'
 import { api } from '@/api/client'
-import type { PersonResponseDto } from '@/api/types/types'
+import type { CustomerResponseDto, EmployeeResponseDto } from '@/api/types/person'
 import type { OrderResponseDto } from '@/api/types/order'
 
 const activeSection = ref('dashboard')
@@ -18,9 +18,12 @@ const recentOrders = ref<OrderResponseDto[]>([])
 
 onMounted(async () => {
   try {
-    const persons = await api<PersonResponseDto[]>('/persons')
-    totalCustomers.value = persons.filter(p => p.roleTypes?.includes('Customer')).length
-    totalEmployees.value = persons.filter(p => p.roleTypes?.includes('Employee')).length
+    const [customers, employees] = await Promise.all([
+      api<CustomerResponseDto[]>('/persons/customers'),
+      api<EmployeeResponseDto[]>('/persons/employees'),
+    ])
+    totalCustomers.value = customers.length
+    totalEmployees.value = employees.length
   } catch {
     totalCustomers.value = 0
     totalEmployees.value = 0
@@ -29,6 +32,7 @@ onMounted(async () => {
   try {
     const orders = await api<OrderResponseDto[]>('/orders')
     totalOrders.value = orders.length
+    console.log(orders)
     
     completedOrders.value = orders.filter(o => o.orderStatus === 'Delivered').length
     cancelOrders.value = orders.filter(o => o.orderStatus === 'Cancelled').length
