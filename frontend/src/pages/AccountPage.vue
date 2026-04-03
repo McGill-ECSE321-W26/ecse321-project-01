@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {onMounted, ref} from 'vue'
+import {ref} from 'vue'
 import {Pencil, UserCircle} from 'lucide-vue-next'
 import {Button} from '@/components/ui/button'
 import {
@@ -14,12 +14,12 @@ import {
 import {Input} from '@/components/ui/input'
 import {Label} from '@/components/ui/label'
 import {useAuthStore} from '@/stores/auth'
-import {api, ApiError} from '@/api/client'
-import type {PersonResponseDto} from '@/api/types'
+import {api} from '@/api/client'
+import type {CustomerResponseDto} from '@/api/types/person.ts'
 
 const auth = useAuthStore()
 
-const person = ref<PersonResponseDto | null>(null)
+const person = ref<CustomerResponseDto | null>(auth.person as CustomerResponseDto | null)
 
 const oldPassword = ref('')
 const newPassword = ref('')
@@ -27,16 +27,9 @@ const confirmPassword = ref('')
 const passwordError = ref('')
 const passwordDialogOpen = ref(false)
 
-const newAddress = ref('')
+const newAddress = ref(person.value?.address ?? '')
 const addressError = ref('')
 const addressDialogOpen = ref(false)
-
-onMounted(async () => {
-  if (auth.personId) {
-    person.value = await api<PersonResponseDto>(`/persons/${auth.personId}`)
-    newAddress.value = person.value.address ?? ''
-  }
-})
 
 async function handlePasswordUpdate() {
   passwordError.value = ''
@@ -58,7 +51,7 @@ async function handlePasswordUpdate() {
 
   try {
     // Update password
-    await api<PersonResponseDto>(`/persons/${auth.personId}/password`, {
+    await api(`/persons/${auth.personId}/password`, {
       method: 'PATCH',
       body: JSON.stringify({oldPassword: oldPassword.value, newPassword: newPassword.value}),
     })
@@ -67,7 +60,7 @@ async function handlePasswordUpdate() {
     newPassword.value = ''
     confirmPassword.value = ''
   } catch (e) {
-    passwordError.value = e instanceof ApiError ? e.message : 'Something went wrong. Please try again.'
+    passwordError.value = e instanceof Error ? e.message : 'Something went wrong. Please try again.'
   }
 }
 
@@ -81,13 +74,13 @@ async function handleAddressUpdate() {
 
   try {
     // Update address
-    person.value = await api<PersonResponseDto>(`/persons/${auth.personId}/address`, {
+    person.value = await api<CustomerResponseDto>(`/persons/${auth.personId}/address`, {
       method: 'PATCH',
       body: JSON.stringify({address: newAddress.value}),
     })
     addressDialogOpen.value = false
   } catch (e) {
-    addressError.value = e instanceof ApiError ? e.message : 'Something went wrong. Please try again.'
+    addressError.value = e instanceof Error ? e.message : 'Something went wrong. Please try again.'
   }
 }
 </script>

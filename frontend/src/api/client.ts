@@ -6,16 +6,6 @@ function getToken(): string | null {
   return localStorage.getItem('token')
 }
 
-// Define custom error class to include a status code which will be used in frontend
-export class ApiError extends Error {
-  status: number
-
-  constructor(message: string, status: number) {
-    super(message)
-    this.status = status
-  }
-}
-
 export async function api<T>(
   path: string,
   options: RequestInit = {},
@@ -48,7 +38,7 @@ export async function api<T>(
     catch {
       // response wasn't JSON, fall back to statusText
     }
-    throw new ApiError(message, response.status)
+    throw new Error(message)
   }
 
   // Check 204 No Content, prevent syntax error from parsing by return undefined (no response body)

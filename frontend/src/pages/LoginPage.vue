@@ -7,7 +7,6 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { useAuthStore } from '@/stores/auth'
-import { ApiError } from '@/api/client'
 
 const router = useRouter()
 const route = useRoute()
@@ -36,7 +35,7 @@ async function handleSubmit() {
     await router.push('/shop')
   }
   catch (e) {
-    error.value = e instanceof ApiError ? e.message : 'Something went wrong. Please try again.'
+    error.value = e instanceof Error ? e.message : 'Something went wrong. Please try again.'
   }
   finally {
     loading.value = false // Guarantee loading = false so button is clickable

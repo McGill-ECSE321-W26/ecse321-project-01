@@ -78,8 +78,10 @@ public class SecurityConfig {
                     .hasRole("Manager")
                     .requestMatchers(HttpMethod.PATCH, "/api/clothing/**")
                     .hasRole("Manager")
-                    // Only managers can list all people
-                    .requestMatchers(HttpMethod.GET, "/api/persons")
+                    // Only managers can list employees or customers
+                    .requestMatchers(HttpMethod.GET, "/api/persons/employees")
+                    .hasRole("Manager")
+                    .requestMatchers(HttpMethod.GET, "/api/persons/customers")
                     .hasRole("Manager")
 
                     // --- Customer-only endpoints ---
@@ -102,9 +104,7 @@ public class SecurityConfig {
                     .authenticated()
                     .requestMatchers(HttpMethod.GET, "/api/orders/*")
                     .authenticated()
-                    // Viewing/modifying own profile
-                    .requestMatchers(HttpMethod.GET, "/api/persons/*")
-                    .authenticated()
+                    // Modifying own profile
                     .requestMatchers(HttpMethod.PATCH, "/api/persons/*/password")
                     .authenticated()
                     // Only customers can update their address

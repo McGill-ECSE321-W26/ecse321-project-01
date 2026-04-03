@@ -35,6 +35,38 @@ public class PersonServiceTests {
   private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
   @Test
+  public void testGetAllEmployees() {
+    Person alice = new Person("id1", "alice@mail.com", "password123");
+    Employee emp1 = new Employee("emp-role-1", alice);
+    Person bob = new Person("id2", "bob@mail.com", "password456");
+    Employee emp2 = new Employee("emp-role-2", bob);
+    when(employeeRepository.findAll()).thenReturn(List.of(emp1, emp2));
+
+    List<Employee> result = service.getEmployees();
+
+    assertNotNull(result);
+    assertEquals(2, result.size());
+    assertEquals("alice@mail.com", result.get(0).getPerson().getEmail());
+    assertEquals("bob@mail.com", result.get(1).getPerson().getEmail());
+  }
+
+  @Test
+  public void testGetAllCustomers() {
+    Person alice = new Person("id1", "alice@mail.com", "password123");
+    Customer cust1 = new Customer("cust-role-1", alice, "1 Main St", 0);
+    Person bob = new Person("id2", "bob@mail.com", "password456");
+    Customer cust2 = new Customer("cust-role-2", bob, "2 Main St", 10);
+    when(customerRepository.findAll()).thenReturn(List.of(cust1, cust2));
+
+    List<Customer> result = service.getCustomers();
+
+    assertNotNull(result);
+    assertEquals(2, result.size());
+    assertEquals("alice@mail.com", result.get(0).getPerson().getEmail());
+    assertEquals("bob@mail.com", result.get(1).getPerson().getEmail());
+  }
+
+  @Test
   public void testGetAllPeople() {
     Person bob = new Person("id1", "bob@mail.com", "password123");
     Person charlie = new Person("id2", "charlie@mail.com", "password456");
@@ -52,13 +84,13 @@ public class PersonServiceTests {
     String password = "12345678";
     Person accountTest = new Person("generated-id", email, password);
 
-    when(personRepository.findByPersonID(any())).thenReturn(accountTest);
     when(personRepository.save(any(Person.class))).thenReturn(accountTest);
+    when(employeeRepository.save(any(Employee.class))).thenAnswer(i -> i.getArgument(0));
 
-    Person createdPerson = service.createEmployee(email, password);
+    Employee createdEmployee = service.createEmployee(email, password);
 
-    assertNotNull(createdPerson);
-    assertEquals(email, createdPerson.getEmail());
+    assertNotNull(createdEmployee);
+    assertEquals(email, createdEmployee.getPerson().getEmail());
   }
 
   @Test
@@ -68,13 +100,14 @@ public class PersonServiceTests {
     String address = "123 Main St";
     Person accountTest = new Person("generated-id", email, password);
 
-    when(personRepository.findByPersonID(any())).thenReturn(accountTest);
     when(personRepository.save(any(Person.class))).thenReturn(accountTest);
+    when(customerRepository.save(any(Customer.class))).thenAnswer(i -> i.getArgument(0));
 
-    Person createdPerson = service.createCustomer(email, password, address);
+    Customer createdCustomer = service.createCustomer(email, password, address);
 
-    assertNotNull(createdPerson);
-    assertEquals(email, createdPerson.getEmail());
+    assertNotNull(createdCustomer);
+    assertEquals(email, createdCustomer.getPerson().getEmail());
+    assertEquals(address, createdCustomer.getAddress());
   }
 
   @Test

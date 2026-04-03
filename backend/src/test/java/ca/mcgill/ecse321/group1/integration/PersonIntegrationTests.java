@@ -174,27 +174,27 @@ public class PersonIntegrationTests {
     dto.setAddress("456 Customer Ave");
 
     // Act
-    ResponseEntity<PersonResponseDto> response =
+    ResponseEntity<CustomerResponseDto> response =
         unauthClient
             .post()
             .uri("/api/persons/customers")
             .contentType(MediaType.APPLICATION_JSON)
             .body(dto)
             .retrieve()
-            .toEntity(PersonResponseDto.class);
+            .toEntity(CustomerResponseDto.class);
 
     // Assert
     assertNotNull(response);
     assertEquals(HttpStatus.CREATED, response.getStatusCode());
-    PersonResponseDto body = response.getBody();
+    CustomerResponseDto body = response.getBody();
     assertNotNull(body);
     assertNotNull(body.getId());
+    assertNotNull(body.getPersonId());
     assertEquals(createdCustomerEmail, body.getEmail());
-    assertTrue(body.getRoleTypes().contains("Customer"));
     assertEquals("456 Customer Ave", body.getAddress());
     assertEquals(0, body.getLoyaltyPoints());
 
-    createdCustomerId = body.getId();
+    createdCustomerId = body.getPersonId();
   }
 
   @Test
@@ -305,153 +305,25 @@ public class PersonIntegrationTests {
     dto.setRole("Customer");
 
     // Act
-    ResponseEntity<AuthResponseDto> response =
+    ResponseEntity<AuthResponseDto<CustomerResponseDto>> response =
         unauthClient
             .post()
             .uri("/api/persons/sessions")
             .contentType(MediaType.APPLICATION_JSON)
             .body(dto)
             .retrieve()
-            .toEntity(AuthResponseDto.class);
+            .toEntity(new ParameterizedTypeReference<>() {});
 
     // Assert
     assertNotNull(response);
     assertEquals(HttpStatus.OK, response.getStatusCode());
-    AuthResponseDto body = response.getBody();
+    AuthResponseDto<CustomerResponseDto> body = response.getBody();
     assertNotNull(body);
     assertNotNull(body.getToken());
     assertNotNull(body.getPerson());
     assertEquals(createdCustomerEmail, body.getPerson().getEmail());
 
     customerToken = body.getToken();
-  }
-
-  // ==== GET /api/persons/{id} ====
-
-  @Test
-  @Order(10)
-  public void testGetPersonByIdUnauthenticated() {
-    // Act
-    ResponseEntity<String> response =
-        unauthClient
-            .get()
-            .uri("/api/persons/" + createdCustomerId)
-            .retrieve()
-            .toEntity(String.class);
-
-    // Assert
-    assertNotNull(response);
-    assertEquals(HttpStatus.FORBIDDEN, response.getStatusCode());
-  }
-
-  @Test
-  @Order(11)
-  public void testGetPersonByIdNotFound() {
-    // Act
-    ResponseEntity<String> response =
-        managerClient.get().uri("/api/persons/" + INVALID_ID).retrieve().toEntity(String.class);
-
-    // Assert
-    assertNotNull(response);
-    assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
-  }
-
-  @Test
-  @Order(12)
-  public void testGetPersonByIdValid() {
-    // Act
-    ResponseEntity<PersonResponseDto> response =
-        managerClient
-            .get()
-            .uri("/api/persons/" + createdCustomerId)
-            .retrieve()
-            .toEntity(PersonResponseDto.class);
-
-    // Assert
-    assertNotNull(response);
-    assertEquals(HttpStatus.OK, response.getStatusCode());
-    PersonResponseDto body = response.getBody();
-    assertNotNull(body);
-    assertEquals(createdCustomerId, body.getId());
-    assertEquals(createdCustomerEmail, body.getEmail());
-  }
-
-  // ==== GET /api/persons ====
-
-  @Test
-  @Order(13)
-  public void testGetPeopleUnauthorized() {
-    // Arrange
-    RestClient customerClient =
-        RestClient.builder()
-            .baseUrl("http://localhost:" + port)
-            .defaultHeader("Authorization", "Bearer " + customerToken)
-            .defaultStatusHandler(HttpStatusCode::isError, (req, res) -> {})
-            .build();
-
-    // Act
-    ResponseEntity<String> response =
-        customerClient.get().uri("/api/persons").retrieve().toEntity(String.class);
-
-    // Assert
-    assertNotNull(response);
-    assertEquals(HttpStatus.FORBIDDEN, response.getStatusCode());
-  }
-
-  @Test
-  @Order(14)
-  public void testGetPeopleValid() {
-    // Act
-    ResponseEntity<List<PersonResponseDto>> response =
-        managerClient
-            .get()
-            .uri("/api/persons")
-            .retrieve()
-            .toEntity(new ParameterizedTypeReference<>() {});
-
-    // Assert
-    assertNotNull(response);
-    assertEquals(HttpStatus.OK, response.getStatusCode());
-    List<PersonResponseDto> body = response.getBody();
-    assertNotNull(body);
-    assertFalse(body.isEmpty());
-    assertTrue(body.stream().anyMatch(p -> createdCustomerEmail.equals(p.getEmail())));
-  }
-
-  @Test
-  @Order(15)
-  public void testGetPeopleByEmailValid() {
-    // Act
-    ResponseEntity<List<PersonResponseDto>> response =
-        managerClient
-            .get()
-            .uri("/api/persons?email=" + createdCustomerEmail)
-            .retrieve()
-            .toEntity(new ParameterizedTypeReference<>() {});
-
-    // Assert
-    assertNotNull(response);
-    assertEquals(HttpStatus.OK, response.getStatusCode());
-    List<PersonResponseDto> body = response.getBody();
-    assertNotNull(body);
-    assertEquals(1, body.size());
-    assertEquals(createdCustomerEmail, body.get(0).getEmail());
-  }
-
-  @Test
-  @Order(16)
-  public void testGetPeopleByEmailNotFound() {
-    // Act
-    ResponseEntity<String> response =
-        managerClient
-            .get()
-            .uri("/api/persons?email=doesnotexist@example.com")
-            .retrieve()
-            .toEntity(String.class);
-
-    // Assert
-    assertNotNull(response);
-    assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
   }
 
   // ==== PATCH /api/persons/{id}/password ====
@@ -534,21 +406,18 @@ public class PersonIntegrationTests {
     dto.setNewPassword("updatedpassword123");
 
     // Act
-    ResponseEntity<PersonResponseDto> response =
+    ResponseEntity<Void> response =
         managerClient
             .patch()
             .uri("/api/persons/" + createdCustomerId + "/password")
             .contentType(MediaType.APPLICATION_JSON)
             .body(dto)
             .retrieve()
-            .toEntity(PersonResponseDto.class);
+            .toEntity(Void.class);
 
     // Assert
     assertNotNull(response);
-    assertEquals(HttpStatus.OK, response.getStatusCode());
-    PersonResponseDto body = response.getBody();
-    assertNotNull(body);
-    assertEquals(createdCustomerId, body.getId());
+    assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
   }
 
   // ==== PATCH /api/persons/{id}/address ====
@@ -597,19 +466,19 @@ public class PersonIntegrationTests {
     dto.setAddress("789 New Address Blvd");
 
     // Act
-    ResponseEntity<PersonResponseDto> response =
+    ResponseEntity<CustomerResponseDto> response =
         customerClient
             .patch()
             .uri("/api/persons/" + createdCustomerId + "/address")
             .contentType(MediaType.APPLICATION_JSON)
             .body(dto)
             .retrieve()
-            .toEntity(PersonResponseDto.class);
+            .toEntity(CustomerResponseDto.class);
 
     // Assert
     assertNotNull(response);
     assertEquals(HttpStatus.OK, response.getStatusCode());
-    PersonResponseDto body = response.getBody();
+    CustomerResponseDto body = response.getBody();
     assertNotNull(body);
     assertEquals("789 New Address Blvd", body.getAddress());
   }
@@ -656,25 +525,25 @@ public class PersonIntegrationTests {
     dto.setPassword(VALID_PASSWORD);
 
     // Act
-    ResponseEntity<PersonResponseDto> response =
+    ResponseEntity<EmployeeResponseDto> response =
         managerClient
             .post()
             .uri("/api/persons/employees")
             .contentType(MediaType.APPLICATION_JSON)
             .body(dto)
             .retrieve()
-            .toEntity(PersonResponseDto.class);
+            .toEntity(EmployeeResponseDto.class);
 
     // Assert
     assertNotNull(response);
     assertEquals(HttpStatus.CREATED, response.getStatusCode());
-    PersonResponseDto body = response.getBody();
+    EmployeeResponseDto body = response.getBody();
     assertNotNull(body);
     assertNotNull(body.getId());
+    assertNotNull(body.getPersonId());
     assertEquals(createdEmployeeEmail, body.getEmail());
-    assertTrue(body.getRoleTypes().contains("Employee"));
 
-    createdEmployeeId = body.getId();
+    createdEmployeeId = body.getPersonId();
   }
 
   // ==== POST /api/persons/{id}/roles/customer ====
@@ -734,22 +603,22 @@ public class PersonIntegrationTests {
     dto.setAddress("100 Role St");
 
     // Act
-    ResponseEntity<PersonResponseDto> response =
+    ResponseEntity<CustomerResponseDto> response =
         managerClient
             .post()
             .uri("/api/persons/" + createdEmployeeId + "/roles/customer")
             .contentType(MediaType.APPLICATION_JSON)
             .body(dto)
             .retrieve()
-            .toEntity(PersonResponseDto.class);
+            .toEntity(CustomerResponseDto.class);
 
     // Assert
     assertNotNull(response);
     assertEquals(HttpStatus.CREATED, response.getStatusCode());
-    PersonResponseDto body = response.getBody();
+    CustomerResponseDto body = response.getBody();
     assertNotNull(body);
-    assertTrue(body.getRoleTypes().contains("Customer"));
-    assertTrue(body.getRoleTypes().contains("Employee"));
+    assertEquals("100 Role St", body.getAddress());
+    assertEquals(createdEmployeeId, body.getPersonId());
   }
 
   // ==== POST /api/persons/{id}/roles/employee ====
@@ -793,20 +662,19 @@ public class PersonIntegrationTests {
   public void testAddEmployeeRoleToCustomerValid() {
     // Act
     // createdCustomerId is a pure Customer
-    ResponseEntity<PersonResponseDto> response =
+    ResponseEntity<EmployeeResponseDto> response =
         managerClient
             .post()
             .uri("/api/persons/" + createdCustomerId + "/roles/employee")
             .retrieve()
-            .toEntity(PersonResponseDto.class);
+            .toEntity(EmployeeResponseDto.class);
 
     // Assert
     assertNotNull(response);
     assertEquals(HttpStatus.CREATED, response.getStatusCode());
-    PersonResponseDto body = response.getBody();
+    EmployeeResponseDto body = response.getBody();
     assertNotNull(body);
-    assertTrue(body.getRoleTypes().contains("Employee"));
-    assertTrue(body.getRoleTypes().contains("Customer"));
+    assertEquals(createdCustomerId, body.getPersonId());
   }
 
   // ==== DELETE /api/persons/{id} ====
@@ -855,17 +723,96 @@ public class PersonIntegrationTests {
     assertNotNull(response);
     assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
 
-    // Verify deletion
-    ResponseEntity<String> getResponse =
-        managerClient
-            .get()
-            .uri("/api/persons/" + createdEmployeeId)
-            .retrieve()
-            .toEntity(String.class);
-    assertEquals(HttpStatus.NOT_FOUND, getResponse.getStatusCode());
-
     // Prevent duplicate cleanup in @AfterAll
     createdEmployeeId = null;
     createdEmployeeEmail = null;
+  }
+
+  // ==== GET /api/persons/employees ====
+
+  @Test
+  @Order(34)
+  public void testGetEmployeesUnauthorized() {
+    // Arrange
+    RestClient customerClient =
+        RestClient.builder()
+            .baseUrl("http://localhost:" + port)
+            .defaultHeader("Authorization", "Bearer " + customerToken)
+            .defaultStatusHandler(HttpStatusCode::isError, (req, res) -> {})
+            .build();
+
+    // Act
+    ResponseEntity<String> response =
+        customerClient.get().uri("/api/persons/employees").retrieve().toEntity(String.class);
+
+    // Assert
+    assertNotNull(response);
+    assertEquals(HttpStatus.FORBIDDEN, response.getStatusCode());
+  }
+
+  @Test
+  @Order(35)
+  public void testGetEmployeesValid() {
+    // Act
+    ResponseEntity<List<EmployeeResponseDto>> response =
+        managerClient
+            .get()
+            .uri("/api/persons/employees")
+            .retrieve()
+            .toEntity(new ParameterizedTypeReference<>() {});
+
+    // Assert
+    assertNotNull(response);
+    assertEquals(HttpStatus.OK, response.getStatusCode());
+    List<EmployeeResponseDto> body = response.getBody();
+    assertNotNull(body);
+    assertFalse(body.isEmpty());
+    assertTrue(body.stream().allMatch(p -> p.getEmail() != null));
+  }
+
+  // ==== GET /api/persons/customers ====
+
+  @Test
+  @Order(36)
+  public void testGetCustomersUnauthorized() {
+    // Arrange
+    RestClient customerClient =
+        RestClient.builder()
+            .baseUrl("http://localhost:" + port)
+            .defaultHeader("Authorization", "Bearer " + customerToken)
+            .defaultStatusHandler(HttpStatusCode::isError, (req, res) -> {})
+            .build();
+
+    // Act
+    ResponseEntity<String> response =
+        customerClient.get().uri("/api/persons/customers").retrieve().toEntity(String.class);
+
+    // Assert
+    assertNotNull(response);
+    assertEquals(HttpStatus.FORBIDDEN, response.getStatusCode());
+  }
+
+  @Test
+  @Order(37)
+  public void testGetCustomersValid() {
+    // Act
+    ResponseEntity<List<CustomerResponseDto>> response =
+        managerClient
+            .get()
+            .uri("/api/persons/customers")
+            .retrieve()
+            .toEntity(new ParameterizedTypeReference<>() {});
+
+    // Assert
+    assertNotNull(response);
+    assertEquals(HttpStatus.OK, response.getStatusCode());
+    List<CustomerResponseDto> body = response.getBody();
+    assertNotNull(body);
+    assertFalse(body.isEmpty());
+    assertTrue(body.stream().anyMatch(p -> createdCustomerEmail.equals(p.getEmail())));
+    assertTrue(
+        body.stream()
+            .filter(p -> createdCustomerEmail.equals(p.getEmail()))
+            .allMatch(p -> p.getId() != null));
   }
 }

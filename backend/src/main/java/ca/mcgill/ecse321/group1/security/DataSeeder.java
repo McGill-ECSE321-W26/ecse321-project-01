@@ -170,7 +170,7 @@ public class DataSeeder {
             emp1,
             OrderStatus.Preparing,
             date("2026-03-20"),
-            null,
+            date("2026-07-02"),
             "123 Maple St, Montreal, QC H3A 1B1",
             0f);
     addItemToOrder(order3, jacketOliveM, 1, jacket.getPrice());
@@ -205,7 +205,7 @@ public class DataSeeder {
             emp1,
             OrderStatus.Preparing,
             date("2026-03-22"),
-            null,
+            date("2026-07-02"),
             "456 Oak Ave, Montreal, QC H2X 2C3",
             15f);
     addItemToOrder(order6, jacketBlackL, 1, jacket.getPrice());
@@ -229,7 +229,7 @@ public class DataSeeder {
     Order order8 =
         createOrder(
             cust4,
-            emp2,
+            emp3,
             OrderStatus.Delivered,
             date("2026-01-05"),
             date("2026-01-09"),
@@ -244,7 +244,7 @@ public class DataSeeder {
             emp3,
             OrderStatus.Preparing,
             date("2026-03-24"),
-            null,
+            date("2026-07-02"),
             "321 Elm Blvd, Longueuil, QC J4K 2F7",
             25f);
     addItemToOrder(order9, dressFloralS, 2, dress.getPrice());
@@ -254,10 +254,10 @@ public class DataSeeder {
     Order order10 =
         createOrder(
             cust5,
-            emp2,
+            null,
             OrderStatus.Preparing,
             date("2026-03-25"),
-            null,
+            date("2026-07-02"),
             "654 Cedar Dr, Brossard, QC J4Y 1M8",
             0f);
     addItemToOrder(order10, jacketOliveL, 1, jacket.getPrice());

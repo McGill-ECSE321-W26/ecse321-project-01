@@ -62,12 +62,22 @@ public class PersonService {
   }
 
   @Transactional(readOnly = true)
+  public List<Employee> getEmployees() {
+    return employeeRepository.findAll();
+  }
+
+  @Transactional(readOnly = true)
+  public List<Customer> getCustomers() {
+    return customerRepository.findAll();
+  }
+
+  @Transactional(readOnly = true)
   public Person getPersonById(String id) {
     return findPersonOrThrow(id);
   }
 
   @Transactional
-  public Person createCustomer(String email, String password, String address) {
+  public Customer createCustomer(String email, String password, String address) {
     validateNewPerson(email, password);
     if (address == null || address.isBlank()) {
       throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Address cannot be empty.");
@@ -82,13 +92,11 @@ public class PersonService {
     customer.setAddress(address);
     customer.setLoyaltyPoints(0);
     customer.setPerson(person);
-    customerRepository.save(customer);
-
-    return personRepository.findByPersonID(person.getPersonID());
+    return customerRepository.save(customer);
   }
 
   @Transactional
-  public Person createEmployee(String email, String password) {
+  public Employee createEmployee(String email, String password) {
     validateNewPerson(email, password);
 
     Person person = new Person();
@@ -98,9 +106,7 @@ public class PersonService {
 
     Employee employee = new Employee();
     employee.setPerson(person);
-    employeeRepository.save(employee);
-
-    return personRepository.findByPersonID(person.getPersonID());
+    return employeeRepository.save(employee);
   }
 
   @Transactional(readOnly = true)
