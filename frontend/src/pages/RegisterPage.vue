@@ -6,7 +6,6 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/componen
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { useAuthStore } from '@/stores/auth'
-import { ApiError } from '@/api/client'
 
 const router = useRouter()
 const auth = useAuthStore()
@@ -31,7 +30,7 @@ async function handleSubmit() {
     await router.push({path: '/login', query: {registered: 'true'}})
   }
   catch (e) {
-    error.value = e instanceof ApiError ? e.message : 'Something went wrong. Please try again.'
+    error.value = e instanceof Error ? e.message : 'Something went wrong. Please try again.'
   }
   finally {
     loading.value = false
