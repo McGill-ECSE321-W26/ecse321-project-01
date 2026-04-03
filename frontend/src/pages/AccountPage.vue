@@ -88,13 +88,19 @@ async function handleAddressUpdate() {
 <template>
   <main class="px-10 pt-16 pb-20 max-w-2xl mx-auto">
     <!-- Heading -->
-    <h1 class="account-heading fade-up text-[40px] lg:text-[52px] font-normal tracking-tight leading-tight mb-2" style="animation-delay: 0s">
+    <h1
+      class="account-heading fade-up text-[40px] lg:text-[52px] font-normal tracking-tight leading-tight mb-2"
+      style="animation-delay: 0s"
+    >
       <span class="block text-(--text-muted)">Welcome <em class="text-(--text-light)">back</em>,</span>
       <span class="block text-(--text-light)">{{ person?.email ?? auth.person?.email }}</span>
     </h1>
     <div class="mb-10 pb-6 border-b border-(--text-light)" />
 
-    <div class="fade-up border border-(--text-light) px-7 pt-6 pb-7 space-y-6" style="animation-delay: 0.15s">
+    <div
+      class="fade-up border border-(--text-light) px-7 pt-6 pb-7 space-y-6"
+      style="animation-delay: 0.15s"
+    >
       <div class="flex items-center justify-between">
         <div>
           <p class="text-[12px] uppercase tracking-[0.2em] text-(--text-light) mb-2">
