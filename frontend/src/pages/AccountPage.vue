@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import {ref} from 'vue'
-import {Pencil, UserCircle} from 'lucide-vue-next'
+import {Pencil} from 'lucide-vue-next'
 import {Button} from '@/components/ui/button'
 import {
   Dialog,
@@ -86,21 +86,21 @@ async function handleAddressUpdate() {
 </script>
 
 <template>
-  <div class="max-w-2xl mx-auto py-6 px-4 space-y-6">
-    <div class="flex items-center gap-3">
-      <UserCircle class="w-10 h-10 text-(--text-muted)" />
-      <h1 class="text-3xl font-bold">
-        {{ person?.email ?? auth.person?.email }}
-      </h1>
-    </div>
+  <main class="px-10 pt-16 pb-20 max-w-2xl mx-auto">
+    <!-- Heading -->
+    <h1 class="account-heading fade-up text-[40px] lg:text-[52px] font-normal tracking-tight leading-tight mb-2" style="animation-delay: 0s">
+      <span class="block text-(--text-muted)">Welcome <em class="text-(--text-light)">back</em>,</span>
+      <span class="block text-(--text-light)">{{ person?.email ?? auth.person?.email }}</span>
+    </h1>
+    <div class="mb-10 pb-6 border-b border-(--text-light)" />
 
-    <div class="border border-(--card-hover) rounded-xl px-4 pt-3 pb-4 space-y-4">
+    <div class="fade-up border border-(--text-light) px-7 pt-6 pb-7 space-y-6" style="animation-delay: 0.15s">
       <div class="flex items-center justify-between">
         <div>
-          <p class="text-xs text-(--text-muted) uppercase tracking-wide mb-1">
+          <p class="text-[12px] uppercase tracking-[0.2em] text-(--text-light) mb-2">
             Address
           </p>
-          <p class="text-sm">
+          <p class="text-[15px] font-light text-(--text-muted)">
             {{ person?.address ?? 'N/A' }}
           </p>
         </div>
@@ -149,10 +149,10 @@ async function handleAddressUpdate() {
       </div>
 
       <div>
-        <p class="text-xs text-(--text-muted) uppercase tracking-wide mb-1">
+        <p class="text-[12px] uppercase tracking-[0.2em] text-(--text-light) mb-2">
           Loyalty Points
         </p>
-        <p class="text-sm">
+        <p class="text-[15px] font-light text-(--text-muted)">
           {{ person?.loyaltyPoints ?? 0 }}
         </p>
       </div>
@@ -217,5 +217,21 @@ async function handleAddressUpdate() {
         </Dialog>
       </div>
     </div>
-  </div>
+  </main>
 </template>
+
+<style scoped>
+.account-heading {
+  font-family: 'Playfair Display', serif;
+  letter-spacing: -1.5px;
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.fade-up {
+  animation: fadeUp 0.6s ease both;
+}
+</style>
