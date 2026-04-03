@@ -165,7 +165,6 @@ public class OrderService {
     int gainedLoyaltyPoints = (int) (total * loyaltyModifier);
     customer.setLoyaltyPoints(
         customer.getLoyaltyPoints() + gainedLoyaltyPoints - usedLoyaltyPoints);
-    customerRepository.save(customer);
   }
 
   @Transactional
@@ -177,6 +176,9 @@ public class OrderService {
 
     Order order = initializeOrder(customer, deliveryDate);
     computeLoyaltyPoints(order, customer, usedLoyaltyPoints);
+
+    itemRepository.saveAll(customer.getItems());
+    customerRepository.save(customer);
     return orderRepository.save(order);
   }
 

@@ -15,7 +15,7 @@ import {Input} from '@/components/ui/input'
 import {Label} from '@/components/ui/label'
 import {useAuthStore} from '@/stores/auth'
 import {api} from '@/api/client'
-import type {CustomerResponseDto} from '@/api/types/person.ts'
+import type {CustomerResponseDto} from '@/api/types/person'
 
 const auth = useAuthStore()
 
