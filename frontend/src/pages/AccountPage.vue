@@ -14,7 +14,7 @@ import {
 import {Input} from '@/components/ui/input'
 import {Label} from '@/components/ui/label'
 import {useAuthStore} from '@/stores/auth'
-import {api, ApiError} from '@/api/client'
+import {api} from '@/api/client'
 import type {CustomerResponseDto} from '@/api/types/person.ts'
 
 const auth = useAuthStore()
@@ -60,7 +60,7 @@ async function handlePasswordUpdate() {
     newPassword.value = ''
     confirmPassword.value = ''
   } catch (e) {
-    passwordError.value = e instanceof ApiError ? e.message : 'Something went wrong. Please try again.'
+    passwordError.value = e instanceof Error ? e.message : 'Something went wrong. Please try again.'
   }
 }
 
@@ -80,7 +80,7 @@ async function handleAddressUpdate() {
     })
     addressDialogOpen.value = false
   } catch (e) {
-    addressError.value = e instanceof ApiError ? e.message : 'Something went wrong. Please try again.'
+    addressError.value = e instanceof Error ? e.message : 'Something went wrong. Please try again.'
   }
 }
 </script>
