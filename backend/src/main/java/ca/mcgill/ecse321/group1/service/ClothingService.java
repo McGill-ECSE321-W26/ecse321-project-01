@@ -82,6 +82,10 @@ public class ClothingService {
     if (color == null || color.isBlank()) {
       throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Color must not be blank");
     }
+    if (!color.matches("^#[0-9A-Fa-f]{6}$")) {
+      throw new ResponseStatusException(
+          HttpStatus.BAD_REQUEST, "Color must be a valid hex color (e.g. #FF5733)");
+    }
     validateStockQuantity(stockQuantity);
     validateImagePath(imagePath);
   }

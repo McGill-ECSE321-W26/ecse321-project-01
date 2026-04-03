@@ -60,7 +60,7 @@ public class ClothingIntegrationTests {
   private final float VALID_PRICE = 99.99f;
   private final String VALID_MODEL_IMAGE = "model.jpg";
   private final ClothingVariant.Size VALID_SIZE = ClothingVariant.Size.M;
-  private final String VALID_COLOR = "Blue";
+  private final String VALID_COLOR = "#0000FF";
   private final String VALID_VARIANT_IMAGE = "variant.png";
   private final int VALID_STOCK = 10;
 
@@ -244,7 +244,7 @@ public class ClothingIntegrationTests {
     // Arrange
     String url = "/api/clothing/" + this.validModelId + "/variants";
     ClothingVariantCreateRequestDto request =
-        new ClothingVariantCreateRequestDto(ClothingVariant.Size.S, "Red", "image.bmp", 5);
+        new ClothingVariantCreateRequestDto(ClothingVariant.Size.S, "#FF0000", "image.bmp", 5);
 
     // Act
     ResponseEntity<String> response =
