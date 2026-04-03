@@ -29,4 +29,3 @@ public class AuthResponseDto<T> {
     this.person = person;
   }
 }
-

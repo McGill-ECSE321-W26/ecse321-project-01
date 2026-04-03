@@ -32,8 +32,6 @@ onMounted(async () => {
   try {
     const orders = await api<OrderResponseDto[]>('/orders')
     totalOrders.value = orders.length
-    console.log(orders)
-    
     completedOrders.value = orders.filter(o => o.orderStatus === 'Delivered').length
     cancelOrders.value = orders.filter(o => o.orderStatus === 'Cancelled').length
     pendingOrders.value = orders.filter(o => o.orderStatus === 'Preparing').length

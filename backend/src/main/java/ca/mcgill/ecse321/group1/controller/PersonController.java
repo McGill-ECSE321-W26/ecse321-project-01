@@ -109,8 +109,9 @@ public class PersonController {
                 .orElseThrow();
         yield new AuthResponseDto<>(token, new ManagerResponseDto(m));
       }
-      default -> throw new ResponseStatusException(
-          HttpStatus.BAD_REQUEST, "Unknown role: " + dto.getRole());
+      default ->
+          throw new ResponseStatusException(
+              HttpStatus.BAD_REQUEST, "Unknown role: " + dto.getRole());
     };
   }
 
