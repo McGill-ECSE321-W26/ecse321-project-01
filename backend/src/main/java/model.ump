@@ -70,6 +70,16 @@ class ClothingVariant {
 class ClothingModel {
   clothingModelID;
   name;
+  description;
+  brand;
+  enum Category {
+    Tops,
+    Bottoms,
+    Dresses,
+    Outerwear,
+    Accessories
+  }
+  Category category;
   float price;
   imagePath;
   boolean archived = false;
