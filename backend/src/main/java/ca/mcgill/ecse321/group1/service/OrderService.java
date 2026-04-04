@@ -220,6 +220,11 @@ public class OrderService {
   }
 
   @Transactional(readOnly = true)
+  public List<Item> getOrderItems(String orderID) {
+    return findOrder(orderID).getItems();
+  }
+
+  @Transactional(readOnly = true)
   public List<Order> getOrdersByCustomerID(String customerID) {
     Customer customer = findCustomer(customerID);
     return orderRepository.findByCustomer(customer);

@@ -1,9 +1,12 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 import { Calendar, X } from 'lucide-vue-next'
 import { api } from '@/api/client'
 import type { OrderResponseDto } from '@/api/types/order'
 import { useAuthStore } from '@/stores/auth'
+
+const router = useRouter()
 
 const auth = useAuthStore()
 
@@ -253,6 +256,12 @@ function canModify(order: OrderResponseDto) {
 
         <!-- Actions -->
         <div class="flex items-center gap-2">
+          <button
+            class="text-[11px] uppercase tracking-widest border border-(--text-light) px-3 py-1.5 text-(--text) hover:bg-(--text) hover:text-(--bg) transition-colors"
+            @click="router.push({ name: 'order-detail', params: { orderID: order.orderID } })"
+          >
+            View
+          </button>
           <button
             v-if="canModify(order) && editingDelivery !== order.orderID"
             :disabled="updatingOrder === order.orderID"
