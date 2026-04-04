@@ -110,7 +110,6 @@ function canModify(order: OrderResponseDto) {
       <p class="text-sm font-light text-(--text-muted)">
         Track and manage your current and past orders.
       </p>
-      <span class="text-[12px] text-(--text-light) uppercase tracking-widest hidden sm:inline">Orders</span>
     </div>
 
     <!-- Stats -->
@@ -142,10 +141,10 @@ function canModify(order: OrderResponseDto) {
         style="animation-delay: 0.2s"
       >
         <p class="text-[10px] uppercase tracking-[0.2em] text-(--text-light) mb-3">
-          Points Saved
+          Money Saved
         </p>
         <p class="text-[44px] font-light text-(--text) leading-none">
-          {{ loading ? '-' : totalSaved }}
+          {{ loading ? '-' : `$${totalSaved.toFixed(2)}` }}
         </p>
       </div>
     </div>
@@ -161,7 +160,7 @@ function canModify(order: OrderResponseDto) {
         <span class="text-[10px] uppercase tracking-[0.18em] text-(--text-light)">Order Date</span>
         <span class="text-[10px] uppercase tracking-[0.18em] text-(--text-light)">Delivery Date</span>
         <span class="text-[10px] uppercase tracking-[0.18em] text-(--text-light)">Total</span>
-        <span class="text-[10px] uppercase tracking-[0.18em] text-(--text-light)">Pts Saved</span>
+        <span class="text-[10px] uppercase tracking-[0.18em] text-(--text-light)">Saved</span>
         <span class="text-[10px] uppercase tracking-[0.18em] text-(--text-light)">Status</span>
         <span class="text-[10px] uppercase tracking-[0.18em] text-(--text-light)">Actions</span>
       </div>
@@ -190,7 +189,7 @@ function canModify(order: OrderResponseDto) {
         :style="{ animationDelay: `${0.3 + i * 0.04}s` }"
       >
         <!-- Order ID -->
-        <span class="text-[13px] text-(--text) font-light tracking-wide">#{{ order.orderID.slice(0, 8) }}…</span>
+        <span class="text-[13px] text-(--text) font-light tracking-wide font-mono">#{{ order.orderID.slice(0, 13) }}…</span>
 
         <!-- Order Date -->
         <span class="text-[13px] text-(--text-muted) font-light">{{ formatDate(order.orderDate) }}</span>
@@ -238,7 +237,7 @@ function canModify(order: OrderResponseDto) {
         <span class="text-[13px] text-(--text-muted) font-light">${{ order.totalPrice?.toFixed(2) ?? '-' }}</span>
 
         <!-- Loyalty Savings -->
-        <span class="text-[13px] text-(--text-muted) font-light">{{ order.loyaltySaving ?? 0 }}</span>
+        <span class="text-[13px] text-(--text-muted) font-light">${{ (order.loyaltySaving ?? 0).toFixed(2) }}</span>
 
         <!-- Status -->
         <span

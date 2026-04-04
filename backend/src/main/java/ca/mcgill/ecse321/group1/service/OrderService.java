@@ -177,7 +177,7 @@ public class OrderService {
     Order order = initializeOrder(customer, deliveryDate);
     computeLoyaltyPoints(order, customer, usedLoyaltyPoints);
 
-    itemRepository.saveAll(customer.getItems());
+    itemRepository.saveAll(order.getItems());
     customerRepository.save(customer);
     return orderRepository.save(order);
   }
