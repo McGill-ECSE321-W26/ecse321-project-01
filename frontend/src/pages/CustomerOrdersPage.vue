@@ -1,16 +1,14 @@
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import { Calendar, X } from 'lucide-vue-next'
+import { Pencil, X } from 'lucide-vue-next'
 import { api } from '@/api/client'
 import type { OrderResponseDto } from '@/api/types/order'
 import { useAuthStore } from '@/stores/auth'
 
 const router = useRouter()
-
 const auth = useAuthStore()
 
-// ── Data ─────────────────────────────────────────────────────────────────────
 const orders = ref<OrderResponseDto[]>([])
 const loading = ref(true)
 const updatingOrder = ref<string | null>(null)
@@ -28,14 +26,6 @@ onMounted(async () => {
   }
 })
 
-const totalOrders = computed(() => orders.value.length)
-const activeOrders = computed(() =>
-  orders.value.filter(o => o.orderStatus !== 'Delivered' && o.orderStatus !== 'Cancelled').length,
-)
-const totalSaved = computed(() =>
-  orders.value.reduce((sum, o) => sum + (o.loyaltySaving ?? 0), 0),
-)
-
 async function cancelOrder(order: OrderResponseDto) {
   updatingOrder.value = order.orderID
   try {
@@ -47,8 +37,8 @@ async function cancelOrder(order: OrderResponseDto) {
         orderStatus: 'Cancelled',
       }),
     })
-    const idx = orders.value.findIndex(o => o.orderID === updated.orderID)
-    if (idx !== -1) orders.value[idx] = updated
+    const index = orders.value.findIndex(o => o.orderID === updated.orderID)
+    if (index !== -1) orders.value[index] = updated
   } catch { /* empty */ } finally {
     updatingOrder.value = null
   }
@@ -74,7 +64,7 @@ async function saveDeliveryDate(order: OrderResponseDto) {
   try {
     // Send as epoch ms to work with java.sql.Date consistently
     const deliveryTimestamp = new Date(editDeliveryValue.value).getTime()
-    const updated = await api<OrderResponseDto>(`/orders/${order.orderID}/`, {
+    const updated = await api<OrderResponseDto>(`/orders/${order.orderID}`, {
       method: 'PATCH',
       body: JSON.stringify({
         employeeID: order.employeeID,
@@ -82,8 +72,8 @@ async function saveDeliveryDate(order: OrderResponseDto) {
         orderStatus: order.orderStatus,
       }),
     })
-    const idx = orders.value.findIndex(o => o.orderID === updated.orderID)
-    if (idx !== -1) orders.value[idx] = updated
+    const index = orders.value.findIndex(o => o.orderID === updated.orderID)
+    if (index !== -1) orders.value[index] = updated
     editingDelivery.value = null
   } catch (e: unknown) {
     saveDeliveryError.value = e instanceof Error ? e.message : 'Failed to update delivery date.'
@@ -92,9 +82,9 @@ async function saveDeliveryDate(order: OrderResponseDto) {
   }
 }
 
-function formatDate(d: Date | null) {
-  if (!d) return '-'
-  return new Date(d).toLocaleDateString('en-CA', { year: 'numeric', month: 'short', day: 'numeric' })
+function formatDate(date: Date | null) {
+  if (!date) return '-'
+  return new Date(date).toLocaleDateString('en-CA', { year: 'numeric', month: 'short', day: 'numeric' })
 }
 
 function canModify(order: OrderResponseDto) {
@@ -125,7 +115,7 @@ function canModify(order: OrderResponseDto) {
           Total Orders
         </p>
         <p class="text-[44px] font-light text-(--text) leading-none">
-          {{ loading ? '-' : totalOrders }}
+          {{ loading ? '-' : orders.length }}
         </p>
       </div>
       <div
@@ -136,7 +126,7 @@ function canModify(order: OrderResponseDto) {
           Active
         </p>
         <p class="text-[44px] font-light text-(--text) leading-none">
-          {{ loading ? '-' : activeOrders }}
+          {{ loading ? '-' : orders.filter(o => o.orderStatus !== 'Delivered' && o.orderStatus !== 'Cancelled').length }}
         </p>
       </div>
       <div
@@ -147,7 +137,7 @@ function canModify(order: OrderResponseDto) {
           Money Saved
         </p>
         <p class="text-[44px] font-light text-(--text) leading-none">
-          {{ loading ? '-' : `$${totalSaved.toFixed(2)}` }}
+          {{ loading ? '-' : `$${orders.reduce((sum, o) => sum + (o.loyaltySaving ?? 0), 0).toFixed(2)}` }}
         </p>
       </div>
     </div>
@@ -230,10 +220,20 @@ function canModify(order: OrderResponseDto) {
               {{ saveDeliveryError }}
             </p>
           </div>
-          <span
+          <div
             v-else
-            class="text-[13px] text-(--text-muted) font-light"
-          >{{ formatDate(order.deliveryDate) }}</span>
+            class="flex items-center gap-2"
+          >
+            <span class="text-[13px] text-(--text-muted) font-light">{{ formatDate(order.deliveryDate) }}</span>
+            <button
+              v-if="canModify(order)"
+              :disabled="updatingOrder === order.orderID"
+              class="text-(--text-light) hover:text-(--text-muted) transition-colors disabled:opacity-40"
+              @click="startEditDelivery(order)"
+            >
+              <Pencil class="w-3 h-3" />
+            </button>
+          </div>
         </div>
 
         <!-- Total Price -->
@@ -261,15 +261,6 @@ function canModify(order: OrderResponseDto) {
             @click="router.push({ name: 'order-detail', params: { orderID: order.orderID } })"
           >
             View
-          </button>
-          <button
-            v-if="canModify(order) && editingDelivery !== order.orderID"
-            :disabled="updatingOrder === order.orderID"
-            class="text-[11px] uppercase tracking-widest border border-(--text-light) px-3 py-1.5 text-(--text) hover:bg-(--text) hover:text-(--bg) transition-colors disabled:opacity-40 flex items-center gap-1.5"
-            @click="startEditDelivery(order)"
-          >
-            <Calendar class="w-3 h-3" />
-            Edit
           </button>
           <button
             v-if="canModify(order)"

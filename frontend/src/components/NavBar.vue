@@ -65,10 +65,10 @@ function handleLogout() {
         <DrawerContent>
           <nav class="flex flex-col gap-2 p-4">
             <Button
-                variant="ghost"
-                :class="['justify-start gap-3', (auth.role !== 'Manager')?'hidden':null]"
-                as-child
-                @click="sidebarOpen = false"
+              variant="ghost"
+              :class="['justify-start gap-3', (auth.role !== 'Manager')?'hidden':null]"
+              as-child
+              @click="sidebarOpen = false"
             >
               <RouterLink to="/manager">
                 <AppWindowMac class="size-5" />

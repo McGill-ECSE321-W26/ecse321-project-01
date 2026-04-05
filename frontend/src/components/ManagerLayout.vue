@@ -34,7 +34,10 @@ const navItems = [
       </div>
 
       <nav class="flex flex-col gap-0 px-0 pt-2">
-        <template v-for="item in navItems" :key="item.key">
+        <template
+          v-for="item in navItems"
+          :key="item.key"
+        >
           <!-- Active route link -->
           <RouterLink
             v-if="item.to"
@@ -46,7 +49,10 @@ const navItems = [
                 : 'text-(--text-muted) hover:bg-(--card-hover) hover:text-(--text)'
             "
           >
-            <component :is="item.icon" class="w-4 h-4 shrink-0" />
+            <component
+              :is="item.icon"
+              class="w-4 h-4 shrink-0"
+            />
             {{ item.label }}
           </RouterLink>
 
@@ -56,7 +62,10 @@ const navItems = [
             class="flex items-center justify-between px-5 py-3 text-[13px] tracking-wide border-b border-(--text-light) opacity-35 cursor-not-allowed select-none"
           >
             <div class="flex items-center gap-3 text-(--text-muted)">
-              <component :is="item.icon" class="w-4 h-4 shrink-0" />
+              <component
+                :is="item.icon"
+                class="w-4 h-4 shrink-0"
+              />
               {{ item.label }}
             </div>
             <span class="text-[9px] uppercase tracking-widest text-(--text-light)">Soon</span>

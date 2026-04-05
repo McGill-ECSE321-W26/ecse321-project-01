@@ -5,7 +5,7 @@ import { ArrowLeft } from 'lucide-vue-next'
 import { api } from '@/api/client'
 import type { OrderResponseDto } from '@/api/types/order'
 import type { ItemResponseDto } from '@/api/types/item'
-import type { ClothingModelResponseDto, ClothingVariantResponseDto } from '@/api/types/clothing'
+import type { ClothingModelListResponseDto, ClothingVariantResponseDto } from '@/api/types/clothing'
 
 const route = useRoute()
 const router = useRouter()
@@ -16,15 +16,15 @@ const items = ref<ItemResponseDto[]>([])
 const loading = ref(true)
 const error = ref<string | null>(null)
 
-// variantID -> { name, size, color }
-const variantMap = ref(new Map<string, { name: string; size: string; color: string }>())
+// variantID: { name, size, color, imagePath }
+const variantMap = ref(new Map<string, { name: string; size: string; color: string; imagePath: string }>())
 
 onMounted(async () => {
   try {
     const [orderData, itemsData, models] = await Promise.all([
       api<OrderResponseDto>(`/orders/${orderID}`),
       api<ItemResponseDto[]>(`/orders/${orderID}/items`),
-      api<ClothingModelResponseDto[]>('/clothing'),
+      api<ClothingModelListResponseDto[]>('/clothing'),
     ])
     order.value = orderData
     items.value = itemsData
@@ -37,10 +37,10 @@ onMounted(async () => {
       ),
     )
 
-    const map = new Map<string, { name: string; size: string; color: string }>()
+    const map = new Map<string, { name: string; size: string; color: string; imagePath: string }>()
     for (const { modelName, variants } of variantLists) {
       for (const v of variants) {
-        map.set(v.clothingVariantID, { name: modelName, size: v.size, color: v.color })
+        map.set(v.clothingVariantID, { name: modelName, size: v.size, color: v.color, imagePath: v.imagePath })
       }
     }
     variantMap.value = map
@@ -54,8 +54,8 @@ onMounted(async () => {
 })
 
 function getVariantInfo(clothingVariantID: string | null) {
-  if (!clothingVariantID) return { name: 'Unknown', size: '-', color: '-' }
-  return variantMap.value.get(clothingVariantID) ?? { name: 'Unknown', size: '-', color: '-' }
+  if (!clothingVariantID) return { name: 'Unknown', size: '-', color: '-', imagePath: '' }
+  return variantMap.value.get(clothingVariantID) ?? { name: 'Unknown', size: '-', color: '-', imagePath: '' }
 }
 </script>
 
@@ -99,29 +99,49 @@ function getVariantInfo(clothingVariantID: string | null) {
       <!-- Order header stats -->
       <div class="grid grid-cols-[2fr_2fr_1fr_1fr] gap-0 border border-(--text-light) mb-10">
         <div
-          class="stat-card p-7 border-r border-(--text-light)"
+          class="stat-card p-7 border-r border-(--text-light) flex flex-col gap-5"
           style="animation-delay: 0s"
         >
-          <p class="text-[10px] uppercase tracking-[0.2em] text-(--text-light) mb-3">
-            Order ID
-          </p>
-          <p class="text-[11px] font-light text-(--text) font-mono leading-relaxed break-all">
-            {{ order.orderID }}
-          </p>
+          <div>
+            <p class="text-[10px] uppercase tracking-[0.2em] text-(--text-light) mb-3">
+              Order ID
+            </p>
+            <p class="text-[11px] font-light text-(--text) font-mono leading-relaxed break-all">
+              {{ order.orderID }}
+            </p>
+          </div>
+          <div>
+            <p class="text-[10px] uppercase tracking-[0.2em] text-(--text-light) mb-3">
+              Address
+            </p>
+            <p class="text-[13px] font-light text-(--text) leading-snug">
+              {{ order.address }}
+            </p>
+          </div>
         </div>
         <div
-          class="stat-card p-7 border-r border-(--text-light)"
+          class="stat-card p-7 border-r border-(--text-light) flex flex-col gap-5"
           style="animation-delay: 0.07s"
         >
-          <p class="text-[10px] uppercase tracking-[0.2em] text-(--text-light) mb-3">
-            Address
-          </p>
-          <p class="text-[13px] font-light text-(--text) leading-snug">
-            {{ order.address }}
-          </p>
+          <div>
+            <p class="text-[10px] uppercase tracking-[0.2em] text-(--text-light) mb-3">
+              Order Date
+            </p>
+            <p class="text-[13px] font-light text-(--text) leading-snug">
+              {{ order.orderDate ? new Date(order.orderDate).toLocaleDateString('en-CA', { year: 'numeric', month: 'short', day: 'numeric' }) : '-' }}
+            </p>
+          </div>
+          <div>
+            <p class="text-[10px] uppercase tracking-[0.2em] text-(--text-light) mb-3">
+              Delivery Date
+            </p>
+            <p class="text-[13px] font-light text-(--text) leading-snug">
+              {{ order.deliveryDate ? new Date(order.deliveryDate).toLocaleDateString('en-CA', { year: 'numeric', month: 'short', day: 'numeric' }) : '-' }}
+            </p>
+          </div>
         </div>
         <div
-          class="stat-card p-7 border-r border-(--text-light)"
+          class="stat-card p-7 border-r border-(--text-light) flex flex-col justify-center"
           style="animation-delay: 0.14s"
         >
           <p class="text-[10px] uppercase tracking-[0.2em] text-(--text-light) mb-3">
@@ -132,7 +152,7 @@ function getVariantInfo(clothingVariantID: string | null) {
           </p>
         </div>
         <div
-          class="stat-card p-7"
+          class="stat-card p-7 flex flex-col justify-center"
           style="animation-delay: 0.21s"
         >
           <p class="text-[10px] uppercase tracking-[0.2em] text-(--text-light) mb-3">
@@ -150,7 +170,8 @@ function getVariantInfo(clothingVariantID: string | null) {
         style="animation-delay: 0.28s"
       >
         <!-- Table header -->
-        <div class="grid grid-cols-[3fr_1fr_1.5fr_1fr_0.6fr] px-6 py-2.5 border-b border-(--text-light)">
+        <div class="grid grid-cols-[2.5rem_3fr_1fr_1.5fr_1fr_0.6fr] px-6 py-2.5 border-b border-(--text-light)">
+          <span />
           <span class="text-[10px] uppercase tracking-[0.18em] text-(--text-light)">Name</span>
           <span class="text-[10px] uppercase tracking-[0.18em] text-(--text-light)">Size</span>
           <span class="text-[10px] uppercase tracking-[0.18em] text-(--text-light)">Color</span>
@@ -170,9 +191,21 @@ function getVariantInfo(clothingVariantID: string | null) {
         <div
           v-for="(item, i) in items"
           :key="item.itemID"
-          class="grid grid-cols-[3fr_1fr_1.5fr_1fr_0.6fr] px-6 py-4 border-b border-(--text-light) last:border-b-0 hover:bg-(--card-hover) transition-colors items-center row-card"
+          class="grid grid-cols-[2.5rem_3fr_1fr_1.5fr_1fr_0.6fr] px-6 py-4 border-b border-(--text-light) last:border-b-0 hover:bg-(--card-hover) transition-colors items-center row-card"
           :style="{ animationDelay: `${0.28 + i * 0.04}s` }"
         >
+          <div class="w-9 h-9 shrink-0 overflow-hidden border border-(--text-light)">
+            <img
+              v-if="getVariantInfo(item.clothingVariantID).imagePath"
+              :src="getVariantInfo(item.clothingVariantID).imagePath"
+              :alt="getVariantInfo(item.clothingVariantID).name"
+              class="w-full h-full object-cover"
+            >
+            <div
+              v-else
+              class="w-full h-full bg-(--card-hover)"
+            />
+          </div>
           <span class="text-[13px] text-(--text) font-light">{{ getVariantInfo(item.clothingVariantID).name }}</span>
           <span class="text-[13px] text-(--text-muted) font-light uppercase">{{ getVariantInfo(item.clothingVariantID).size }}</span>
           <span class="text-[13px] text-(--text-muted) font-light capitalize">{{ getVariantInfo(item.clothingVariantID).color }}</span>
