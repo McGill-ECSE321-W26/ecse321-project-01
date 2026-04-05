@@ -55,15 +55,18 @@ function getClothingImage(model: ClothingModelListResponseDto): string {
   return model.variants[index]?.imagePath ?? '' // blank image path if not provided
 }
 
-// Handle color swatch click
 function selectColor(modelId: string, colorIndex: number) {
   selectedColorIndex.value[modelId] = colorIndex // populate hashmap with k/v entry
 }
 
-// Check if a color is selected
 function isColorSelected(modelId: string, colorIndex: number): boolean {
-  // look up selected color index from selectedColorIndex.value[modelId] default to 0
+  // look up selected color index from selectedColorIndex.value[modelId] defaulted to 0
   return (selectedColorIndex.value[modelId] ?? 0) === colorIndex // return true if color index match
+}
+
+function formatPrice(price: number): string {
+  // Format to clean integer is no decimals, but fix to 2 places if decimals
+  return Number.isInteger(price) ? `${price}` : price.toFixed(2)
 }
 
 onMounted(async () => {
@@ -177,7 +180,7 @@ onMounted(async () => {
             {{ model.name }}
           </p>
           <p class="text-sm font-extrabold text-(--text)">
-            ${{ model.price.toFixed(2) }} CAD
+            ${{ formatPrice(model.price) }} CAD
           </p>
           <div class="flex gap-1.5 mt-2">
             <div
