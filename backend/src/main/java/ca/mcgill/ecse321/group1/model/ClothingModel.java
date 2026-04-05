@@ -11,6 +11,12 @@ public class ClothingModel
 {
 
   //------------------------
+  // ENUMERATIONS
+  //------------------------
+
+  public enum Category { Tops, Bottoms, Dresses, Outerwear, Accessories }
+
+  //------------------------
   // MEMBER VARIABLES
   //------------------------
 
@@ -20,8 +26,10 @@ public class ClothingModel
   private String clothingModelID;
   @Column(unique = true)
   private String name;
+  private String description;
+  private String brand;
+  private Category category;
   private float price;
-  private String imagePath;
   @Column(columnDefinition = "boolean default false")
   private boolean archived;
 
@@ -37,12 +45,14 @@ public class ClothingModel
     clothingVariants = new ArrayList<ClothingVariant>();
   }
 
-  public ClothingModel(String aClothingModelID, String aName, float aPrice, String aImagePath)
+  public ClothingModel(String aClothingModelID, String aName, String aDescription, String aBrand, Category aCategory, float aPrice)
   {
     clothingModelID = aClothingModelID;
     name = aName;
+    description = aDescription;
+    brand = aBrand;
+    category = aCategory;
     price = aPrice;
-    imagePath = aImagePath;
     archived = false;
     clothingVariants = new ArrayList<ClothingVariant>();
   }
@@ -67,18 +77,34 @@ public class ClothingModel
     return wasSet;
   }
 
-  public boolean setPrice(float aPrice)
+  public boolean setDescription(String aDescription)
   {
     boolean wasSet = false;
-    price = aPrice;
+    description = aDescription;
     wasSet = true;
     return wasSet;
   }
 
-  public boolean setImagePath(String aImagePath)
+  public boolean setBrand(String aBrand)
   {
     boolean wasSet = false;
-    imagePath = aImagePath;
+    brand = aBrand;
+    wasSet = true;
+    return wasSet;
+  }
+
+  public boolean setCategory(Category aCategory)
+  {
+    boolean wasSet = false;
+    category = aCategory;
+    wasSet = true;
+    return wasSet;
+  }
+
+  public boolean setPrice(float aPrice)
+  {
+    boolean wasSet = false;
+    price = aPrice;
     wasSet = true;
     return wasSet;
   }
@@ -101,14 +127,24 @@ public class ClothingModel
     return name;
   }
 
+  public String getDescription()
+  {
+    return description;
+  }
+
+  public String getBrand()
+  {
+    return brand;
+  }
+
+  public Category getCategory()
+  {
+    return category;
+  }
+
   public float getPrice()
   {
     return price;
-  }
-
-  public String getImagePath()
-  {
-    return imagePath;
   }
 
   public boolean getArchived()
@@ -233,8 +269,10 @@ public class ClothingModel
     return super.toString() + "["+
             "clothingModelID" + ":" + getClothingModelID()+ "," +
             "name" + ":" + getName()+ "," +
+            "description" + ":" + getDescription()+ "," +
+            "brand" + ":" + getBrand()+ "," +
             "price" + ":" + getPrice()+ "," +
-            "imagePath" + ":" + getImagePath()+ "," +
-            "archived" + ":" + getArchived()+ "]";
+            "archived" + ":" + getArchived()+ "]" + System.getProperties().getProperty("line.separator") +
+            "  " + "category" + "=" + (getCategory() != null ? !getCategory().equals(this)  ? getCategory().toString().replaceAll("  ","    ") : "this" : "null");
   }
 }

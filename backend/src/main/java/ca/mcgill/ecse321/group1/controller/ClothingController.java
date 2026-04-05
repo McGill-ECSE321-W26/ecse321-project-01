@@ -1,6 +1,7 @@
 package ca.mcgill.ecse321.group1.controller;
 
 import ca.mcgill.ecse321.group1.dto.ClothingModelCreateRequestDto;
+import ca.mcgill.ecse321.group1.dto.ClothingModelListResponseDto;
 import ca.mcgill.ecse321.group1.dto.ClothingModelResponseDto;
 import ca.mcgill.ecse321.group1.dto.ClothingVariantCreateRequestDto;
 import ca.mcgill.ecse321.group1.dto.ClothingVariantResponseDto;
@@ -21,9 +22,9 @@ public class ClothingController {
   }
 
   @GetMapping
-  public List<ClothingModelResponseDto> getAllClothingModels() {
+  public List<ClothingModelListResponseDto> getAllClothingModels() {
     return clothingService.getAllClothingModels().stream()
-        .map(ClothingModelResponseDto::new)
+        .map(ClothingModelListResponseDto::new)
         .toList();
   }
 
@@ -38,7 +39,11 @@ public class ClothingController {
       @RequestBody ClothingModelCreateRequestDto request) {
     return new ClothingModelResponseDto(
         clothingService.createClothingModel(
-            request.getName(), request.getPrice(), request.getImagePath()));
+            request.getName(),
+            request.getDescription(),
+            request.getBrand(),
+            request.getCategory(),
+            request.getPrice()));
   }
 
   @PutMapping("/{modelId}")
@@ -46,7 +51,12 @@ public class ClothingController {
       @PathVariable String modelId, @RequestBody ClothingModelCreateRequestDto request) {
     return new ClothingModelResponseDto(
         clothingService.updateClothingModel(
-            modelId, request.getName(), request.getPrice(), request.getImagePath()));
+            modelId,
+            request.getName(),
+            request.getDescription(),
+            request.getBrand(),
+            request.getCategory(),
+            request.getPrice()));
   }
 
   @DeleteMapping("/{modelId}")

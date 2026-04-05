@@ -1,6 +1,7 @@
 package ca.mcgill.ecse321.group1.service;
 
 import ca.mcgill.ecse321.group1.model.ClothingModel;
+import ca.mcgill.ecse321.group1.model.ClothingModel.Category;
 import ca.mcgill.ecse321.group1.model.ClothingVariant;
 import ca.mcgill.ecse321.group1.model.Item;
 import ca.mcgill.ecse321.group1.repository.ClothingModelRepository;
@@ -62,6 +63,12 @@ public class ClothingService {
     }
   }
 
+  private void validateBrand(String brand) {
+    if (brand == null || brand.isBlank()) {
+      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Brand must not be blank");
+    }
+  }
+
   // Checks name uniqueness, optionally excluding a model ID (used during updates to allow keeping
   // the same name)
   private void validateNameUniqueness(String name, String excludeModelId) {
@@ -81,6 +88,10 @@ public class ClothingService {
     }
     if (color == null || color.isBlank()) {
       throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Color must not be blank");
+    }
+    if (!color.matches("^#[0-9A-Fa-f]{6}$")) {
+      throw new ResponseStatusException(
+          HttpStatus.BAD_REQUEST, "Color must be a valid hex color (e.g. #FF5733)");
     }
     validateStockQuantity(stockQuantity);
     validateImagePath(imagePath);
@@ -143,24 +154,30 @@ public class ClothingService {
   }
 
   @Transactional
-  public ClothingModel createClothingModel(String name, float price, String imagePath)
+  public ClothingModel createClothingModel(
+      String name, String description, String brand, Category category, float price)
       throws ResponseStatusException {
     validateName(name);
+    validateBrand(brand);
     validatePrice(price);
     validateNameUniqueness(name, null);
-    validateImagePath(imagePath);
 
-    ClothingModel model = new ClothingModel(null, name, price, imagePath);
+    ClothingModel model = new ClothingModel(null, name, description, brand, category, price);
     return clothingModelRepository.save(model);
   }
 
   @Transactional
   public ClothingModel updateClothingModel(
-      String modelId, String name, float price, String imagePath) {
+      String modelId,
+      String name,
+      String description,
+      String brand,
+      Category category,
+      float price) {
     ClothingModel model = findModel(modelId);
     validateName(name);
+    validateBrand(brand);
     validatePrice(price);
-    validateImagePath(imagePath);
 
     // Only validate uniqueness and update if the name actually changed
     if (!name.equals(model.getName())) {
@@ -174,7 +191,9 @@ public class ClothingService {
       updateCartItemPrices(modelId, price);
     }
 
-    model.setImagePath(imagePath);
+    model.setDescription(description);
+    model.setBrand(brand);
+    model.setCategory(category);
 
     clothingModelRepository.save(model);
     return model;
