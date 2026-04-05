@@ -43,9 +43,11 @@ public class ClothingServiceTests {
   public void testGetAllClothingModels() {
     // Arrange
     ClothingModel model1 =
-        new ClothingModel(null, "Summer Jacket", VALID_DESCRIPTION, VALID_BRAND, VALID_CATEGORY, 79.99f);
+        new ClothingModel(
+            null, "Summer Jacket", VALID_DESCRIPTION, VALID_BRAND, VALID_CATEGORY, 79.99f);
     ClothingModel model2 =
-        new ClothingModel(null, "Winter Coat", VALID_DESCRIPTION, VALID_BRAND, VALID_CATEGORY, 149.99f);
+        new ClothingModel(
+            null, "Winter Coat", VALID_DESCRIPTION, VALID_BRAND, VALID_CATEGORY, 149.99f);
     when(clothingModelRepository.findByArchivedFalse()).thenReturn(List.of(model1, model2));
 
     // Act
@@ -104,7 +106,8 @@ public class ClothingServiceTests {
 
     // Act
     ClothingModel result =
-        clothingService.createClothingModel(name, VALID_DESCRIPTION, VALID_BRAND, VALID_CATEGORY, price);
+        clothingService.createClothingModel(
+            name, VALID_DESCRIPTION, VALID_BRAND, VALID_CATEGORY, price);
 
     // Assert
     assertNotNull(result);
@@ -210,7 +213,8 @@ public class ClothingServiceTests {
     String newBrand = "Adidas";
     Category newCategory = Category.Tops;
     ClothingModel model =
-        new ClothingModel(id, "Summer Jacket", VALID_DESCRIPTION, VALID_BRAND, VALID_CATEGORY, 79.99f);
+        new ClothingModel(
+            id, "Summer Jacket", VALID_DESCRIPTION, VALID_BRAND, VALID_CATEGORY, 79.99f);
     ClothingVariant variant =
         new ClothingVariant(id, ClothingVariant.Size.M, "blue", VALID_VARIANT_IMAGE, 5, model);
     Item item = new Item(id, 1, 1f, variant);
@@ -256,7 +260,8 @@ public class ClothingServiceTests {
     // Arrange
     String id = "1";
     ClothingModel model =
-        new ClothingModel(id, "Summer Jacket", VALID_DESCRIPTION, VALID_BRAND, VALID_CATEGORY, 79.99f);
+        new ClothingModel(
+            id, "Summer Jacket", VALID_DESCRIPTION, VALID_BRAND, VALID_CATEGORY, 79.99f);
     when(clothingModelRepository.findByClothingModelIDAndArchivedFalse(id)).thenReturn(model);
 
     // Act & Assert
@@ -276,7 +281,8 @@ public class ClothingServiceTests {
     String newName = "Winter Coat";
     float price = 79.99f;
     ClothingModel saved =
-        new ClothingModel(id, "Summer Jacket", VALID_DESCRIPTION, VALID_BRAND, VALID_CATEGORY, price);
+        new ClothingModel(
+            id, "Summer Jacket", VALID_DESCRIPTION, VALID_BRAND, VALID_CATEGORY, price);
     ClothingModel exist =
         new ClothingModel("2", newName, VALID_DESCRIPTION, VALID_BRAND, VALID_CATEGORY, price);
     when(clothingModelRepository.findByClothingModelIDAndArchivedFalse(id)).thenReturn(saved);
@@ -299,7 +305,8 @@ public class ClothingServiceTests {
     // Arrange
     String id = "1";
     ClothingModel model =
-        new ClothingModel(id, "Summer Jacket", VALID_DESCRIPTION, VALID_BRAND, VALID_CATEGORY, 79.99f);
+        new ClothingModel(
+            id, "Summer Jacket", VALID_DESCRIPTION, VALID_BRAND, VALID_CATEGORY, 79.99f);
     when(clothingModelRepository.findByClothingModelIDAndArchivedFalse(id)).thenReturn(model);
 
     // Act & Assert
@@ -317,7 +324,8 @@ public class ClothingServiceTests {
     // Arrange
     String id = "1";
     ClothingModel model =
-        new ClothingModel(id, "Summer Jacket", VALID_DESCRIPTION, VALID_BRAND, VALID_CATEGORY, 79.99f);
+        new ClothingModel(
+            id, "Summer Jacket", VALID_DESCRIPTION, VALID_BRAND, VALID_CATEGORY, 79.99f);
     when(clothingModelRepository.findByClothingModelIDAndArchivedFalse(id)).thenReturn(model);
 
     // Act & Assert
@@ -423,7 +431,12 @@ public class ClothingServiceTests {
     String variantId = "variant1";
     ClothingModel model =
         new ClothingModel(
-            correctModelId, "Summer Jacket", VALID_DESCRIPTION, VALID_BRAND, VALID_CATEGORY, 79.99f);
+            correctModelId,
+            "Summer Jacket",
+            VALID_DESCRIPTION,
+            VALID_BRAND,
+            VALID_CATEGORY,
+            79.99f);
     new ClothingVariant(
         variantId, ClothingVariant.Size.M, "#FF0000", VALID_VARIANT_IMAGE, 10, model);
     when(clothingVariantRepository.findByClothingVariantIDAndArchivedFalse(variantId))

@@ -73,119 +73,435 @@ public class DataSeeder {
     ClothingModel tshirt =
         createClothingModel(
             "Classic T-Shirt", "Kloth Essentials", ClothingModel.Category.Tops, 25f);
-    ClothingVariant tshirtWhiteS = createVariant(tshirt, Size.S, "#FFFFFF", 30, "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=800&auto=format&fit=crop&q=60&fm=jpg");
-    ClothingVariant tshirtWhiteM = createVariant(tshirt, Size.M, "#FFFFFF", 45, "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=800&auto=format&fit=crop&q=60&fm=jpg");
-    ClothingVariant tshirtBlackM = createVariant(tshirt, Size.M, "#1C1C1C", 40, "https://images.unsplash.com/photo-1503341504253-dff4815485f1?w=800&auto=format&fit=crop&q=60&fm=jpg");
-    ClothingVariant tshirtBlackL = createVariant(tshirt, Size.L, "#1C1C1C", 25, "https://images.unsplash.com/photo-1503341504253-dff4815485f1?w=800&auto=format&fit=crop&q=60&fm=jpg");
-    ClothingVariant tshirtNavyXL = createVariant(tshirt, Size.XL, "#1F305E", 15, "https://images.unsplash.com/photo-1618354691373-d851c5c3a990?w=800&auto=format&fit=crop&q=60&fm=jpg");
+    ClothingVariant tshirtWhiteS =
+        createVariant(
+            tshirt,
+            Size.S,
+            "#FFFFFF",
+            30,
+            "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=800&auto=format&fit=crop&q=60&fm=jpg");
+    ClothingVariant tshirtWhiteM =
+        createVariant(
+            tshirt,
+            Size.M,
+            "#FFFFFF",
+            45,
+            "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=800&auto=format&fit=crop&q=60&fm=jpg");
+    ClothingVariant tshirtBlackM =
+        createVariant(
+            tshirt,
+            Size.M,
+            "#1C1C1C",
+            40,
+            "https://images.unsplash.com/photo-1503341504253-dff4815485f1?w=800&auto=format&fit=crop&q=60&fm=jpg");
+    ClothingVariant tshirtBlackL =
+        createVariant(
+            tshirt,
+            Size.L,
+            "#1C1C1C",
+            25,
+            "https://images.unsplash.com/photo-1503341504253-dff4815485f1?w=800&auto=format&fit=crop&q=60&fm=jpg");
+    ClothingVariant tshirtNavyXL =
+        createVariant(
+            tshirt,
+            Size.XL,
+            "#1F305E",
+            15,
+            "https://images.unsplash.com/photo-1618354691373-d851c5c3a990?w=800&auto=format&fit=crop&q=60&fm=jpg");
 
     // Premium Hoodie
     ClothingModel hoodie =
-        createClothingModel(
-            "Premium Hoodie", "Kloth Originals", ClothingModel.Category.Tops, 60f);
-    ClothingVariant hoodieGrayM = createVariant(hoodie, Size.M, "#808080", 20, "https://images.unsplash.com/photo-1509942774463-acf339cf87d5?w=800&auto=format&fit=crop&q=60&fm=jpg");
-    ClothingVariant hoodieGrayL = createVariant(hoodie, Size.L, "#808080", 18, "https://images.unsplash.com/photo-1509942774463-acf339cf87d5?w=800&auto=format&fit=crop&q=60&fm=jpg");
-    ClothingVariant hoodieBlackL = createVariant(hoodie, Size.L, "#1C1C1C", 22, "https://images.unsplash.com/photo-1556821840-3a63f15732ce?w=800&auto=format&fit=crop&q=60&fm=jpg");
-    ClothingVariant hoodieBlackXL = createVariant(hoodie, Size.XL, "#1C1C1C", 10, "https://images.unsplash.com/photo-1556821840-3a63f15732ce?w=800&auto=format&fit=crop&q=60&fm=jpg");
+        createClothingModel("Premium Hoodie", "Kloth Originals", ClothingModel.Category.Tops, 60f);
+    ClothingVariant hoodieGrayM =
+        createVariant(
+            hoodie,
+            Size.M,
+            "#808080",
+            20,
+            "https://images.unsplash.com/photo-1509942774463-acf339cf87d5?w=800&auto=format&fit=crop&q=60&fm=jpg");
+    ClothingVariant hoodieGrayL =
+        createVariant(
+            hoodie,
+            Size.L,
+            "#808080",
+            18,
+            "https://images.unsplash.com/photo-1509942774463-acf339cf87d5?w=800&auto=format&fit=crop&q=60&fm=jpg");
+    ClothingVariant hoodieBlackL =
+        createVariant(
+            hoodie,
+            Size.L,
+            "#1C1C1C",
+            22,
+            "https://images.unsplash.com/photo-1556821840-3a63f15732ce?w=800&auto=format&fit=crop&q=60&fm=jpg");
+    ClothingVariant hoodieBlackXL =
+        createVariant(
+            hoodie,
+            Size.XL,
+            "#1C1C1C",
+            10,
+            "https://images.unsplash.com/photo-1556821840-3a63f15732ce?w=800&auto=format&fit=crop&q=60&fm=jpg");
 
     // Slim Fit Jeans
     ClothingModel jeans =
         createClothingModel(
             "Slim Fit Jeans", "Kloth Essentials", ClothingModel.Category.Bottoms, 80f);
-    ClothingVariant jeansBlueS = createVariant(jeans, Size.S, "#3B5998", 12, "https://images.unsplash.com/photo-1542272604-787c3835535d?w=800&auto=format&fit=crop&q=60&fm=jpg");
-    ClothingVariant jeansBlueM = createVariant(jeans, Size.M, "#3B5998", 20, "https://images.unsplash.com/photo-1542272604-787c3835535d?w=800&auto=format&fit=crop&q=60&fm=jpg");
-    ClothingVariant jeansBlueL = createVariant(jeans, Size.L, "#3B5998", 16, "https://images.unsplash.com/photo-1542272604-787c3835535d?w=800&auto=format&fit=crop&q=60&fm=jpg");
-    ClothingVariant jeansBlackM = createVariant(jeans, Size.M, "#1C1C1C", 14, "https://images.unsplash.com/photo-1475178626620-a4d074967452?w=800&auto=format&fit=crop&q=60&fm=jpg");
+    ClothingVariant jeansBlueS =
+        createVariant(
+            jeans,
+            Size.S,
+            "#3B5998",
+            12,
+            "https://images.unsplash.com/photo-1542272604-787c3835535d?w=800&auto=format&fit=crop&q=60&fm=jpg");
+    ClothingVariant jeansBlueM =
+        createVariant(
+            jeans,
+            Size.M,
+            "#3B5998",
+            20,
+            "https://images.unsplash.com/photo-1542272604-787c3835535d?w=800&auto=format&fit=crop&q=60&fm=jpg");
+    ClothingVariant jeansBlueL =
+        createVariant(
+            jeans,
+            Size.L,
+            "#3B5998",
+            16,
+            "https://images.unsplash.com/photo-1542272604-787c3835535d?w=800&auto=format&fit=crop&q=60&fm=jpg");
+    ClothingVariant jeansBlackM =
+        createVariant(
+            jeans,
+            Size.M,
+            "#1C1C1C",
+            14,
+            "https://images.unsplash.com/photo-1475178626620-a4d074967452?w=800&auto=format&fit=crop&q=60&fm=jpg");
 
     // Summer Floral Dress
     ClothingModel dress =
         createClothingModel(
             "Summer Floral Dress", "Kloth Studio", ClothingModel.Category.Dresses, 50f);
-    ClothingVariant dressFloralS = createVariant(dress, Size.S, "#E8A0BF", 8, "https://images.unsplash.com/photo-1572804013309-59a88b7e92f1?w=800&auto=format&fit=crop&q=60&fm=jpg");
-    ClothingVariant dressFloralM = createVariant(dress, Size.M, "#E8A0BF", 12, "https://images.unsplash.com/photo-1572804013309-59a88b7e92f1?w=800&auto=format&fit=crop&q=60&fm=jpg");
-    ClothingVariant dressFloralL = createVariant(dress, Size.L, "#E8A0BF", 6, "https://images.unsplash.com/photo-1572804013309-59a88b7e92f1?w=800&auto=format&fit=crop&q=60&fm=jpg");
+    ClothingVariant dressFloralS =
+        createVariant(
+            dress,
+            Size.S,
+            "#E8A0BF",
+            8,
+            "https://images.unsplash.com/photo-1572804013309-59a88b7e92f1?w=800&auto=format&fit=crop&q=60&fm=jpg");
+    ClothingVariant dressFloralM =
+        createVariant(
+            dress,
+            Size.M,
+            "#E8A0BF",
+            12,
+            "https://images.unsplash.com/photo-1572804013309-59a88b7e92f1?w=800&auto=format&fit=crop&q=60&fm=jpg");
+    ClothingVariant dressFloralL =
+        createVariant(
+            dress,
+            Size.L,
+            "#E8A0BF",
+            6,
+            "https://images.unsplash.com/photo-1572804013309-59a88b7e92f1?w=800&auto=format&fit=crop&q=60&fm=jpg");
 
     // Bomber Jacket
     ClothingModel jacket =
         createClothingModel(
             "Bomber Jacket", "Kloth Originals", ClothingModel.Category.Outerwear, 120f);
-    ClothingVariant jacketOliveM = createVariant(jacket, Size.M, "#556B2F", 7, "https://images.unsplash.com/photo-1591047139829-d91aecb6caea?w=800&auto=format&fit=crop&q=60&fm=jpg");
-    ClothingVariant jacketOliveL = createVariant(jacket, Size.L, "#556B2F", 9, "https://images.unsplash.com/photo-1591047139829-d91aecb6caea?w=800&auto=format&fit=crop&q=60&fm=jpg");
-    ClothingVariant jacketBlackL = createVariant(jacket, Size.L, "#1C1C1C", 11, "https://images.unsplash.com/photo-1548126032-079a0fb0099d?w=800&auto=format&fit=crop&q=60&fm=jpg");
-    ClothingVariant jacketBlackXL = createVariant(jacket, Size.XL, "#1C1C1C", 5, "https://images.unsplash.com/photo-1548126032-079a0fb0099d?w=800&auto=format&fit=crop&q=60&fm=jpg");
+    ClothingVariant jacketOliveM =
+        createVariant(
+            jacket,
+            Size.M,
+            "#556B2F",
+            7,
+            "https://images.unsplash.com/photo-1591047139829-d91aecb6caea?w=800&auto=format&fit=crop&q=60&fm=jpg");
+    ClothingVariant jacketOliveL =
+        createVariant(
+            jacket,
+            Size.L,
+            "#556B2F",
+            9,
+            "https://images.unsplash.com/photo-1591047139829-d91aecb6caea?w=800&auto=format&fit=crop&q=60&fm=jpg");
+    ClothingVariant jacketBlackL =
+        createVariant(
+            jacket,
+            Size.L,
+            "#1C1C1C",
+            11,
+            "https://images.unsplash.com/photo-1548126032-079a0fb0099d?w=800&auto=format&fit=crop&q=60&fm=jpg");
+    ClothingVariant jacketBlackXL =
+        createVariant(
+            jacket,
+            Size.XL,
+            "#1C1C1C",
+            5,
+            "https://images.unsplash.com/photo-1548126032-079a0fb0099d?w=800&auto=format&fit=crop&q=60&fm=jpg");
 
     // Classic Polo Shirt
     ClothingModel polo =
         createClothingModel(
             "Classic Polo Shirt", "Kloth Essentials", ClothingModel.Category.Tops, 40f);
-    ClothingVariant poloWhiteM = createVariant(polo, Size.M, "#FFFFFF", 25, "https://images.unsplash.com/photo-1586363104862-3a5e2ab60d99?w=800&auto=format&fit=crop&q=60&fm=jpg");
-    ClothingVariant poloNavyM = createVariant(polo, Size.M, "#1F305E", 20, "https://images.unsplash.com/photo-1598032895397-b9472444bf93?w=800&auto=format&fit=crop&q=60&fm=jpg");
-    ClothingVariant poloNavyL = createVariant(polo, Size.L, "#1F305E", 18, "https://images.unsplash.com/photo-1598032895397-b9472444bf93?w=800&auto=format&fit=crop&q=60&fm=jpg");
+    ClothingVariant poloWhiteM =
+        createVariant(
+            polo,
+            Size.M,
+            "#FFFFFF",
+            25,
+            "https://images.unsplash.com/photo-1586363104862-3a5e2ab60d99?w=800&auto=format&fit=crop&q=60&fm=jpg");
+    ClothingVariant poloNavyM =
+        createVariant(
+            polo,
+            Size.M,
+            "#1F305E",
+            20,
+            "https://images.unsplash.com/photo-1598032895397-b9472444bf93?w=800&auto=format&fit=crop&q=60&fm=jpg");
+    ClothingVariant poloNavyL =
+        createVariant(
+            polo,
+            Size.L,
+            "#1F305E",
+            18,
+            "https://images.unsplash.com/photo-1598032895397-b9472444bf93?w=800&auto=format&fit=crop&q=60&fm=jpg");
 
     // Cargo Shorts
     ClothingModel shorts =
-        createClothingModel(
-            "Cargo Shorts", "Kloth Originals", ClothingModel.Category.Bottoms, 35f);
-    ClothingVariant shortsKhakiS = createVariant(shorts, Size.S, "#C3B091", 15, "https://images.unsplash.com/photo-1562886520-8a50978b4655?w=800&auto=format&fit=crop&q=60&fm=jpg");
-    ClothingVariant shortsKhakiM = createVariant(shorts, Size.M, "#C3B091", 22, "https://images.unsplash.com/photo-1562886520-8a50978b4655?w=800&auto=format&fit=crop&q=60&fm=jpg");
-    ClothingVariant shortsKhakiL = createVariant(shorts, Size.L, "#C3B091", 18, "https://images.unsplash.com/photo-1562886520-8a50978b4655?w=800&auto=format&fit=crop&q=60&fm=jpg");
-    ClothingVariant shortsBlackM = createVariant(shorts, Size.M, "#1C1C1C", 20, "https://images.unsplash.com/photo-1591195853828-11db59a44f43?w=800&auto=format&fit=crop&q=60&fm=jpg");
+        createClothingModel("Cargo Shorts", "Kloth Originals", ClothingModel.Category.Bottoms, 35f);
+    ClothingVariant shortsKhakiS =
+        createVariant(
+            shorts,
+            Size.S,
+            "#C3B091",
+            15,
+            "https://images.unsplash.com/photo-1562886520-8a50978b4655?w=800&auto=format&fit=crop&q=60&fm=jpg");
+    ClothingVariant shortsKhakiM =
+        createVariant(
+            shorts,
+            Size.M,
+            "#C3B091",
+            22,
+            "https://images.unsplash.com/photo-1562886520-8a50978b4655?w=800&auto=format&fit=crop&q=60&fm=jpg");
+    ClothingVariant shortsKhakiL =
+        createVariant(
+            shorts,
+            Size.L,
+            "#C3B091",
+            18,
+            "https://images.unsplash.com/photo-1562886520-8a50978b4655?w=800&auto=format&fit=crop&q=60&fm=jpg");
+    ClothingVariant shortsBlackM =
+        createVariant(
+            shorts,
+            Size.M,
+            "#1C1C1C",
+            20,
+            "https://images.unsplash.com/photo-1591195853828-11db59a44f43?w=800&auto=format&fit=crop&q=60&fm=jpg");
 
     // Limited Edition Tee mostly out-of-stock for UI edge-case testing
     ClothingModel rareItem =
         createClothingModel(
             "Limited Edition Tee", "Kloth Studio", ClothingModel.Category.Tops, 90f);
-    ClothingVariant rareTeeBlackM = createVariant(rareItem, Size.M, "#1C1C1C", 0, "https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?w=800&auto=format&fit=crop&q=60&fm=jpg");
-    ClothingVariant rareTeeBlackL = createVariant(rareItem, Size.L, "#1C1C1C", 2, "https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?w=800&auto=format&fit=crop&q=60&fm=jpg");
+    ClothingVariant rareTeeBlackM =
+        createVariant(
+            rareItem,
+            Size.M,
+            "#1C1C1C",
+            0,
+            "https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?w=800&auto=format&fit=crop&q=60&fm=jpg");
+    ClothingVariant rareTeeBlackL =
+        createVariant(
+            rareItem,
+            Size.L,
+            "#1C1C1C",
+            2,
+            "https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?w=800&auto=format&fit=crop&q=60&fm=jpg");
 
     // Relaxed Cargo Trousers
     ClothingModel cargoTrousers =
         createClothingModel(
             "Relaxed Cargo Trousers", "Kloth Essentials", ClothingModel.Category.Bottoms, 98f);
-    ClothingVariant cargoTrousersTanS = createVariant(cargoTrousers, Size.S, "#C2B49A", 14, "https://images.unsplash.com/photo-1624378439575-d8705ad7ae80?w=600&h=800&fit=crop");
-    ClothingVariant cargoTrousersTanM = createVariant(cargoTrousers, Size.M, "#C2B49A", 20, "https://images.unsplash.com/photo-1624378439575-d8705ad7ae80?w=600&h=800&fit=crop");
-    ClothingVariant cargoTrousersTanL = createVariant(cargoTrousers, Size.L, "#C2B49A", 16, "https://images.unsplash.com/photo-1624378439575-d8705ad7ae80?w=600&h=800&fit=crop");
-    ClothingVariant cargoTrousersBlackM = createVariant(cargoTrousers, Size.M, "#3B3A32", 18, "https://images.unsplash.com/photo-1624378439575-d8705ad7ae80?w=600&h=800&fit=crop");
-    ClothingVariant cargoTrousersOliveL = createVariant(cargoTrousers, Size.L, "#6B6455", 10, "https://images.unsplash.com/photo-1624378439575-d8705ad7ae80?w=600&h=800&fit=crop");
+    ClothingVariant cargoTrousersTanS =
+        createVariant(
+            cargoTrousers,
+            Size.S,
+            "#C2B49A",
+            14,
+            "https://images.unsplash.com/photo-1624378439575-d8705ad7ae80?w=600&h=800&fit=crop");
+    ClothingVariant cargoTrousersTanM =
+        createVariant(
+            cargoTrousers,
+            Size.M,
+            "#C2B49A",
+            20,
+            "https://images.unsplash.com/photo-1624378439575-d8705ad7ae80?w=600&h=800&fit=crop");
+    ClothingVariant cargoTrousersTanL =
+        createVariant(
+            cargoTrousers,
+            Size.L,
+            "#C2B49A",
+            16,
+            "https://images.unsplash.com/photo-1624378439575-d8705ad7ae80?w=600&h=800&fit=crop");
+    ClothingVariant cargoTrousersBlackM =
+        createVariant(
+            cargoTrousers,
+            Size.M,
+            "#3B3A32",
+            18,
+            "https://images.unsplash.com/photo-1624378439575-d8705ad7ae80?w=600&h=800&fit=crop");
+    ClothingVariant cargoTrousersOliveL =
+        createVariant(
+            cargoTrousers,
+            Size.L,
+            "#6B6455",
+            10,
+            "https://images.unsplash.com/photo-1624378439575-d8705ad7ae80?w=600&h=800&fit=crop");
 
     // Pleated Wide-Leg Pants
     ClothingModel wideLegPants =
         createClothingModel(
             "Pleated Wide-Leg Pants", "Kloth Essentials", ClothingModel.Category.Bottoms, 115f);
-    ClothingVariant wideLegTanS = createVariant(wideLegPants, Size.S, "#C2B49A", 10, "https://images.unsplash.com/photo-1594938298603-c8148c4dae35?w=600&h=800&fit=crop");
-    ClothingVariant wideLegTanM = createVariant(wideLegPants, Size.M, "#C2B49A", 15, "https://images.unsplash.com/photo-1594938298603-c8148c4dae35?w=600&h=800&fit=crop");
-    ClothingVariant wideLegBlackM = createVariant(wideLegPants, Size.M, "#1A1A18", 12, "https://images.unsplash.com/photo-1594938298603-c8148c4dae35?w=600&h=800&fit=crop");
-    ClothingVariant wideLegBlackL = createVariant(wideLegPants, Size.L, "#1A1A18", 8, "https://images.unsplash.com/photo-1594938298603-c8148c4dae35?w=600&h=800&fit=crop");
-    ClothingVariant wideLegOliveL = createVariant(wideLegPants, Size.L, "#6B6455", 6, "https://images.unsplash.com/photo-1594938298603-c8148c4dae35?w=600&h=800&fit=crop");
+    ClothingVariant wideLegTanS =
+        createVariant(
+            wideLegPants,
+            Size.S,
+            "#C2B49A",
+            10,
+            "https://images.unsplash.com/photo-1594938298603-c8148c4dae35?w=600&h=800&fit=crop");
+    ClothingVariant wideLegTanM =
+        createVariant(
+            wideLegPants,
+            Size.M,
+            "#C2B49A",
+            15,
+            "https://images.unsplash.com/photo-1594938298603-c8148c4dae35?w=600&h=800&fit=crop");
+    ClothingVariant wideLegBlackM =
+        createVariant(
+            wideLegPants,
+            Size.M,
+            "#1A1A18",
+            12,
+            "https://images.unsplash.com/photo-1594938298603-c8148c4dae35?w=600&h=800&fit=crop");
+    ClothingVariant wideLegBlackL =
+        createVariant(
+            wideLegPants,
+            Size.L,
+            "#1A1A18",
+            8,
+            "https://images.unsplash.com/photo-1594938298603-c8148c4dae35?w=600&h=800&fit=crop");
+    ClothingVariant wideLegOliveL =
+        createVariant(
+            wideLegPants,
+            Size.L,
+            "#6B6455",
+            6,
+            "https://images.unsplash.com/photo-1594938298603-c8148c4dae35?w=600&h=800&fit=crop");
 
     // Linen Blend Camp Shirt
     ClothingModel campShirt =
         createClothingModel(
             "Linen Blend Camp Shirt", "Kloth Studio", ClothingModel.Category.Tops, 78f);
-    ClothingVariant campShirtWhiteS = createVariant(campShirt, Size.S, "#F5F0E8", 12, "https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?w=600&h=800&fit=crop");
-    ClothingVariant campShirtWhiteM = createVariant(campShirt, Size.M, "#F5F0E8", 18, "https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?w=600&h=800&fit=crop");
-    ClothingVariant campShirtWhiteL = createVariant(campShirt, Size.L, "#F5F0E8", 10, "https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?w=600&h=800&fit=crop");
-    ClothingVariant campShirtTanM = createVariant(campShirt, Size.M, "#8B7D6B", 15, "https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?w=600&h=800&fit=crop");
-    ClothingVariant campShirtTanL = createVariant(campShirt, Size.L, "#8B7D6B", 8, "https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?w=600&h=800&fit=crop");
+    ClothingVariant campShirtWhiteS =
+        createVariant(
+            campShirt,
+            Size.S,
+            "#F5F0E8",
+            12,
+            "https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?w=600&h=800&fit=crop");
+    ClothingVariant campShirtWhiteM =
+        createVariant(
+            campShirt,
+            Size.M,
+            "#F5F0E8",
+            18,
+            "https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?w=600&h=800&fit=crop");
+    ClothingVariant campShirtWhiteL =
+        createVariant(
+            campShirt,
+            Size.L,
+            "#F5F0E8",
+            10,
+            "https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?w=600&h=800&fit=crop");
+    ClothingVariant campShirtTanM =
+        createVariant(
+            campShirt,
+            Size.M,
+            "#8B7D6B",
+            15,
+            "https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?w=600&h=800&fit=crop");
+    ClothingVariant campShirtTanL =
+        createVariant(
+            campShirt,
+            Size.L,
+            "#8B7D6B",
+            8,
+            "https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?w=600&h=800&fit=crop");
 
     // Nylon Crossbody Bag
     ClothingModel crossbodyBag =
         createClothingModel(
             "Nylon Crossbody Bag", "Kloth Accessories", ClothingModel.Category.Accessories, 65f);
-    ClothingVariant crossbodyBlackS = createVariant(crossbodyBag, Size.S, "#1A1A18", 20, "https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=600&h=800&fit=crop");
-    ClothingVariant crossbodyBlackM = createVariant(crossbodyBag, Size.M, "#1A1A18", 15, "https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=600&h=800&fit=crop");
-    ClothingVariant crossbodyOliveS = createVariant(crossbodyBag, Size.S, "#5C5A4E", 10, "https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=600&h=800&fit=crop");
-    ClothingVariant crossbodyOliveM = createVariant(crossbodyBag, Size.M, "#5C5A4E", 12, "https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=600&h=800&fit=crop");
+    ClothingVariant crossbodyBlackS =
+        createVariant(
+            crossbodyBag,
+            Size.S,
+            "#1A1A18",
+            20,
+            "https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=600&h=800&fit=crop");
+    ClothingVariant crossbodyBlackM =
+        createVariant(
+            crossbodyBag,
+            Size.M,
+            "#1A1A18",
+            15,
+            "https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=600&h=800&fit=crop");
+    ClothingVariant crossbodyOliveS =
+        createVariant(
+            crossbodyBag,
+            Size.S,
+            "#5C5A4E",
+            10,
+            "https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=600&h=800&fit=crop");
+    ClothingVariant crossbodyOliveM =
+        createVariant(
+            crossbodyBag,
+            Size.M,
+            "#5C5A4E",
+            12,
+            "https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=600&h=800&fit=crop");
 
     // Layered Coach Jacket
     ClothingModel coachJacket =
         createClothingModel(
             "Layered Coach Jacket", "Kloth Originals", ClothingModel.Category.Outerwear, 165f);
-    ClothingVariant coachNavyM = createVariant(coachJacket, Size.M, "#2C3040", 9, "https://images.unsplash.com/photo-1544022613-e87ca75a784a?w=600&h=800&fit=crop");
-    ClothingVariant coachNavyL = createVariant(coachJacket, Size.L, "#2C3040", 7, "https://images.unsplash.com/photo-1544022613-e87ca75a784a?w=600&h=800&fit=crop");
-    ClothingVariant coachNavyXL = createVariant(coachJacket, Size.XL, "#2C3040", 5, "https://images.unsplash.com/photo-1544022613-e87ca75a784a?w=600&h=800&fit=crop");
-    ClothingVariant coachBlackM = createVariant(coachJacket, Size.M, "#3B3A32", 11, "https://images.unsplash.com/photo-1544022613-e87ca75a784a?w=600&h=800&fit=crop");
-    ClothingVariant coachBlackL = createVariant(coachJacket, Size.L, "#3B3A32", 6, "https://images.unsplash.com/photo-1544022613-e87ca75a784a?w=600&h=800&fit=crop");
+    ClothingVariant coachNavyM =
+        createVariant(
+            coachJacket,
+            Size.M,
+            "#2C3040",
+            9,
+            "https://images.unsplash.com/photo-1544022613-e87ca75a784a?w=600&h=800&fit=crop");
+    ClothingVariant coachNavyL =
+        createVariant(
+            coachJacket,
+            Size.L,
+            "#2C3040",
+            7,
+            "https://images.unsplash.com/photo-1544022613-e87ca75a784a?w=600&h=800&fit=crop");
+    ClothingVariant coachNavyXL =
+        createVariant(
+            coachJacket,
+            Size.XL,
+            "#2C3040",
+            5,
+            "https://images.unsplash.com/photo-1544022613-e87ca75a784a?w=600&h=800&fit=crop");
+    ClothingVariant coachBlackM =
+        createVariant(
+            coachJacket,
+            Size.M,
+            "#3B3A32",
+            11,
+            "https://images.unsplash.com/photo-1544022613-e87ca75a784a?w=600&h=800&fit=crop");
+    ClothingVariant coachBlackL =
+        createVariant(
+            coachJacket,
+            Size.L,
+            "#3B3A32",
+            6,
+            "https://images.unsplash.com/photo-1544022613-e87ca75a784a?w=600&h=800&fit=crop");
 
     // Orders
     // cust1: 2 delivered, 1 preparing

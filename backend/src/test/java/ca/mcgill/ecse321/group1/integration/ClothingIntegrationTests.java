@@ -143,8 +143,7 @@ public class ClothingIntegrationTests {
   public void testCreateClothingModelWithBlankBrand() {
     // Arrange
     ClothingModelCreateRequestDto request =
-        new ClothingModelCreateRequestDto(
-            "Another Jacket", "desc", "  ", VALID_CATEGORY, 59.99f);
+        new ClothingModelCreateRequestDto("Another Jacket", "desc", "  ", VALID_CATEGORY, 59.99f);
 
     // Act
     ResponseEntity<String> response =
@@ -253,11 +252,7 @@ public class ClothingIntegrationTests {
   public void testGetAllClothingModelsIncludesVariantSummaries() {
     // Act
     ResponseEntity<ClothingModelListResponseDto[]> response =
-        client
-            .get()
-            .uri("/api/clothing")
-            .retrieve()
-            .toEntity(ClothingModelListResponseDto[].class);
+        client.get().uri("/api/clothing").retrieve().toEntity(ClothingModelListResponseDto[].class);
 
     // Assert
     assertNotNull(response);
@@ -286,8 +281,7 @@ public class ClothingIntegrationTests {
     // Arrange — add a second variant with the SAME color but different size
     String url = "/api/clothing/" + this.validModelId + "/variants";
     ClothingVariantCreateRequestDto request =
-        new ClothingVariantCreateRequestDto(
-            ClothingVariant.Size.L, VALID_COLOR, "variant2.png", 5);
+        new ClothingVariantCreateRequestDto(ClothingVariant.Size.L, VALID_COLOR, "variant2.png", 5);
 
     ResponseEntity<ClothingVariantResponseDto> createResponse =
         client
@@ -302,8 +296,7 @@ public class ClothingIntegrationTests {
 
     // Also add a variant with a DIFFERENT color
     ClothingVariantCreateRequestDto request2 =
-        new ClothingVariantCreateRequestDto(
-            ClothingVariant.Size.S, "#FF0000", "variant3.png", 3);
+        new ClothingVariantCreateRequestDto(ClothingVariant.Size.S, "#FF0000", "variant3.png", 3);
 
     ResponseEntity<ClothingVariantResponseDto> createResponse2 =
         client
@@ -318,11 +311,7 @@ public class ClothingIntegrationTests {
 
     // Act — get all models
     ResponseEntity<ClothingModelListResponseDto[]> response =
-        client
-            .get()
-            .uri("/api/clothing")
-            .retrieve()
-            .toEntity(ClothingModelListResponseDto[].class);
+        client.get().uri("/api/clothing").retrieve().toEntity(ClothingModelListResponseDto[].class);
 
     // Assert
     assertEquals(HttpStatus.OK, response.getStatusCode());
@@ -456,7 +445,11 @@ public class ClothingIntegrationTests {
     // Arrange
     ClothingModelCreateRequestDto request =
         new ClothingModelCreateRequestDto(
-            "Updated Jacket", "Updated description", "Adidas", ClothingModel.Category.Tops, 149.99f);
+            "Updated Jacket",
+            "Updated description",
+            "Adidas",
+            ClothingModel.Category.Tops,
+            149.99f);
 
     // Act
     ResponseEntity<ClothingModelResponseDto> response =

@@ -30,15 +30,17 @@ public class ClothingModelListResponseDto {
             .filter(v -> !v.getArchived())
             .mapToInt(ClothingVariant::getStockQuantity)
             .sum();
-    // We want to get a list of variants, but only their image and color which will be used in the main clothing shop page. It should not return variants with duplicate colors, as only 1 image is needed per unique color, so we perform filtering using Collectors.toMap
+    // We want to get a list of variants, but only their image and color which will be used in the
+    // main clothing shop page. It should not return variants with duplicate colors, as only 1 image
+    // is needed per unique color, so we perform filtering using Collectors.toMap
     this.variants =
         model.getClothingVariants().stream()
             .filter(v -> !v.getArchived())
             .collect(
                 Collectors.toMap(
                     ClothingVariant::getColor, // key: color
-                        v -> v,  // value: variant
-                        (v1, v2) -> v1)) // merge function: keep 1st
+                    v -> v, // value: variant
+                    (v1, v2) -> v1)) // merge function: keep 1st
             .values()
             .stream()
             .map(v -> new VariantSummaryDto(v.getImagePath(), v.getColor()))

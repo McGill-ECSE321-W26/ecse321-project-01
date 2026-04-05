@@ -72,8 +72,8 @@ function formatPrice(price: number): string {
 onMounted(async () => {
   try {
     models.value = await api<ClothingModelListResponseDto[]>('/clothing')
-  } catch (e: any) {
-    error.value = e.message ?? 'Failed to load models'
+  } catch (e: unknown) {
+    error.value = e instanceof Error ? e.message : 'Failed to load products'
   } finally {
     // Turn off spinner once data is fully loaded
     loading.value = false
@@ -139,24 +139,40 @@ onMounted(async () => {
     </div>
 
     <!-- Loading State -->
-    <div v-if="loading" class="max-w-350 mx-auto px-5 md:px-10 pb-20 flex justify-center items-center py-32">
+    <div
+      v-if="loading"
+      class="max-w-350 mx-auto px-5 md:px-10 pb-20 flex justify-center items-center py-32"
+    >
       <div class="loading-spinner" />
     </div>
 
     <!-- Error State -->
-    <div v-else-if="error" class="max-w-350 mx-auto px-5 md:px-10 pb-20 flex justify-center items-center py-32">
-      <p class="text-sm text-red-400">{{ error }}</p>
+    <div
+      v-else-if="error"
+      class="max-w-350 mx-auto px-5 md:px-10 pb-20 flex justify-center items-center py-32"
+    >
+      <p class="text-sm text-red-400">
+        {{ error }}
+      </p>
     </div>
 
     <!-- Empty State -->
-    <div v-else-if="filteredModels.length === 0" class="max-w-350 mx-auto px-5 md:px-10 pb-20 flex justify-center items-center py-32">
-      <p class="text-sm text-(--text-muted)">No models found.</p>
+    <div
+      v-else-if="filteredModels.length === 0"
+      class="max-w-350 mx-auto px-5 md:px-10 pb-20 flex justify-center items-center py-32"
+    >
+      <p class="text-sm text-(--text-muted)">
+        No models found.
+      </p>
     </div>
 
     <!-- Product Grid -->
-    <div v-else class="max-w-350 mx-auto px-5 md:px-10 pb-20 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
+    <div
+      v-else
+      class="max-w-350 mx-auto px-5 md:px-10 pb-20 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5"
+    >
       <div
-        v-for="(model, index) in filteredModels"
+        v-for="(model) in filteredModels"
         :key="model.clothingModelID"
         class="model-card group cursor-pointer"
       >
