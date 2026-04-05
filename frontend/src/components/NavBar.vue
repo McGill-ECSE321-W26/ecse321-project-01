@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { RouterLink, useRouter } from 'vue-router'
-import { User, ShoppingCart, Menu, Store, Package, LogOut, AppWindowMac } from 'lucide-vue-next'
+import { User, ShoppingCart, Menu, Store, Package, LogOut, AppWindowMac, ClipboardList } from 'lucide-vue-next'
 import { Button } from '@/components/ui/button'
 import {
   Drawer,
@@ -73,6 +73,17 @@ function handleLogout() {
               <RouterLink to="/manager">
                 <AppWindowMac class="size-5" />
                 Control Panel
+              </RouterLink>
+            </Button>
+            <Button
+              variant="ghost"
+              :class="['justify-start gap-3', (auth.role !== 'Employee')?'hidden':null]"
+              as-child
+              @click="sidebarOpen = false"
+            >
+              <RouterLink to="/employee/orders">
+                <ClipboardList class="size-5" />
+                Order Dashboard
               </RouterLink>
             </Button>
             <Button

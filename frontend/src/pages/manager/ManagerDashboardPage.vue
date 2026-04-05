@@ -107,7 +107,7 @@ const statCards = computed(() => [
           {{ stat.label }}
         </p>
         <p class="text-[44px] font-light text-(--text) leading-none">
-          {{ stat.value ?? '—' }}
+          {{ stat.value ?? '-' }}
         </p>
       </div>
     </div>

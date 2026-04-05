@@ -6,10 +6,16 @@ import { api } from '@/api/client'
 import type { OrderResponseDto } from '@/api/types/order'
 import type { ItemResponseDto } from '@/api/types/item'
 import type { ClothingModelListResponseDto, ClothingVariantResponseDto } from '@/api/types/clothing'
+import { useAuthStore } from '@/stores/auth'
 
 const route = useRoute()
 const router = useRouter()
 const orderID = route.params.orderID as string
+const auth = useAuthStore()
+
+function goBack() {
+  router.push({ name: auth.role === 'Employee' ? 'employee-orders' : 'orders' })
+}
 
 const order = ref<OrderResponseDto | null>(null)
 const items = ref<ItemResponseDto[]>([])
@@ -64,7 +70,7 @@ function getVariantInfo(clothingVariantID: string | null) {
     <!-- Back -->
     <button
       class="flex items-center gap-2 text-[12px] uppercase tracking-widest text-(--text-light) hover:text-(--text-muted) transition-colors mb-8"
-      @click="router.push({ name: 'orders' })"
+      @click="goBack()"
     >
       <ArrowLeft class="w-3.5 h-3.5" />
       Back to Orders

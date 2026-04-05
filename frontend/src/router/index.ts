@@ -11,6 +11,7 @@ import CustomerOrdersPage from '../pages/CustomerOrdersPage.vue'
 import OrderDetailPage from '../pages/OrderDetailPage.vue'
 import ManagerDashboardPage from '../pages/manager/ManagerDashboardPage.vue'
 import ManagerLayout from '../components/ManagerLayout.vue'
+import EmployeeOrdersPage from '../pages/employee/EmployeeOrdersPage.vue'
 
 // List of routes that do not require auth
 const publicRoutes = ['home', 'login', 'register', 'not-found']
@@ -25,6 +26,7 @@ const router = createRouter({
     { path: '/cart', name: 'cart', component: CartPage },
     { path: '/shop', name: 'shop', component: ShopPage },
     { path: '/orders', name: 'orders', component: CustomerOrdersPage },
+    { path: '/employee/orders', name: 'employee-orders', component: EmployeeOrdersPage },
     { path: '/orders/:orderID', name: 'order-detail', component: OrderDetailPage },
     {
       path: '/manager',
@@ -49,6 +51,10 @@ router.beforeEach((to, _from, next) => {
 
   // All /manager/* routes are manager-only
   if (to.path.startsWith('/manager') && role !== 'Manager') {
+    next({ name: 'not-found' });
+  }
+  // All /employee/* routes are employee-only
+  else if (to.path.startsWith('/employee') && role !== 'Employee') {
     next({ name: 'not-found' });
   }
   else if (!isAuthenticated && !isRoutePublic) {

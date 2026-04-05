@@ -153,7 +153,7 @@ async function updateStatus(order: OrderResponseDto, status: string) {
 }
 
 function formatDate(d: Date | null) {
-  if (!d) return '—'
+  if (!d) return '-'
   return new Date(d).toLocaleDateString('en-CA', { year: 'numeric', month: 'short', day: 'numeric' })
 }
 
@@ -183,7 +183,7 @@ function formatDate(d: Date | null) {
           Total Orders
         </p>
         <p class="text-[44px] font-light text-(--text) leading-none">
-          {{ loading ? '—' : totalOrders }}
+          {{ loading ? '-' : totalOrders }}
         </p>
       </div>
       <div
@@ -194,7 +194,7 @@ function formatDate(d: Date | null) {
           Not Assigned
         </p>
         <p class="text-[44px] font-light text-(--text) leading-none">
-          {{ loading ? '—' : notAssigned }}
+          {{ loading ? '-' : notAssigned }}
         </p>
       </div>
       <div
@@ -205,7 +205,7 @@ function formatDate(d: Date | null) {
           Completed
         </p>
         <p class="text-[44px] font-light text-(--text) leading-none">
-          {{ loading ? '—' : completed }}
+          {{ loading ? '-' : completed }}
         </p>
       </div>
     </div>
@@ -272,7 +272,7 @@ function formatDate(d: Date | null) {
       >
         <span class="text-[13px] text-(--text) font-light tracking-wide">#{{ order.orderID }}</span>
         <span class="text-[13px] text-(--text-muted) font-light">{{ formatDate(order.orderDate) }}</span>
-        <span class="text-[13px] text-(--text-muted) font-light">${{ order.totalPrice?.toFixed(2) ?? '—' }}</span>
+        <span class="text-[13px] text-(--text-muted) font-light">${{ order.totalPrice?.toFixed(2) ?? '-' }}</span>
         <span
           class="text-[11px] uppercase tracking-widest"
           :class="{
@@ -293,7 +293,7 @@ function formatDate(d: Date | null) {
           v-else
           class="text-[12px] text-(--text-light)"
         >
-          —
+          -
         </span>
         <button
           class="text-[11px] uppercase tracking-widest text-(--text) border border-(--text-light) px-3 py-1.5 hover:bg-(--text) hover:text-(--bg) transition-colors w-fit"
