@@ -1,7 +1,6 @@
 // Matches backend ClothingModel.Category enum
 export type ClothingCategory = 'Tops' | 'Bottoms' | 'Dresses' | 'Outerwear' | 'Accessories'
 
-// Matches backend ClothingModelListResponseDto.VariantSummaryDto
 export interface VariantSummaryDto {
   imagePath: string
   color: string
@@ -15,7 +14,6 @@ export interface ClothingModelListResponseDto {
   brand: string
   category: ClothingCategory
   price: number
-  totalStockQuantity: number
   variants: VariantSummaryDto[]
 }
 
