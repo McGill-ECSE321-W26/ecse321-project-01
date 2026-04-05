@@ -5,7 +5,6 @@ export interface Product {
   price: number
   colors: string[]
   img: string
-  sizes: string[]
   category: 'tops' | 'bottoms' | 'outerwear' | 'accessories'
 }
 
@@ -20,7 +19,6 @@ export const products: Product[] = [
     colors: ['#5c5a4e', '#3b3a32', '#8b7d6b'],
 
     img: 'https://images.unsplash.com/photo-1591047139829-d91aecb6caea?w=600&h=800&fit=crop&crop=top',
-    sizes: ['XS', 'S', 'M', 'L', 'XL'],
     category: 'outerwear',
   },
   {
@@ -31,7 +29,6 @@ export const products: Product[] = [
     colors: ['#c2b49a', '#3b3a32', '#6b6455'],
 
     img: 'https://images.unsplash.com/photo-1624378439575-d8705ad7ae80?w=600&h=800&fit=crop',
-    sizes: ['XS', 'S', 'M', 'L', 'XL'],
     category: 'bottoms',
   },
   {
@@ -42,7 +39,6 @@ export const products: Product[] = [
     colors: ['#2c3040', '#c2b49a', '#f5f0e8'],
 
     img: 'https://images.unsplash.com/photo-1556821840-3a63f95609a7?w=600&h=800&fit=crop',
-    sizes: ['XS', 'S', 'M', 'L', 'XL'],
     category: 'tops',
   },
   {
@@ -53,7 +49,6 @@ export const products: Product[] = [
     colors: ['#f5f0e8', '#1a1a18'],
 
     img: 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=600&h=800&fit=crop',
-    sizes: ['XS', 'S', 'M', 'L', 'XL'],
     category: 'tops',
   },
   {
@@ -64,7 +59,6 @@ export const products: Product[] = [
     colors: ['#c2b49a', '#1a1a18', '#6b6455'],
 
     img: 'https://images.unsplash.com/photo-1594938298603-c8148c4dae35?w=600&h=800&fit=crop',
-    sizes: ['XS', 'S', 'M', 'L', 'XL'],
     category: 'bottoms',
   },
   {
@@ -75,7 +69,6 @@ export const products: Product[] = [
     colors: ['#f5f0e8', '#8b7d6b'],
 
     img: 'https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?w=600&h=800&fit=crop',
-    sizes: ['XS', 'S', 'M', 'L', 'XL'],
     category: 'tops',
   },
   {
@@ -86,7 +79,6 @@ export const products: Product[] = [
     colors: ['#6888a5', '#3b3a32'],
 
     img: 'https://images.unsplash.com/photo-1591195853828-11db59a44f6b?w=600&h=800&fit=crop',
-    sizes: ['XS', 'S', 'M', 'L', 'XL'],
     category: 'bottoms',
   },
   {
@@ -97,7 +89,6 @@ export const products: Product[] = [
     colors: ['#1a1a18', '#5c5a4e'],
 
     img: 'https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=600&h=800&fit=crop',
-    sizes: [],
     category: 'accessories',
   },
   {
@@ -108,7 +99,6 @@ export const products: Product[] = [
     colors: ['#2c3040', '#3b3a32'],
 
     img: 'https://images.unsplash.com/photo-1544022613-e87ca75a784a?w=600&h=800&fit=crop',
-    sizes: ['XS', 'S', 'M', 'L', 'XL'],
     category: 'outerwear',
   },
   {
@@ -119,7 +109,6 @@ export const products: Product[] = [
     colors: ['#f5f0e8', '#1a1a18', '#c2b49a', '#5c5a4e'],
 
     img: 'https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?w=600&h=800&fit=crop',
-    sizes: ['XS', 'S', 'M', 'L', 'XL'],
     category: 'tops',
   },
 ]
