@@ -12,7 +12,7 @@ import { api } from '@/api/client'
 import type { ClothingModelListResponseDto } from '@/api/types/clothing'
 
 const activeCategory = ref('All')
-const sortBy = ref('newest')
+const sortBy = ref('none')
 const models = ref<ClothingModelListResponseDto[]>([])
 const loading = ref(true)
 const error = ref<string | null>(null)
@@ -23,7 +23,7 @@ const selectedColorIndex = ref<Record<string, number>>({})
 const categories = ['All', 'Tops', 'Bottoms', 'Dresses', 'Outerwear', 'Accessories'] as const
 
 const sortOptions = [
-  { label: 'Newest', value: 'newest' },
+  { label: 'None', value: 'none' },
   { label: 'Price: Low → High', value: 'price-asc' },
   { label: 'Price: High → Low', value: 'price-desc' },
 ] as const
@@ -121,7 +121,7 @@ onMounted(async () => {
         <SelectTrigger
           class="ml-auto w-auto rounded-none border-(--text-light) text-[13px] text-(--text-muted) px-4 h-8 shadow-none focus-visible:ring-0 transition-all hover:bg-(--card-hover) hover:border-(--text-muted)"
         >
-          <SelectValue placeholder="Sort by: Newest" />
+          <SelectValue placeholder="Sort by: None" />
         </SelectTrigger>
         <SelectContent
           class="rounded-none border-(--text-light) bg-(--bg)! text-(--text) shadow-sm"
@@ -159,7 +159,6 @@ onMounted(async () => {
         v-for="(model, index) in filteredModels"
         :key="model.clothingModelID"
         class="model-card group cursor-pointer"
-        :style="{ animationDelay: `${index * 0.05}s` }"
       >
         <!-- Image -->
         <div class="aspect-3/4 overflow-hidden relative bg-(--card-hover)">
@@ -205,21 +204,6 @@ onMounted(async () => {
 .shop-heading {
   font-family: 'Playfair Display', serif;
   letter-spacing: -1.5px;
-}
-
-@keyframes fadeUp {
-  from {
-    opacity: 0;
-    transform: translateY(24px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.model-card {
-  animation: fadeUp 0.6s ease both;
 }
 
 .loading-spinner {
