@@ -92,11 +92,14 @@ public class SecurityConfig {
                     .requestMatchers(HttpMethod.POST, "/api/orders")
                     .hasRole("Customer")
 
-                    // --- Employee or Manager endpoints ---
+                    // --- Employee, Manager, or Customer endpoints ---
                     // Updating orders (assign employee, change status/date) requires Employee or
-                    // Manager
+                    // Manager; customers can also update their own orders (delivery date, cancel)
+
+                    // CURRENTLY ADDED CUSTOMERS TO PATCH TO CANCEL/MODIFY DELIVERY DATE
+                    // THIS WILL NEED TO BE LOOKED AT AGAIN AND BE CHANGED FOR SECURITY REASONS
                     .requestMatchers(HttpMethod.PATCH, "/api/orders/*")
-                    .hasAnyRole("Employee", "Manager")
+                    .hasAnyRole("Employee", "Manager", "Customer")
 
                     // --- Any authenticated user ---
                     // Viewing orders requires login but any role can do it
