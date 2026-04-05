@@ -1,8 +1,10 @@
 package ca.mcgill.ecse321.group1.controller;
 
+import ca.mcgill.ecse321.group1.dto.ItemResponseDto;
 import ca.mcgill.ecse321.group1.dto.OrderCreateRequestDto;
 import ca.mcgill.ecse321.group1.dto.OrderRequestUpdateDto;
 import ca.mcgill.ecse321.group1.dto.OrderResponseDto;
+import ca.mcgill.ecse321.group1.model.Item;
 import ca.mcgill.ecse321.group1.model.Order;
 import ca.mcgill.ecse321.group1.service.OrderService;
 import java.util.ArrayList;
@@ -87,5 +89,15 @@ public class OrderController {
   public OrderResponseDto getOrderByID(@PathVariable String orderID) {
     Order order = orderService.getOrderByID(orderID);
     return new OrderResponseDto(order);
+  }
+
+  @GetMapping("/{orderID}/items")
+  public List<ItemResponseDto> getOrderItems(@PathVariable String orderID) {
+    List<Item> items = orderService.getOrderItems(orderID);
+    List<ItemResponseDto> itemsDTO = new ArrayList<>();
+    for (Item item : items) {
+      itemsDTO.add(new ItemResponseDto(item));
+    }
+    return itemsDTO;
   }
 }

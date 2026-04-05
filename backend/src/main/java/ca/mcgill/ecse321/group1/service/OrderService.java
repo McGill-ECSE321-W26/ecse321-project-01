@@ -165,7 +165,6 @@ public class OrderService {
     int gainedLoyaltyPoints = (int) (total * loyaltyModifier);
     customer.setLoyaltyPoints(
         customer.getLoyaltyPoints() + gainedLoyaltyPoints - usedLoyaltyPoints);
-    customerRepository.save(customer);
   }
 
   @Transactional
@@ -177,6 +176,9 @@ public class OrderService {
 
     Order order = initializeOrder(customer, deliveryDate);
     computeLoyaltyPoints(order, customer, usedLoyaltyPoints);
+
+    itemRepository.saveAll(order.getItems());
+    customerRepository.save(customer);
     return orderRepository.save(order);
   }
 
@@ -215,6 +217,11 @@ public class OrderService {
   @Transactional(readOnly = true)
   public Order getOrderByID(String orderID) {
     return findOrder(orderID);
+  }
+
+  @Transactional(readOnly = true)
+  public List<Item> getOrderItems(String orderID) {
+    return findOrder(orderID).getItems();
   }
 
   @Transactional(readOnly = true)
