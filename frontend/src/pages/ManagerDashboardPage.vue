@@ -77,7 +77,7 @@ function slicePath(cx: number, cy: number, r: number, startFraction: number, end
 const navItems = [
   { key: 'dashboard', label: 'Dashboard', icon: LayoutDashboard, to: null },
   { key: 'orders', label: 'Orders', icon: ShoppingBag, to: '/manager/orders' },
-  { key: 'inventory', label: 'Inventory', icon: Boxes, to: '/shop' },
+  { key: 'inventory', label: 'Inventory', icon: Boxes, to: '/manager/inventory' },
   { key: 'customers', label: 'Customers', icon: Users, to: null },
   { key: 'employees', label: 'Employees', icon: UserCog, to: null },
 ]

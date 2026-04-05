@@ -37,3 +37,24 @@ export interface ClothingVariantResponseDto {
   stockQuantity: number
   modelId: string
 }
+
+// Request DTOs
+
+export interface ClothingModelRequestDto {
+  name: string
+  description: string
+  brand: string
+  category: ClothingCategory
+  price: number
+}
+
+export interface ClothingVariantCreateRequestDto {
+  size: string
+  color: string
+  imagePath: string
+  stockQuantity: number
+}
+
+export interface ClothingVariantStockUpdateDto {
+  stockQuantity: number
+}

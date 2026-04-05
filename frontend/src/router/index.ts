@@ -8,6 +8,7 @@ import CartPage from '../pages/CartPage.vue'
 import ShopPage from '../pages/ShopPage.vue'
 import OrdersPage from '../pages/OrdersPage.vue'
 import ManagerDashboardPage from '../pages/ManagerDashboardPage.vue'
+import ManagerInventoryPage from '../pages/ManagerInventoryPage.vue'
 
 // List of routes that do not require auth
 const publicRoutes = ['home', 'login', 'register', 'not-found']
@@ -23,6 +24,7 @@ const router = createRouter({
     { path: '/shop', name: 'shop', component: ShopPage },
     { path: '/manager', name: 'manager-dashboard', component: ManagerDashboardPage },
     { path: '/manager/orders', name: 'manager-orders', component: OrdersPage },
+    { path: '/manager/inventory', name: 'manager-inventory', component: ManagerInventoryPage },
     { path: '/:pathMatch(.*)*', name: 'not-found', component: NotFoundPage },
   ],
 })
