@@ -3,6 +3,7 @@ package ca.mcgill.ecse321.group1.integration;
 import static org.junit.jupiter.api.Assertions.*;
 
 import ca.mcgill.ecse321.group1.dto.ClothingModelCreateRequestDto;
+import ca.mcgill.ecse321.group1.dto.ClothingModelListResponseDto;
 import ca.mcgill.ecse321.group1.dto.ClothingModelResponseDto;
 import ca.mcgill.ecse321.group1.dto.ClothingVariantCreateRequestDto;
 import ca.mcgill.ecse321.group1.dto.ClothingVariantResponseDto;
@@ -133,8 +134,6 @@ public class ClothingIntegrationTests {
     assertEquals(VALID_CATEGORY, body.getCategory());
     assertEquals(VALID_PRICE, body.getPrice());
     assertNotNull(body.getClothingModelID());
-    assertNotNull(body.getVariants());
-    assertEquals(0, body.getVariants().size());
 
     this.validModelId = body.getClothingModelID();
   }
@@ -167,13 +166,13 @@ public class ClothingIntegrationTests {
   @Order(3)
   public void testGetAllClothingModels() {
     // Act
-    ResponseEntity<ClothingModelResponseDto[]> response =
-        client.get().uri("/api/clothing").retrieve().toEntity(ClothingModelResponseDto[].class);
+    ResponseEntity<ClothingModelListResponseDto[]> response =
+        client.get().uri("/api/clothing").retrieve().toEntity(ClothingModelListResponseDto[].class);
 
     // Assert
     assertNotNull(response);
     assertEquals(HttpStatus.OK, response.getStatusCode());
-    ClothingModelResponseDto[] body = response.getBody();
+    ClothingModelListResponseDto[] body = response.getBody();
     assertNotNull(body);
     assertTrue(body.length > 0, "Should return at least one clothing model.");
   }
@@ -251,24 +250,34 @@ public class ClothingIntegrationTests {
 
   @Test
   @Order(7)
-  public void testGetClothingModelIncludesVariantSummaries() {
+  public void testGetAllClothingModelsIncludesVariantSummaries() {
     // Act
-    ResponseEntity<ClothingModelResponseDto> response =
+    ResponseEntity<ClothingModelListResponseDto[]> response =
         client
             .get()
-            .uri("/api/clothing/" + this.validModelId)
+            .uri("/api/clothing")
             .retrieve()
-            .toEntity(ClothingModelResponseDto.class);
+            .toEntity(ClothingModelListResponseDto[].class);
 
     // Assert
     assertNotNull(response);
     assertEquals(HttpStatus.OK, response.getStatusCode());
-    ClothingModelResponseDto body = response.getBody();
+    ClothingModelListResponseDto[] body = response.getBody();
     assertNotNull(body);
-    assertNotNull(body.getVariants());
-    assertEquals(1, body.getVariants().size());
-    assertEquals(VALID_VARIANT_IMAGE, body.getVariants().get(0).getImagePath());
-    assertEquals(VALID_COLOR, body.getVariants().get(0).getColor());
+    assertTrue(body.length > 0);
+    // Find our model in the list
+    ClothingModelListResponseDto found = null;
+    for (ClothingModelListResponseDto dto : body) {
+      if (this.validModelId.equals(dto.getClothingModelID())) {
+        found = dto;
+        break;
+      }
+    }
+    assertNotNull(found, "Should find the created model in the list");
+    assertNotNull(found.getVariants());
+    assertEquals(1, found.getVariants().size());
+    assertEquals(VALID_VARIANT_IMAGE, found.getVariants().get(0).getImagePath());
+    assertEquals(VALID_COLOR, found.getVariants().get(0).getColor());
   }
 
   @Test
