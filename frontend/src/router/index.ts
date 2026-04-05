@@ -6,10 +6,11 @@ import NotFoundPage from '../pages/NotFoundPage.vue'
 import AccountPage from '../pages/AccountPage.vue'
 import CartPage from '../pages/CartPage.vue'
 import ShopPage from '../pages/ShopPage.vue'
-import OrdersPage from '../pages/OrdersPage.vue'
+import OrdersDashboardPage from '../pages/manager/OrdersDashboardPage.vue'
 import CustomerOrdersPage from '../pages/CustomerOrdersPage.vue'
 import OrderDetailPage from '../pages/OrderDetailPage.vue'
-import ManagerDashboardPage from '../pages/ManagerDashboardPage.vue'
+import ManagerDashboardPage from '../pages/manager/ManagerDashboardPage.vue'
+import ManagerLayout from '../components/ManagerLayout.vue'
 
 // List of routes that do not require auth
 const publicRoutes = ['home', 'login', 'register', 'not-found']
@@ -25,8 +26,14 @@ const router = createRouter({
     { path: '/shop', name: 'shop', component: ShopPage },
     { path: '/orders', name: 'orders', component: CustomerOrdersPage },
     { path: '/orders/:orderID', name: 'order-detail', component: OrderDetailPage },
-    { path: '/manager', name: 'manager-dashboard', component: ManagerDashboardPage },
-    { path: '/manager/orders', name: 'manager-orders', component: OrdersPage },
+    {
+      path: '/manager',
+      component: ManagerLayout,
+      children: [
+        { path: '',       name: 'manager-dashboard', component: ManagerDashboardPage },
+        { path: 'orders', name: 'manager-orders',    component: OrdersDashboardPage },
+      ],
+    },
     { path: '/:pathMatch(.*)*', name: 'not-found', component: NotFoundPage },
   ],
 })
