@@ -1,9 +1,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
-import { RouterLink, useRoute } from 'vue-router'
 import {
-  ShoppingBag, Boxes, Users, UserCog, LayoutDashboard,
-  ShieldCheck, ChevronDown, ChevronUp, Pencil, Trash2, Plus, Package,
+  ChevronDown, ChevronUp, Pencil, Trash2, Plus, Package,
 } from 'lucide-vue-next'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -22,8 +20,6 @@ import type {
   ClothingVariantResponseDto,
   ClothingCategory,
 } from '@/api/types/clothing'
-
-const route = useRoute()
 
 // ── Data ────────────────────────────────────────────────────────────────────
 const models = ref<ClothingModelListResponseDto[]>([])
@@ -271,62 +267,10 @@ async function confirmDeleteVariant() {
 function formatPrice(price: number): string {
   return Number.isInteger(price) ? `${price}` : price.toFixed(2)
 }
-
-// ── Sidebar ─────────────────────────────────────────────────────────────────
-const navItems = [
-  { key: 'dashboard', label: 'Dashboard', icon: LayoutDashboard, to: '/manager' },
-  { key: 'orders', label: 'Orders', icon: ShoppingBag, to: '/manager/orders' },
-  { key: 'inventory', label: 'Inventory', icon: Boxes, to: '/manager/inventory' },
-  { key: 'customers', label: 'Customers', icon: Users, to: null },
-  { key: 'employees', label: 'Employees', icon: UserCog, to: null },
-]
-
-const activeSection = computed(() => {
-  if (route.path === '/manager') return 'dashboard'
-  if (route.path.startsWith('/manager/orders')) return 'orders'
-  if (route.path.startsWith('/manager/inventory')) return 'inventory'
-  return ''
-})
 </script>
 
 <template>
-  <div class="flex min-h-screen bg-(--bg)">
-    <!-- Sidebar -->
-    <aside class="w-52 shrink-0 border-r border-(--text-light) flex flex-col pt-8 gap-1">
-      <div class="flex flex-col items-center gap-2 pb-6 border-b border-(--text-light) px-4">
-        <div class="w-12 h-12 border border-(--text-light) flex items-center justify-center">
-          <ShieldCheck class="w-5 h-5 text-(--text-muted)" />
-        </div>
-        <span class="text-[10px] text-(--text-light) uppercase tracking-[0.2em]">Manager</span>
-      </div>
-
-      <nav class="flex flex-col gap-0 px-0 pt-2">
-        <template
-          v-for="item in navItems"
-          :key="item.key"
-        >
-          <component
-            :is="item.to ? RouterLink : 'button'"
-            v-bind="item.to ? { to: item.to } : {}"
-            class="flex items-center gap-3 px-5 py-3 text-[13px] tracking-wide border-b border-(--text-light) transition-colors w-full text-left"
-            :class="
-              activeSection === item.key
-                ? 'bg-(--card-hover) text-(--text) font-medium'
-                : 'text-(--text-muted) hover:bg-(--card-hover) hover:text-(--text)'
-            "
-          >
-            <component
-              :is="item.icon"
-              class="w-4 h-4 shrink-0"
-            />
-            {{ item.label }}
-          </component>
-        </template>
-      </nav>
-    </aside>
-
-    <!-- Main -->
-    <main class="flex-1 px-10 pt-16 pb-20">
+  <main class="flex-1 px-10 pt-16 pb-20">
       <!-- Heading -->
       <h1 class="inventory-heading text-[40px] lg:text-[52px] font-normal tracking-tight leading-tight mb-2">
         <span class="text-(--text-muted)">Inventory</span>
@@ -564,7 +508,7 @@ const activeSection = computed(() => {
           </div>
         </template>
       </div>
-    </main>
+  </main>
 
     <!-- Create/Edit Model Dialog -->
     <Dialog v-model:open="showModelDialog">
@@ -879,7 +823,6 @@ const activeSection = computed(() => {
         </DialogFooter>
       </DialogContent>
     </Dialog>
-  </div>
 </template>
 
 <style scoped>
