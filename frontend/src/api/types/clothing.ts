@@ -14,6 +14,7 @@ export interface ClothingModelListResponseDto {
   brand: string
   category: ClothingCategory
   price: number
+  totalStockQuantity: number
   variants: VariantSummaryDto[]
 }
 

@@ -385,11 +385,12 @@ function formatPrice(price: number): string {
       </div>
 
       <!-- Table header -->
-      <div class="grid grid-cols-[2fr_1.5fr_1fr_1fr_auto] px-6 py-2.5 border-b border-(--text-light)">
+      <div class="grid grid-cols-[2fr_1.5fr_1fr_1fr_1fr_auto] px-6 py-2.5 border-b border-(--text-light)">
         <span class="text-[10px] uppercase tracking-[0.18em] text-(--text-light)">Name</span>
         <span class="text-[10px] uppercase tracking-[0.18em] text-(--text-light)">Brand</span>
         <span class="text-[10px] uppercase tracking-[0.18em] text-(--text-light)">Category</span>
         <span class="text-[10px] uppercase tracking-[0.18em] text-(--text-light)">Price</span>
+        <span class="text-[10px] uppercase tracking-[0.18em] text-(--text-light)">Stock</span>
         <span class="text-[10px] uppercase tracking-[0.18em] text-(--text-light)">Actions</span>
       </div>
 
@@ -422,13 +423,14 @@ function formatPrice(price: number): string {
         <div
           v-for="(model, i) in filteredModels"
           :key="model.clothingModelID"
-          class="grid grid-cols-[2fr_1.5fr_1fr_1fr_auto] px-6 py-4 border-b border-(--text-light) hover:bg-(--card-hover) transition-colors items-center row-card"
+          class="grid grid-cols-[2fr_1.5fr_1fr_1fr_1fr_auto] px-6 py-4 border-b border-(--text-light) hover:bg-(--card-hover) transition-colors items-center row-card"
           :style="{ animationDelay: `${0.3 + i * 0.04}s` }"
         >
           <span class="text-[13px] text-(--text) font-light tracking-wide">{{ model.name }}</span>
           <span class="text-[13px] text-(--text-muted) font-light">{{ model.brand }}</span>
           <span class="text-[11px] uppercase tracking-widest text-(--text-muted)">{{ model.category }}</span>
           <span class="text-[13px] text-(--text) font-light">${{ formatPrice(model.price) }}</span>
+          <span class="text-[13px] text-(--text-muted) font-light">{{ model.totalStockQuantity }}</span>
           <div class="flex items-center gap-2">
             <button
               class="p-1.5 border border-(--text-light) text-(--text-muted) hover:bg-(--card-hover) hover:text-(--text) transition-colors"
@@ -472,9 +474,15 @@ function formatPrice(price: number): string {
 
         <!-- Section 1: Model Details -->
         <section>
-          <p class="text-[10px] uppercase tracking-[0.2em] text-(--text-light) mb-5">
-            Model Details
-          </p>
+          <div class="flex items-center justify-between mb-5">
+            <p class="text-[10px] uppercase tracking-[0.2em] text-(--text-light)">
+              Model Details
+            </p>
+            <div class="flex items-center gap-2">
+              <span class="text-[10px] uppercase tracking-[0.18em] text-(--text-light)">Total Stock:</span>
+              <span class="text-[13px] font-light text-(--text)">{{ selectedModel.totalStockQuantity }}</span>
+            </div>
+          </div>
           <p
             v-if="modelError"
             class="text-[12px] text-red-400 mb-4"

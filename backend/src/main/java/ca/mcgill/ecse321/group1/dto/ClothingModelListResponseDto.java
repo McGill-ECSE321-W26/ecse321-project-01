@@ -1,6 +1,7 @@
 package ca.mcgill.ecse321.group1.dto;
 
 import ca.mcgill.ecse321.group1.model.ClothingModel;
+import ca.mcgill.ecse321.group1.model.ClothingVariant;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -13,6 +14,7 @@ public class ClothingModelListResponseDto {
   private String brand;
   private ClothingModel.Category category;
   private float price;
+  private int totalStockQuantity;
   private List<VariantSummaryDto> variants;
 
   public ClothingModelListResponseDto() {}
@@ -24,6 +26,11 @@ public class ClothingModelListResponseDto {
     this.brand = model.getBrand();
     this.category = model.getCategory();
     this.price = model.getPrice();
+    this.totalStockQuantity =
+        model.getClothingVariants().stream()
+            .filter(v -> !v.getArchived())
+            .mapToInt(ClothingVariant::getStockQuantity)
+            .sum();
     // We want to get a list of variants, but only their image and color which will be used in the
     // main clothing shop page. It should not return variants with duplicate colors, as only 1 image
     // is needed per unique color, so we use a Set to track seen colors and filter accordingly.
@@ -85,6 +92,14 @@ public class ClothingModelListResponseDto {
 
   public void setPrice(float price) {
     this.price = price;
+  }
+
+  public int getTotalStockQuantity() {
+    return totalStockQuantity;
+  }
+
+  public void setTotalStockQuantity(int totalStockQuantity) {
+    this.totalStockQuantity = totalStockQuantity;
   }
 
   public List<VariantSummaryDto> getVariants() {
