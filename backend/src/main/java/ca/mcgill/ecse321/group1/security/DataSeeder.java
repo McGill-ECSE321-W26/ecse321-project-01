@@ -72,71 +72,71 @@ public class DataSeeder {
     // Classic T-Shirt multiple colors and sizes
     ClothingModel tshirt =
         createClothingModel(
-            "Classic T-Shirt", "Generic", ClothingModel.Category.Tops, 24.99f);
-    ClothingVariant tshirtWhiteS = createVariant(tshirt, Size.S, "White", 30);
-    ClothingVariant tshirtWhiteM = createVariant(tshirt, Size.M, "White", 45);
-    ClothingVariant tshirtBlackM = createVariant(tshirt, Size.M, "Black", 40);
-    ClothingVariant tshirtBlackL = createVariant(tshirt, Size.L, "Black", 25);
-    ClothingVariant tshirtNavyXL = createVariant(tshirt, Size.XL, "Navy", 15);
+            "Classic T-Shirt", "Generic", ClothingModel.Category.Tops, 25f);
+    ClothingVariant tshirtWhiteS = createVariant(tshirt, Size.S, "#FFFFFF", 30, "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=800&auto=format&fit=crop&q=60&fm=jpg");
+    ClothingVariant tshirtWhiteM = createVariant(tshirt, Size.M, "#FFFFFF", 45, "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=800&auto=format&fit=crop&q=60&fm=jpg");
+    ClothingVariant tshirtBlackM = createVariant(tshirt, Size.M, "#1C1C1C", 40, "https://images.unsplash.com/photo-1503341504253-dff4815485f1?w=800&auto=format&fit=crop&q=60&fm=jpg");
+    ClothingVariant tshirtBlackL = createVariant(tshirt, Size.L, "#1C1C1C", 25, "https://images.unsplash.com/photo-1503341504253-dff4815485f1?w=800&auto=format&fit=crop&q=60&fm=jpg");
+    ClothingVariant tshirtNavyXL = createVariant(tshirt, Size.XL, "#1F305E", 15, "https://images.unsplash.com/photo-1618354691373-d851c5c3a990?w=800&auto=format&fit=crop&q=60&fm=jpg");
 
     // Premium Hoodie
     ClothingModel hoodie =
         createClothingModel(
-            "Premium Hoodie", "Generic", ClothingModel.Category.Tops, 59.99f);
-    ClothingVariant hoodieGrayM = createVariant(hoodie, Size.M, "Gray", 20);
-    ClothingVariant hoodieGrayL = createVariant(hoodie, Size.L, "Gray", 18);
-    ClothingVariant hoodieBlackL = createVariant(hoodie, Size.L, "Black", 22);
-    ClothingVariant hoodieBlackXL = createVariant(hoodie, Size.XL, "Black", 10);
+            "Premium Hoodie", "Generic", ClothingModel.Category.Tops, 60f);
+    ClothingVariant hoodieGrayM = createVariant(hoodie, Size.M, "#808080", 20, "https://images.unsplash.com/photo-1509942774463-acf339cf87d5?w=800&auto=format&fit=crop&q=60&fm=jpg");
+    ClothingVariant hoodieGrayL = createVariant(hoodie, Size.L, "#808080", 18, "https://images.unsplash.com/photo-1509942774463-acf339cf87d5?w=800&auto=format&fit=crop&q=60&fm=jpg");
+    ClothingVariant hoodieBlackL = createVariant(hoodie, Size.L, "#1C1C1C", 22, "https://images.unsplash.com/photo-1556821840-3a63f15732ce?w=800&auto=format&fit=crop&q=60&fm=jpg");
+    ClothingVariant hoodieBlackXL = createVariant(hoodie, Size.XL, "#1C1C1C", 10, "https://images.unsplash.com/photo-1556821840-3a63f15732ce?w=800&auto=format&fit=crop&q=60&fm=jpg");
 
     // Slim Fit Jeans
     ClothingModel jeans =
         createClothingModel(
-            "Slim Fit Jeans", "Generic", ClothingModel.Category.Bottoms, 79.99f);
-    ClothingVariant jeansBlueS = createVariant(jeans, Size.S, "Blue", 12);
-    ClothingVariant jeansBlueM = createVariant(jeans, Size.M, "Blue", 20);
-    ClothingVariant jeansBlueL = createVariant(jeans, Size.L, "Blue", 16);
-    ClothingVariant jeansBlackM = createVariant(jeans, Size.M, "Black", 14);
+            "Slim Fit Jeans", "Generic", ClothingModel.Category.Bottoms, 80f);
+    ClothingVariant jeansBlueS = createVariant(jeans, Size.S, "#3B5998", 12, "https://images.unsplash.com/photo-1542272604-787c3835535d?w=800&auto=format&fit=crop&q=60&fm=jpg");
+    ClothingVariant jeansBlueM = createVariant(jeans, Size.M, "#3B5998", 20, "https://images.unsplash.com/photo-1542272604-787c3835535d?w=800&auto=format&fit=crop&q=60&fm=jpg");
+    ClothingVariant jeansBlueL = createVariant(jeans, Size.L, "#3B5998", 16, "https://images.unsplash.com/photo-1542272604-787c3835535d?w=800&auto=format&fit=crop&q=60&fm=jpg");
+    ClothingVariant jeansBlackM = createVariant(jeans, Size.M, "#1C1C1C", 14, "https://images.unsplash.com/photo-1475178626620-a4d074967452?w=800&auto=format&fit=crop&q=60&fm=jpg");
 
     // Summer Floral Dress
     ClothingModel dress =
         createClothingModel(
-            "Summer Floral Dress", "Generic", ClothingModel.Category.Dresses, 49.99f);
-    ClothingVariant dressFloralS = createVariant(dress, Size.S, "Floral", 8);
-    ClothingVariant dressFloralM = createVariant(dress, Size.M, "Floral", 12);
-    ClothingVariant dressFloralL = createVariant(dress, Size.L, "Floral", 6);
+            "Summer Floral Dress", "Generic", ClothingModel.Category.Dresses, 50f);
+    ClothingVariant dressFloralS = createVariant(dress, Size.S, "#E8A0BF", 8, "https://images.unsplash.com/photo-1572804013309-59a88b7e92f1?w=800&auto=format&fit=crop&q=60&fm=jpg");
+    ClothingVariant dressFloralM = createVariant(dress, Size.M, "#E8A0BF", 12, "https://images.unsplash.com/photo-1572804013309-59a88b7e92f1?w=800&auto=format&fit=crop&q=60&fm=jpg");
+    ClothingVariant dressFloralL = createVariant(dress, Size.L, "#E8A0BF", 6, "https://images.unsplash.com/photo-1572804013309-59a88b7e92f1?w=800&auto=format&fit=crop&q=60&fm=jpg");
 
     // Bomber Jacket
     ClothingModel jacket =
         createClothingModel(
-            "Bomber Jacket", "Generic", ClothingModel.Category.Outerwear, 119.99f);
-    ClothingVariant jacketOliveM = createVariant(jacket, Size.M, "Olive", 7);
-    ClothingVariant jacketOliveL = createVariant(jacket, Size.L, "Olive", 9);
-    ClothingVariant jacketBlackL = createVariant(jacket, Size.L, "Black", 11);
-    ClothingVariant jacketBlackXL = createVariant(jacket, Size.XL, "Black", 5);
+            "Bomber Jacket", "Generic", ClothingModel.Category.Outerwear, 120f);
+    ClothingVariant jacketOliveM = createVariant(jacket, Size.M, "#556B2F", 7, "https://images.unsplash.com/photo-1591047139829-d91aecb6caea?w=800&auto=format&fit=crop&q=60&fm=jpg");
+    ClothingVariant jacketOliveL = createVariant(jacket, Size.L, "#556B2F", 9, "https://images.unsplash.com/photo-1591047139829-d91aecb6caea?w=800&auto=format&fit=crop&q=60&fm=jpg");
+    ClothingVariant jacketBlackL = createVariant(jacket, Size.L, "#1C1C1C", 11, "https://images.unsplash.com/photo-1548126032-079a0fb0099d?w=800&auto=format&fit=crop&q=60&fm=jpg");
+    ClothingVariant jacketBlackXL = createVariant(jacket, Size.XL, "#1C1C1C", 5, "https://images.unsplash.com/photo-1548126032-079a0fb0099d?w=800&auto=format&fit=crop&q=60&fm=jpg");
 
     // Classic Polo Shirt
     ClothingModel polo =
         createClothingModel(
-            "Classic Polo Shirt", "Generic", ClothingModel.Category.Tops, 39.99f);
-    ClothingVariant poloWhiteM = createVariant(polo, Size.M, "White", 25);
-    ClothingVariant poloNavyM = createVariant(polo, Size.M, "Navy", 20);
-    ClothingVariant poloNavyL = createVariant(polo, Size.L, "Navy", 18);
+            "Classic Polo Shirt", "Generic", ClothingModel.Category.Tops, 40f);
+    ClothingVariant poloWhiteM = createVariant(polo, Size.M, "#FFFFFF", 25, "https://images.unsplash.com/photo-1586363104862-3a5e2ab60d99?w=800&auto=format&fit=crop&q=60&fm=jpg");
+    ClothingVariant poloNavyM = createVariant(polo, Size.M, "#1F305E", 20, "https://images.unsplash.com/photo-1598032895397-b9472444bf93?w=800&auto=format&fit=crop&q=60&fm=jpg");
+    ClothingVariant poloNavyL = createVariant(polo, Size.L, "#1F305E", 18, "https://images.unsplash.com/photo-1598032895397-b9472444bf93?w=800&auto=format&fit=crop&q=60&fm=jpg");
 
     // Cargo Shorts
     ClothingModel shorts =
         createClothingModel(
-            "Cargo Shorts", "Generic", ClothingModel.Category.Bottoms, 34.99f);
-    ClothingVariant shortsKhakiS = createVariant(shorts, Size.S, "Khaki", 15);
-    ClothingVariant shortsKhakiM = createVariant(shorts, Size.M, "Khaki", 22);
-    ClothingVariant shortsKhakiL = createVariant(shorts, Size.L, "Khaki", 18);
-    ClothingVariant shortsBlackM = createVariant(shorts, Size.M, "Black", 20);
+            "Cargo Shorts", "Generic", ClothingModel.Category.Bottoms, 35f);
+    ClothingVariant shortsKhakiS = createVariant(shorts, Size.S, "#C3B091", 15, "https://images.unsplash.com/photo-1562886520-8a50978b4655?w=800&auto=format&fit=crop&q=60&fm=jpg");
+    ClothingVariant shortsKhakiM = createVariant(shorts, Size.M, "#C3B091", 22, "https://images.unsplash.com/photo-1562886520-8a50978b4655?w=800&auto=format&fit=crop&q=60&fm=jpg");
+    ClothingVariant shortsKhakiL = createVariant(shorts, Size.L, "#C3B091", 18, "https://images.unsplash.com/photo-1562886520-8a50978b4655?w=800&auto=format&fit=crop&q=60&fm=jpg");
+    ClothingVariant shortsBlackM = createVariant(shorts, Size.M, "#1C1C1C", 20, "https://images.unsplash.com/photo-1591195853828-11db59a44f43?w=800&auto=format&fit=crop&q=60&fm=jpg");
 
     // Limited Edition Tee mostly out-of-stock for UI edge-case testing
     ClothingModel rareItem =
         createClothingModel(
-            "Limited Edition Tee", "Generic", ClothingModel.Category.Tops, 89.99f);
-    ClothingVariant rareTeeBlackM = createVariant(rareItem, Size.M, "Black", 0);
-    ClothingVariant rareTeeBlackL = createVariant(rareItem, Size.L, "Black", 2);
+            "Limited Edition Tee", "Generic", ClothingModel.Category.Tops, 90f);
+    ClothingVariant rareTeeBlackM = createVariant(rareItem, Size.M, "#1C1C1C", 0, "https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?w=800&auto=format&fit=crop&q=60&fm=jpg");
+    ClothingVariant rareTeeBlackL = createVariant(rareItem, Size.L, "#1C1C1C", 2, "https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?w=800&auto=format&fit=crop&q=60&fm=jpg");
 
     // Orders
     // cust1: 2 delivered, 1 preparing
@@ -324,12 +324,14 @@ public class DataSeeder {
     return clothingModelRepository.save(model);
   }
 
-  private ClothingVariant createVariant(ClothingModel model, Size size, String color, int stock) {
+  private ClothingVariant createVariant(
+      ClothingModel model, Size size, String color, int stock, String imagePath) {
     ClothingVariant variant = new ClothingVariant();
     variant.setModel(model);
     variant.setSize(size);
     variant.setColor(color);
     variant.setStockQuantity(stock);
+    variant.setImagePath(imagePath);
     return clothingVariantRepository.save(variant);
   }
 
