@@ -114,17 +114,15 @@ public class DataSeeder {
             "https://i.pinimg.com/736x/f7/67/9c/f7679c84bd40669b7b66c021244205cd.jpg");
     ClothingVariant hoodieBlackL = hoodieBlackAll[2], hoodieBlackXL = hoodieBlackAll[3];
     createAllSizes(
-            hoodie,
-            "#F0F0F0",
-            25,
-            "https://i.pinimg.com/1200x/12/db/1e/12db1e73ed55afba605c3a4f2fa846c1.jpg"
-    );
+        hoodie,
+        "#F0F0F0",
+        25,
+        "https://i.pinimg.com/1200x/12/db/1e/12db1e73ed55afba605c3a4f2fa846c1.jpg");
     createAllSizes(
-            hoodie,
-            "#BA8C5D",
-            20,
-            "https://i.pinimg.com/736x/6c/84/18/6c841808f0bce9dbdead9b03cd4e95ef.jpg"
-    );
+        hoodie,
+        "#BA8C5D",
+        20,
+        "https://i.pinimg.com/736x/6c/84/18/6c841808f0bce9dbdead9b03cd4e95ef.jpg");
 
     // Slim Fit Jeans — blue, black
     ClothingModel jeans =
@@ -147,11 +145,10 @@ public class DataSeeder {
             "https://i.pinimg.com/1200x/97/15/2b/97152b14dca6a17d97d4ddde72fed822.jpg");
     ClothingVariant jeansBlackM = jeansBlackAll[1];
     createAllSizes(
-            jeans,
-            "#7D91B2",
-            20,
-            "https://i.pinimg.com/736x/be/d4/96/bed4962afa439eff895791b265e50f44.jpg"
-    );
+        jeans,
+        "#7D91B2",
+        20,
+        "https://i.pinimg.com/736x/be/d4/96/bed4962afa439eff895791b265e50f44.jpg");
 
     // Summer Floral Dress — pink
     ClothingModel dress =
@@ -205,35 +202,30 @@ public class DataSeeder {
             "https://i.pinimg.com/1200x/a5/7b/5c/a57b5c3af8531b36e6be94d7afa5f581.jpg");
     ClothingVariant poloNavyM = poloNavyAll[1], poloNavyL = poloNavyAll[2];
     createAllSizes(
-            polo,
-            "#1C564A",
-            20,
-            "https://i.pinimg.com/1200x/da/b4/ff/dab4ffbd58f51266b8fb4edc2687b443.jpg"
-    );
+        polo,
+        "#1C564A",
+        20,
+        "https://i.pinimg.com/1200x/da/b4/ff/dab4ffbd58f51266b8fb4edc2687b443.jpg");
     createAllSizes(
-            polo,
-            "#641826",
-            25,
-            "https://i.pinimg.com/1200x/21/03/d2/2103d260cb11f09909454ad4731bac47.jpg"
-    );
+        polo,
+        "#641826",
+        25,
+        "https://i.pinimg.com/1200x/21/03/d2/2103d260cb11f09909454ad4731bac47.jpg");
     createAllSizes(
-            polo,
-            "#8E6E57",
-            20,
-            "https://i.pinimg.com/736x/9e/cb/7b/9ecb7bc67d9960862250ce997d5dd738.jpg"
-    );
+        polo,
+        "#8E6E57",
+        20,
+        "https://i.pinimg.com/736x/9e/cb/7b/9ecb7bc67d9960862250ce997d5dd738.jpg");
     createAllSizes(
-            polo,
-            "#93928E",
-            35,
-            "https://i.pinimg.com/1200x/35/31/3e/35313ea8a71b08015b84a8e459a64614.jpg"
-    );
+        polo,
+        "#93928E",
+        35,
+        "https://i.pinimg.com/1200x/35/31/3e/35313ea8a71b08015b84a8e459a64614.jpg");
     createAllSizes(
-            polo,
-            "#19181C",
-            15,
-            "https://i.pinimg.com/1200x/5d/13/f4/5d13f484d8f6a06f5f754edb9fa6bc81.jpg"
-    );
+        polo,
+        "#19181C",
+        15,
+        "https://i.pinimg.com/1200x/5d/13/f4/5d13f484d8f6a06f5f754edb9fa6bc81.jpg");
     // Cargo Shorts — khaki, black
     ClothingModel shorts =
         createClothingModel("Cargo Shorts", "Kloth Originals", ClothingModel.Category.Bottoms, 35f);
@@ -354,11 +346,10 @@ public class DataSeeder {
     ClothingVariant campShirtTanM = campShirtTanAll[1], campShirtTanL = campShirtTanAll[2];
 
     createAllSizes(
-            campShirt,
-            "#201E1F",
-            15,
-            "https://i.pinimg.com/1200x/aa/2f/e9/aa2fe9071a9e77654f4b9ac97d8ad2ec.jpg"
-    );
+        campShirt,
+        "#201E1F",
+        15,
+        "https://i.pinimg.com/1200x/aa/2f/e9/aa2fe9071a9e77654f4b9ac97d8ad2ec.jpg");
 
     // Nylon Crossbody Bag — black, olive
     ClothingModel crossbodyBag =
