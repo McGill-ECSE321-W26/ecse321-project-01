@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { Button } from '@/components/ui/button'
 import {
   Select,
@@ -8,10 +8,75 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { products, categories, sortOptions } from '@/data/products'
+import { api } from '@/api/client'
+import type { ClothingModelListResponseDto } from '@/api/types/clothing'
 
 const activeCategory = ref('All')
 const sortBy = ref('newest')
+const models = ref<ClothingModelListResponseDto[]>([])
+const loading = ref(true)
+const error = ref<string | null>(null)
+
+// Hashmap -> Key: clothingModelID (str) | Value: selected color index (int)
+const selectedColorIndex = ref<Record<string, number>>({})
+
+const categories = ['All', 'Tops', 'Bottoms', 'Dresses', 'Outerwear', 'Accessories'] as const
+
+const sortOptions = [
+  { label: 'Newest', value: 'newest' },
+  { label: 'Price: Low → High', value: 'price-asc' },
+  { label: 'Price: High → Low', value: 'price-desc' },
+] as const
+
+const filteredModels = computed(() => {
+  let result = models.value
+
+  // Category filter
+  if (activeCategory.value !== 'All') {
+    result = result.filter(
+      (p) => p.category === activeCategory.value,
+    )
+  }
+
+  // Sort
+  if (sortBy.value === 'price-asc') {
+    result = [...result].sort((a, b) => a.price - b.price)
+  } else if (sortBy.value === 'price-desc') {
+    result = [...result].sort((a, b) => b.price - a.price)
+  }
+
+  return result
+})
+
+// Get image for a model based on chosen color
+function getClothingImage(model: ClothingModelListResponseDto): string {
+  // If no entry with that key exists yet, ?? 0 defaults to index 0
+  const index = selectedColorIndex.value[model.clothingModelID] ?? 0
+  return model.variants[index]?.imagePath ?? '' // blank image path if not provided
+}
+
+// Handle color swatch click
+function selectColor(modelId: string, colorIndex: number) {
+  selectedColorIndex.value[modelId] = colorIndex // populate hashmap with k/v entry
+}
+
+// Check if a color is selected
+function isColorSelected(modelId: string, colorIndex: number): boolean {
+  // look up selected color index from selectedColorIndex.value[modelId] default to 0
+  return (selectedColorIndex.value[modelId] ?? 0) === colorIndex // return true if color index match
+}
+
+onMounted(async () => {
+  try {
+    models.value = await api<ClothingModelListResponseDto[]>('/clothing')
+  } catch (e: any) {
+    error.value = e.message ?? 'Failed to load models'
+  } finally {
+    // Turn off spinner once data is fully loaded
+    loading.value = false
+  }
+})
+
 </script>
 
 <template>
@@ -26,7 +91,7 @@ const sortBy = ref('newest')
           Browse our full collection of clothing and accessories.
         </p>
         <span class="text-[13px] text-(--text-light) tracking-wide hidden sm:inline">
-          Showing {{ products.length }} of 48 items
+          Showing {{ filteredModels.length }} of {{ models.length }} items
         </span>
       </div>
     </div>
@@ -69,20 +134,35 @@ const sortBy = ref('newest')
         </SelectContent>
       </Select>
     </div>
+
+    <!-- Loading State -->
+    <div v-if="loading" class="max-w-350 mx-auto px-5 md:px-10 pb-20 flex justify-center items-center py-32">
+      <div class="loading-spinner" />
+    </div>
+
+    <!-- Error State -->
+    <div v-else-if="error" class="max-w-350 mx-auto px-5 md:px-10 pb-20 flex justify-center items-center py-32">
+      <p class="text-sm text-red-400">{{ error }}</p>
+    </div>
+
+    <!-- Empty State -->
+    <div v-else-if="filteredModels.length === 0" class="max-w-350 mx-auto px-5 md:px-10 pb-20 flex justify-center items-center py-32">
+      <p class="text-sm text-(--text-muted)">No models found.</p>
+    </div>
+
     <!-- Product Grid -->
-    <div class="max-w-350 mx-auto px-5 md:px-10 pb-20 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
+    <div v-else class="max-w-350 mx-auto px-5 md:px-10 pb-20 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
       <div
-        v-for="(product, index) in products"
-        :key="product.id"
-        class="product-card group cursor-pointer"
+        v-for="(model, index) in filteredModels"
+        :key="model.clothingModelID"
+        class="model-card group cursor-pointer"
         :style="{ animationDelay: `${index * 0.05}s` }"
       >
         <!-- Image -->
-        <div class="aspect-3/4 overflow-hidden relative">
-          <!-- Product Image -->
+        <div class="aspect-3/4 overflow-hidden relative bg-(--card-hover)">
           <img
-            :src="product.img"
-            :alt="product.name"
+            :src="getClothingImage(model)"
+            :alt="model.name"
             loading="lazy"
             class="w-full h-full object-cover transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-105"
           >
@@ -91,20 +171,25 @@ const sortBy = ref('newest')
         <!-- Product Info -->
         <div class="pt-3.5 px-1">
           <p class="text-[11px] text-(--text-light) uppercase tracking-widest mb-1">
-            {{ product.brand }}
+            {{ model.brand }}
           </p>
           <p class="text-sm text-(--text) leading-snug mb-1.5">
-            {{ product.name }}
+            {{ model.name }}
           </p>
           <p class="text-sm font-extrabold text-(--text)">
-            ${{ product.price }} CAD
+            ${{ model.price.toFixed(2) }} CAD
           </p>
           <div class="flex gap-1.5 mt-2">
             <div
-              v-for="(color, ci) in product.colors"
-              :key="ci"
-              class="w-3.5 h-3.5 rounded-full border-[1.5px] border-(--text-light) cursor-pointer hover:border-(--text) transition-colors"
-              :style="{ backgroundColor: color }"
+              v-for="(variant, color_idx) in model.variants"
+              :key="color_idx"
+              class="w-3.5 h-3.5 rounded-full border-[1.5px] cursor-pointer transition-colors"
+              :class="isColorSelected(model.clothingModelID, color_idx)
+                ? 'border-(--text) scale-110'
+                : 'border-(--text-light) hover:border-(--text)'"
+              :style="{ backgroundColor: variant.color }"
+              :title="variant.color"
+              @click="selectColor(model.clothingModelID, color_idx)"
             />
           </div>
         </div>
@@ -130,7 +215,22 @@ const sortBy = ref('newest')
   }
 }
 
-.product-card {
+.model-card {
   animation: fadeUp 0.6s ease both;
+}
+
+.loading-spinner {
+  width: 32px;
+  height: 32px;
+  border: 2px solid var(--text-light);
+  border-top-color: var(--text);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
 }
 </style>
