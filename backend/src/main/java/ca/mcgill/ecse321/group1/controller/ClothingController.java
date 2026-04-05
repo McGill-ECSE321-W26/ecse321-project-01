@@ -38,7 +38,11 @@ public class ClothingController {
       @RequestBody ClothingModelCreateRequestDto request) {
     return new ClothingModelResponseDto(
         clothingService.createClothingModel(
-            request.getName(), request.getPrice(), request.getImagePath()));
+            request.getName(),
+            request.getDescription(),
+            request.getBrand(),
+            request.getCategory(),
+            request.getPrice()));
   }
 
   @PutMapping("/{modelId}")
@@ -46,7 +50,12 @@ public class ClothingController {
       @PathVariable String modelId, @RequestBody ClothingModelCreateRequestDto request) {
     return new ClothingModelResponseDto(
         clothingService.updateClothingModel(
-            modelId, request.getName(), request.getPrice(), request.getImagePath()));
+            modelId,
+            request.getName(),
+            request.getDescription(),
+            request.getBrand(),
+            request.getCategory(),
+            request.getPrice()));
   }
 
   @DeleteMapping("/{modelId}")

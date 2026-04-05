@@ -81,6 +81,5 @@ class ClothingModel {
   }
   Category category;
   float price;
-  imagePath;
   boolean archived = false;
 }

@@ -9,6 +9,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import ca.mcgill.ecse321.group1.model.ClothingModel;
+import ca.mcgill.ecse321.group1.model.ClothingModel.Category;
 import ca.mcgill.ecse321.group1.model.ClothingVariant;
 import ca.mcgill.ecse321.group1.model.Item;
 import ca.mcgill.ecse321.group1.repository.ClothingModelRepository;
@@ -31,16 +32,20 @@ public class ClothingServiceTests {
   @Mock ItemRepository itemRepository;
   @InjectMocks ClothingService clothingService;
 
-  private static final String VALID_MODEL_IMAGE = "model.jpg";
   private static final String VALID_VARIANT_IMAGE = "variant.png";
+  private static final String VALID_DESCRIPTION = "A warm jacket";
+  private static final String VALID_BRAND = "Nike";
+  private static final Category VALID_CATEGORY = Category.Outerwear;
 
   // ===== getAllClothingModels =====
 
   @Test
   public void testGetAllClothingModels() {
     // Arrange
-    ClothingModel model1 = new ClothingModel(null, "Summer Jacket", 79.99f, VALID_MODEL_IMAGE);
-    ClothingModel model2 = new ClothingModel(null, "Winter Coat", 149.99f, VALID_MODEL_IMAGE);
+    ClothingModel model1 =
+        new ClothingModel(null, "Summer Jacket", VALID_DESCRIPTION, VALID_BRAND, VALID_CATEGORY, 79.99f);
+    ClothingModel model2 =
+        new ClothingModel(null, "Winter Coat", VALID_DESCRIPTION, VALID_BRAND, VALID_CATEGORY, 149.99f);
     when(clothingModelRepository.findByArchivedFalse()).thenReturn(List.of(model1, model2));
 
     // Act
@@ -58,8 +63,9 @@ public class ClothingServiceTests {
     // Arrange
     String modelId = "1";
     String name = "Summer Jacket";
-    Float price = 79.99f;
-    ClothingModel model = new ClothingModel(modelId, name, price, VALID_MODEL_IMAGE);
+    float price = 79.99f;
+    ClothingModel model =
+        new ClothingModel(modelId, name, VALID_DESCRIPTION, VALID_BRAND, VALID_CATEGORY, price);
     when(clothingModelRepository.findByClothingModelIDAndArchivedFalse(modelId)).thenReturn(model);
 
     // Act
@@ -69,7 +75,8 @@ public class ClothingServiceTests {
     assertNotNull(result);
     assertEquals("Summer Jacket", result.getName());
     assertEquals(price, result.getPrice());
-    assertEquals(VALID_MODEL_IMAGE, result.getImagePath());
+    assertEquals(VALID_BRAND, result.getBrand());
+    assertEquals(VALID_CATEGORY, result.getCategory());
   }
 
   @Test
@@ -91,29 +98,32 @@ public class ClothingServiceTests {
     // Arrange
     String name = "Summer Jacket";
     float price = 79.99f;
-    ClothingModel saved = new ClothingModel(null, name, price, VALID_MODEL_IMAGE);
+    ClothingModel saved =
+        new ClothingModel(null, name, VALID_DESCRIPTION, VALID_BRAND, VALID_CATEGORY, price);
     when(clothingModelRepository.save(any(ClothingModel.class))).thenReturn(saved);
 
     // Act
-    ClothingModel result = clothingService.createClothingModel(name, price, VALID_MODEL_IMAGE);
+    ClothingModel result =
+        clothingService.createClothingModel(name, VALID_DESCRIPTION, VALID_BRAND, VALID_CATEGORY, price);
 
     // Assert
     assertNotNull(result);
     assertEquals(name, result.getName());
     assertEquals(price, result.getPrice());
-    assertEquals(VALID_MODEL_IMAGE, result.getImagePath());
+    assertEquals(VALID_BRAND, result.getBrand());
     verify(clothingModelRepository, times(1)).save(any(ClothingModel.class));
   }
 
   @Test
   public void testCreateClothingModelWithInvalidName() {
-    // Arrange
-    float price = 79.99f;
     // ACT & ASSERT
+    float price = 79.99f;
     ResponseStatusException e =
         assertThrows(
             ResponseStatusException.class,
-            () -> clothingService.createClothingModel(null, price, VALID_MODEL_IMAGE));
+            () ->
+                clothingService.createClothingModel(
+                    null, VALID_DESCRIPTION, VALID_BRAND, VALID_CATEGORY, price));
     assertEquals("400 BAD_REQUEST \"Name must not be blank\"", e.getMessage());
   }
 
@@ -122,14 +132,17 @@ public class ClothingServiceTests {
     // Arrange
     String name = "Summer Jacket";
     float price = 79.99f;
-    ClothingModel saved = new ClothingModel(null, name, price, VALID_MODEL_IMAGE);
+    ClothingModel saved =
+        new ClothingModel(null, name, VALID_DESCRIPTION, VALID_BRAND, VALID_CATEGORY, price);
     when(clothingModelRepository.findByNameAndArchivedFalse(name)).thenReturn(saved);
 
     // Act & Assert
     ResponseStatusException e =
         assertThrows(
             ResponseStatusException.class,
-            () -> clothingService.createClothingModel(name, price, VALID_MODEL_IMAGE));
+            () ->
+                clothingService.createClothingModel(
+                    name, VALID_DESCRIPTION, VALID_BRAND, VALID_CATEGORY, price));
     assertEquals(
         String.format("409 CONFLICT \"A clothing model with name '%s' already exists\"", name),
         e.getMessage());
@@ -140,7 +153,9 @@ public class ClothingServiceTests {
     ResponseStatusException e =
         assertThrows(
             ResponseStatusException.class,
-            () -> clothingService.createClothingModel("  ", 100f, VALID_MODEL_IMAGE));
+            () ->
+                clothingService.createClothingModel(
+                    "  ", VALID_DESCRIPTION, VALID_BRAND, VALID_CATEGORY, 100f));
     assertEquals("400 BAD_REQUEST \"Name must not be blank\"", e.getMessage());
   }
 
@@ -153,40 +168,34 @@ public class ClothingServiceTests {
     ResponseStatusException e =
         assertThrows(
             ResponseStatusException.class,
-            () -> clothingService.createClothingModel(name, price, VALID_MODEL_IMAGE));
+            () ->
+                clothingService.createClothingModel(
+                    name, VALID_DESCRIPTION, VALID_BRAND, VALID_CATEGORY, price));
     assertEquals("400 BAD_REQUEST \"Price must be > 0\"", e.getMessage());
   }
 
   @Test
-  public void testCreateClothingModelWithBlankImagePath() {
-    // Arrange
-    String name = "Summer Jacket";
-    float price = 79.99f;
-    when(clothingModelRepository.findByNameAndArchivedFalse(name)).thenReturn(null);
-
+  public void testCreateClothingModelWithBlankBrand() {
     // Act & Assert
     ResponseStatusException e =
         assertThrows(
             ResponseStatusException.class,
-            () -> clothingService.createClothingModel(name, price, ""));
-    assertEquals("400 BAD_REQUEST \"Image path must not be blank\"", e.getMessage());
+            () ->
+                clothingService.createClothingModel(
+                    "Summer Jacket", VALID_DESCRIPTION, "  ", VALID_CATEGORY, 79.99f));
+    assertEquals("400 BAD_REQUEST \"Brand must not be blank\"", e.getMessage());
   }
 
   @Test
-  public void testCreateClothingModelWithInvalidImageExtension() {
-    // Arrange
-    String name = "Summer Jacket";
-    float price = 79.99f;
-    when(clothingModelRepository.findByNameAndArchivedFalse(name)).thenReturn(null);
-
+  public void testCreateClothingModelWithNullBrand() {
     // Act & Assert
     ResponseStatusException e =
         assertThrows(
             ResponseStatusException.class,
-            () -> clothingService.createClothingModel(name, price, "image.bmp"));
-    assertEquals(
-        "400 BAD_REQUEST \"Image path must end with a valid image extension (.jpg, .jpeg, .png, .gif, .webp, .svg)\"",
-        e.getMessage());
+            () ->
+                clothingService.createClothingModel(
+                    "Summer Jacket", VALID_DESCRIPTION, null, VALID_CATEGORY, 79.99f));
+    assertEquals("400 BAD_REQUEST \"Brand must not be blank\"", e.getMessage());
   }
 
   // ===== updateClothingModel =====
@@ -197,8 +206,11 @@ public class ClothingServiceTests {
     String id = "1";
     String newName = "Winter Coat";
     float newPrice = 129.99f;
-    String newImage = "updated.jpg";
-    ClothingModel model = new ClothingModel(id, "Summer Jacket", 79.99f, VALID_MODEL_IMAGE);
+    String newDescription = "Updated description";
+    String newBrand = "Adidas";
+    Category newCategory = Category.Tops;
+    ClothingModel model =
+        new ClothingModel(id, "Summer Jacket", VALID_DESCRIPTION, VALID_BRAND, VALID_CATEGORY, 79.99f);
     ClothingVariant variant =
         new ClothingVariant(id, ClothingVariant.Size.M, "blue", VALID_VARIANT_IMAGE, 5, model);
     Item item = new Item(id, 1, 1f, variant);
@@ -208,13 +220,17 @@ public class ClothingServiceTests {
     when(clothingModelRepository.save(any(ClothingModel.class))).thenAnswer(i -> i.getArgument(0));
 
     // Act
-    ClothingModel res = clothingService.updateClothingModel(id, newName, newPrice, newImage);
+    ClothingModel res =
+        clothingService.updateClothingModel(
+            id, newName, newDescription, newBrand, newCategory, newPrice);
 
     // Assert
     assertNotNull(res);
     assertEquals(newName, res.getName());
     assertEquals(newPrice, res.getPrice());
-    assertEquals(newImage, res.getImagePath());
+    assertEquals(newDescription, res.getDescription());
+    assertEquals(newBrand, res.getBrand());
+    assertEquals(newCategory, res.getCategory());
     verify(itemRepository, times(1)).saveAll(any());
     verify(clothingModelRepository, times(1)).save(any(ClothingModel.class));
   }
@@ -229,7 +245,9 @@ public class ClothingServiceTests {
     ResponseStatusException e =
         assertThrows(
             ResponseStatusException.class,
-            () -> clothingService.updateClothingModel(id, "New Name", 99.99f, VALID_MODEL_IMAGE));
+            () ->
+                clothingService.updateClothingModel(
+                    id, "New Name", VALID_DESCRIPTION, VALID_BRAND, VALID_CATEGORY, 99.99f));
     assertEquals("404 NOT_FOUND \"Clothing model with ID " + id + " not found\"", e.getMessage());
   }
 
@@ -237,14 +255,17 @@ public class ClothingServiceTests {
   public void testUpdateClothingModelWithBlankName() {
     // Arrange
     String id = "1";
-    ClothingModel model = new ClothingModel(id, "Summer Jacket", 79.99f, VALID_MODEL_IMAGE);
+    ClothingModel model =
+        new ClothingModel(id, "Summer Jacket", VALID_DESCRIPTION, VALID_BRAND, VALID_CATEGORY, 79.99f);
     when(clothingModelRepository.findByClothingModelIDAndArchivedFalse(id)).thenReturn(model);
 
     // Act & Assert
     ResponseStatusException e =
         assertThrows(
             ResponseStatusException.class,
-            () -> clothingService.updateClothingModel(id, "  ", 79.99f, VALID_MODEL_IMAGE));
+            () ->
+                clothingService.updateClothingModel(
+                    id, "  ", VALID_DESCRIPTION, VALID_BRAND, VALID_CATEGORY, 79.99f));
     assertEquals("400 BAD_REQUEST \"Name must not be blank\"", e.getMessage());
   }
 
@@ -254,8 +275,10 @@ public class ClothingServiceTests {
     String id = "1";
     String newName = "Winter Coat";
     float price = 79.99f;
-    ClothingModel saved = new ClothingModel(id, "Summer Jacket", price, VALID_MODEL_IMAGE);
-    ClothingModel exist = new ClothingModel("2", newName, price, VALID_MODEL_IMAGE);
+    ClothingModel saved =
+        new ClothingModel(id, "Summer Jacket", VALID_DESCRIPTION, VALID_BRAND, VALID_CATEGORY, price);
+    ClothingModel exist =
+        new ClothingModel("2", newName, VALID_DESCRIPTION, VALID_BRAND, VALID_CATEGORY, price);
     when(clothingModelRepository.findByClothingModelIDAndArchivedFalse(id)).thenReturn(saved);
     when(clothingModelRepository.findByNameAndArchivedFalse(newName)).thenReturn(exist);
 
@@ -263,7 +286,9 @@ public class ClothingServiceTests {
     ResponseStatusException e =
         assertThrows(
             ResponseStatusException.class,
-            () -> clothingService.updateClothingModel(id, newName, price, VALID_MODEL_IMAGE));
+            () ->
+                clothingService.updateClothingModel(
+                    id, newName, VALID_DESCRIPTION, VALID_BRAND, VALID_CATEGORY, price));
     assertEquals(
         String.format("409 CONFLICT \"A clothing model with name '%s' already exists\"", newName),
         e.getMessage());
@@ -273,47 +298,36 @@ public class ClothingServiceTests {
   public void testUpdateClothingModelWithInvalidPrice() {
     // Arrange
     String id = "1";
-    ClothingModel model = new ClothingModel(id, "Summer Jacket", 79.99f, VALID_MODEL_IMAGE);
+    ClothingModel model =
+        new ClothingModel(id, "Summer Jacket", VALID_DESCRIPTION, VALID_BRAND, VALID_CATEGORY, 79.99f);
     when(clothingModelRepository.findByClothingModelIDAndArchivedFalse(id)).thenReturn(model);
 
     // Act & Assert
     ResponseStatusException e =
         assertThrows(
             ResponseStatusException.class,
-            () -> clothingService.updateClothingModel(id, "Summer Jacket", -1f, VALID_MODEL_IMAGE));
+            () ->
+                clothingService.updateClothingModel(
+                    id, "Summer Jacket", VALID_DESCRIPTION, VALID_BRAND, VALID_CATEGORY, -1f));
     assertEquals("400 BAD_REQUEST \"Price must be > 0\"", e.getMessage());
   }
 
   @Test
-  public void testUpdateClothingModelWithBlankImagePath() {
+  public void testUpdateClothingModelWithBlankBrand() {
     // Arrange
     String id = "1";
-    ClothingModel model = new ClothingModel(id, "Summer Jacket", 79.99f, VALID_MODEL_IMAGE);
+    ClothingModel model =
+        new ClothingModel(id, "Summer Jacket", VALID_DESCRIPTION, VALID_BRAND, VALID_CATEGORY, 79.99f);
     when(clothingModelRepository.findByClothingModelIDAndArchivedFalse(id)).thenReturn(model);
 
     // Act & Assert
     ResponseStatusException e =
         assertThrows(
             ResponseStatusException.class,
-            () -> clothingService.updateClothingModel(id, "Summer Jacket", 79.99f, "  "));
-    assertEquals("400 BAD_REQUEST \"Image path must not be blank\"", e.getMessage());
-  }
-
-  @Test
-  public void testUpdateClothingModelWithInvalidImageExtension() {
-    // Arrange
-    String id = "1";
-    ClothingModel model = new ClothingModel(id, "Summer Jacket", 79.99f, VALID_MODEL_IMAGE);
-    when(clothingModelRepository.findByClothingModelIDAndArchivedFalse(id)).thenReturn(model);
-
-    // Act & Assert
-    ResponseStatusException e =
-        assertThrows(
-            ResponseStatusException.class,
-            () -> clothingService.updateClothingModel(id, "Summer Jacket", 79.99f, "image.tiff"));
-    assertEquals(
-        "400 BAD_REQUEST \"Image path must end with a valid image extension (.jpg, .jpeg, .png, .gif, .webp, .svg)\"",
-        e.getMessage());
+            () ->
+                clothingService.updateClothingModel(
+                    id, "Summer Jacket", VALID_DESCRIPTION, "  ", VALID_CATEGORY, 79.99f));
+    assertEquals("400 BAD_REQUEST \"Brand must not be blank\"", e.getMessage());
   }
 
   // ===== deleteClothingModel =====
@@ -322,9 +336,12 @@ public class ClothingServiceTests {
   public void testDeleteValidClothingModel() {
     // Arrange
     String modelId = "model1";
-    ClothingModel model = new ClothingModel(modelId, "Summer Jacket", 79.99f, VALID_MODEL_IMAGE);
+    ClothingModel model =
+        new ClothingModel(
+            modelId, "Summer Jacket", VALID_DESCRIPTION, VALID_BRAND, VALID_CATEGORY, 79.99f);
     ClothingVariant variant =
-        new ClothingVariant("v1", ClothingVariant.Size.M, "#FF0000", VALID_VARIANT_IMAGE, 10, model);
+        new ClothingVariant(
+            "v1", ClothingVariant.Size.M, "#FF0000", VALID_VARIANT_IMAGE, 10, model);
     when(clothingModelRepository.findByClothingModelIDAndArchivedFalse(modelId)).thenReturn(model);
     when(itemRepository.findByClothingVariant_Model_ClothingModelIDAndOrderIsNull(modelId))
         .thenReturn(List.of());
@@ -357,7 +374,9 @@ public class ClothingServiceTests {
     // Arrange
     String modelId = "model1";
     String variantId = "variant1";
-    ClothingModel model = new ClothingModel(modelId, "Summer Jacket", 79.99f, VALID_MODEL_IMAGE);
+    ClothingModel model =
+        new ClothingModel(
+            modelId, "Summer Jacket", VALID_DESCRIPTION, VALID_BRAND, VALID_CATEGORY, 79.99f);
     ClothingVariant variant =
         new ClothingVariant(
             variantId, ClothingVariant.Size.M, "#FF0000", VALID_VARIANT_IMAGE, 10, model);
@@ -403,8 +422,10 @@ public class ClothingServiceTests {
     String wrongModelId = "model2";
     String variantId = "variant1";
     ClothingModel model =
-        new ClothingModel(correctModelId, "Summer Jacket", 79.99f, VALID_MODEL_IMAGE);
-    new ClothingVariant(variantId, ClothingVariant.Size.M, "#FF0000", VALID_VARIANT_IMAGE, 10, model);
+        new ClothingModel(
+            correctModelId, "Summer Jacket", VALID_DESCRIPTION, VALID_BRAND, VALID_CATEGORY, 79.99f);
+    new ClothingVariant(
+        variantId, ClothingVariant.Size.M, "#FF0000", VALID_VARIANT_IMAGE, 10, model);
     when(clothingVariantRepository.findByClothingVariantIDAndArchivedFalse(variantId))
         .thenReturn(
             new ClothingVariant(
@@ -430,7 +451,9 @@ public class ClothingServiceTests {
   public void testGetVariantsByModel() {
     // Arrange
     String modelId = "model1";
-    ClothingModel model = new ClothingModel(modelId, "Summer Jacket", 79.99f, VALID_MODEL_IMAGE);
+    ClothingModel model =
+        new ClothingModel(
+            modelId, "Summer Jacket", VALID_DESCRIPTION, VALID_BRAND, VALID_CATEGORY, 79.99f);
     ClothingVariant variant =
         new ClothingVariant(
             "variant1", ClothingVariant.Size.M, "#FF0000", VALID_VARIANT_IMAGE, 10, model);
@@ -465,7 +488,9 @@ public class ClothingServiceTests {
   public void testCreateValidVariant() {
     // Arrange
     String modelId = "model1";
-    ClothingModel model = new ClothingModel(modelId, "Summer Jacket", 79.99f, VALID_MODEL_IMAGE);
+    ClothingModel model =
+        new ClothingModel(
+            modelId, "Summer Jacket", VALID_DESCRIPTION, VALID_BRAND, VALID_CATEGORY, 79.99f);
     ClothingVariant saved =
         new ClothingVariant(
             null,
@@ -473,7 +498,8 @@ public class ClothingServiceTests {
             "#0000FF",
             VALID_VARIANT_IMAGE,
             5,
-            new ClothingModel(modelId, "Summer Jacket", 79.99f, VALID_MODEL_IMAGE));
+            new ClothingModel(
+                modelId, "Summer Jacket", VALID_DESCRIPTION, VALID_BRAND, VALID_CATEGORY, 79.99f));
     when(clothingModelRepository.findByClothingModelIDAndArchivedFalse(modelId)).thenReturn(model);
     when(clothingVariantRepository.save(any(ClothingVariant.class))).thenReturn(saved);
 
@@ -512,7 +538,9 @@ public class ClothingServiceTests {
   public void testCreateVariantWithNullSize() {
     // Arrange
     String modelId = "model1";
-    ClothingModel model = new ClothingModel(modelId, "Summer Jacket", 79.99f, VALID_MODEL_IMAGE);
+    ClothingModel model =
+        new ClothingModel(
+            modelId, "Summer Jacket", VALID_DESCRIPTION, VALID_BRAND, VALID_CATEGORY, 79.99f);
     when(clothingModelRepository.findByClothingModelIDAndArchivedFalse(modelId)).thenReturn(model);
 
     // Act & Assert
@@ -527,7 +555,9 @@ public class ClothingServiceTests {
   public void testCreateVariantWithBlankColor() {
     // Arrange
     String modelId = "model1";
-    ClothingModel model = new ClothingModel(modelId, "Summer Jacket", 79.99f, VALID_MODEL_IMAGE);
+    ClothingModel model =
+        new ClothingModel(
+            modelId, "Summer Jacket", VALID_DESCRIPTION, VALID_BRAND, VALID_CATEGORY, 79.99f);
     when(clothingModelRepository.findByClothingModelIDAndArchivedFalse(modelId)).thenReturn(model);
 
     // Act & Assert
@@ -544,7 +574,9 @@ public class ClothingServiceTests {
   public void testCreateVariantWithInvalidHexColorNoPound() {
     // Arrange
     String modelId = "model1";
-    ClothingModel model = new ClothingModel(modelId, "Summer Jacket", 79.99f, VALID_MODEL_IMAGE);
+    ClothingModel model =
+        new ClothingModel(
+            modelId, "Summer Jacket", VALID_DESCRIPTION, VALID_BRAND, VALID_CATEGORY, 79.99f);
     when(clothingModelRepository.findByClothingModelIDAndArchivedFalse(modelId)).thenReturn(model);
 
     // Act & Assert
@@ -562,7 +594,9 @@ public class ClothingServiceTests {
   public void testCreateVariantWithInvalidHexColorTooShort() {
     // Arrange
     String modelId = "model1";
-    ClothingModel model = new ClothingModel(modelId, "Summer Jacket", 79.99f, VALID_MODEL_IMAGE);
+    ClothingModel model =
+        new ClothingModel(
+            modelId, "Summer Jacket", VALID_DESCRIPTION, VALID_BRAND, VALID_CATEGORY, 79.99f);
     when(clothingModelRepository.findByClothingModelIDAndArchivedFalse(modelId)).thenReturn(model);
 
     // Act & Assert
@@ -580,7 +614,9 @@ public class ClothingServiceTests {
   public void testCreateVariantWithInvalidHexColorBadChars() {
     // Arrange
     String modelId = "model1";
-    ClothingModel model = new ClothingModel(modelId, "Summer Jacket", 79.99f, VALID_MODEL_IMAGE);
+    ClothingModel model =
+        new ClothingModel(
+            modelId, "Summer Jacket", VALID_DESCRIPTION, VALID_BRAND, VALID_CATEGORY, 79.99f);
     when(clothingModelRepository.findByClothingModelIDAndArchivedFalse(modelId)).thenReturn(model);
 
     // Act & Assert
@@ -598,7 +634,9 @@ public class ClothingServiceTests {
   public void testCreateVariantWithInvalidHexColorNamedColor() {
     // Arrange
     String modelId = "model1";
-    ClothingModel model = new ClothingModel(modelId, "Summer Jacket", 79.99f, VALID_MODEL_IMAGE);
+    ClothingModel model =
+        new ClothingModel(
+            modelId, "Summer Jacket", VALID_DESCRIPTION, VALID_BRAND, VALID_CATEGORY, 79.99f);
     when(clothingModelRepository.findByClothingModelIDAndArchivedFalse(modelId)).thenReturn(model);
 
     // Act & Assert
@@ -616,7 +654,9 @@ public class ClothingServiceTests {
   public void testCreateVariantWithNegativeStock() {
     // Arrange
     String modelId = "model1";
-    ClothingModel model = new ClothingModel(modelId, "Summer Jacket", 79.99f, VALID_MODEL_IMAGE);
+    ClothingModel model =
+        new ClothingModel(
+            modelId, "Summer Jacket", VALID_DESCRIPTION, VALID_BRAND, VALID_CATEGORY, 79.99f);
     when(clothingModelRepository.findByClothingModelIDAndArchivedFalse(modelId)).thenReturn(model);
 
     // Act & Assert
@@ -633,7 +673,9 @@ public class ClothingServiceTests {
   public void testCreateVariantWithBlankImagePath() {
     // Arrange
     String modelId = "model1";
-    ClothingModel model = new ClothingModel(modelId, "Summer Jacket", 79.99f, VALID_MODEL_IMAGE);
+    ClothingModel model =
+        new ClothingModel(
+            modelId, "Summer Jacket", VALID_DESCRIPTION, VALID_BRAND, VALID_CATEGORY, 79.99f);
     when(clothingModelRepository.findByClothingModelIDAndArchivedFalse(modelId)).thenReturn(model);
 
     // Act & Assert
@@ -648,7 +690,9 @@ public class ClothingServiceTests {
   public void testCreateVariantWithInvalidImageExtension() {
     // Arrange
     String modelId = "model1";
-    ClothingModel model = new ClothingModel(modelId, "Summer Jacket", 79.99f, VALID_MODEL_IMAGE);
+    ClothingModel model =
+        new ClothingModel(
+            modelId, "Summer Jacket", VALID_DESCRIPTION, VALID_BRAND, VALID_CATEGORY, 79.99f);
     when(clothingModelRepository.findByClothingModelIDAndArchivedFalse(modelId)).thenReturn(model);
 
     // Act & Assert
@@ -667,9 +711,12 @@ public class ClothingServiceTests {
   public void testCreateVariantWithDuplicateSizeAndColor() {
     // Arrange
     String modelId = "model1";
-    ClothingModel model = new ClothingModel(modelId, "Summer Jacket", 79.99f, VALID_MODEL_IMAGE);
+    ClothingModel model =
+        new ClothingModel(
+            modelId, "Summer Jacket", VALID_DESCRIPTION, VALID_BRAND, VALID_CATEGORY, 79.99f);
     // Adding a variant to the model creates the duplicate
-    new ClothingVariant("existing", ClothingVariant.Size.M, "#FF0000", VALID_VARIANT_IMAGE, 10, model);
+    new ClothingVariant(
+        "existing", ClothingVariant.Size.M, "#FF0000", VALID_VARIANT_IMAGE, 10, model);
     when(clothingModelRepository.findByClothingModelIDAndArchivedFalse(modelId)).thenReturn(model);
 
     // Act & Assert
@@ -691,7 +738,9 @@ public class ClothingServiceTests {
     // Arrange
     String modelId = "model1";
     String variantId = "variant1";
-    ClothingModel model = new ClothingModel(modelId, "Summer Jacket", 79.99f, VALID_MODEL_IMAGE);
+    ClothingModel model =
+        new ClothingModel(
+            modelId, "Summer Jacket", VALID_DESCRIPTION, VALID_BRAND, VALID_CATEGORY, 79.99f);
     ClothingVariant variant =
         new ClothingVariant(
             variantId, ClothingVariant.Size.M, "#FF0000", VALID_VARIANT_IMAGE, 10, model);
@@ -737,7 +786,9 @@ public class ClothingServiceTests {
     // Arrange
     String modelId = "model1";
     String variantId = "variant1";
-    ClothingModel model = new ClothingModel(modelId, "Summer Jacket", 79.99f, VALID_MODEL_IMAGE);
+    ClothingModel model =
+        new ClothingModel(
+            modelId, "Summer Jacket", VALID_DESCRIPTION, VALID_BRAND, VALID_CATEGORY, 79.99f);
     ClothingVariant variant =
         new ClothingVariant(
             variantId, ClothingVariant.Size.M, "#FF0000", VALID_VARIANT_IMAGE, 10, model);
@@ -782,7 +833,9 @@ public class ClothingServiceTests {
     // Arrange
     String modelId = "model1";
     String variantId = "variant1";
-    ClothingModel model = new ClothingModel(modelId, "Summer Jacket", 79.99f, VALID_MODEL_IMAGE);
+    ClothingModel model =
+        new ClothingModel(
+            modelId, "Summer Jacket", VALID_DESCRIPTION, VALID_BRAND, VALID_CATEGORY, 79.99f);
     ClothingVariant variant =
         new ClothingVariant(
             variantId, ClothingVariant.Size.M, "#FF0000", VALID_VARIANT_IMAGE, 10, model);

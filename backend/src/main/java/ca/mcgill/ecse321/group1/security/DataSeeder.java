@@ -72,7 +72,7 @@ public class DataSeeder {
     // Classic T-Shirt multiple colors and sizes
     ClothingModel tshirt =
         createClothingModel(
-            "Classic T-Shirt", 24.99f, "https://picsum.photos/seed/tshirt/400/400.jpg");
+            "Classic T-Shirt", "Generic", ClothingModel.Category.Tops, 24.99f);
     ClothingVariant tshirtWhiteS = createVariant(tshirt, Size.S, "White", 30);
     ClothingVariant tshirtWhiteM = createVariant(tshirt, Size.M, "White", 45);
     ClothingVariant tshirtBlackM = createVariant(tshirt, Size.M, "Black", 40);
@@ -82,7 +82,7 @@ public class DataSeeder {
     // Premium Hoodie
     ClothingModel hoodie =
         createClothingModel(
-            "Premium Hoodie", 59.99f, "https://picsum.photos/seed/hoodie/400/400.jpg");
+            "Premium Hoodie", "Generic", ClothingModel.Category.Tops, 59.99f);
     ClothingVariant hoodieGrayM = createVariant(hoodie, Size.M, "Gray", 20);
     ClothingVariant hoodieGrayL = createVariant(hoodie, Size.L, "Gray", 18);
     ClothingVariant hoodieBlackL = createVariant(hoodie, Size.L, "Black", 22);
@@ -91,7 +91,7 @@ public class DataSeeder {
     // Slim Fit Jeans
     ClothingModel jeans =
         createClothingModel(
-            "Slim Fit Jeans", 79.99f, "https://picsum.photos/seed/jeans/400/400.jpg");
+            "Slim Fit Jeans", "Generic", ClothingModel.Category.Bottoms, 79.99f);
     ClothingVariant jeansBlueS = createVariant(jeans, Size.S, "Blue", 12);
     ClothingVariant jeansBlueM = createVariant(jeans, Size.M, "Blue", 20);
     ClothingVariant jeansBlueL = createVariant(jeans, Size.L, "Blue", 16);
@@ -100,7 +100,7 @@ public class DataSeeder {
     // Summer Floral Dress
     ClothingModel dress =
         createClothingModel(
-            "Summer Floral Dress", 49.99f, "https://picsum.photos/seed/dress/400/400.jpg");
+            "Summer Floral Dress", "Generic", ClothingModel.Category.Dresses, 49.99f);
     ClothingVariant dressFloralS = createVariant(dress, Size.S, "Floral", 8);
     ClothingVariant dressFloralM = createVariant(dress, Size.M, "Floral", 12);
     ClothingVariant dressFloralL = createVariant(dress, Size.L, "Floral", 6);
@@ -108,7 +108,7 @@ public class DataSeeder {
     // Bomber Jacket
     ClothingModel jacket =
         createClothingModel(
-            "Bomber Jacket", 119.99f, "https://picsum.photos/seed/jacket/400/400.jpg");
+            "Bomber Jacket", "Generic", ClothingModel.Category.Outerwear, 119.99f);
     ClothingVariant jacketOliveM = createVariant(jacket, Size.M, "Olive", 7);
     ClothingVariant jacketOliveL = createVariant(jacket, Size.L, "Olive", 9);
     ClothingVariant jacketBlackL = createVariant(jacket, Size.L, "Black", 11);
@@ -117,7 +117,7 @@ public class DataSeeder {
     // Classic Polo Shirt
     ClothingModel polo =
         createClothingModel(
-            "Classic Polo Shirt", 39.99f, "https://picsum.photos/seed/polo/400/400.jpg");
+            "Classic Polo Shirt", "Generic", ClothingModel.Category.Tops, 39.99f);
     ClothingVariant poloWhiteM = createVariant(polo, Size.M, "White", 25);
     ClothingVariant poloNavyM = createVariant(polo, Size.M, "Navy", 20);
     ClothingVariant poloNavyL = createVariant(polo, Size.L, "Navy", 18);
@@ -125,7 +125,7 @@ public class DataSeeder {
     // Cargo Shorts
     ClothingModel shorts =
         createClothingModel(
-            "Cargo Shorts", 34.99f, "https://picsum.photos/seed/shorts/400/400.jpg");
+            "Cargo Shorts", "Generic", ClothingModel.Category.Bottoms, 34.99f);
     ClothingVariant shortsKhakiS = createVariant(shorts, Size.S, "Khaki", 15);
     ClothingVariant shortsKhakiM = createVariant(shorts, Size.M, "Khaki", 22);
     ClothingVariant shortsKhakiL = createVariant(shorts, Size.L, "Khaki", 18);
@@ -134,7 +134,7 @@ public class DataSeeder {
     // Limited Edition Tee mostly out-of-stock for UI edge-case testing
     ClothingModel rareItem =
         createClothingModel(
-            "Limited Edition Tee", 89.99f, "https://picsum.photos/seed/limited/400/400.jpg");
+            "Limited Edition Tee", "Generic", ClothingModel.Category.Tops, 89.99f);
     ClothingVariant rareTeeBlackM = createVariant(rareItem, Size.M, "Black", 0);
     ClothingVariant rareTeeBlackL = createVariant(rareItem, Size.L, "Black", 2);
 
@@ -314,11 +314,13 @@ public class DataSeeder {
     return customerRepository.save(cust);
   }
 
-  private ClothingModel createClothingModel(String name, float price, String imagePath) {
+  private ClothingModel createClothingModel(
+      String name, String brand, ClothingModel.Category category, float price) {
     ClothingModel model = new ClothingModel();
     model.setName(name);
+    model.setBrand(brand);
+    model.setCategory(category);
     model.setPrice(price);
-    model.setImagePath(imagePath);
     return clothingModelRepository.save(model);
   }
 
