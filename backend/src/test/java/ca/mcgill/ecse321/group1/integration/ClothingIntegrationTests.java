@@ -282,6 +282,72 @@ public class ClothingIntegrationTests {
 
   @Test
   @Order(8)
+  public void testGetAllClothingModelsDeduplicatesVariantsByColor() {
+    // Arrange — add a second variant with the SAME color but different size
+    String url = "/api/clothing/" + this.validModelId + "/variants";
+    ClothingVariantCreateRequestDto request =
+        new ClothingVariantCreateRequestDto(
+            ClothingVariant.Size.L, VALID_COLOR, "variant2.png", 5);
+
+    ResponseEntity<ClothingVariantResponseDto> createResponse =
+        client
+            .post()
+            .uri(url)
+            .header("Authorization", "Bearer " + managerToken)
+            .contentType(MediaType.APPLICATION_JSON)
+            .body(request)
+            .retrieve()
+            .toEntity(ClothingVariantResponseDto.class);
+    assertEquals(HttpStatus.CREATED, createResponse.getStatusCode());
+
+    // Also add a variant with a DIFFERENT color
+    ClothingVariantCreateRequestDto request2 =
+        new ClothingVariantCreateRequestDto(
+            ClothingVariant.Size.S, "#FF0000", "variant3.png", 3);
+
+    ResponseEntity<ClothingVariantResponseDto> createResponse2 =
+        client
+            .post()
+            .uri(url)
+            .header("Authorization", "Bearer " + managerToken)
+            .contentType(MediaType.APPLICATION_JSON)
+            .body(request2)
+            .retrieve()
+            .toEntity(ClothingVariantResponseDto.class);
+    assertEquals(HttpStatus.CREATED, createResponse2.getStatusCode());
+
+    // Act — get all models
+    ResponseEntity<ClothingModelListResponseDto[]> response =
+        client
+            .get()
+            .uri("/api/clothing")
+            .retrieve()
+            .toEntity(ClothingModelListResponseDto[].class);
+
+    // Assert
+    assertEquals(HttpStatus.OK, response.getStatusCode());
+    ClothingModelListResponseDto[] body = response.getBody();
+    assertNotNull(body);
+    ClothingModelListResponseDto found = null;
+    for (ClothingModelListResponseDto dto : body) {
+      if (this.validModelId.equals(dto.getClothingModelID())) {
+        found = dto;
+        break;
+      }
+    }
+    assertNotNull(found);
+    // Model has 3 variants (2 blue, 1 red) but list should deduplicate by color → 2 entries
+    assertEquals(2, found.getVariants().size());
+    long blueCount =
+        found.getVariants().stream().filter(v -> VALID_COLOR.equals(v.getColor())).count();
+    long redCount =
+        found.getVariants().stream().filter(v -> "#FF0000".equals(v.getColor())).count();
+    assertEquals(1, blueCount, "Should have exactly one variant entry for blue");
+    assertEquals(1, redCount, "Should have exactly one variant entry for red");
+  }
+
+  @Test
+  @Order(9)
   public void testAddVariantWithInvalidImagePath() {
     // Arrange
     String url = "/api/clothing/" + this.validModelId + "/variants";
@@ -305,7 +371,7 @@ public class ClothingIntegrationTests {
   }
 
   @Test
-  @Order(9)
+  @Order(10)
   public void testAddVariantToInvalidModel() {
     // Arrange
     String url = "/api/clothing/" + INVALID_MODEL_ID + "/variants";
@@ -330,7 +396,7 @@ public class ClothingIntegrationTests {
   }
 
   @Test
-  @Order(10)
+  @Order(11)
   public void testGetVariantsByModel() {
     // Arrange
     String url = "/api/clothing/" + this.validModelId + "/variants";
@@ -348,7 +414,7 @@ public class ClothingIntegrationTests {
   }
 
   @Test
-  @Order(11)
+  @Order(12)
   public void testGetVariantByValidId() {
     // Arrange
     String url = "/api/clothing/" + this.validModelId + "/variants/" + this.validVariantId;
@@ -369,7 +435,7 @@ public class ClothingIntegrationTests {
   }
 
   @Test
-  @Order(12)
+  @Order(13)
   public void testGetVariantByInvalidId() {
     // Arrange
     String url = "/api/clothing/" + this.validModelId + "/variants/" + INVALID_VARIANT_ID;
@@ -385,7 +451,7 @@ public class ClothingIntegrationTests {
   // ==== PUT /api/clothing/{modelId} ====
 
   @Test
-  @Order(13)
+  @Order(14)
   public void testUpdateClothingModelValid() {
     // Arrange
     ClothingModelCreateRequestDto request =
@@ -417,7 +483,7 @@ public class ClothingIntegrationTests {
   }
 
   @Test
-  @Order(14)
+  @Order(15)
   public void testUpdateClothingModelBlankName() {
     // Arrange
     ClothingModelCreateRequestDto request =
@@ -441,7 +507,7 @@ public class ClothingIntegrationTests {
   }
 
   @Test
-  @Order(15)
+  @Order(16)
   public void testUpdateClothingModelNonPositivePrice() {
     // Arrange
     ClothingModelCreateRequestDto request =
@@ -465,7 +531,7 @@ public class ClothingIntegrationTests {
   }
 
   @Test
-  @Order(16)
+  @Order(17)
   public void testUpdateClothingModelBlankBrand() {
     // Arrange
     ClothingModelCreateRequestDto request =
@@ -489,7 +555,7 @@ public class ClothingIntegrationTests {
   }
 
   @Test
-  @Order(17)
+  @Order(18)
   public void testUpdateClothingModelInvalidId() {
     // Arrange
     ClothingModelCreateRequestDto request =
@@ -515,7 +581,7 @@ public class ClothingIntegrationTests {
   // ==== PATCH /api/clothing/{modelId}/variants/{variantId} ====
 
   @Test
-  @Order(18)
+  @Order(19)
   public void testUpdateVariantStockValid() {
     // Arrange
     ClothingVariantUpdateRequestDto request = new ClothingVariantUpdateRequestDto(25);
@@ -541,7 +607,7 @@ public class ClothingIntegrationTests {
   }
 
   @Test
-  @Order(19)
+  @Order(20)
   public void testUpdateVariantStockNegative() {
     // Arrange
     ClothingVariantUpdateRequestDto request = new ClothingVariantUpdateRequestDto(-1);
@@ -563,7 +629,7 @@ public class ClothingIntegrationTests {
   }
 
   @Test
-  @Order(20)
+  @Order(21)
   public void testUpdateVariantStockInvalidVariantId() {
     // Arrange
     ClothingVariantUpdateRequestDto request = new ClothingVariantUpdateRequestDto(5);
@@ -585,7 +651,7 @@ public class ClothingIntegrationTests {
   }
 
   @Test
-  @Order(21)
+  @Order(22)
   public void testDeleteVariant() {
     // Arrange
     String url = "/api/clothing/" + this.validModelId + "/variants/" + this.validVariantId;
@@ -604,7 +670,7 @@ public class ClothingIntegrationTests {
   }
 
   @Test
-  @Order(22)
+  @Order(23)
   public void testDeleteClothingModel() {
     // Arrange
     String url = "/api/clothing/" + this.validModelId;
@@ -623,7 +689,7 @@ public class ClothingIntegrationTests {
   }
 
   @Test
-  @Order(23)
+  @Order(24)
   public void testDeleteNonExistentModel() {
     // Arrange
     String url = "/api/clothing/" + INVALID_MODEL_ID;
