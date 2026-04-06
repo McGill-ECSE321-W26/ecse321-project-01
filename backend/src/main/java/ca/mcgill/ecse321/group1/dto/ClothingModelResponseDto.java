@@ -7,8 +7,10 @@ public class ClothingModelResponseDto {
 
   private String clothingModelID;
   private String name;
+  private String description;
+  private String brand;
+  private ClothingModel.Category category;
   private float price;
-  private String imagePath;
   private int totalStockQuantity;
 
   public ClothingModelResponseDto() {}
@@ -16,8 +18,10 @@ public class ClothingModelResponseDto {
   public ClothingModelResponseDto(ClothingModel model) {
     this.clothingModelID = model.getClothingModelID();
     this.name = model.getName();
+    this.description = model.getDescription();
+    this.brand = model.getBrand();
+    this.category = model.getCategory();
     this.price = model.getPrice();
-    this.imagePath = model.getImagePath();
     this.totalStockQuantity =
         model.getClothingVariants().stream()
             .filter(v -> !v.getArchived())
@@ -41,20 +45,36 @@ public class ClothingModelResponseDto {
     this.name = name;
   }
 
+  public String getDescription() {
+    return description;
+  }
+
+  public void setDescription(String description) {
+    this.description = description;
+  }
+
+  public String getBrand() {
+    return brand;
+  }
+
+  public void setBrand(String brand) {
+    this.brand = brand;
+  }
+
+  public ClothingModel.Category getCategory() {
+    return category;
+  }
+
+  public void setCategory(ClothingModel.Category category) {
+    this.category = category;
+  }
+
   public float getPrice() {
     return price;
   }
 
   public void setPrice(float price) {
     this.price = price;
-  }
-
-  public String getImagePath() {
-    return imagePath;
-  }
-
-  public void setImagePath(String imagePath) {
-    this.imagePath = imagePath;
   }
 
   public int getTotalStockQuantity() {
