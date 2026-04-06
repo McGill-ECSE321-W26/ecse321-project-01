@@ -8,6 +8,10 @@ public class ItemResponseDto {
   private int quantity;
   private String clothingVariantID;
   private String customerID;
+  private String modelName;
+  private String variantSize;
+  private String variantColor;
+  private String variantImagePath;
 
   @SuppressWarnings("unused")
   private ItemResponseDto() {}
@@ -16,11 +20,16 @@ public class ItemResponseDto {
     this.itemID = item.getItemID();
     this.price = item.getPrice();
     this.quantity = item.getQuantity();
-    this.clothingVariantID =
-        (item.getClothingVariant() != null)
-            ? item.getClothingVariant().getClothingVariantID()
-            : null;
     this.customerID = (item.getCustomer() != null) ? item.getCustomer().getRoleID() : null;
+
+    var variant = item.getClothingVariant();
+    if (variant != null) {
+      this.clothingVariantID = variant.getClothingVariantID();
+      this.variantSize = variant.getSize() != null ? variant.getSize().toString() : null;
+      this.variantColor = variant.getColor();
+      this.variantImagePath = variant.getImagePath();
+      this.modelName = variant.getModel() != null ? variant.getModel().getName() : null;
+    }
   }
 
   public String getItemID() {
@@ -61,5 +70,21 @@ public class ItemResponseDto {
 
   public void setCustomerID(String newCustomerID) {
     this.customerID = newCustomerID;
+  }
+
+  public String getModelName() {
+    return this.modelName;
+  }
+
+  public String getVariantSize() {
+    return this.variantSize;
+  }
+
+  public String getVariantColor() {
+    return this.variantColor;
+  }
+
+  public String getVariantImagePath() {
+    return this.variantImagePath;
   }
 }

@@ -5,7 +5,6 @@ import { ArrowLeft } from 'lucide-vue-next'
 import { api } from '@/api/client'
 import type { OrderResponseDto } from '@/api/types/order'
 import type { ItemResponseDto } from '@/api/types/item'
-import type { ClothingModelListResponseDto, ClothingVariantResponseDto } from '@/api/types/clothing'
 import { useAuthStore } from '@/stores/auth'
 
 const route = useRoute()
@@ -22,34 +21,14 @@ const items = ref<ItemResponseDto[]>([])
 const loading = ref(true)
 const error = ref<string | null>(null)
 
-// variantID: { name, size, color, imagePath }
-const variantMap = ref(new Map<string, { name: string; size: string; color: string; imagePath: string }>())
-
 onMounted(async () => {
   try {
-    const [orderData, itemsData, models] = await Promise.all([
+    const [orderData, itemsData] = await Promise.all([
       api<OrderResponseDto>(`/orders/${orderID}`),
       api<ItemResponseDto[]>(`/orders/${orderID}/items`),
-      api<ClothingModelListResponseDto[]>('/clothing'),
     ])
     order.value = orderData
     items.value = itemsData
-
-    const variantLists = await Promise.all(
-      models.map(m =>
-        api<ClothingVariantResponseDto[]>(`/clothing/${m.clothingModelID}/variants`).then(
-          variants => ({ modelName: m.name, variants }),
-        ),
-      ),
-    )
-
-    const map = new Map<string, { name: string; size: string; color: string; imagePath: string }>()
-    for (const { modelName, variants } of variantLists) {
-      for (const v of variants) {
-        map.set(v.clothingVariantID, { name: modelName, size: v.size, color: v.color, imagePath: v.imagePath })
-      }
-    }
-    variantMap.value = map
   }
   catch (e: unknown) {
     error.value = e instanceof Error ? e.message : 'Failed to load order.'
@@ -59,9 +38,13 @@ onMounted(async () => {
   }
 })
 
-function getVariantInfo(clothingVariantID: string | null) {
-  if (!clothingVariantID) return { name: 'Unknown', size: '-', color: '-', imagePath: '' }
-  return variantMap.value.get(clothingVariantID) ?? { name: 'Unknown', size: '-', color: '-', imagePath: '' }
+function getVariantInfo(item: ItemResponseDto) {
+  return {
+    name: item.modelName ?? 'Unknown',
+    size: item.variantSize ?? '-',
+    color: item.variantColor ?? '-',
+    imagePath: item.variantImagePath ?? '',
+  }
 }
 </script>
 
@@ -202,9 +185,9 @@ function getVariantInfo(clothingVariantID: string | null) {
         >
           <div class="w-9 h-9 shrink-0 overflow-hidden border border-(--text-light)">
             <img
-              v-if="getVariantInfo(item.clothingVariantID).imagePath"
-              :src="getVariantInfo(item.clothingVariantID).imagePath"
-              :alt="getVariantInfo(item.clothingVariantID).name"
+              v-if="getVariantInfo(item).imagePath"
+              :src="getVariantInfo(item).imagePath"
+              :alt="getVariantInfo(item).name"
               class="w-full h-full object-cover"
             >
             <div
@@ -212,9 +195,9 @@ function getVariantInfo(clothingVariantID: string | null) {
               class="w-full h-full bg-(--card-hover)"
             />
           </div>
-          <span class="text-[13px] text-(--text) font-light">{{ getVariantInfo(item.clothingVariantID).name }}</span>
-          <span class="text-[13px] text-(--text-muted) font-light uppercase">{{ getVariantInfo(item.clothingVariantID).size }}</span>
-          <span class="text-[13px] text-(--text-muted) font-light capitalize">{{ getVariantInfo(item.clothingVariantID).color }}</span>
+          <span class="text-[13px] text-(--text) font-light">{{ getVariantInfo(item).name }}</span>
+          <span class="text-[13px] text-(--text-muted) font-light uppercase">{{ getVariantInfo(item).size }}</span>
+          <span class="text-[13px] text-(--text-muted) font-light capitalize">{{ getVariantInfo(item).color }}</span>
           <span class="text-[13px] text-(--text-muted) font-light">${{ item.price.toFixed(2) }}</span>
           <span class="text-[13px] text-(--text-muted) font-light">× {{ item.quantity }}</span>
         </div>

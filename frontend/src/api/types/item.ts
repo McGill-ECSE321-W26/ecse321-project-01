@@ -4,4 +4,8 @@ export interface ItemResponseDto {
   quantity: number
   clothingVariantID: string | null
   customerID: string | null
+  modelName: string | null
+  variantSize: string | null
+  variantColor: string | null
+  variantImagePath: string | null
 }

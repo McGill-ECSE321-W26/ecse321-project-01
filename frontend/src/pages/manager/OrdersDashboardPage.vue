@@ -5,7 +5,6 @@ import { api } from '@/api/client.ts'
 import type { OrderResponseDto } from '@/api/types/order.ts'
 import type { EmployeeResponseDto } from '@/api/types/person.ts'
 import type { ItemResponseDto } from '@/api/types/item.ts'
-import type { ClothingModelResponseDto, ClothingVariantResponseDto } from '@/api/types/clothing.ts'
 
 // ── Data ────────────────────────────────────────────────────────────────────
 const orders = ref<OrderResponseDto[]>([])
@@ -22,7 +21,6 @@ const selectedOrder = ref<OrderResponseDto | null>(null)
 const detailItems = ref<ItemResponseDto[]>([])
 const detailLoading = ref(false)
 const detailError = ref<string | null>(null)
-const variantMap = ref(new Map<string, { name: string; size: string; color: string }>())
 
 // assign panel state
 const assigning = ref(false)
@@ -62,26 +60,7 @@ async function openDetail(order: OrderResponseDto) {
   detailError.value = null
   detailItems.value = []
   try {
-    const [itemsData, models] = await Promise.all([
-      api<ItemResponseDto[]>(`/orders/${order.orderID}/items`),
-      api<ClothingModelResponseDto[]>('/clothing'),
-    ])
-    detailItems.value = itemsData
-
-    const variantLists = await Promise.all(
-      models.map(m =>
-        api<ClothingVariantResponseDto[]>(`/clothing/${m.clothingModelID}/variants`).then(
-          variants => ({ modelName: m.name, variants }),
-        ),
-      ),
-    )
-    const map = new Map<string, { name: string; size: string; color: string }>()
-    for (const { modelName, variants } of variantLists) {
-      for (const v of variants) {
-        map.set(v.clothingVariantID, { name: modelName, size: v.size, color: v.color })
-      }
-    }
-    variantMap.value = map
+    detailItems.value = await api<ItemResponseDto[]>(`/orders/${order.orderID}/items`)
   } catch (e: unknown) {
     detailError.value = e instanceof Error ? e.message : 'Failed to load order details.'
   } finally {
@@ -89,9 +68,12 @@ async function openDetail(order: OrderResponseDto) {
   }
 }
 
-function getVariantInfo(clothingVariantID: string | null) {
-  if (!clothingVariantID) return { name: 'Unknown', size: '-', color: '-' }
-  return variantMap.value.get(clothingVariantID) ?? { name: 'Unknown', size: '-', color: '-' }
+function getVariantInfo(item: ItemResponseDto) {
+  return {
+    name: item.modelName ?? 'Unknown',
+    size: item.variantSize ?? '-',
+    color: item.variantColor ?? '-',
+  }
 }
 
 // ── Assign employee ───────────────────────────────────────────────────────────
@@ -470,9 +452,9 @@ function formatDate(d: Date | null) {
             class="grid grid-cols-[3fr_1fr_1.5fr_1fr_0.6fr] px-6 py-4 border-b border-(--text-light) last:border-b-0 hover:bg-(--card-hover) transition-colors items-center row-card"
             :style="{ animationDelay: `${0.28 + i * 0.04}s` }"
           >
-            <span class="text-[13px] text-(--text) font-light">{{ getVariantInfo(item.clothingVariantID).name }}</span>
-            <span class="text-[13px] text-(--text-muted) font-light uppercase">{{ getVariantInfo(item.clothingVariantID).size }}</span>
-            <span class="text-[13px] text-(--text-muted) font-light capitalize">{{ getVariantInfo(item.clothingVariantID).color }}</span>
+            <span class="text-[13px] text-(--text) font-light">{{ getVariantInfo(item).name }}</span>
+            <span class="text-[13px] text-(--text-muted) font-light uppercase">{{ getVariantInfo(item).size }}</span>
+            <span class="text-[13px] text-(--text-muted) font-light capitalize">{{ getVariantInfo(item).color }}</span>
             <span class="text-[13px] text-(--text-muted) font-light">${{ item.price.toFixed(2) }}</span>
             <span class="text-[13px] text-(--text-muted) font-light">× {{ item.quantity }}</span>
           </div>
