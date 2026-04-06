@@ -963,7 +963,10 @@ function formatPrice(price: number): string {
               {{ uploadingImage ? 'Uploading...' : 'Click to upload an image' }}
             </span>
           </div>
-          <div v-else class="relative border border-(--text-light)">
+          <div
+            v-else
+            class="relative border border-(--text-light)"
+          >
             <img
               :src="variantForm.imagePath"
               alt="Variant preview"
