@@ -41,10 +41,9 @@ const props = withDefaults(defineProps<{
 
 .footer-logo {
   font-family: 'Lexend Deca', sans-serif;
-  font-size: 40px;
-  font-weight: 700;
+  font-size: 25px;
+  font-weight: 500;
   text-decoration: none;
-  letter-spacing: 2px;
 }
 
 .footer-links {
