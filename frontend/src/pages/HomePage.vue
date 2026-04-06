@@ -2,6 +2,7 @@
 import { RouterLink } from 'vue-router'
 import { ref, onMounted, onUnmounted } from 'vue'
 import { useAuthStore } from '@/stores/auth'
+import FooterBar from "@/components/FooterBar.vue";
 
 
 // used to check if already logged in, if so, just have a single enter store button
@@ -123,12 +124,7 @@ onUnmounted(() => {
     </div>
 
     // footer on the bottom with useful info
-    <footer class="footer-bar">
-      <span>© 2026 Kloth. Clothing for humans.</span>
-      <a href="#">About</a><span>|</span>
-      <a href="#">Terms of Service</a><span>|</span>
-      <a href="#">Privacy Policy</a>
-    </footer>
+    <FooterBar variant="dark" />
   </div>
 </template>
 
@@ -222,18 +218,4 @@ onUnmounted(() => {
 .btn-ghost { background: rgba(255,255,255,0.1); color: #fff; border: 1px solid rgba(255,255,255,0.5); backdrop-filter: blur(6px); }
 .btn:hover { opacity: 0.85; }
 
-.footer-bar {
-  position: absolute;
-  bottom: 0; left: 0; right: 0;
-  padding: 10px 20px;
-  display: flex;
-  justify-content: center;
-  gap: 12px;
-  font-size: 10px;
-  color: rgba(255, 255, 255, 0.4);
-  z-index: 30;
-}
-
-.footer-bar a { color: rgba(255,255,255,0.4); text-decoration: none; }
-.footer-bar a:hover { color: #fff; }
 </style>

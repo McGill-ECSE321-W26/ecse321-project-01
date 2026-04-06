@@ -2,6 +2,7 @@
 import { ref, onMounted, onUnmounted } from 'vue'
 import { RouterLink, useRouter, useRoute } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
+import FooterBar from "@/components/FooterBar.vue";
 
 const router = useRouter()
 const route = useRoute()
@@ -182,20 +183,7 @@ onUnmounted(() => {
       </div>
     </div>
 
-    <footer class="footer-bar">
-      <RouterLink
-        to="/"
-        class="footer-logo"
-      >
-        Kloth
-      </RouterLink>
-      <div class="footer-links">
-        <span>© 2026 Kloth. Clothing for humans.</span>
-        <a href="#">About</a><span>|</span>
-        <a href="#">Terms of Service</a><span>|</span>
-        <a href="#">Privacy Policy</a>
-      </div>
-    </footer>
+    <FooterBar variant="dark" />
   </div>
 </template>
 
@@ -329,33 +317,4 @@ onUnmounted(() => {
 }
 .form-footer a { color: #111; text-decoration: underline; }
 
-.footer-bar {
-  position: absolute;
-  bottom: 0; left: 0; right: 0;
-  z-index: 30;
-  padding: 12px 20px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 4px;
-}
-
-.footer-logo {
-  font-family: 'Lexend Deca', serif;
-  font-size: 60px;
-  font-weight: 700;
-  color: #fff;
-  text-decoration: none;
-  letter-spacing: 2px;
-}
-
-.footer-links {
-  display: flex;
-  gap: 10px;
-  font-size: 20px;
-  color: rgba(255,255,255,0.5);
-}
-
-.footer-links a { color: rgba(255,255,255,0.5); text-decoration: none; }
-.footer-links a:hover { color: #fff; }
 </style>

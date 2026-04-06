@@ -135,4 +135,9 @@
     -webkit-font-smoothing: antialiased;
     /* Custom styling from figma design */
   }
+  #app {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+  }
 }
