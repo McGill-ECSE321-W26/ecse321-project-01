@@ -47,6 +47,14 @@ const router = createRouter({
     },
     { path: '/:pathMatch(.*)*', name: 'not-found', component: NotFoundPage },
   ],
+  // @ts-expect-error scroll behavior requires to and from even if not in use
+  scrollBehavior(to, from, savedPosition) {
+    if (savedPosition) {
+      return savedPosition
+    } else {
+      return { top: 0 }
+    }
+  }
 })
 
 // Docs: https://router.vuejs.org/guide/advanced/navigation-guards.html

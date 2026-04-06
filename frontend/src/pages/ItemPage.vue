@@ -40,6 +40,13 @@ const colors = computed(() => {
 const sizes = computed(() => {
   return [...new Set(variants.value.map(v => v.size))]
 })
+const inStock = computed(() => {
+  return (
+    currVariant.value &&
+    currVariant.value.stockQuantity > 0 &&
+    (!existingItem.value || existingItem.value.quantity !== currVariant.value.stockQuantity)
+  )
+})
 
 
 onMounted(async () => {
@@ -132,13 +139,18 @@ function isSizeAvailable(size: string) {
   )
 }
 
+function getImagePath(color: string) {
+  const variant = variants.value.find(v => v.color === color)
+  return variant?.imagePath
+}
+
 
 </script>
 
 <template>
   <div class="min-h-screen">
     <!-- Back to shop button -->
-    <div class="max-w-350 mx-auto py-6 pt-6 md:pt-6 flex items-center gap-3 flex-wrap">
+    <div class="max-w-350 px-5 py-5 pt-6 align-start">
       <RouterLink to="/shop">
         <Button
           size="sm"
@@ -184,10 +196,10 @@ function isSizeAvailable(size: string) {
     <!-- Show item -->
     <div
       v-else
-      class="grid grid-cols-1 md:grid-cols-2 pb-15"
+      class="grid grid-cols-1 md:grid-cols-8 pb-15 px-10 md:gap-3"
     >
       <!-- image -->
-      <div class="aspect-[3/4] w-full overflow-hidden bg-(--card-hover)">
+      <div class="aspect-[3/4] w-full overflow-hidden bg-(--card-hover) md:col-span-5 border-[2px] border-(--card-hover)">
         <img
           :src="currVariant?.imagePath"
           :alt="model?.name"
@@ -196,8 +208,27 @@ function isSizeAvailable(size: string) {
         >
       </div>
 
+      <!-- other color images -->
+      <div
+        class="hidden md:flex flex-col w-full gap-3 md:col-span-1 md:pr-5"
+      >
+        <div
+          v-for="color in colors"
+          :key="color"
+          class="aspect-[3/4] w-full overflow-hidden bg-(--card-hover) cursor-pointer border-[2px] border-(--card-hover)"
+          @click="isColorAvailable(color) && selectColor(color)"
+        >
+          <img
+            :src="getImagePath(color)"
+            :alt="color"
+            loading="lazy"
+            class="w-full h-full object-cover"
+          >
+        </div>
+      </div>
+
       <!-- info -->
-      <div class="flex flex-col items-start pt-8 px-6">
+      <div class="flex flex-col items-start pt-8 col-span-2">
         <!-- brand name -->
         <p class="text-(--text-light)">
           {{ model?.brand }}
@@ -247,13 +278,25 @@ function isSizeAvailable(size: string) {
         </div>
 
         <!-- add to cart button -->
-        <span class="pb-60"><Button
+        <span class="pb-3"><Button
           size="lg"
-          class="rounded-none cursor-pointer text-[20px] font-medium text-(--bg) py-6 bg-(--button-hover) hover:bg-[#773f23]"
+          class="rounded-none text-[20px] font-medium  py-6"
+          :class="[
+            inStock
+              ? 'cursor-pointer text-(--bg) bg-(--button-hover) hover:bg-[#773f23]'
+              : 'cursor-not-allowed bg-[#773f23] text-(--bg)'
+          ]"
+          :disabled="!inStock"
           @click="addToCart"
         >
           Add to Cart &nbsp; {{ model?.price }}$
         </Button></span>
+        <span class="pb-55"><p
+          v-if="!inStock"
+          class="text-(--text-light) text-[15px]"
+        >
+          Out of Stock!
+        </p></span>
 
         <!-- details -->
         <Button
