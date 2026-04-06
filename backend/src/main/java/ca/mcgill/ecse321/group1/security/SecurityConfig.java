@@ -83,6 +83,9 @@ public class SecurityConfig {
                     .hasRole("Manager")
                     .requestMatchers(HttpMethod.GET, "/api/persons/customers")
                     .hasRole("Manager")
+                    // Customers can fetch their own profile by customer ID
+                    .requestMatchers(HttpMethod.GET, "/api/persons/customers/*")
+                    .hasRole("Customer")
 
                     // --- Customer-only endpoints ---
                     // All cart operations require Customer role

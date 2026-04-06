@@ -72,6 +72,16 @@ public class PersonService {
   }
 
   @Transactional(readOnly = true)
+  public Customer getCustomerById(String id) {
+    Customer customer = customerRepository.findByRoleID(id);
+    if (customer == null) {
+      throw new ResponseStatusException(
+          HttpStatus.NOT_FOUND, "There is no customer with ID " + id + ".");
+    }
+    return customer;
+  }
+
+  @Transactional(readOnly = true)
   public Person getPersonById(String id) {
     return findPersonOrThrow(id);
   }
