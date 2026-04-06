@@ -446,7 +446,7 @@ function formatPrice(price: number): string {
           <span class="text-[13px] text-(--text) font-light">{{ model.totalStockQuantity }}</span>
           <div class="flex items-center gap-2">
             <button
-              class="p-1.5 border border-(--text-light) text-(--text-muted) hover:bg-(--card-hover) hover:text-(--text) transition-colors"
+              class="p-1.5 border border-(--text-light) text-(--text-muted) hover:bg-(--button-hover) hover:text-(--bg) transition-colors"
               title="Edit model"
               @click="openEditDetails(model)"
             >
