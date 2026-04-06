@@ -180,8 +180,11 @@ function getVariantInfo(item: ItemResponseDto) {
         <div
           v-for="(item, i) in items"
           :key="item.itemID"
-          class="grid grid-cols-[2.5rem_3fr_1fr_1.5fr_1fr_0.6fr] px-6 py-4 border-b border-(--text-light) last:border-b-0 hover:bg-(--card-hover) transition-colors items-center row-card"
+          class="grid grid-cols-[2.5rem_3fr_1fr_1.5fr_1fr_0.6fr] px-6 py-4 border-b border-(--text-light) last:border-b-0 transition-colors items-center row-card"
+          :class="item.clothingVariantID && !item.variantArchived ? 'cursor-pointer hover:bg-(--card-hover)' : ''"
+          :title="item.clothingVariantID && !item.variantArchived ? 'View item' : undefined"
           :style="{ animationDelay: `${0.28 + i * 0.04}s` }"
+          @click="item.clothingVariantID && !item.variantArchived && router.push({ name: 'item', params: { id: item.modelID } })"
         >
           <div class="w-9 h-9 shrink-0 overflow-hidden border border-(--text-light)">
             <img

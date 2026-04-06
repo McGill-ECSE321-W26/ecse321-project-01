@@ -8,6 +8,8 @@ public class ItemResponseDto {
   private int quantity;
   private String clothingVariantID;
   private String customerID;
+  private boolean variantArchived;
+  private String modelID;
   private String modelName;
   private String variantSize;
   private String variantColor;
@@ -25,10 +27,15 @@ public class ItemResponseDto {
     var variant = item.getClothingVariant();
     if (variant != null) {
       this.clothingVariantID = variant.getClothingVariantID();
+      this.variantArchived = variant.getArchived();
       this.variantSize = variant.getSize() != null ? variant.getSize().toString() : null;
       this.variantColor = variant.getColor();
       this.variantImagePath = variant.getImagePath();
-      this.modelName = variant.getModel() != null ? variant.getModel().getName() : null;
+      var model = variant.getModel();
+      if (model != null) {
+        this.modelName = model.getName();
+        this.modelID = model.getClothingModelID();
+      }
     }
   }
 
@@ -70,6 +77,14 @@ public class ItemResponseDto {
 
   public void setCustomerID(String newCustomerID) {
     this.customerID = newCustomerID;
+  }
+
+  public boolean isVariantArchived() {
+    return this.variantArchived;
+  }
+
+  public String getModelID() {
+    return this.modelID;
   }
 
   public String getModelName() {
