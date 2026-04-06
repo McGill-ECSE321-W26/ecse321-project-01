@@ -5,92 +5,130 @@ import { Minus, Plus, Trash2 } from 'lucide-vue-next'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
 import { Skeleton } from '@/components/ui/skeleton'
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from '@/components/ui/dialog'
 import { api } from '@/api/client'
 import { useAuthStore } from '@/stores/auth'
+import { useCartStore } from '@/stores/cart'
 import type { CustomerResponseDto } from '@/api/types/person'
-import type {
-  ItemResponseDto,
-  CartTotalDto,
-  ClothingVariantResponseDto,
-  ClothingModelResponseDto,
-  CompleteCartItem,
-} from '@/api/types/cart'
+import type { ItemResponseDto } from '@/api/types/item'
+import type { CartTotalDto, CompleteCartItem } from '@/api/types/cart'
+import type { OrderResponseDto, OrderCreateRequestDto } from '@/api/types/order'
 
 const auth = useAuthStore()
+const cart = useCartStore()
 const router = useRouter()
 
 const customerId = computed(() => (auth.person as CustomerResponseDto)?.id)
+const availableLoyaltyPoints = computed(() => (auth.person as CustomerResponseDto)?.loyaltyPoints ?? 0)
 
 const items = ref<CompleteCartItem[]>([])
 const cartTotal = ref(0)
 const loading = ref(true)
 const error = ref('')
 
+// Checkout dialog state
+const checkoutOpen = ref(false)
+const deliveryDate = ref('')
+const usedLoyaltyPoints = ref(0)
+const checkoutError = ref('')
+const checkoutLoading = ref(false)
+
+const minDeliveryDate = computed(() => {
+  const tomorrow = new Date()
+  tomorrow.setDate(tomorrow.getDate() + 1)
+  return tomorrow.toISOString().split('T')[0]
+})
+
 async function loadCart() {
   loading.value = true
   error.value = ''
-  try{
-    const [rawItems, models] = await Promise.all([api<ItemResponseDto[]>(`/carts/${customerId.value}/items`), 
-                                                  api<ClothingModelResponseDto[]>('/clothing'),])
+  try {
+    const [rawItems, totalDto] = await Promise.all([
+      api<ItemResponseDto[]>(`/carts/${customerId.value}/items`),
+      api<CartTotalDto>(`/carts/${customerId.value}`),
+    ])
 
-    const variantMap = new Map<string, {modelName: string; color: string; size: string; imagePath: string}>()
-    await Promise.all(
-      models.map(async(model) => {
-        const variants = await api<ClothingVariantResponseDto[]>(`/clothing/${model.clothingModelID}/variants`)
-        for(const v of variants){
-          variantMap.set(v.clothingVariantID,{
-            modelName: model.name,
-            color: v.color,
-            size: v.size,
-            imagePath: v.imagePath || model.imagePath,
-          })
-        }
-      }),
-    )
-
-    items.value = rawItems.map(item => ({itemID: item.itemID,
-                                         quantity: item.quantity,
-                                         price: item.price,
-                                         clothingVariantID: item.clothingVariantID,
-                                         ...(variantMap.get(item.clothingVariantID) ?? { modelName: 'Unknown', color: '—', size: '—', imagePath: '' }),
+    cart.items = rawItems
+    items.value = rawItems.map(item => ({
+      itemID: item.itemID,
+      quantity: item.quantity,
+      price: item.price,
+      clothingVariantID: item.clothingVariantID ?? '',
+      modelName: item.modelName ?? 'Unknown',
+      color: item.variantColor ?? '-',
+      size: item.variantSize ?? '-',
+      imagePath: item.variantImagePath ?? '',
     }))
 
-    const totalDto = await api<CartTotalDto>(`/carts/${customerId.value}`)
     cartTotal.value = totalDto.cartTotal
-  }
-  catch (e) {
+  } catch (e) {
     error.value = e instanceof Error ? e.message : 'Failed to load cart.'
-  }
-  finally {
+  } finally {
     loading.value = false
   }
 }
 
 async function updateQuantity(item: CompleteCartItem, delta: number) {
   const newQty = item.quantity + delta
-  if(newQty < 1){
-    return
-  }
-  try{
-    await api(`/carts/${customerId.value}/items/${item.itemID}`, {method: 'PATCH', body: JSON.stringify({quantity: newQty}),})
+  if (newQty < 1) return
+  try {
+    await api(`/carts/${customerId.value}/items/${item.itemID}`, { method: 'PATCH', body: JSON.stringify({ quantity: newQty }) })
     item.quantity = newQty
+    const storeItem = cart.items.find(i => i.itemID === item.itemID)
+    if (storeItem) storeItem.quantity = newQty
     const totalDto = await api<CartTotalDto>(`/carts/${customerId.value}`)
     cartTotal.value = totalDto.cartTotal
-  }
-  catch(e){
+  } catch (e) {
     error.value = e instanceof Error ? e.message : 'Failed to update quantity.'
   }
 }
 
-async function removeItem(itemID: string){
-  try{
-    await api(`/carts/${customerId.value}/items/${itemID}`, {method: 'DELETE'})
+async function removeItem(itemID: string) {
+  try {
+    await api(`/carts/${customerId.value}/items/${itemID}`, { method: 'DELETE' })
     items.value = items.value.filter(i => i.itemID !== itemID)
+    cart.items = cart.items.filter(i => i.itemID !== itemID)
     const totalDto = await api<CartTotalDto>(`/carts/${customerId.value}`)
     cartTotal.value = totalDto.cartTotal
-  }
-  catch(e){
+  } catch (e) {
     error.value = e instanceof Error ? e.message : 'Failed to remove item.'
+  }
+}
+
+function openCheckout() {
+  deliveryDate.value = minDeliveryDate.value
+  usedLoyaltyPoints.value = 0
+  checkoutError.value = ''
+  checkoutOpen.value = true
+}
+
+async function placeOrder() {
+  if (!deliveryDate.value) {
+    checkoutError.value = 'Please select a delivery date.'
+    return
+  }
+  checkoutLoading.value = true
+  checkoutError.value = ''
+  try {
+    const body: OrderCreateRequestDto = {
+      customerID: customerId.value,
+      deliveryDate: deliveryDate.value,
+      usedLoyaltyPoints: usedLoyaltyPoints.value,
+    }
+    await api<OrderResponseDto>('/orders', { method: 'POST', body: JSON.stringify(body) })
+    cart.clearCart()
+    checkoutOpen.value = false
+    router.push({ name: 'shop' })
+  } catch (e) {
+    checkoutError.value = e instanceof Error ? e.message : 'Failed to place order.'
+  } finally {
+    checkoutLoading.value = false
   }
 }
 
@@ -204,10 +242,67 @@ onMounted(loadCart)
 
       <Button
         class="w-full mt-6"
-        @click="router.push('/checkout')"
+        @click="openCheckout"
       >
         Proceed to checkout
       </Button>
     </div>
   </div>
+
+  <Dialog v-model:open="checkoutOpen">
+    <DialogContent class="sm:max-w-md">
+      <DialogHeader>
+        <DialogTitle>Checkout</DialogTitle>
+      </DialogHeader>
+
+      <div class="flex flex-col gap-5 py-2">
+        <div class="flex flex-col gap-1.5">
+          <label class="text-sm font-medium">Delivery date</label>
+          <input
+            v-model="deliveryDate"
+            type="date"
+            :min="minDeliveryDate"
+            class="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+          >
+        </div>
+
+        <div class="flex flex-col gap-1.5">
+          <div class="flex items-center justify-between">
+            <label class="text-sm font-medium">Loyalty points to use</label>
+            <span class="text-xs text-(--text-muted)">{{ availableLoyaltyPoints }} available</span>
+          </div>
+          <input
+            v-model.number="usedLoyaltyPoints"
+            type="number"
+            min="0"
+            :max="availableLoyaltyPoints"
+            class="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+          >
+        </div>
+
+        <div
+          v-if="checkoutError"
+          class="rounded-md bg-red-50 border border-red-200 p-3 text-sm text-red-800"
+        >
+          {{ checkoutError }}
+        </div>
+      </div>
+
+      <DialogFooter>
+        <Button
+          variant="outline"
+          :disabled="checkoutLoading"
+          @click="checkoutOpen = false"
+        >
+          Cancel
+        </Button>
+        <Button
+          :disabled="checkoutLoading"
+          @click="placeOrder"
+        >
+          {{ checkoutLoading ? 'Placing order...' : 'Place order' }}
+        </Button>
+      </DialogFooter>
+    </DialogContent>
+  </Dialog>
 </template>
