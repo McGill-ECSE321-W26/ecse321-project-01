@@ -162,6 +162,19 @@ async function saveModel() {
   const err = validateModel()
   if (err) { modelError.value = err; return }
 
+  // Do not send request to backend if data has not changed
+  const m = selectedModel.value!
+  if (
+    modelForm.value.name === m.name &&
+    modelForm.value.brand === m.brand &&
+    modelForm.value.category === m.category &&
+    modelForm.value.price === m.price &&
+    modelForm.value.description === m.description
+  ) {
+    toast.info('No changes to save.')
+    return
+  }
+
   savingModel.value = true
   modelError.value = null
   try {
@@ -259,6 +272,13 @@ async function saveVariantEdit(variantId: string) {
   if (!form) return
 
   if (form.stockQuantity < 0) { form.error = 'Stock must be 0 or greater.'; return }
+
+  // Do not send request to backend if data has not changed
+  const original = detailVariants.value.find(v => v.clothingVariantID === variantId)
+  if (original && form.stockQuantity === original.stockQuantity) {
+    toast.info('No changes to save.')
+    return
+  }
 
   form.saving = true
   form.error = null

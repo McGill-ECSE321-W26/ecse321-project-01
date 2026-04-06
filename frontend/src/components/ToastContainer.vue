@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useToastStore } from '@/stores/toast'
-import { X, CheckCircle2, AlertCircle } from 'lucide-vue-next'
+import { X, CheckCircle2, AlertCircle, Info } from 'lucide-vue-next'
 
 const toast = useToastStore()
 </script>
@@ -23,6 +23,10 @@ const toast = useToastStore()
           <CheckCircle2
             v-if="t.type === 'success'"
             class="shrink-0 mt-0.5 w-4 h-4 text-green-600"
+          />
+          <Info
+            v-else-if="t.type === 'info'"
+            class="shrink-0 mt-0.5 w-4 h-4 text-blue-400"
           />
           <AlertCircle
             v-else
