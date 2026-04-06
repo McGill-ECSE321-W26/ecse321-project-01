@@ -10,6 +10,7 @@ import {
 } from '@/components/ui/select'
 import { api } from '@/api/client'
 import type { ClothingModelListResponseDto } from '@/api/types/clothing'
+import router from '@/router'
 
 const activeCategory = ref('All')
 const sortBy = ref('none')
@@ -67,6 +68,10 @@ function isColorSelected(modelId: string, colorIndex: number): boolean {
 function formatPrice(price: number): string {
   // Format to clean integer is no decimals, but fix to 2 places if decimals
   return Number.isInteger(price) ? `${price}` : price.toFixed(2)
+}
+
+function goItemPage(modelId: string) {
+  router.push({ name: 'item', params: { id: modelId } })
 }
 
 onMounted(async () => {
@@ -175,6 +180,7 @@ onMounted(async () => {
         v-for="(model) in filteredModels"
         :key="model.clothingModelID"
         class="model-card group cursor-pointer"
+        @click="goItemPage(model.clothingModelID)"
       >
         <!-- Image -->
         <div class="aspect-3/4 overflow-hidden relative bg-(--card-hover)">
@@ -207,7 +213,7 @@ onMounted(async () => {
                 : 'border-(--text-light) hover:border-(--text)'"
               :style="{ backgroundColor: variant.color }"
               :title="variant.color"
-              @click="selectColor(model.clothingModelID, color_idx)"
+              @click.stop="selectColor(model.clothingModelID, color_idx)"
             />
           </div>
         </div>

@@ -5,3 +5,8 @@ export interface ItemResponseDto {
   clothingVariantID: string | null
   customerID: string | null
 }
+
+export interface ItemCreateRequestDto {
+  clothingVariantID: string;
+  quantity: number;
+}
