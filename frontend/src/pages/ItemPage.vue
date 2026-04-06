@@ -28,7 +28,7 @@ const currVariant = computed(() => {
   ) || null
 })
 const existingItem = cart.items.find(
-  item => item.clothingVariantID === currVariant.value!.clothingVariantID
+  item => item.clothingVariantID === currVariant.value?.clothingVariantID
 )
 const detailsOpen = ref(false)
 
