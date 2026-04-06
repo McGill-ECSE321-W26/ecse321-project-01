@@ -628,7 +628,7 @@ function formatPrice(price: number): string {
               <img
                 :src="variant.imagePath"
                 :alt="`${variant.size} variant`"
-                class="w-full h-36 object-cover border border-(--text-light) bg-(--card-hover)"
+                class="w-full h-48 object-cover border border-(--text-light) bg-(--card-hover)"
                 @error="($event.target as HTMLImageElement).style.display = 'none'"
               >
 
