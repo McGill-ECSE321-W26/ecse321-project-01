@@ -69,37 +69,55 @@ onUnmounted(() => {
 <template>
   <div class="kloth-home">
     <div class="collage">
-
       // used to add images
       // move individual images in their frames to be aligned well when scaled
       <div
-          v-for="(style, i) in photoStyles"
-          :key="i"
-          class="photo"
-          :style="style"
+        v-for="(style, i) in photoStyles"
+        :key="i"
+        class="photo"
+        :style="style"
       >
         <img
-            :src="photos[i]"
-            alt=""
-            :style="{ objectPosition: i === 3 || i === 4 ? 'center 30%' : 'center 10%' }"
-        />
+          :src="photos[i]"
+          alt=""
+          :style="{ objectPosition: i === 3 || i === 4 ? 'center 30%' : 'center 10%' }"
+        >
       </div>
     </div>
 
     // tint to improve visibility of buttons and logo
-    <div class="tint"></div>
+    <div class="tint" />
 
     // overlay, i.e logo and buttons for login and sign up
     <div class="overlay">
-      <h1 class="brand-name">Kloth</h1>
-      <p class="brand-slogan">Clothing for humans.</p>
+      <h1 class="brand-name">
+        Kloth
+      </h1>
+      <p class="brand-slogan">
+        Clothing for humans.
+      </p>
       <div class="btn-group">
         <template v-if="auth.isAuthenticated">
-          <RouterLink to="/shop" class="btn btn-white">View Catalog</RouterLink>
+          <RouterLink
+            to="/shop"
+            class="btn btn-white"
+          >
+            View Catalog
+          </RouterLink>
         </template>
         <template v-else>
-          <RouterLink to="/register" class="btn btn-white">Create Account</RouterLink>
-          <RouterLink to="/login" class="btn btn-ghost">Log in</RouterLink>
+          <RouterLink
+            to="/register"
+            class="btn btn-white"
+          >
+            Create Account
+          </RouterLink>
+          <RouterLink
+            to="/login"
+            class="btn btn-ghost"
+          >
+            Log in
+          </RouterLink>
         </template>
       </div>
     </div>

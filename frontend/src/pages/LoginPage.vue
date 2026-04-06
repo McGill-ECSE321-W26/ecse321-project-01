@@ -81,61 +81,114 @@ onUnmounted(() => {
 <template>
   <div class="kloth-page">
     <div class="collage">
-      <div v-for="(style, i) in photoStyles" :key="i" class="photo" :style="style">
+      <div
+        v-for="(style, i) in photoStyles"
+        :key="i"
+        class="photo"
+        :style="style"
+      >
         <img
-            :src="photos[i]"
-            alt=""
-            :style="{ objectPosition: i === 3 || i === 4 ? 'center 30%' : 'center 10%' }"
-        />
+          :src="photos[i]"
+          alt=""
+          :style="{ objectPosition: i === 3 || i === 4 ? 'center 30%' : 'center 10%' }"
+        >
       </div>
     </div>
 
-    <div class="tint"></div>
+    <div class="tint" />
 
     <div class="overlay">
       <div class="form-box">
         <div class="form-header">
-          <RouterLink to="/" class="back-link">← Kloth</RouterLink>
-          <h1 class="form-title">Log In</h1>
+          <RouterLink
+            to="/"
+            class="back-link"
+          >
+            ← Kloth
+          </RouterLink>
+          <h1 class="form-title">
+            Log In
+          </h1>
         </div>
 
-        <div v-if="registered" class="alert alert-success">
+        <div
+          v-if="registered"
+          class="alert alert-success"
+        >
           Account created successfully. Please log in.
         </div>
-        <div v-if="error" class="alert alert-error">{{ error }}</div>
+        <div
+          v-if="error"
+          class="alert alert-error"
+        >
+          {{ error }}
+        </div>
 
-        <form @submit.prevent="handleSubmit" class="form-fields">
+        <form
+          class="form-fields"
+          @submit.prevent="handleSubmit"
+        >
           <div class="field">
             <label>Email</label>
-            <input v-model="email" type="email" placeholder="hello@example.com" />
+            <input
+              v-model="email"
+              type="email"
+              placeholder="hello@example.com"
+            >
           </div>
           <div class="field">
             <label>Password</label>
-            <input v-model="password" type="password" placeholder="••••••••" />
+            <input
+              v-model="password"
+              type="password"
+              placeholder="••••••••"
+            >
           </div>
           <div class="field">
             <label>Role</label>
             <select v-model="role">
-              <option value="" disabled>Select a role</option>
-              <option value="Customer">Customer</option>
-              <option value="Employee">Employee</option>
-              <option value="Manager">Manager</option>
+              <option
+                value=""
+                disabled
+              >
+                Select a role
+              </option>
+              <option value="Customer">
+                Customer
+              </option>
+              <option value="Employee">
+                Employee
+              </option>
+              <option value="Manager">
+                Manager
+              </option>
             </select>
           </div>
-          <button type="submit" class="btn-submit" :disabled="loading">
+          <button
+            type="submit"
+            class="btn-submit"
+            :disabled="loading"
+          >
             {{ loading ? 'Logging in...' : 'Log In' }}
           </button>
         </form>
 
         <p class="form-footer">
           Don't have an account?
-          <RouterLink to="/register">Sign up</RouterLink>
+          <RouterLink to="/register">
+            Sign up
+          </RouterLink>
         </p>
       </div>
     </div>
 
     <footer class="footer-bar">
-      <RouterLink to="/" class="footer-logo">Kloth</RouterLink>
+      <RouterLink
+        to="/"
+        class="footer-logo"
+      >
+        Kloth
+      </RouterLink>
       <div class="footer-links">
         <span>© 2026 Kloth. Clothing for humans.</span>
         <a href="#">About</a><span>|</span>

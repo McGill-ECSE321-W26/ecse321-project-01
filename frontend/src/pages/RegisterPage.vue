@@ -76,53 +76,96 @@ onUnmounted(() => {
 <template>
   <div class="kloth-page">
     <div class="collage">
-      <div v-for="(style, i) in photoStyles" :key="i" class="photo" :style="style">
+      <div
+        v-for="(style, i) in photoStyles"
+        :key="i"
+        class="photo"
+        :style="style"
+      >
         <img
-            :src="photos[i]"
-            alt=""
-            :style="{ objectPosition: i === 3 || i === 4 ? 'center 30%' : 'center 10%' }"
-        />
+          :src="photos[i]"
+          alt=""
+          :style="{ objectPosition: i === 3 || i === 4 ? 'center 30%' : 'center 10%' }"
+        >
       </div>
     </div>
 
-    <div class="tint"></div>
+    <div class="tint" />
 
     <div class="overlay">
       <div class="form-box">
         <div class="form-header">
-          <RouterLink to="/" class="back-link">← Kloth</RouterLink>
-          <h1 class="form-title">Create Account</h1>
+          <RouterLink
+            to="/"
+            class="back-link"
+          >
+            ← Kloth
+          </RouterLink>
+          <h1 class="form-title">
+            Create Account
+          </h1>
         </div>
 
-        <div v-if="error" class="alert alert-error">{{ error }}</div>
+        <div
+          v-if="error"
+          class="alert alert-error"
+        >
+          {{ error }}
+        </div>
 
-        <form @submit.prevent="handleSubmit" class="form-fields">
+        <form
+          class="form-fields"
+          @submit.prevent="handleSubmit"
+        >
           <div class="field">
             <label>Email</label>
-            <input v-model="email" type="email" placeholder="you@example.com" />
+            <input
+              v-model="email"
+              type="email"
+              placeholder="you@example.com"
+            >
           </div>
           <div class="field">
             <label>Password</label>
-            <input v-model="password" type="password" placeholder="Min. 8 characters" />
+            <input
+              v-model="password"
+              type="password"
+              placeholder="Min. 8 characters"
+            >
           </div>
           <div class="field">
             <label>Address</label>
-            <input v-model="address" type="text" placeholder="123 Main St" />
+            <input
+              v-model="address"
+              type="text"
+              placeholder="123 Main St"
+            >
           </div>
-          <button type="submit" class="btn-submit" :disabled="loading">
+          <button
+            type="submit"
+            class="btn-submit"
+            :disabled="loading"
+          >
             {{ loading ? 'Creating account...' : 'Sign Up' }}
           </button>
         </form>
 
         <p class="form-footer">
           Already have an account?
-          <RouterLink to="/login">Log in</RouterLink>
+          <RouterLink to="/login">
+            Log in
+          </RouterLink>
         </p>
       </div>
     </div>
 
     <footer class="footer-bar">
-      <RouterLink to="/" class="footer-logo">Kloth</RouterLink>
+      <RouterLink
+        to="/"
+        class="footer-logo"
+      >
+        Kloth
+      </RouterLink>
       <div class="footer-links">
         <span>© 2026 Kloth. Clothing for humans.</span>
         <a href="#">About</a><span>|</span>
