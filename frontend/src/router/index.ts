@@ -12,8 +12,8 @@ import OrderDetailPage from '../pages/OrderDetailPage.vue'
 import ManagerDashboardPage from '../pages/manager/ManagerDashboardPage.vue'
 import ManagerLayout from '../components/ManagerLayout.vue'
 import EmployeeOrdersPage from '../pages/employee/EmployeeOrdersPage.vue'
-import CustomersDashboardPage from "@/pages/CustomersDashboardPage.vue";
-import EmployeesDashboardPage from "@/pages/EmployeesDashboardPage.vue";
+import CustomersDashboardPage from "@/pages/manager/CustomersDashboardPage.vue";
+import EmployeesDashboardPage from "@/pages/manager/EmployeesDashboardPage.vue";
 
 // List of routes that do not require auth
 const publicRoutes = ['home', 'login', 'register', 'not-found']
