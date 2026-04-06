@@ -11,6 +11,7 @@ const activeSection = computed(() => {
   if (route.path === '/manager') return 'dashboard'
   if (route.path.startsWith('/manager/orders')) return 'orders'
   if (route.path.startsWith('/manager/customers')) return 'customers'
+  if (route.path.startsWith('/manager/employees')) return 'employees'
   return ''
 })
 
@@ -19,7 +20,7 @@ const navItems = [
   { key: 'orders',    label: 'Orders',    icon: ShoppingBag,     to: '/manager/orders' },
   { key: 'inventory', label: 'Inventory', icon: Boxes,           to: null },
   { key: 'customers', label: 'Customers', icon: Users,           to: '/manager/customers' },
-  { key: 'employees', label: 'Employees', icon: UserCog,         to: null },
+  { key: 'employees', label: 'Employees', icon: UserCog,         to: '/manager/employees' },
 ]
 </script>
 
