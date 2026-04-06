@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
 public class DataSeeder {
 
   private static final String MANAGER_EMAIL = "manager@admin.com";
-  private static final String MANAGER_PASSWORD = "manager123";
+    private static final String MANAGER_PASSWORD = "manager123";
 
   private final PersonRepository personRepository;
   private final ManagerRepository managerRepository;

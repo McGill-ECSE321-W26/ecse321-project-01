@@ -228,8 +228,8 @@ onUnmounted(() => {
   padding: 10px 20px;
   display: flex;
   justify-content: center;
-  gap: 12px;
-  font-size: 10px;
+  gap: 20px;
+  font-size: 15px;
   color: rgba(255, 255, 255, 0.4);
   z-index: 30;
 }

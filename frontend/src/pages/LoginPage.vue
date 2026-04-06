@@ -333,29 +333,33 @@ onUnmounted(() => {
   position: absolute;
   bottom: 0; left: 0; right: 0;
   z-index: 30;
-  padding: 12px 20px;
+  padding: 10px 20px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 4px;
+  gap: 20px;
+  font-size: 15px;
+  color: rgba(255, 255, 255, 0.4);
 }
 
 .footer-logo {
   font-family: 'Lexend Deca', serif;
-  font-size: 60px;
+  font-size: 40px;
   font-weight: 700;
   color: #fff;
   text-decoration: none;
   letter-spacing: 2px;
 }
 
+.footer-logo:hover { color: #fff; }
+
 .footer-links {
   display: flex;
-  gap: 10px;
-  font-size: 20px;
-  color: rgba(255,255,255,0.5);
+  gap: 20px;
+  font-size: 15px;
+  color: rgba(255,255,255,0.4);
 }
 
-.footer-links a { color: rgba(255,255,255,0.5); text-decoration: none; }
+.footer-links a { color: rgba(255,255,255,0.4); text-decoration: none; }
 .footer-links a:hover { color: #fff; }
 </style>
