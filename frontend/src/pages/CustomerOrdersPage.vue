@@ -201,7 +201,7 @@ function canModify(order: OrderResponseDto) {
               >
               <button
                 :disabled="updatingOrder === order.orderID"
-                class="text-[10px] uppercase tracking-widest border border-(--text-light) px-2 py-1 text-(--text) hover:bg-(--text) hover:text-(--bg) transition-colors disabled:opacity-40"
+                class="text-[10px] uppercase tracking-widest border border-(--text-light) px-2 py-1 text-(--text) hover:bg-(--button-hover) hover:text-(--bg) transition-colors disabled:opacity-40"
                 @click="saveDeliveryDate(order)"
               >
                 Save
@@ -257,7 +257,7 @@ function canModify(order: OrderResponseDto) {
         <!-- Actions -->
         <div class="flex items-center gap-2">
           <button
-            class="text-[11px] uppercase tracking-widest border border-(--text-light) px-3 py-1.5 text-(--text) hover:bg-(--text) hover:text-(--bg) transition-colors"
+            class="text-[11px] uppercase tracking-widest border border-(--text-light) px-3 py-1.5 text-(--text) hover:bg-(--button-hover) hover:text-(--bg) transition-colors"
             @click="router.push({ name: 'order-detail', params: { orderID: order.orderID } })"
           >
             View

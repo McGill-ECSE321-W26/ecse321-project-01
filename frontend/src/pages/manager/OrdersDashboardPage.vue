@@ -296,7 +296,7 @@ function formatDate(d: Date | null) {
           -
         </span>
         <button
-          class="text-[11px] uppercase tracking-widest text-(--text) border border-(--text-light) px-3 py-1.5 hover:bg-(--text) hover:text-(--bg) transition-colors w-fit"
+          class="text-[11px] uppercase tracking-widest text-(--text) border border-(--text-light) px-3 py-1.5 hover:bg-(--button-hover) hover:text-(--bg) transition-colors w-fit"
           @click="openDetail(order)"
         >
           View
@@ -403,7 +403,7 @@ function formatDate(d: Date | null) {
           <div class="p-6 flex items-end gap-2">
             <button
               v-if="!selectedOrder.employeeID && selectedOrder.orderStatus !== 'Cancelled'"
-              class="text-[11px] uppercase tracking-widest text-(--text) border border-(--text-light) px-4 py-2 hover:bg-(--text) hover:text-(--bg) transition-colors"
+              class="text-[11px] uppercase tracking-widest text-(--text) border border-(--text-light) px-4 py-2 hover:bg-(--button-hover) hover:text-(--bg) transition-colors"
               @click="openAssign"
             >
               Assign Employee
@@ -411,7 +411,7 @@ function formatDate(d: Date | null) {
             <button
               v-if="selectedOrder.orderStatus === 'Preparing' && selectedOrder.employeeID !== null"
               :disabled="updatingStatus === selectedOrder.orderID"
-              class="text-[11px] uppercase tracking-widest border border-(--text-light) px-4 py-2 text-(--text) hover:bg-(--text) hover:text-(--bg) transition-colors disabled:opacity-40"
+              class="text-[11px] uppercase tracking-widest border border-(--text-light) px-4 py-2 text-(--text) hover:bg-(--button-hover) hover:text-(--bg) transition-colors disabled:opacity-40"
               @click="updateStatus(selectedOrder, 'Delivered')"
             >
               Mark Delivered

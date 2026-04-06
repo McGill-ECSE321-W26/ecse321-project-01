@@ -11,6 +11,7 @@ import CustomerOrdersPage from '../pages/CustomerOrdersPage.vue'
 import OrderDetailPage from '../pages/OrderDetailPage.vue'
 import ManagerDashboardPage from '../pages/manager/ManagerDashboardPage.vue'
 import ManagerLayout from '../components/ManagerLayout.vue'
+import ManagerInventoryPage from '../pages/manager/ManagerInventoryPage.vue'
 import EmployeeOrdersPage from '../pages/employee/EmployeeOrdersPage.vue'
 
 // List of routes that do not require auth
@@ -34,6 +35,7 @@ const router = createRouter({
       children: [
         { path: '',       name: 'manager-dashboard', component: ManagerDashboardPage },
         { path: 'orders', name: 'manager-orders',    component: OrdersDashboardPage },
+          { path: 'inventory', name: 'manager-inventory', component: ManagerInventoryPage },
       ],
     },
     { path: '/:pathMatch(.*)*', name: 'not-found', component: NotFoundPage },
