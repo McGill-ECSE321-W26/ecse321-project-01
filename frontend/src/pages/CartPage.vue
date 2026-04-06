@@ -103,8 +103,15 @@ onMounted(loadCart)
       Shopping Cart
     </h1>
 
-    <div v-if="loading" class="flex flex-col gap-4">
-      <div v-for="n in 3" :key="n" class="flex items-center gap-4 py-5">
+    <div
+      v-if="loading"
+      class="flex flex-col gap-4"
+    >
+      <div
+        v-for="n in 3"
+        :key="n"
+        class="flex items-center gap-4 py-5"
+      >
         <Skeleton class="w-20 h-20 rounded-lg shrink-0" />
         <div class="flex-1 space-y-2">
           <Skeleton class="h-4 w-1/2" />
@@ -115,20 +122,36 @@ onMounted(loadCart)
       </div>
     </div>
 
-    <div v-else-if="error" class="rounded-md bg-red-50 border border-red-200 p-4 text-sm text-red-800">
+    <div
+      v-else-if="error"
+      class="rounded-md bg-red-50 border border-red-200 p-4 text-sm text-red-800"
+    >
       {{ error }}
     </div>
 
-    <div v-else-if="items.length === 0" class="text-center text-(--text-muted) py-16">
+    <div
+      v-else-if="items.length === 0"
+      class="text-center text-(--text-muted) py-16"
+    >
       Your cart is empty.
     </div>
 
     <div v-else>
       <div class="flex flex-col">
-        <template v-for="(item, index) in items":key="item.itemID">
-          <Separator v-if="index > 0" class="bg-(--card-hover)" />
+        <template
+          v-for="(item, index) in items"
+          :key="item.itemID"
+        >
+          <Separator
+            v-if="index > 0"
+            class="bg-(--card-hover)"
+          />
           <div class="flex items-center gap-4 py-5">
-            <img :src="item.imagePath" :alt="item.modelName" class="w-20 h-20 object-cover rounded-lg bg-gray-100 shrink-0">
+            <img
+              :src="item.imagePath"
+              :alt="item.modelName"
+              class="w-20 h-20 object-cover rounded-lg bg-gray-100 shrink-0"
+            >
             <div class="flex-1 min-w-0">
               <p class="font-medium truncate">
                 {{ item.modelName }}
