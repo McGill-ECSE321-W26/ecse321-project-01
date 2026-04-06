@@ -122,6 +122,9 @@ async function placeOrder() {
       usedLoyaltyPoints: usedLoyaltyPoints.value,
     }
     await api<OrderResponseDto>('/orders', { method: 'POST', body: JSON.stringify(body) })
+    // Fetch fresh customer data so loyalty points reflect what the backend computed
+    const updated = await api<CustomerResponseDto>(`/persons/customers/${customerId.value}`)
+    auth.updatePerson(updated)
     cart.clearCart()
     checkoutOpen.value = false
     router.push({ name: 'shop' })

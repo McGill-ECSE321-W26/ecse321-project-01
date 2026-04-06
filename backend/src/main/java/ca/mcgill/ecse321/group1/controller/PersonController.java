@@ -125,6 +125,11 @@ public class PersonController {
     return personService.getCustomers().stream().map(CustomerResponseDto::new).toList();
   }
 
+  @GetMapping("/customers/{id}")
+  public CustomerResponseDto getCustomer(@PathVariable String id) {
+    return new CustomerResponseDto(personService.getCustomerById(id));
+  }
+
   @PatchMapping("/{id}/password")
   @ResponseStatus(HttpStatus.NO_CONTENT)
   public void updatePassword(

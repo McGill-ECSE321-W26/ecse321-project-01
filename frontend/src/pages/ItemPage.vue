@@ -27,8 +27,8 @@ const currVariant = computed(() => {
     v.size === selectedSize.value
   ) || null
 })
-const existingItem = cart.items.find(
-  item => item.clothingVariantID === currVariant.value?.clothingVariantID
+const existingItem = computed(() =>
+  cart.items.find(item => item.clothingVariantID === currVariant.value?.clothingVariantID)
 )
 const detailsOpen = ref(false)
 
@@ -64,11 +64,11 @@ async function addToCart() {
   try {
     const customerId = auth.person?.id
     if (!customerId) return
-    if (existingItem) {
-      await api(`/carts/${customerId}/items/${existingItem.itemID}`, {
+    if (existingItem.value) {
+      await api(`/carts/${customerId}/items/${existingItem.value.itemID}`, {
         method: 'PATCH',
         body: JSON.stringify({
-          quantity: existingItem.quantity + 1
+          quantity: existingItem.value.quantity + 1
         })
       })
     } else {
