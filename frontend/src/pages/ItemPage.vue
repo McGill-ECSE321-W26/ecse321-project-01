@@ -132,13 +132,18 @@ function isSizeAvailable(size: string) {
   )
 }
 
+function getImagePath(color: string) {
+  const variant = variants.value.find(v => v.color === color)
+  return variant?.imagePath
+}
+
 
 </script>
 
 <template>
   <div class="min-h-screen">
     <!-- Back to shop button -->
-    <div class="max-w-350 mx-auto py-6 pt-6 md:pt-6 flex items-center gap-3 flex-wrap">
+    <div class="max-w-350 px-5 py-5 pt-6 align-start">
       <RouterLink to="/shop">
         <Button
           size="sm"
@@ -184,10 +189,10 @@ function isSizeAvailable(size: string) {
     <!-- Show item -->
     <div
       v-else
-      class="grid grid-cols-1 md:grid-cols-2 pb-15"
+      class="grid grid-cols-1 md:grid-cols-8 pb-15 px-10 md:gap-3"
     >
       <!-- image -->
-      <div class="aspect-[3/4] w-full overflow-hidden bg-(--card-hover)">
+      <div class="aspect-[3/4] w-full overflow-hidden bg-(--card-hover) md:col-span-4 border-[2px] border-(--text-light)">
         <img
           :src="currVariant?.imagePath"
           :alt="model?.name"
@@ -196,8 +201,27 @@ function isSizeAvailable(size: string) {
         >
       </div>
 
+      <!-- other color images -->
+      <div
+        class="hidden md:flex flex-col w-full gap-3 md:col-span-1 md:pr-5"
+      >
+        <div
+          v-for="color in colors"
+          :key="color"
+          class="aspect-[3/4] w-full overflow-hidden bg-(--card-hover) cursor-pointer border-[2px] border-(--text-light)"
+          @click="isColorAvailable(color) && selectColor(color)"
+        >
+          <img
+            :src="getImagePath(color)"
+            :alt="color"
+            loading="lazy"
+            class="w-full h-full object-cover"
+          >
+        </div>
+      </div>
+
       <!-- info -->
-      <div class="flex flex-col items-start pt-8 px-6">
+      <div class="flex flex-col items-start pt-8 col-span-3">
         <!-- brand name -->
         <p class="text-(--text-light)">
           {{ model?.brand }}
