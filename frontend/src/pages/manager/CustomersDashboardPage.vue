@@ -82,18 +82,25 @@ function formatDate(d: Date | null) {
 
     <!-- Stats -->
     <div class="grid grid-cols-3 gap-0 border border-(--text-light) mb-10">
-      <div class="stat-card p-7" style="animation-delay: 0s">
-        <p class="text-[10px] uppercase tracking-[0.2em] text-(--text-light) mb-3">Total Customers</p>
-        <p class="text-[44px] font-light text-(--text) leading-none">{{ loading ? '-' : totalCustomers }}</p>
+      <div
+        class="stat-card p-7"
+        style="animation-delay: 0s"
+      >
+        <p class="text-[10px] uppercase tracking-[0.2em] text-(--text-light) mb-3">
+          Total Customers
+        </p>
+        <p class="text-[44px] font-light text-(--text) leading-none">
+          {{ loading ? '-' : totalCustomers }}
+        </p>
       </div>
     </div>
 
 
     <!-- ── Customer list ── -->
     <div
-        v-if="currentView === 'list'"
-        class="stat-card border border-(--text-light)"
-        style="animation-delay: 0.3s"
+      v-if="currentView === 'list'"
+      class="stat-card border border-(--text-light)"
+      style="animation-delay: 0.3s"
     >
       <!-- Table header -->
       <div class="grid grid-cols-[2.5fr_2fr_1fr_0.6fr] px-6 py-2.5 border-b border-(--text-light)">
@@ -104,15 +111,25 @@ function formatDate(d: Date | null) {
       </div>
 
 
-      <div v-if="loading" class="px-6 py-10 text-[13px] text-(--text-light)">Loading customers…</div>
-      <div v-else-if="customers.length === 0" class="px-6 py-10 text-[13px] text-(--text-light)">No customers found.</div>
+      <div
+        v-if="loading"
+        class="px-6 py-10 text-[13px] text-(--text-light)"
+      >
+        Loading customers…
+      </div>
+      <div
+        v-else-if="customers.length === 0"
+        class="px-6 py-10 text-[13px] text-(--text-light)"
+      >
+        No customers found.
+      </div>
 
 
       <div
-          v-for="(customer, i) in customers"
-          :key="customer.id"
-          class="grid grid-cols-[2.5fr_2fr_1fr_0.6fr] px-6 py-4 border-b border-(--text-light) last:border-b-0 hover:bg-(--card-hover) transition-colors items-center row-card"
-          :style="{ animationDelay: `${0.3 + i * 0.04}s` }"
+        v-for="(customer, i) in customers"
+        :key="customer.id"
+        class="grid grid-cols-[2.5fr_2fr_1fr_0.6fr] px-6 py-4 border-b border-(--text-light) last:border-b-0 hover:bg-(--card-hover) transition-colors items-center row-card"
+        :style="{ animationDelay: `${0.3 + i * 0.04}s` }"
       >
         <span class="text-[13px] text-(--text) font-light">{{ customer.email }}</span>
         <span class="text-[13px] text-(--text-muted) font-light">{{ customer.address || '-' }}</span>
@@ -121,8 +138,8 @@ function formatDate(d: Date | null) {
           <span class="text-[13px] text-(--text-muted) font-light">{{ customer.loyaltyPoints ?? 0 }}</span>
         </div>
         <button
-            class="text-[11px] uppercase tracking-widest text-(--text) border border-(--text-light) px-3 py-1.5 hover:bg-(--text) hover:text-(--bg) transition-colors w-fit"
-            @click="openDetail(customer)"
+          class="text-[11px] uppercase tracking-widest text-(--text) border border-(--text-light) px-3 py-1.5 hover:bg-(--text) hover:text-(--bg) transition-colors w-fit"
+          @click="openDetail(customer)"
         >
           View
         </button>
@@ -132,56 +149,94 @@ function formatDate(d: Date | null) {
 
     <!-- ── Customer detail ── -->
     <div
-        v-else-if="currentView === 'detail' && selectedCustomer"
-        class="stat-card border border-(--text-light)"
-        style="animation-delay: 0.3s"
+      v-else-if="currentView === 'detail' && selectedCustomer"
+      class="stat-card border border-(--text-light)"
+      style="animation-delay: 0.3s"
     >
       <!-- Header -->
       <div class="flex items-center justify-between px-8 py-5 border-b border-(--text-light)">
         <button
-            class="flex items-center gap-2 text-[11px] uppercase tracking-widest text-(--text-light) hover:text-(--text-muted) transition-colors"
-            @click="currentView = 'list'"
+          class="flex items-center gap-2 text-[11px] uppercase tracking-widest text-(--text-light) hover:text-(--text-muted) transition-colors"
+          @click="currentView = 'list'"
         >
           <ArrowLeft class="w-3.5 h-3.5" /> Back to Customers
         </button>
         <span class="text-[10px] uppercase tracking-[0.2em] text-(--text-light)">
-         Customer <strong class="text-(--text-muted)">{{ selectedCustomer.email }}</strong>
-       </span>
+          Customer <strong class="text-(--text-muted)">{{ selectedCustomer.email }}</strong>
+        </span>
       </div>
 
 
       <div class="px-8 pt-8 pb-8">
         <!-- Profile info -->
         <div class="grid grid-cols-[2fr_2fr_1fr_1fr] gap-0 border border-(--text-light) mb-8">
-          <div class="stat-card p-6 border-r border-(--text-light)" style="animation-delay: 0s">
-            <p class="text-[10px] uppercase tracking-[0.2em] text-(--text-light) mb-3">Email</p>
-            <p class="text-[13px] font-light text-(--text) break-all">{{ selectedCustomer.email }}</p>
+          <div
+            class="stat-card p-6 border-r border-(--text-light)"
+            style="animation-delay: 0s"
+          >
+            <p class="text-[10px] uppercase tracking-[0.2em] text-(--text-light) mb-3">
+              Email
+            </p>
+            <p class="text-[13px] font-light text-(--text) break-all">
+              {{ selectedCustomer.email }}
+            </p>
           </div>
-          <div class="stat-card p-6 border-r border-(--text-light)" style="animation-delay: 0.07s">
-            <p class="text-[10px] uppercase tracking-[0.2em] text-(--text-light) mb-3">Address</p>
-            <p class="text-[13px] font-light text-(--text) leading-snug">{{ selectedCustomer.address || '-' }}</p>
+          <div
+            class="stat-card p-6 border-r border-(--text-light)"
+            style="animation-delay: 0.07s"
+          >
+            <p class="text-[10px] uppercase tracking-[0.2em] text-(--text-light) mb-3">
+              Address
+            </p>
+            <p class="text-[13px] font-light text-(--text) leading-snug">
+              {{ selectedCustomer.address || '-' }}
+            </p>
           </div>
-          <div class="stat-card p-6 border-r border-(--text-light)" style="animation-delay: 0.14s">
-            <p class="text-[10px] uppercase tracking-[0.2em] text-(--text-light) mb-3">Loyalty Points</p>
-            <p class="text-[32px] font-light text-(--text) leading-none">{{ selectedCustomer.loyaltyPoints ?? 0 }}</p>
+          <div
+            class="stat-card p-6 border-r border-(--text-light)"
+            style="animation-delay: 0.14s"
+          >
+            <p class="text-[10px] uppercase tracking-[0.2em] text-(--text-light) mb-3">
+              Loyalty Points
+            </p>
+            <p class="text-[32px] font-light text-(--text) leading-none">
+              {{ selectedCustomer.loyaltyPoints ?? 0 }}
+            </p>
           </div>
-          <div class="stat-card p-6" style="animation-delay: 0.21s">
-            <p class="text-[10px] uppercase tracking-[0.2em] text-(--text-light) mb-3">Orders</p>
-            <p class="text-[32px] font-light text-(--text) leading-none">{{ detailLoading ? '-' : customerOrderCount }}</p>
+          <div
+            class="stat-card p-6"
+            style="animation-delay: 0.21s"
+          >
+            <p class="text-[10px] uppercase tracking-[0.2em] text-(--text-light) mb-3">
+              Orders
+            </p>
+            <p class="text-[32px] font-light text-(--text) leading-none">
+              {{ detailLoading ? '-' : customerOrderCount }}
+            </p>
           </div>
         </div>
 
 
         <!-- Order stats -->
         <div class="grid grid-cols-2 gap-0 border border-(--text-light) mb-8">
-          <div class="stat-card p-6 border-r border-(--text-light)" style="animation-delay: 0.28s">
-            <p class="text-[10px] uppercase tracking-[0.2em] text-(--text-light) mb-3">Total Spent</p>
+          <div
+            class="stat-card p-6 border-r border-(--text-light)"
+            style="animation-delay: 0.28s"
+          >
+            <p class="text-[10px] uppercase tracking-[0.2em] text-(--text-light) mb-3">
+              Total Spent
+            </p>
             <p class="text-[32px] font-light text-(--text) leading-none">
               ${{ detailLoading ? '-' : customerTotalSpent.toFixed(2) }}
             </p>
           </div>
-          <div class="stat-card p-6" style="animation-delay: 0.35s">
-            <p class="text-[10px] uppercase tracking-[0.2em] text-(--text-light) mb-3">Delivered Orders</p>
+          <div
+            class="stat-card p-6"
+            style="animation-delay: 0.35s"
+          >
+            <p class="text-[10px] uppercase tracking-[0.2em] text-(--text-light) mb-3">
+              Delivered Orders
+            </p>
             <p class="text-[32px] font-light text-(--text) leading-none">
               {{ detailLoading ? '-' : customerOrdersDelivered }}
             </p>
@@ -190,7 +245,10 @@ function formatDate(d: Date | null) {
 
 
         <!-- Orders table -->
-        <div class="stat-card border border-(--text-light)" style="animation-delay: 0.42s">
+        <div
+          class="stat-card border border-(--text-light)"
+          style="animation-delay: 0.42s"
+        >
           <div class="px-6 py-3 border-b border-(--text-light)">
             <span class="text-[10px] uppercase tracking-[0.2em] text-(--text-light)">Order History</span>
           </div>
@@ -205,31 +263,46 @@ function formatDate(d: Date | null) {
           </div>
 
 
-          <div v-if="detailLoading" class="px-6 py-10 text-[13px] text-(--text-light)">Loading orders…</div>
-          <div v-else-if="detailError" class="px-6 py-10 text-[13px] text-red-400">{{ detailError }}</div>
-          <div v-else-if="customerOrders.length === 0" class="px-6 py-10 text-[13px] text-(--text-light)">No orders found.</div>
+          <div
+            v-if="detailLoading"
+            class="px-6 py-10 text-[13px] text-(--text-light)"
+          >
+            Loading orders…
+          </div>
+          <div
+            v-else-if="detailError"
+            class="px-6 py-10 text-[13px] text-red-400"
+          >
+            {{ detailError }}
+          </div>
+          <div
+            v-else-if="customerOrders.length === 0"
+            class="px-6 py-10 text-[13px] text-(--text-light)"
+          >
+            No orders found.
+          </div>
 
 
           <div
-              v-for="(order, i) in customerOrders"
-              :key="order.orderID"
-              class="grid grid-cols-[2fr_1.5fr_1fr_1.2fr_1.5fr] px-6 py-4 border-b border-(--text-light) last:border-b-0 hover:bg-(--card-hover) transition-colors items-center row-card"
-              :style="{ animationDelay: `${0.42 + i * 0.04}s` }"
+            v-for="(order, i) in customerOrders"
+            :key="order.orderID"
+            class="grid grid-cols-[2fr_1.5fr_1fr_1.2fr_1.5fr] px-6 py-4 border-b border-(--text-light) last:border-b-0 hover:bg-(--card-hover) transition-colors items-center row-card"
+            :style="{ animationDelay: `${0.42 + i * 0.04}s` }"
           >
             <span class="text-[13px] text-(--text) font-light tracking-wide font-mono">#{{ order.orderID.slice(0, 12) }}…</span>
             <span class="text-[13px] text-(--text-muted) font-light">{{ formatDate(order.orderDate) }}</span>
             <span class="text-[13px] text-(--text-muted) font-light">${{ order.totalPrice?.toFixed(2) ?? '-' }}</span>
             <span
-                class="text-[11px] uppercase tracking-widest"
-                :class="{
-               'text-(--text-muted)': order.orderStatus === 'Delivered',
-               'text-(--text-light) line-through': order.orderStatus === 'Cancelled',
-               'text-(--text)': order.orderStatus === 'Preparing',
-             }"
+              class="text-[11px] uppercase tracking-widest"
+              :class="{
+                'text-(--text-muted)': order.orderStatus === 'Delivered',
+                'text-(--text-light) line-through': order.orderStatus === 'Cancelled',
+                'text-(--text)': order.orderStatus === 'Preparing',
+              }"
             >{{ order.orderStatus }}</span>
             <span class="text-[13px] text-(--text-muted) font-light">
-             ${{ (order.loyaltySaving ?? 0).toFixed(2) }}
-           </span>
+              ${{ (order.loyaltySaving ?? 0).toFixed(2) }}
+            </span>
           </div>
         </div>
       </div>
