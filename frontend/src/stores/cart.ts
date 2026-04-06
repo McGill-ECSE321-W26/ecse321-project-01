@@ -6,7 +6,7 @@ import type { ItemResponseDto } from '@/api/types/item'
 export const useCartStore = defineStore('cart', () => {
   const items = ref<ItemResponseDto[]>([])
 
-  const itemCount = computed(() => items.value.length)
+  const itemCount = computed(() => items.value.reduce((sum, i) => sum + i.quantity, 0))
 
   async function fetchCart(customerId: string) {
     items.value = await api<ItemResponseDto[]>(`/carts/${customerId}/items`)

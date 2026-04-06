@@ -1,3 +1,9 @@
+export interface OrderCreateRequestDto {
+  customerID: string
+  deliveryDate: string
+  usedLoyaltyPoints: number
+}
+
 export interface OrderResponseDto {
   orderID: string
   orderStatus: string
