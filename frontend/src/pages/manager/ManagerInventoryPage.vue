@@ -85,8 +85,8 @@ onMounted(async () => {
   }
 })
 
-// ── Detail Panel ─────────────────────────────────────────────────────────────
-async function openDetail(model: ClothingModelListResponseDto) {
+// ── Detailed Edit Panel ─────────────────────────────────────────────────────────────
+async function openEditDetails(model: ClothingModelListResponseDto) {
   selectedModel.value = model
   modelForm.value = {
     name: model.name,
@@ -129,7 +129,7 @@ function openCreateModel() {
 function validateModel(): string | null {
   if (!modelForm.value.name.trim()) return 'Name is required.'
   if (!modelForm.value.brand.trim()) return 'Brand is required.'
-  if (modelForm.value.price <= 0) return 'Price must be greater than 0.'
+  if (modelForm.value.price <= 0) return 'Price must be >= 0'
   return null
 }
 
@@ -358,7 +358,7 @@ function formatPrice(price: number): string {
       </div>
     </div>
 
-    <!-- ── List View ── -->
+    <!-- MAIN LIST VIEW (ALL clothing models : name, brand, category, price, stock) -->
     <div
       v-if="currentView === 'list'"
       class="stat-card border border-(--text-light)"
@@ -427,15 +427,15 @@ function formatPrice(price: number): string {
           :style="{ animationDelay: `${0.3 + i * 0.04}s` }"
         >
           <span class="text-[13px] text-(--text) font-light tracking-wide">{{ model.name }}</span>
-          <span class="text-[13px] text-(--text-muted) font-light">{{ model.brand }}</span>
+          <span class="text-[13px] text-(--text) font-light">{{ model.brand }}</span>
           <span class="text-[11px] uppercase tracking-widest text-(--text-muted)">{{ model.category }}</span>
           <span class="text-[13px] text-(--text) font-light">${{ formatPrice(model.price) }}</span>
-          <span class="text-[13px] text-(--text-muted) font-light">{{ model.totalStockQuantity }}</span>
+          <span class="text-[13px] text-(--text) font-light">{{ model.totalStockQuantity }}</span>
           <div class="flex items-center gap-2">
             <button
               class="p-1.5 border border-(--text-light) text-(--text-muted) hover:bg-(--card-hover) hover:text-(--text) transition-colors"
               title="Edit model"
-              @click="openDetail(model)"
+              @click="openEditDetails(model)"
             >
               <Pencil class="w-3.5 h-3.5" />
             </button>
@@ -451,7 +451,7 @@ function formatPrice(price: number): string {
       </template>
     </div>
 
-    <!-- ── Detail Panel ── -->
+    <!-- DETAILED EDIT SPECIFIC CLOTHING MODEL  -->
     <div
       v-else-if="currentView === 'detail' && selectedModel"
       class="stat-card border border-(--text-light)"
@@ -472,7 +472,7 @@ function formatPrice(price: number): string {
 
       <div class="px-8 pt-8 pb-8 space-y-10">
 
-        <!-- Section 1: Model Details -->
+        <!-- 1 : Specific Model Details -->
         <section>
           <div class="flex items-center justify-between mb-5">
             <p class="text-[10px] uppercase tracking-[0.2em] text-(--text-light)">
@@ -570,7 +570,7 @@ function formatPrice(price: number): string {
           </div>
         </section>
 
-        <!-- Section 2: Variants -->
+        <!-- 2 : Variants -->
         <section>
           <div class="flex items-center justify-between mb-5">
             <div class="flex items-center gap-2">
@@ -628,12 +628,11 @@ function formatPrice(price: number): string {
               <div class="space-y-1.5">
                 <Label class="text-[10px] uppercase tracking-widest text-(--text-light)">Color</Label>
                 <div class="flex items-center gap-2">
-                  <input
-                    type="color"
-                    :value="variant.color"
-                    disabled
-                    class="w-8 h-8 border border-(--text-light) p-0 bg-transparent cursor-default"
-                  >
+                  <div
+                    class="w-3.5 h-3.5 rounded-full border-[1.5px] border-(--text)"
+                    :style="{ backgroundColor: variant.color }"
+                    :title="variant.color"
+                  />
                   <span class="text-[12px] font-mono text-(--text-muted)">
                     {{ variant.color }}
                   </span>
@@ -658,7 +657,7 @@ function formatPrice(price: number): string {
                 {{ variantForms[variant.clothingVariantID].error }}
               </p>
 
-              <!-- Actions -->
+              <!-- Actions (Save/Delete) -->
               <div class="flex items-center gap-2 mt-auto pt-2 border-t border-(--text-light)">
                 <button
                   :disabled="variantForms[variant.clothingVariantID]?.saving"
