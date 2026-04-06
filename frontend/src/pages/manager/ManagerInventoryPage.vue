@@ -13,6 +13,7 @@ import {
   Dialog, DialogContent, DialogHeader, DialogTitle,
   DialogDescription, DialogFooter, DialogClose,
 } from '@/components/ui/dialog'
+import { Upload } from 'lucide-vue-next'
 import { api } from '@/api/client'
 import { useToastStore } from '@/stores/toast'
 
@@ -68,6 +69,44 @@ const variantError = ref<string | null>(null)
 const showDeleteVariantDialog = ref(false)
 const deletingVariant = ref<ClothingVariantResponseDto | null>(null)
 const deletingVariantLoading = ref(false)
+
+// Image upload w/ Cloudinary (cloud host) unsigned upload API
+// Requires VITE_CLOUDINARY_CLOUD_NAME and VITE_CLOUDINARY_UPLOAD_PRESET in .env
+// Docs: https://cloudinary.com/documentation/upload_images#unsigned_upload
+const uploadingImage = ref(false)
+const imageFileInput = ref<HTMLInputElement | null>(null)
+
+async function uploadImage(event: Event) {
+  const file = (event.target as HTMLInputElement).files?.[0]
+  if (!file) return
+
+  uploadingImage.value = true
+  try {
+    // Client-side image uploading docs: https://cloudinary.com/documentation/client_side_uploading#direct_call_to_the_api
+    // Since client-side, no API key required, only need to know CLOUD_NAME and UPLOAD_PRESET
+    const formData = new FormData()
+    formData.append('file', file)
+    formData.append('upload_preset', import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET)
+
+    const cloudName = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME
+    // Cloudinary returns a JSON response with `secure_url` key (hosted image URL with https:// link)
+    // JSON response format: https://cloudinary.com/documentation/upload_images#upload_response
+    const res = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/image/upload`, {
+      method: 'POST',
+      body: formData,
+    })
+
+    if (!res.ok) throw new Error('Upload failed')
+    const data = await res.json()
+    variantForm.value.imagePath = data.secure_url // set to returned JSON `secure_url` key
+  } catch (e: unknown) {
+    variantError.value = e instanceof Error ? e.message : 'Image upload failed.'
+    toast.error(variantError.value!)
+  } finally {
+    uploadingImage.value = false
+    if (imageFileInput.value) imageFileInput.value.value = ''
+  }
+}
 
 // ── Computed ────────────────────────────────────────────────────────────────
 const filteredModels = computed(() => {
@@ -162,6 +201,19 @@ async function saveModel() {
   const err = validateModel()
   if (err) { modelError.value = err; return }
 
+  // Do not send request to backend if data has not changed
+  const m = selectedModel.value!
+  if (
+    modelForm.value.name === m.name &&
+    modelForm.value.brand === m.brand &&
+    modelForm.value.category === m.category &&
+    modelForm.value.price === m.price &&
+    modelForm.value.description === m.description
+  ) {
+    toast.info('No changes to save.')
+    return
+  }
+
   savingModel.value = true
   modelError.value = null
   try {
@@ -215,7 +267,8 @@ function openCreateVariant() {
 
 function validateVariant(): string | null {
   if (!/^#[0-9A-Fa-f]{6}$/.test(variantForm.value.color)) return 'Color must be a valid hex code (e.g. #FF5733).'
-  if (!/\.(jpg|jpeg|png|gif|webp|svg)$/i.test(variantForm.value.imagePath)) return 'Image path must end with .jpg, .jpeg, .png, .gif, .webp, or .svg.'
+  if (!variantForm.value.imagePath.trim()) return 'An image is required.'
+  if (!/\.(jpg|jpeg|png|gif|webp|svg)(\?.*)?$/i.test(variantForm.value.imagePath)) return 'Image must be a valid image URL (.jpg, .png, .gif, .webp, or .svg).'
   if (variantForm.value.stockQuantity < 0) return 'Stock quantity must be 0 or greater.'
   return null
 }
@@ -259,6 +312,13 @@ async function saveVariantEdit(variantId: string) {
   if (!form) return
 
   if (form.stockQuantity < 0) { form.error = 'Stock must be 0 or greater.'; return }
+
+  // Do not send request to backend if data has not changed
+  const original = detailVariants.value.find(v => v.clothingVariantID === variantId)
+  if (original && form.stockQuantity === original.stockQuantity) {
+    toast.info('No changes to save.')
+    return
+  }
 
   form.saving = true
   form.error = null
@@ -885,12 +945,41 @@ function formatPrice(price: number): string {
         </div>
 
         <div class="space-y-1.5">
-          <Label class="text-[11px] uppercase tracking-widests text-(--text-light)">Image Path</Label>
-          <Input
-            v-model="variantForm.imagePath"
-            class="rounded-none border-(--text-light) bg-transparent text-(--text) text-[13px] focus-visible:ring-0 focus-visible:border-(--text-muted)"
-            placeholder="e.g. /images/shirt-blue.jpg"
-          />
+          <Label class="text-[11px] uppercase tracking-widests text-(--text-light)">Image</Label>
+          <input
+            ref="imageFileInput"
+            type="file"
+            accept="image/*"
+            class="hidden"
+            @change="uploadImage"
+          >
+          <div
+            v-if="!variantForm.imagePath"
+            class="border border-dashed border-(--text-light) p-6 flex flex-col items-center gap-2 cursor-pointer hover:border-(--text-muted) transition-colors"
+            @click="imageFileInput?.click()"
+          >
+            <Upload class="w-5 h-5 text-(--text-light)" />
+            <span class="text-[12px] text-(--text-light)">
+              {{ uploadingImage ? 'Uploading...' : 'Click to upload an image' }}
+            </span>
+          </div>
+          <div
+            v-else
+            class="relative border border-(--text-light)"
+          >
+            <img
+              :src="variantForm.imagePath"
+              alt="Variant preview"
+              class="w-full h-32 object-cover"
+            >
+            <button
+              type="button"
+              class="absolute top-1 right-1 bg-(--bg) border border-(--text-light) text-(--text-muted) text-[11px] px-1.5 py-0.5 hover:text-(--text)"
+              @click="variantForm.imagePath = ''"
+            >
+              Remove
+            </button>
+          </div>
         </div>
 
         <div class="space-y-1.5">
