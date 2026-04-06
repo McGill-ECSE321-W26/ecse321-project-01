@@ -38,7 +38,9 @@ onMounted(() => {
     class="flex justify-center pt-2 cursor-pointer"
     @click="backToShop"
   >
-      <p class="font-medium text-[40px] md:text-[55px] ">Kloth</p>
+    <p class="font-medium text-[40px] md:text-[55px] ">
+      Kloth
+    </p>
   </div>
   <nav class="fixed top-0 right-0 z-50">
     <div class="flex justify-end items-center gap-4 px-8 h-16">
@@ -68,7 +70,7 @@ onMounted(() => {
           <ShoppingCart class="size-5" />
           <span
             v-if="cart.itemCount > 0"
-            class="text-[6px]"
+            class="text-[15px]"
           >
             {{ cart.itemCount }}
           </span>

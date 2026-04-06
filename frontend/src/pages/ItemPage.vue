@@ -5,11 +5,18 @@ import { ref, onMounted, computed } from 'vue'
 import { useRoute, RouterLink } from 'vue-router'
 import { Button } from '@/components/ui/button'
 import { ArrowLeft, ChevronDown } from 'lucide-vue-next'
+import { useAuthStore } from '@/stores/auth'
+import { useCartStore } from '@/stores/cart'
+import { useToastStore } from '@/stores/toast'
 
 const route = useRoute()
+const auth = useAuthStore()
+const cart = useCartStore()
+const toast = useToastStore()
 
 const loading = ref(true)
 const error = ref<string | null>(null)
+const itemError = ref<string | null>(null)
 
 const modelId = computed(() => route.params.id as string)
 const model = ref<ClothingModelResponseDto | null>(null)
@@ -20,6 +27,9 @@ const currVariant = computed(() => {
     v.size === selectedSize.value
   ) || null
 })
+const existingItem = cart.items.find(
+  item => item.clothingVariantID === currVariant.value!.clothingVariantID
+)
 const detailsOpen = ref(false)
 
 const selectedColor = ref<string | null>(null)
@@ -48,8 +58,34 @@ onMounted(async () => {
   }
 })
 
-function addToCart() {
-  // TODO
+async function addToCart() {
+  if (!currVariant.value) return
+
+  try {
+    const customerId = auth.person?.id
+    if (!customerId) return
+    if (existingItem) {
+      await api(`/carts/${customerId}/items/${existingItem.itemID}`, {
+        method: 'PATCH',
+        body: JSON.stringify({
+          quantity: existingItem.quantity + 1
+        })
+      })
+    } else {
+      await api(`/carts/${customerId}/items`, {
+        method: 'POST',
+        body: JSON.stringify({
+          clothingVariantID: currVariant.value.clothingVariantID,
+          quantity: 1
+        })
+      })
+    }
+    await cart.fetchCart(customerId)
+    toast.success('Item added to cart.')
+  } catch (e: unknown) {
+    itemError.value = e instanceof Error ? e.message : 'Failed to add to cart.'
+    toast.error(itemError.value!)
+  }
 }
 
 function toggleDetails() {
@@ -162,6 +198,10 @@ function isSizeAvailable(size: string) {
 
       <!-- info -->
       <div class="flex flex-col items-start pt-8 px-6">
+        <!-- brand name -->
+        <p class="text-(--text-light)">
+          {{ model?.brand }}
+        </p>
         <!-- item name -->
         <p class="text-[40px]">
           {{ model?.name }}
