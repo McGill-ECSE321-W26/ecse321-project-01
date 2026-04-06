@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import {ref} from 'vue'
-import {Pencil, UserCircle} from 'lucide-vue-next'
+import {Pencil, ShoppingBag} from 'lucide-vue-next'
 import {Button} from '@/components/ui/button'
 import {
   Dialog,
@@ -13,11 +13,13 @@ import {
 } from '@/components/ui/dialog'
 import {Input} from '@/components/ui/input'
 import {Label} from '@/components/ui/label'
+import {useRouter} from 'vue-router'
 import {useAuthStore} from '@/stores/auth'
 import {api} from '@/api/client'
-import type {CustomerResponseDto} from '@/api/types/person.ts'
+import type {CustomerResponseDto} from '@/api/types/person'
 
 const auth = useAuthStore()
+const router = useRouter()
 
 const person = ref<CustomerResponseDto | null>(auth.person as CustomerResponseDto | null)
 
@@ -83,78 +85,106 @@ async function handleAddressUpdate() {
     addressError.value = e instanceof Error ? e.message : 'Something went wrong. Please try again.'
   }
 }
+
+function getName(email: string | undefined) {
+  if (!email) return ''
+  return email.substring(0, email.indexOf('@')).replace('.', ' ')
+}
 </script>
 
 <template>
-  <div class="max-w-2xl mx-auto py-6 px-4 space-y-6">
-    <div class="flex items-center gap-3">
-      <UserCircle class="w-10 h-10 text-(--text-muted)" />
-      <h1 class="text-3xl font-bold">
-        {{ person?.email ?? auth.person?.email }}
-      </h1>
-    </div>
+  <main class="px-10 pt-16 pb-20 max-w-2xl mx-auto">
+    <!-- Heading -->
+    <h1
+      class="account-heading fade-up text-[40px] lg:text-[52px] font-normal tracking-tight leading-tight mb-2"
+      style="animation-delay: 0s"
+    >
+      <span class="text-(--text-muted)">Welcome <em class="text-(--text-light)">back</em><span class="text-(--text-light) capitalize">, {{ getName(person?.email ?? auth.person?.email) }}</span></span>
+    </h1>
+    <div class="mb-10 pb-6 border-b border-(--text-light)" />
 
-    <div class="border border-(--card-hover) rounded-xl px-4 pt-3 pb-4 space-y-4">
-      <div class="flex items-center justify-between">
-        <div>
-          <p class="text-xs text-(--text-muted) uppercase tracking-wide mb-1">
-            Address
-          </p>
-          <p class="text-sm">
-            {{ person?.address ?? 'N/A' }}
-          </p>
-        </div>
-        <Dialog v-model:open="addressDialogOpen">
-          <DialogTrigger as-child>
-            <Button
-              variant="ghost"
-              size="icon"
-            >
-              <Pencil class="w-4 h-4" />
-            </Button>
-          </DialogTrigger>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Update Address</DialogTitle>
-            </DialogHeader>
-            <div class="space-y-4">
-              <div
-                v-if="addressError"
-                class="rounded-md bg-red-50 border border-red-200 p-3 text-sm text-red-800"
-              >
-                {{ addressError }}
-              </div>
-              <div class="space-y-2">
-                <Label for="address">New Address</Label>
-                <Input
-                  id="address"
-                  v-model="newAddress"
-                  type="text"
-                  placeholder=""
-                />
-              </div>
-            </div>
-            <DialogFooter>
-              <DialogClose as-child>
-                <Button variant="outline">
-                  Cancel
-                </Button>
-              </DialogClose>
-              <Button @click="handleAddressUpdate">
-                Save Address
-              </Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
+    <div
+      class="fade-up border border-(--text-light) px-7 pt-6 pb-7 space-y-6"
+      style="animation-delay: 0.15s"
+    >
+      <div>
+        <p class="text-[12px] uppercase tracking-[0.2em] text-(--text-light) mb-2">
+          Email
+        </p>
+        <p class="text-[15px] font-light text-(--text-muted)">
+          {{ person?.email ?? auth.person?.email }}
+        </p>
       </div>
 
       <div>
-        <p class="text-xs text-(--text-muted) uppercase tracking-wide mb-1">
+        <p class="text-[12px] uppercase tracking-[0.2em] text-(--text-light) mb-2">
+          Address
+        </p>
+        <div class="flex items-center gap-2">
+          <p class="text-[15px] font-light text-(--text-muted)">
+            {{ person?.address ?? 'N/A' }}
+          </p>
+          <Dialog v-model:open="addressDialogOpen">
+            <DialogTrigger as-child>
+              <button
+                class="text-(--text-light) hover:text-(--text-muted) transition-colors"
+                title="Change address"
+              >
+                <Pencil class="w-3.5 h-3.5" />
+              </button>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Update Address</DialogTitle>
+              </DialogHeader>
+              <div class="space-y-4">
+                <div
+                  v-if="addressError"
+                  class="rounded-md bg-red-50 border border-red-200 p-3 text-sm text-red-800"
+                >
+                  {{ addressError }}
+                </div>
+                <div class="space-y-2">
+                  <Label for="address">New Address</Label>
+                  <Input
+                    id="address"
+                    v-model="newAddress"
+                    type="text"
+                    placeholder=""
+                  />
+                </div>
+              </div>
+              <DialogFooter>
+                <DialogClose as-child>
+                  <Button variant="outline">
+                    Cancel
+                  </Button>
+                </DialogClose>
+                <Button @click="handleAddressUpdate">
+                  Save Address
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+        </div>
+      </div>
+
+      <div>
+        <p class="text-[12px] uppercase tracking-[0.2em] text-(--text-light) mb-2">
           Loyalty Points
         </p>
-        <p class="text-sm">
-          {{ person?.loyaltyPoints ?? 0 }}
-        </p>
+        <div class="flex items-center gap-2">
+          <p class="text-[15px] font-light text-(--text-muted)">
+            {{ person?.loyaltyPoints ?? 0 }}
+          </p>
+          <button
+            class="text-(--text-light) hover:text-(--text-muted) transition-colors"
+            title="Spend points in the store"
+            @click="router.push({ name: 'shop' })"
+          >
+            <ShoppingBag class="w-3.5 h-3.5" />
+          </button>
+        </div>
       </div>
 
       <div class="pt-2">
@@ -217,5 +247,21 @@ async function handleAddressUpdate() {
         </Dialog>
       </div>
     </div>
-  </div>
+  </main>
 </template>
+
+<style scoped>
+.account-heading {
+  font-family: 'Playfair Display', serif;
+  letter-spacing: -1.5px;
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.fade-up {
+  animation: fadeUp 0.6s ease both;
+}
+</style>

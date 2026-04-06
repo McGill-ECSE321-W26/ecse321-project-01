@@ -6,8 +6,13 @@ import NotFoundPage from '../pages/NotFoundPage.vue'
 import AccountPage from '../pages/AccountPage.vue'
 import CartPage from '../pages/CartPage.vue'
 import ShopPage from '../pages/ShopPage.vue'
-import OrdersPage from '../pages/OrdersPage.vue'
-import ManagerDashboardPage from '../pages/ManagerDashboardPage.vue'
+import OrdersDashboardPage from '../pages/manager/OrdersDashboardPage.vue'
+import CustomerOrdersPage from '../pages/CustomerOrdersPage.vue'
+import OrderDetailPage from '../pages/OrderDetailPage.vue'
+import ManagerDashboardPage from '../pages/manager/ManagerDashboardPage.vue'
+import ManagerLayout from '../components/ManagerLayout.vue'
+import ManagerInventoryPage from '../pages/manager/ManagerInventoryPage.vue'
+import EmployeeOrdersPage from '../pages/employee/EmployeeOrdersPage.vue'
 
 // List of routes that do not require auth
 const publicRoutes = ['home', 'login', 'register', 'not-found']
@@ -21,8 +26,18 @@ const router = createRouter({
     { path: '/account', name: 'account', component: AccountPage },
     { path: '/cart', name: 'cart', component: CartPage },
     { path: '/shop', name: 'shop', component: ShopPage },
-    { path: '/manager', name: 'manager-dashboard', component: ManagerDashboardPage },
-    { path: '/manager/orders', name: 'manager-orders', component: OrdersPage },
+    { path: '/orders', name: 'orders', component: CustomerOrdersPage },
+    { path: '/employee/orders', name: 'employee-orders', component: EmployeeOrdersPage },
+    { path: '/orders/:orderID', name: 'order-detail', component: OrderDetailPage },
+    {
+      path: '/manager',
+      component: ManagerLayout,
+      children: [
+        { path: '',       name: 'manager-dashboard', component: ManagerDashboardPage },
+        { path: 'orders', name: 'manager-orders',    component: OrdersDashboardPage },
+          { path: 'inventory', name: 'manager-inventory', component: ManagerInventoryPage },
+      ],
+    },
     { path: '/:pathMatch(.*)*', name: 'not-found', component: NotFoundPage },
   ],
 })
@@ -38,6 +53,10 @@ router.beforeEach((to, _from, next) => {
 
   // All /manager/* routes are manager-only
   if (to.path.startsWith('/manager') && role !== 'Manager') {
+    next({ name: 'not-found' });
+  }
+  // All /employee/* routes are employee-only
+  else if (to.path.startsWith('/employee') && role !== 'Employee') {
     next({ name: 'not-found' });
   }
   else if (!isAuthenticated && !isRoutePublic) {

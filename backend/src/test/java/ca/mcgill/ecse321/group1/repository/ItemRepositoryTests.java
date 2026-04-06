@@ -312,7 +312,7 @@ public class ItemRepositoryTests {
   @Test
   public void testFindCartItemsByModelId_returnsCartItems() {
     // Create model and variant
-    ClothingModel model = new ClothingModel(null, "Test Jacket", 99.99f, "model.jpg");
+    ClothingModel model = new ClothingModel(null, "Test Jacket", null, "Generic", null, 99.99f);
     clothingModelRepository.save(model);
     String modelId = model.getClothingModelID();
 
@@ -348,7 +348,7 @@ public class ItemRepositoryTests {
   @Test
   public void testFindCartItemsByModelId_excludesOrderedItems() {
     // Create model and variant
-    ClothingModel model = new ClothingModel(null, "Test Shirt", 49.99f, "model.jpg");
+    ClothingModel model = new ClothingModel(null, "Test Shirt", null, "Generic", null, 49.99f);
     clothingModelRepository.save(model);
     String modelId = model.getClothingModelID();
 
@@ -413,11 +413,11 @@ public class ItemRepositoryTests {
   @Test
   public void testFindCartItemsByModelId_excludesDifferentModel() {
     // Create two models, each with a variant and a cart item
-    ClothingModel model1 = new ClothingModel(null, "Pants", 79.99f, "model.jpg");
+    ClothingModel model1 = new ClothingModel(null, "Pants", null, "Generic", null, 79.99f);
     clothingModelRepository.save(model1);
     String model1Id = model1.getClothingModelID();
 
-    ClothingModel model2 = new ClothingModel(null, "Hat", 29.99f, "model.jpg");
+    ClothingModel model2 = new ClothingModel(null, "Hat", null, "Generic", null, 29.99f);
     clothingModelRepository.save(model2);
 
     ClothingVariant variant1 =

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { RouterView } from 'vue-router'
 import NavBar from '@/components/NavBar.vue'
+import ToastContainer from '@/components/ToastContainer.vue'
 import { useAuthStore } from '@/stores/auth'
 
 const auth = useAuthStore()
@@ -11,4 +12,5 @@ const auth = useAuthStore()
   <main>
     <RouterView />
   </main>
+  <ToastContainer />
 </template>
