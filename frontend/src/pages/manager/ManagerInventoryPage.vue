@@ -14,6 +14,9 @@ import {
   DialogDescription, DialogFooter, DialogClose,
 } from '@/components/ui/dialog'
 import { api } from '@/api/client'
+import { useToastStore } from '@/stores/toast'
+
+const toast = useToastStore()
 import type {
   ClothingModelListResponseDto,
   ClothingModelResponseDto,
@@ -146,8 +149,10 @@ async function createModel() {
     })
     models.value = await api<ClothingModelListResponseDto[]>('/clothing')
     showCreateModelDialog.value = false
+    toast.success('Model created successfully.')
   } catch (e: unknown) {
     modelError.value = e instanceof Error ? e.message : 'Failed to create model.'
+    toast.error(modelError.value!)
   } finally {
     savingModel.value = false
   }
@@ -167,8 +172,10 @@ async function saveModel() {
     models.value = await api<ClothingModelListResponseDto[]>('/clothing')
     const updated = models.value.find(m => m.clothingModelID === selectedModel.value!.clothingModelID)
     if (updated) selectedModel.value = updated
+    toast.success('Model saved successfully.')
   } catch (e: unknown) {
     modelError.value = e instanceof Error ? e.message : 'Failed to save model.'
+    toast.error(modelError.value!)
   } finally {
     savingModel.value = false
   }
@@ -191,8 +198,9 @@ async function confirmDeleteModel() {
     }
     showDeleteModelDialog.value = false
     deletingModel.value = null
-  } catch {
-    // silently fail
+    toast.success('Model deleted.')
+  } catch (e: unknown) {
+    toast.error(e instanceof Error ? e.message : 'Failed to delete model.')
   } finally {
     deletingModelLoading.value = false
   }
@@ -237,8 +245,10 @@ async function createVariant() {
     }
     models.value = await api<ClothingModelListResponseDto[]>('/clothing')
     showVariantDialog.value = false
+    toast.success('Variant created successfully.')
   } catch (e: unknown) {
     variantError.value = e instanceof Error ? e.message : 'Failed to create variant.'
+    toast.error(variantError.value!)
   } finally {
     savingVariant.value = false
   }
@@ -266,8 +276,10 @@ async function saveVariantEdit(variantId: string) {
         variantForms.value[v.clothingVariantID].stockQuantity = v.stockQuantity
       }
     }
+    toast.success('Stock updated.')
   } catch (e: unknown) {
     form.error = e instanceof Error ? e.message : 'Failed to update stock.'
+    toast.error(form.error)
   } finally {
     form.saving = false
   }
@@ -294,8 +306,9 @@ async function confirmDeleteVariant() {
     models.value = await api<ClothingModelListResponseDto[]>('/clothing')
     showDeleteVariantDialog.value = false
     deletingVariant.value = null
-  } catch {
-    // silently fail
+    toast.success('Variant deleted.')
+  } catch (e: unknown) {
+    toast.error(e instanceof Error ? e.message : 'Failed to delete variant.')
   } finally {
     deletingVariantLoading.value = false
   }
