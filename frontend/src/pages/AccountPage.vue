@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {ref} from 'vue'
+import {ref, computed} from 'vue'
 import {Pencil, ShoppingBag} from 'lucide-vue-next'
 import {Button} from '@/components/ui/button'
 import {
@@ -21,7 +21,7 @@ import type {CustomerResponseDto} from '@/api/types/person'
 const auth = useAuthStore()
 const router = useRouter()
 
-const person = ref<CustomerResponseDto | null>(auth.person as CustomerResponseDto | null)
+const person = computed(() => auth.person as CustomerResponseDto | null)
 
 const oldPassword = ref('')
 const newPassword = ref('')
@@ -76,10 +76,11 @@ async function handleAddressUpdate() {
 
   try {
     // Update address
-    person.value = await api<CustomerResponseDto>(`/persons/${auth.personId}/address`, {
+    const updated = await api<CustomerResponseDto>(`/persons/${auth.personId}/address`, {
       method: 'PATCH',
       body: JSON.stringify({address: newAddress.value}),
     })
+    auth.updatePerson(updated)
     addressDialogOpen.value = false
   } catch (e) {
     addressError.value = e instanceof Error ? e.message : 'Something went wrong. Please try again.'

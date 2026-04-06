@@ -52,6 +52,11 @@ export const useAuthStore = defineStore('auth', () => {
     localStorage.removeItem('role')
   }
 
+  function updatePerson(newPerson: RoleResponseDto) {
+    person.value = newPerson
+    localStorage.setItem('person', JSON.stringify(newPerson))
+  }
+
   return {
     token,
     person,
@@ -62,5 +67,6 @@ export const useAuthStore = defineStore('auth', () => {
     login,
     register,
     logout,
+    updatePerson,
   }
 })
