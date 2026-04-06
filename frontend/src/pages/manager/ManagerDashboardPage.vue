@@ -232,7 +232,7 @@ const statCards = computed(() => [
           </RouterLink>
 
           <RouterLink
-            to="/shop"
+            to="/manager/inventory"
             class="group flex items-center justify-between py-4 border-b border-(--text-light) hover:bg-(--card-hover) px-2 -mx-2 transition-colors"
           >
             <div class="flex items-center gap-3">

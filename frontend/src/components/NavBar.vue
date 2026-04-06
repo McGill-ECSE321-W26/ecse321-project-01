@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { ref } from 'vue'
-import { RouterLink, useRouter } from 'vue-router'
+import { ref, onMounted } from 'vue'
+import { RouterLink, useRoute, useRouter } from 'vue-router'
 import { User, ShoppingCart, Menu, Store, Package, LogOut, AppWindowMac, ClipboardList } from 'lucide-vue-next'
 import { Button } from '@/components/ui/button'
 import {
@@ -8,19 +8,42 @@ import {
   DrawerContent,
 } from '@/components/ui/drawer'
 import { useAuthStore } from '@/stores/auth'
+import { useCartStore } from '@/stores/cart'
 
 const sidebarOpen = ref(false)
 const router = useRouter()
+const route = useRoute()
 const auth = useAuthStore()
+const cart = useCartStore()
 
 function handleLogout() {
   sidebarOpen.value = false
   auth.logout()
   router.push('/')
 }
+
+function backToShop() {
+  router.push({name: 'shop'})
+}
+
+onMounted(() => {
+  if (auth.role === 'Customer') {
+    cart.fetchCart(auth.personId!)
+  }
+})
+
 </script>
 
 <template>
+  <div
+    v-if="route.name !== 'home'"
+    class="flex justify-center pt-2 cursor-pointer"
+    @click="backToShop"
+  >
+    <p class="font-medium text-[40px] md:text-[55px] ">
+      Kloth
+    </p>
+  </div>
   <nav class="fixed top-0 right-0 z-50">
     <div class="flex justify-end items-center gap-4 px-8 h-16">
       <Button
@@ -47,6 +70,12 @@ function handleLogout() {
           aria-label="Cart"
         >
           <ShoppingCart class="size-5" />
+          <span
+            v-if="cart.itemCount > 0"
+            class="text-[15px]"
+          >
+            {{ cart.itemCount }}
+          </span>
         </RouterLink>
       </Button>
       <Drawer

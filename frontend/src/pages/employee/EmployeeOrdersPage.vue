@@ -218,7 +218,7 @@ function formatDate(d: Date | null) {
         >-</span>
         <div class="flex items-center gap-2">
           <button
-            class="text-[11px] uppercase tracking-widest border border-(--text-light) px-3 py-1.5 text-(--text) hover:bg-(--text) hover:text-(--bg) transition-colors"
+            class="text-[11px] uppercase tracking-widest border border-(--text-light) px-3 py-1.5 text-(--text) hover:bg-(--button-hover) hover:text-(--bg) transition-colors"
             @click="router.push({ name: 'order-detail', params: { orderID: order.orderID } })"
           >
             View
@@ -226,7 +226,7 @@ function formatDate(d: Date | null) {
           <button
             v-if="canAssignSelf(order)"
             :disabled="updatingStatus === order.orderID"
-            class="text-[11px] uppercase tracking-widest border border-(--text-light) px-3 py-1.5 text-(--text) hover:bg-(--text) hover:text-(--bg) transition-colors disabled:opacity-40"
+            class="text-[11px] uppercase tracking-widest border border-(--text-light) px-3 py-1.5 text-(--text) hover:bg-(--button-hover) hover:text-(--bg) transition-colors disabled:opacity-40"
             @click="assignSelf(order)"
           >
             Assign Me
@@ -234,7 +234,7 @@ function formatDate(d: Date | null) {
           <button
             v-if="canMarkDelivered(order)"
             :disabled="updatingStatus === order.orderID"
-            class="text-[11px] uppercase tracking-widest border border-(--text-light) px-3 py-1.5 text-(--text) hover:bg-(--text) hover:text-(--bg) transition-colors disabled:opacity-40"
+            class="text-[11px] uppercase tracking-widest border border-(--text-light) px-3 py-1.5 text-(--text) hover:bg-(--button-hover) hover:text-(--bg) transition-colors disabled:opacity-40"
             @click="markDelivered(order)"
           >
             Delivered
