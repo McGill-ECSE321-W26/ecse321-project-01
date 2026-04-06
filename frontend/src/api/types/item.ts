@@ -9,3 +9,8 @@ export interface ItemResponseDto {
   variantColor: string | null
   variantImagePath: string | null
 }
+
+export interface ItemCreateRequestDto {
+  clothingVariantID: string;
+  quantity: number;
+}
