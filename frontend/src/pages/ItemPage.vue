@@ -102,7 +102,7 @@ function isSizeAvailable(size: string) {
 <template>
   <div class="min-h-screen">
     <!-- Back to shop button -->
-    <div class="max-w-350 mx-auto py-6 pt-16 md:pt-24 flex items-center gap-3 flex-wrap">
+    <div class="max-w-350 mx-auto py-6 pt-6 md:pt-6 flex items-center gap-3 flex-wrap">
       <RouterLink to="/shop">
         <Button
           size="sm"
