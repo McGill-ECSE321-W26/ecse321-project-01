@@ -107,9 +107,12 @@ function isSizeAvailable(size: string) {
         <Button
           size="sm"
           variant="outline"
-          class="rounded-none border-(--text-light) text-[18px] tracking-wide bg-transparent text-(--text-light) hover:bg-(--card-hover) hover:border-(--text-muted) p-1"
+          class="rounded-none border-(--text-light) border-2 text-[18px] tracking-wide bg-transparent text-(--text-light) hover:bg-(--card-hover) hover:border-(--text-muted) p-1 cursor-pointer"
         >
-          <ArrowLeft :size="10" :strokeWidth="3" /> Back to shopping
+          <ArrowLeft
+            :size="10"
+            :stroke-width="3"
+          /> Back to shopping
         </Button>
       </RouterLink>
     </div>
@@ -143,10 +146,10 @@ function isSizeAvailable(size: string) {
     </div>
 
     <!-- Show item -->
-     <div
+    <div
       v-else
       class="grid grid-cols-1 md:grid-cols-2 pb-15"
-     >
+    >
       <!-- image -->
       <div class="aspect-[3/4] w-full overflow-hidden bg-(--card-hover)">
         <img
@@ -172,8 +175,8 @@ function isSizeAvailable(size: string) {
             class="w-5 h-5 rounded-full border-[1.5px] cursor-pointer transition-colors"
             :class="[
               isColorSelected(color)
-              ? 'border-(--text) scale-110'
-              : 'border-(--text-light) hover:border-(--text)',
+                ? 'border-(--text) scale-110'
+                : 'border-(--text-light) hover:border-(--text)',
               !isColorAvailable(color) && 'opacity-30 cursor-not-allowed'
             ]"
             :style="{ backgroundColor: color }"
@@ -190,11 +193,11 @@ function isSizeAvailable(size: string) {
             :variant="isSizeSelected(size) ? 'default' : 'outline'"
             :disabled="!isSizeAvailable(size)"
             size="lg"
-            class="rounded-none border-(--text-light) text-[18px] tracking-wide w-12.5"
+            class="rounded-none border-(--text-light) text-[18px] tracking-wide w-12.5 cursor-pointer"
             :class="[
               isSizeSelected(size)
-              ? 'bg-(--text) text-(--bg)'
-              : 'bg-transparent text-(--text-muted) hover:bg-(--card-hover) hover:border-(--text-muted)',
+                ? 'bg-(--text) text-(--bg)'
+                : 'bg-transparent text-(--text-muted) hover:bg-(--card-hover) hover:border-(--text-muted)',
               !isSizeAvailable(size) && 'bg-(--card-hover) cursor-not-allowed'
             ]"
             @click="selectSize(size)"
@@ -206,24 +209,31 @@ function isSizeAvailable(size: string) {
         <!-- add to cart button -->
         <span class="pb-60"><Button
           size="lg"
-          class="rounded-none text-[20px] font-medium text-(--bg) py-6 bg-(--button-hover) hover:bg-[#773f23]"
-          @click="addToCart">
-          Add to Cart &nbsp {{ model?.price }}$
+          class="rounded-none cursor-pointer text-[20px] font-medium text-(--bg) py-6 bg-(--button-hover) hover:bg-[#773f23]"
+          @click="addToCart"
+        >
+          Add to Cart &nbsp; {{ model?.price }}$
         </Button></span>
 
         <!-- details -->
         <Button
           size="sm"
-          class="bg-transparent text-(--text) rounded-none hover:bg-(--card-hover)"
-          @click="toggleDetails">
+          class="bg-transparent text-(--text) rounded-none cursor-pointer hover:bg-(--card-hover)"
+          @click="toggleDetails"
+        >
           <span>Details</span>
-          <ChevronDown class="transition-transform duration-500" :class="{ 'rotate-180': detailsOpen }"/>
+          <ChevronDown
+            class="transition-transform duration-500"
+            :class="{ 'rotate-180': detailsOpen }"
+          />
         </Button>
-        <div v-show="detailsOpen" class="mt-3 text-(--text-muted) leading-relaxed">
+        <div
+          v-show="detailsOpen"
+          class="mt-3 text-(--text-muted) leading-relaxed"
+        >
           {{ model?.description }}
         </div>
       </div>
-     </div>
-
+    </div>
   </div>
 </template>
