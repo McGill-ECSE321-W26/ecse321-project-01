@@ -575,7 +575,7 @@ function formatPrice(price: number): string {
             </button>
             <button
               :disabled="savingModel"
-              class="text-[11px] uppercase tracking-widest border border-(--text-light) px-5 py-2 text-(--text) hover:bg-(--text) hover:text-(--bg) transition-colors disabled:opacity-40"
+              class="text-[11px] uppercase tracking-widest border border-(--text-light) px-5 py-2 text-(--text) hover:bg-(--button-hover) hover:text-(--bg) transition-colors disabled:opacity-40"
               @click="saveModel"
             >
               {{ savingModel ? 'Saving...' : 'Save Changes' }}
@@ -674,7 +674,7 @@ function formatPrice(price: number): string {
               <div class="flex items-center gap-2 mt-auto pt-2 border-t border-(--text-light)">
                 <button
                   :disabled="variantForms[variant.clothingVariantID]?.saving"
-                  class="flex-1 text-[11px] uppercase tracking-widest border border-(--text-light) px-3 py-1.5 text-(--text) hover:bg-(--text) hover:text-(--bg) transition-colors disabled:opacity-40"
+                  class="flex-1 text-[11px] uppercase tracking-widest border border-(--text-light) px-3 py-1.5 text-(--text) hover:bg-(--button-hover) hover:text-(--bg) transition-colors disabled:opacity-40"
                   @click="saveVariantEdit(variant.clothingVariantID)"
                 >
                   {{ variantForms[variant.clothingVariantID]?.saving ? 'Saving...' : 'Save' }}
