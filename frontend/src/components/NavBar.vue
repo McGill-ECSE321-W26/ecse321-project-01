@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
-import { RouterLink, useRouter } from 'vue-router'
+import { RouterLink, useRoute, useRouter } from 'vue-router'
 import { User, ShoppingCart, Menu, Store, Package, LogOut, AppWindowMac, ClipboardList } from 'lucide-vue-next'
 import { Button } from '@/components/ui/button'
 import {
@@ -12,6 +12,7 @@ import { useCartStore } from '@/stores/cart'
 
 const sidebarOpen = ref(false)
 const router = useRouter()
+const route = useRoute()
 const auth = useAuthStore()
 const cart = useCartStore()
 
@@ -34,7 +35,8 @@ onMounted(() => {
 </script>
 
 <template>
-  <div 
+  <div
+    v-if="route.name !== 'home'"
     class="flex justify-center pt-2 cursor-pointer"
     @click="backToShop"
   >
