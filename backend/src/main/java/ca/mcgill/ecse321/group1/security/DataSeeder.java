@@ -68,75 +68,326 @@ public class DataSeeder {
     Customer cust5 =
         createCustomer("alex.tremblay@example.com", "654 Cedar Dr, Brossard, QC J4Y 1M8", 0);
 
-    // Clothing Models & Variants
-    // Classic T-Shirt multiple colors and sizes
+    // Clothing Models & Variants — each model gets a variant for every size (S M L XL) per color
+
+    // Classic T-Shirt — white, black, navy
     ClothingModel tshirt =
         createClothingModel(
-            "Classic T-Shirt", 24.99f, "https://picsum.photos/seed/tshirt/400/400.jpg");
-    ClothingVariant tshirtWhiteS = createVariant(tshirt, Size.S, "White", 30);
-    ClothingVariant tshirtWhiteM = createVariant(tshirt, Size.M, "White", 45);
-    ClothingVariant tshirtBlackM = createVariant(tshirt, Size.M, "Black", 40);
-    ClothingVariant tshirtBlackL = createVariant(tshirt, Size.L, "Black", 25);
-    ClothingVariant tshirtNavyXL = createVariant(tshirt, Size.XL, "Navy", 15);
+            "Classic T-Shirt", "Kloth Essentials", ClothingModel.Category.Tops, 25f);
+    ClothingVariant[] tshirtWhiteAll =
+        createAllSizes(
+            tshirt,
+            "#FFFFFF",
+            30,
+            "https://i.pinimg.com/1200x/06/7d/03/067d0313c3e9482aef3804296aadd53c.jpg");
+    ClothingVariant tshirtWhiteS = tshirtWhiteAll[0], tshirtWhiteM = tshirtWhiteAll[1];
+    ClothingVariant[] tshirtBlackAll =
+        createAllSizes(
+            tshirt,
+            "#1C1C1C",
+            30,
+            "https://i.pinimg.com/1200x/fb/7f/6a/fb7f6a6963520f0ff5b638f73404a176.jpg");
+    ClothingVariant tshirtBlackM = tshirtBlackAll[1], tshirtBlackL = tshirtBlackAll[2];
+    ClothingVariant[] tshirtCreamAll =
+        createAllSizes(
+            tshirt,
+            "#D4C8B8",
+            15,
+            "https://i.pinimg.com/1200x/2d/7b/21/2d7b21a072cd538589f63358fbd35520.jpg");
+    ClothingVariant tshirtCreamXL = tshirtCreamAll[3];
 
-    // Premium Hoodie
+    // Premium Hoodie — gray, black
     ClothingModel hoodie =
-        createClothingModel(
-            "Premium Hoodie", 59.99f, "https://picsum.photos/seed/hoodie/400/400.jpg");
-    ClothingVariant hoodieGrayM = createVariant(hoodie, Size.M, "Gray", 20);
-    ClothingVariant hoodieGrayL = createVariant(hoodie, Size.L, "Gray", 18);
-    ClothingVariant hoodieBlackL = createVariant(hoodie, Size.L, "Black", 22);
-    ClothingVariant hoodieBlackXL = createVariant(hoodie, Size.XL, "Black", 10);
+        createClothingModel("Premium Hoodie", "Kloth Originals", ClothingModel.Category.Tops, 60f);
+    ClothingVariant[] hoodieTealAll =
+        createAllSizes(
+            hoodie,
+            "#738C89",
+            20,
+            "https://i.pinimg.com/1200x/fe/5e/0d/fe5e0d2891819e1981e996b5e7670516.jpg");
+    ClothingVariant hoodieTealM = hoodieTealAll[1], hoodieTealL = hoodieTealAll[2];
+    ClothingVariant[] hoodieBlackAll =
+        createAllSizes(
+            hoodie,
+            "#1C1C1C",
+            15,
+            "https://i.pinimg.com/736x/f7/67/9c/f7679c84bd40669b7b66c021244205cd.jpg");
+    ClothingVariant hoodieBlackL = hoodieBlackAll[2], hoodieBlackXL = hoodieBlackAll[3];
+    createAllSizes(
+        hoodie,
+        "#F0F0F0",
+        25,
+        "https://i.pinimg.com/1200x/12/db/1e/12db1e73ed55afba605c3a4f2fa846c1.jpg");
+    createAllSizes(
+        hoodie,
+        "#BA8C5D",
+        20,
+        "https://i.pinimg.com/736x/6c/84/18/6c841808f0bce9dbdead9b03cd4e95ef.jpg");
 
-    // Slim Fit Jeans
+    // Slim Fit Jeans — blue, black
     ClothingModel jeans =
         createClothingModel(
-            "Slim Fit Jeans", 79.99f, "https://picsum.photos/seed/jeans/400/400.jpg");
-    ClothingVariant jeansBlueS = createVariant(jeans, Size.S, "Blue", 12);
-    ClothingVariant jeansBlueM = createVariant(jeans, Size.M, "Blue", 20);
-    ClothingVariant jeansBlueL = createVariant(jeans, Size.L, "Blue", 16);
-    ClothingVariant jeansBlackM = createVariant(jeans, Size.M, "Black", 14);
+            "Slim Fit Jeans", "Kloth Essentials", ClothingModel.Category.Bottoms, 80f);
+    ClothingVariant[] jeansNavyAll =
+        createAllSizes(
+            jeans,
+            "#1E2646",
+            15,
+            "https://i.pinimg.com/736x/60/1b/81/601b81e9cddcf47572109478ec6dcc9f.jpg");
+    ClothingVariant jeansNavyS = jeansNavyAll[0],
+        jeansNavyM = jeansNavyAll[1],
+        jeansNavyL = jeansNavyAll[2];
+    ClothingVariant[] jeansBlackAll =
+        createAllSizes(
+            jeans,
+            "#1C1C1C",
+            14,
+            "https://i.pinimg.com/1200x/97/15/2b/97152b14dca6a17d97d4ddde72fed822.jpg");
+    ClothingVariant jeansBlackM = jeansBlackAll[1];
+    createAllSizes(
+        jeans,
+        "#7D91B2",
+        20,
+        "https://i.pinimg.com/736x/be/d4/96/bed4962afa439eff895791b265e50f44.jpg");
 
-    // Summer Floral Dress
+    // Summer Floral Dress — pink
     ClothingModel dress =
         createClothingModel(
-            "Summer Floral Dress", 49.99f, "https://picsum.photos/seed/dress/400/400.jpg");
-    ClothingVariant dressFloralS = createVariant(dress, Size.S, "Floral", 8);
-    ClothingVariant dressFloralM = createVariant(dress, Size.M, "Floral", 12);
-    ClothingVariant dressFloralL = createVariant(dress, Size.L, "Floral", 6);
+            "Summer Floral Dress", "Kloth Studio", ClothingModel.Category.Dresses, 50f);
+    ClothingVariant[] dressFloralAll =
+        createAllSizes(
+            dress,
+            "#E8A0BF",
+            10,
+            "https://i.pinimg.com/736x/17/b3/22/17b322a3ad5739100771ef76a8d3caaf.jpg");
+    ClothingVariant dressFloralS = dressFloralAll[0],
+        dressFloralM = dressFloralAll[1],
+        dressFloralL = dressFloralAll[2];
 
-    // Bomber Jacket
+    // Bomber Jacket — olive, black
     ClothingModel jacket =
         createClothingModel(
-            "Bomber Jacket", 119.99f, "https://picsum.photos/seed/jacket/400/400.jpg");
-    ClothingVariant jacketOliveM = createVariant(jacket, Size.M, "Olive", 7);
-    ClothingVariant jacketOliveL = createVariant(jacket, Size.L, "Olive", 9);
-    ClothingVariant jacketBlackL = createVariant(jacket, Size.L, "Black", 11);
-    ClothingVariant jacketBlackXL = createVariant(jacket, Size.XL, "Black", 5);
+            "Bomber Jacket", "Kloth Originals", ClothingModel.Category.Outerwear, 120f);
+    ClothingVariant[] jacketOliveAll =
+        createAllSizes(
+            jacket,
+            "#556B2F",
+            8,
+            "https://i.pinimg.com/1200x/19/b8/c8/19b8c859b11a00767e73519129819f8a.jpg");
+    ClothingVariant jacketOliveM = jacketOliveAll[1], jacketOliveL = jacketOliveAll[2];
+    ClothingVariant[] jacketBlackAll =
+        createAllSizes(
+            jacket,
+            "#1C1C1C",
+            8,
+            "https://i.pinimg.com/736x/64/af/d8/64afd894c2c6ef02e57c2d8298eb3fd4.jpg");
+    ClothingVariant jacketBlackL = jacketBlackAll[2], jacketBlackXL = jacketBlackAll[3];
 
-    // Classic Polo Shirt
+    // Classic Polo Shirt — white, navy
     ClothingModel polo =
         createClothingModel(
-            "Classic Polo Shirt", 39.99f, "https://picsum.photos/seed/polo/400/400.jpg");
-    ClothingVariant poloWhiteM = createVariant(polo, Size.M, "White", 25);
-    ClothingVariant poloNavyM = createVariant(polo, Size.M, "Navy", 20);
-    ClothingVariant poloNavyL = createVariant(polo, Size.L, "Navy", 18);
-
-    // Cargo Shorts
+            "Classic Polo Shirt", "Kloth Essentials", ClothingModel.Category.Tops, 40f);
+    ClothingVariant[] poloWhiteAll =
+        createAllSizes(
+            polo,
+            "#FFFFFF",
+            20,
+            "https://i.pinimg.com/1200x/7f/63/8c/7f638cdad4844d451b0c5e064900d826.jpg");
+    ClothingVariant poloWhiteM = poloWhiteAll[1];
+    ClothingVariant[] poloNavyAll =
+        createAllSizes(
+            polo,
+            "#1F305E",
+            18,
+            "https://i.pinimg.com/1200x/a5/7b/5c/a57b5c3af8531b36e6be94d7afa5f581.jpg");
+    ClothingVariant poloNavyM = poloNavyAll[1], poloNavyL = poloNavyAll[2];
+    createAllSizes(
+        polo,
+        "#1C564A",
+        20,
+        "https://i.pinimg.com/1200x/da/b4/ff/dab4ffbd58f51266b8fb4edc2687b443.jpg");
+    createAllSizes(
+        polo,
+        "#641826",
+        25,
+        "https://i.pinimg.com/1200x/21/03/d2/2103d260cb11f09909454ad4731bac47.jpg");
+    createAllSizes(
+        polo,
+        "#8E6E57",
+        20,
+        "https://i.pinimg.com/736x/9e/cb/7b/9ecb7bc67d9960862250ce997d5dd738.jpg");
+    createAllSizes(
+        polo,
+        "#93928E",
+        35,
+        "https://i.pinimg.com/1200x/35/31/3e/35313ea8a71b08015b84a8e459a64614.jpg");
+    createAllSizes(
+        polo,
+        "#19181C",
+        15,
+        "https://i.pinimg.com/1200x/5d/13/f4/5d13f484d8f6a06f5f754edb9fa6bc81.jpg");
+    // Cargo Shorts — khaki, black
     ClothingModel shorts =
-        createClothingModel(
-            "Cargo Shorts", 34.99f, "https://picsum.photos/seed/shorts/400/400.jpg");
-    ClothingVariant shortsKhakiS = createVariant(shorts, Size.S, "Khaki", 15);
-    ClothingVariant shortsKhakiM = createVariant(shorts, Size.M, "Khaki", 22);
-    ClothingVariant shortsKhakiL = createVariant(shorts, Size.L, "Khaki", 18);
-    ClothingVariant shortsBlackM = createVariant(shorts, Size.M, "Black", 20);
+        createClothingModel("Cargo Shorts", "Kloth Originals", ClothingModel.Category.Bottoms, 35f);
+    ClothingVariant[] shortsKhakiAll =
+        createAllSizes(
+            shorts,
+            "#928D79",
+            18,
+            "https://i.pinimg.com/1200x/34/1a/bc/341abc0a9fdebd4539b312d48af5b961.jpg");
+    ClothingVariant shortsKhakiS = shortsKhakiAll[0],
+        shortsKhakiM = shortsKhakiAll[1],
+        shortsKhakiL = shortsKhakiAll[2];
+    ClothingVariant[] shortsBlackAll =
+        createAllSizes(
+            shorts,
+            "#1C1C1C",
+            20,
+            "https://i.pinimg.com/736x/6a/89/7f/6a897f9ee86159a8b8272a6b4164c09c.jpg");
+    ClothingVariant shortsBlackM = shortsBlackAll[1];
 
-    // Limited Edition Tee mostly out-of-stock for UI edge-case testing
+    // Limited Edition Tee — black (mostly out-of-stock for UI edge-case testing)
     ClothingModel rareItem =
         createClothingModel(
-            "Limited Edition Tee", 89.99f, "https://picsum.photos/seed/limited/400/400.jpg");
-    ClothingVariant rareTeeBlackM = createVariant(rareItem, Size.M, "Black", 0);
-    ClothingVariant rareTeeBlackL = createVariant(rareItem, Size.L, "Black", 2);
+            "Limited Edition Tee", "Kloth Studio", ClothingModel.Category.Tops, 90f);
+    createVariant(
+        rareItem,
+        Size.S,
+        "#1C1C1C",
+        0,
+        "https://i.pinimg.com/1200x/3b/2a/b7/3b2ab7abb02ed11a1f497b9938df5e6a.jpg");
+    ClothingVariant rareTeeBlackM =
+        createVariant(
+            rareItem,
+            Size.M,
+            "#1C1C1C",
+            0,
+            "https://i.pinimg.com/1200x/3b/2a/b7/3b2ab7abb02ed11a1f497b9938df5e6a.jpg");
+    ClothingVariant rareTeeBlackL =
+        createVariant(
+            rareItem,
+            Size.L,
+            "#1C1C1C",
+            2,
+            "https://i.pinimg.com/1200x/3b/2a/b7/3b2ab7abb02ed11a1f497b9938df5e6a.jpg");
+    createVariant(
+        rareItem,
+        Size.XL,
+        "#1C1C1C",
+        0,
+        "https://i.pinimg.com/1200x/3b/2a/b7/3b2ab7abb02ed11a1f497b9938df5e6a.jpg");
+
+    // Relaxed Cargo Trousers — tan, dark, taupe
+    ClothingModel cargoTrousers =
+        createClothingModel(
+            "Relaxed Cargo Trousers", "Kloth Essentials", ClothingModel.Category.Bottoms, 98f);
+    ClothingVariant[] cargoTrousersTanAll =
+        createAllSizes(
+            cargoTrousers,
+            "#C2B49A",
+            15,
+            "https://i.pinimg.com/736x/2f/0c/02/2f0c02c0dc68e1fd7da4a58b6249e7d1.jpg");
+    ClothingVariant cargoTrousersTanM = cargoTrousersTanAll[1],
+        cargoTrousersTanL = cargoTrousersTanAll[2];
+    createAllSizes(
+        cargoTrousers,
+        "#3B3A32",
+        15,
+        "https://i.pinimg.com/736x/04/45/b8/0445b8b4567a01b3acee022f3c34e92a.jpg");
+    ClothingVariant[] cargoTrousersOliveAll =
+        createAllSizes(
+            cargoTrousers,
+            "#6B6455",
+            10,
+            "https://i.pinimg.com/1200x/c6/54/eb/c654eb35700ce012b0a3e5b49b996aec.jpg");
+    ClothingVariant cargoTrousersOliveL = cargoTrousersOliveAll[2];
+
+    // Pleated Wide-Leg Pants — tan, black, taupe
+    ClothingModel wideLegPants =
+        createClothingModel(
+            "Pleated Wide-Leg Pants", "Kloth Essentials", ClothingModel.Category.Bottoms, 115f);
+    ClothingVariant[] wideLegTanAll =
+        createAllSizes(
+            wideLegPants,
+            "#C2B49A",
+            12,
+            "https://i.pinimg.com/736x/ba/98/3b/ba983bea4447a4d9607f057cf7bc390a.jpg");
+    ClothingVariant wideLegTanS = wideLegTanAll[0], wideLegTanM = wideLegTanAll[1];
+    ClothingVariant[] wideLegBlackAll =
+        createAllSizes(
+            wideLegPants,
+            "#1A1A18",
+            10,
+            "https://i.pinimg.com/736x/cb/5f/66/cb5f662a291bbc94dbee403d719c65fc.jpg");
+    ClothingVariant wideLegBlackM = wideLegBlackAll[1];
+    createAllSizes(
+        wideLegPants,
+        "#6B6455",
+        8,
+        "https://i.pinimg.com/736x/b9/d1/b6/b9d1b699f95b34d74167aba7120f28a4.jpg");
+
+    // Linen Blend Camp Shirt — cream, tan
+    ClothingModel campShirt =
+        createClothingModel(
+            "Linen Blend Camp Shirt", "Kloth Studio", ClothingModel.Category.Tops, 78f);
+    ClothingVariant[] campShirtCreamAll =
+        createAllSizes(
+            campShirt,
+            "#78685B",
+            12,
+            "https://i.pinimg.com/1200x/df/da/a7/dfdaa721dd42d5270cdab1cbdb4f7551.jpg");
+    ClothingVariant campShirtWhiteS = campShirtCreamAll[0], campShirtWhiteM = campShirtCreamAll[1];
+    ClothingVariant[] campShirtTanAll =
+        createAllSizes(
+            campShirt,
+            "#EDEDEB",
+            10,
+            "https://i.pinimg.com/1200x/1b/db/6c/1bdb6ccae4a4f417cee45cee454258e9.jpg");
+    ClothingVariant campShirtTanM = campShirtTanAll[1], campShirtTanL = campShirtTanAll[2];
+
+    createAllSizes(
+        campShirt,
+        "#201E1F",
+        15,
+        "https://i.pinimg.com/1200x/aa/2f/e9/aa2fe9071a9e77654f4b9ac97d8ad2ec.jpg");
+
+    // Nylon Crossbody Bag — black, olive
+    ClothingModel crossbodyBag =
+        createClothingModel(
+            "Nylon Crossbody Bag", "Kloth Accessories", ClothingModel.Category.Accessories, 65f);
+    ClothingVariant[] crossbodyBlackAll =
+        createAllSizes(
+            crossbodyBag,
+            "#1A1A18",
+            15,
+            "https://i.pinimg.com/1200x/4b/9e/e3/4b9ee37cf344ddc311721688b4e6e735.jpg");
+    ClothingVariant crossbodyBlackS = crossbodyBlackAll[0], crossbodyBlackM = crossbodyBlackAll[1];
+    ClothingVariant[] crossbodyOliveAll =
+        createAllSizes(
+            crossbodyBag,
+            "#E6DFD1",
+            10,
+            "https://i.pinimg.com/1200x/38/59/59/385959b4ac8b1645520c6c5f75dc9fb3.jpg");
+    ClothingVariant crossbodyOliveS = crossbodyOliveAll[0];
+
+    // Layered Coach Jacket — navy, black
+    ClothingModel coachJacket =
+        createClothingModel(
+            "Layered Coach Jacket", "Kloth Originals", ClothingModel.Category.Outerwear, 165f);
+    ClothingVariant[] coachNavyAll =
+        createAllSizes(
+            coachJacket,
+            "#2C3040",
+            8,
+            "https://i.pinimg.com/1200x/9c/19/30/9c19307112b6085044fde3642dcf02a0.jpg");
+    ClothingVariant coachNavyM = coachNavyAll[1], coachNavyL = coachNavyAll[2];
+    ClothingVariant[] coachBlackAll =
+        createAllSizes(
+            coachJacket,
+            "#3B3A32",
+            8,
+            "https://i.pinimg.com/1200x/6d/80/c2/6d80c240d452822ce23d8db480c43cd1.jpg");
+    ClothingVariant coachBlackM = coachBlackAll[1], coachBlackL = coachBlackAll[2];
 
     // Orders
     // cust1: 2 delivered, 1 preparing
@@ -150,7 +401,7 @@ public class DataSeeder {
             "123 Maple St, Montreal, QC H3A 1B1",
             0f);
     addItemToOrder(order1, tshirtBlackM, 2, tshirt.getPrice());
-    addItemToOrder(order1, hoodieGrayM, 1, hoodie.getPrice());
+    addItemToOrder(order1, hoodieTealM, 1, hoodie.getPrice());
 
     Order order2 =
         createOrder(
@@ -161,7 +412,7 @@ public class DataSeeder {
             date("2026-02-12"),
             "123 Maple St, Montreal, QC H3A 1B1",
             5f);
-    addItemToOrder(order2, jeansBlueL, 1, jeans.getPrice());
+    addItemToOrder(order2, jeansNavyL, 1, jeans.getPrice());
     addItemToOrder(order2, poloNavyM, 2, polo.getPrice());
 
     Order order3 =
@@ -174,6 +425,7 @@ public class DataSeeder {
             "123 Maple St, Montreal, QC H3A 1B1",
             0f);
     addItemToOrder(order3, jacketOliveM, 1, jacket.getPrice());
+    addItemToOrder(order3, campShirtWhiteM, 2, campShirt.getPrice());
 
     // cust2: 1 delivered, 1 cancelled, 1 preparing
     Order order4 =
@@ -187,6 +439,7 @@ public class DataSeeder {
             10f);
     addItemToOrder(order4, dressFloralM, 1, dress.getPrice());
     addItemToOrder(order4, shortsKhakiM, 2, shorts.getPrice());
+    addItemToOrder(order4, crossbodyBlackM, 1, crossbodyBag.getPrice());
 
     Order order5 =
         createOrder(
@@ -209,7 +462,7 @@ public class DataSeeder {
             "456 Oak Ave, Montreal, QC H2X 2C3",
             15f);
     addItemToOrder(order6, jacketBlackL, 1, jacket.getPrice());
-    addItemToOrder(order6, tshirtNavyXL, 3, tshirt.getPrice());
+    addItemToOrder(order6, tshirtCreamXL, 3, tshirt.getPrice());
 
     // cust3: 1 delivered
     Order order7 =
@@ -237,6 +490,8 @@ public class DataSeeder {
             20f);
     addItemToOrder(order8, jeansBlackM, 1, jeans.getPrice());
     addItemToOrder(order8, hoodieBlackL, 1, hoodie.getPrice());
+    addItemToOrder(order8, wideLegBlackM, 1, wideLegPants.getPrice());
+    addItemToOrder(order8, coachNavyL, 1, coachJacket.getPrice());
 
     Order order9 =
         createOrder(
@@ -263,6 +518,7 @@ public class DataSeeder {
     addItemToOrder(order10, jacketOliveL, 1, jacket.getPrice());
     addItemToOrder(order10, shortsBlackM, 2, shorts.getPrice());
     addItemToOrder(order10, jacketBlackXL, 1, jacket.getPrice());
+    addItemToOrder(order10, cargoTrousersTanM, 1, cargoTrousers.getPrice());
 
     // Spread remaining variants across extra orders for emp3 load
     Order order11 =
@@ -274,17 +530,51 @@ public class DataSeeder {
             date("2026-03-15"),
             "789 Pine Rd, Laval, QC H7N 4E5",
             0f);
-    addItemToOrder(order11, jeansBlueM, 1, jeans.getPrice());
-    addItemToOrder(order11, hoodieGrayL, 1, hoodie.getPrice());
+    addItemToOrder(order11, jeansNavyM, 1, jeans.getPrice());
+    addItemToOrder(order11, hoodieTealL, 1, hoodie.getPrice());
     addItemToOrder(order11, shortsKhakiL, 1, shorts.getPrice());
     addItemToOrder(order11, dressFloralL, 1, dress.getPrice());
     addItemToOrder(order11, poloNavyL, 1, polo.getPrice());
     addItemToOrder(order11, tshirtBlackL, 1, tshirt.getPrice());
+    addItemToOrder(order11, campShirtTanM, 1, campShirt.getPrice());
+
+    // cust2: new accessories order
+    Order order12 =
+        createOrder(
+            cust2,
+            emp2,
+            OrderStatus.Delivered,
+            date("2026-03-01"),
+            date("2026-03-06"),
+            "456 Oak Ave, Montreal, QC H2X 2C3",
+            0f);
+    addItemToOrder(order12, crossbodyOliveS, 1, crossbodyBag.getPrice());
+    addItemToOrder(order12, coachBlackM, 1, coachJacket.getPrice());
+    addItemToOrder(order12, cargoTrousersOliveL, 1, cargoTrousers.getPrice());
+
+    // cust1: new order with wide-leg pants
+    Order order13 =
+        createOrder(
+            cust1,
+            emp2,
+            OrderStatus.Delivered,
+            date("2026-03-12"),
+            date("2026-03-18"),
+            "123 Maple St, Montreal, QC H3A 1B1",
+            10f);
+    addItemToOrder(order13, wideLegTanS, 1, wideLegPants.getPrice());
+    addItemToOrder(order13, campShirtWhiteS, 1, campShirt.getPrice());
+    addItemToOrder(order13, coachNavyM, 1, coachJacket.getPrice());
 
     // Cart items (in-cart, not yet ordered)
     createCartItem(cust3, hoodieBlackXL, 1, hoodie.getPrice());
+    createCartItem(cust3, wideLegTanM, 1, wideLegPants.getPrice());
     createCartItem(cust5, tshirtBlackM, 2, tshirt.getPrice());
-    createCartItem(cust5, jeansBlueS, 1, jeans.getPrice());
+    createCartItem(cust5, jeansNavyS, 1, jeans.getPrice());
+    createCartItem(cust5, crossbodyBlackS, 1, crossbodyBag.getPrice());
+    createCartItem(cust1, coachBlackL, 1, coachJacket.getPrice());
+    createCartItem(cust1, cargoTrousersTanL, 2, cargoTrousers.getPrice());
+    createCartItem(cust2, campShirtTanL, 1, campShirt.getPrice());
     // rareTeeBlackM is 0-stock useful for testing "out of stock" display in catalog
     createCartItem(cust4, rareTeeBlackM, 1, rareItem.getPrice());
   }
@@ -314,20 +604,24 @@ public class DataSeeder {
     return customerRepository.save(cust);
   }
 
-  private ClothingModel createClothingModel(String name, float price, String imagePath) {
+  private ClothingModel createClothingModel(
+      String name, String brand, ClothingModel.Category category, float price) {
     ClothingModel model = new ClothingModel();
     model.setName(name);
+    model.setBrand(brand);
+    model.setCategory(category);
     model.setPrice(price);
-    model.setImagePath(imagePath);
     return clothingModelRepository.save(model);
   }
 
-  private ClothingVariant createVariant(ClothingModel model, Size size, String color, int stock) {
+  private ClothingVariant createVariant(
+      ClothingModel model, Size size, String color, int stock, String imagePath) {
     ClothingVariant variant = new ClothingVariant();
     variant.setModel(model);
     variant.setSize(size);
     variant.setColor(color);
     variant.setStockQuantity(stock);
+    variant.setImagePath(imagePath);
     return clothingVariantRepository.save(variant);
   }
 
@@ -367,6 +661,16 @@ public class DataSeeder {
     item.setPrice(unitPrice * quantity);
     item.setCustomer(customer);
     itemRepository.save(item);
+  }
+
+  private ClothingVariant[] createAllSizes(
+      ClothingModel model, String color, int stock, String imagePath) {
+    Size[] sizes = {Size.S, Size.M, Size.L, Size.XL};
+    ClothingVariant[] variants = new ClothingVariant[4];
+    for (int i = 0; i < sizes.length; i++) {
+      variants[i] = createVariant(model, sizes[i], color, stock, imagePath);
+    }
+    return variants; // index: 0=S, 1=M, 2=L, 3=XL
   }
 
   private Date date(String iso) {

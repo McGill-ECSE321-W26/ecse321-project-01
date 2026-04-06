@@ -2,8 +2,11 @@ package ca.mcgill.ecse321.group1.dto;
 
 import ca.mcgill.ecse321.group1.model.ClothingModel;
 import ca.mcgill.ecse321.group1.model.ClothingVariant;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
-public class ClothingModelResponseDto {
+public class ClothingModelListResponseDto {
 
   private String clothingModelID;
   private String name;
@@ -12,10 +15,11 @@ public class ClothingModelResponseDto {
   private ClothingModel.Category category;
   private float price;
   private int totalStockQuantity;
+  private List<VariantSummaryDto> variants;
 
-  public ClothingModelResponseDto() {}
+  public ClothingModelListResponseDto() {}
 
-  public ClothingModelResponseDto(ClothingModel model) {
+  public ClothingModelListResponseDto(ClothingModel model) {
     this.clothingModelID = model.getClothingModelID();
     this.name = model.getName();
     this.description = model.getDescription();
@@ -27,6 +31,19 @@ public class ClothingModelResponseDto {
             .filter(v -> !v.getArchived())
             .mapToInt(ClothingVariant::getStockQuantity)
             .sum();
+    // We want to get a list of variants, but only their image and color which will be used in the
+    // main clothing shop page. It should not return variants with duplicate colors, as only 1 image
+    // is needed per unique color, so we use a Set to track seen colors and filter accordingly.
+    Set<String> seenColors = new HashSet<>();
+    this.variants =
+        model.getClothingVariants().stream()
+            .filter(v -> !v.getArchived())
+            .filter(
+                v ->
+                    seenColors.add(
+                        v.getColor())) // set add() methods returns false for duplicate colors
+            .map(v -> new VariantSummaryDto(v.getImagePath(), v.getColor()))
+            .toList();
   }
 
   public String getClothingModelID() {
@@ -83,5 +100,41 @@ public class ClothingModelResponseDto {
 
   public void setTotalStockQuantity(int totalStockQuantity) {
     this.totalStockQuantity = totalStockQuantity;
+  }
+
+  public List<VariantSummaryDto> getVariants() {
+    return variants;
+  }
+
+  public void setVariants(List<VariantSummaryDto> variants) {
+    this.variants = variants;
+  }
+
+  public static class VariantSummaryDto {
+    private String imagePath;
+    private String color;
+
+    public VariantSummaryDto() {}
+
+    public VariantSummaryDto(String imagePath, String color) {
+      this.imagePath = imagePath;
+      this.color = color;
+    }
+
+    public String getImagePath() {
+      return imagePath;
+    }
+
+    public void setImagePath(String imagePath) {
+      this.imagePath = imagePath;
+    }
+
+    public String getColor() {
+      return color;
+    }
+
+    public void setColor(String color) {
+      this.color = color;
+    }
   }
 }

@@ -48,6 +48,7 @@
   --text-muted: #6b6860;
   --text-light: #9a958a;
   --card-hover: #e4dfd3;
+  --button-hover: #AE5A31;
   /* Custom color palette */
 
   --radius: 0.625rem;
@@ -115,6 +116,10 @@
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.556 0 0);
+}
+.home-page nav svg {
+  color: #fff;
+  stroke: #fff;
 }
 
 @layer base {
