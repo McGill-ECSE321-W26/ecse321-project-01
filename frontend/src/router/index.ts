@@ -47,9 +47,8 @@ const router = createRouter({
     },
     { path: '/:pathMatch(.*)*', name: 'not-found', component: NotFoundPage },
   ],
+  // @ts-ignore
   scrollBehavior(to, from, savedPosition) {
-    to
-    from
     if (savedPosition) {
       return savedPosition
     } else {
