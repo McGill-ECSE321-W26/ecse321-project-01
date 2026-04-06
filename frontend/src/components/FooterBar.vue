@@ -13,9 +13,9 @@ const props = withDefaults(defineProps<{
 <template>
   <footer :class="['footer-bar', props.variant === 'dark' ? 'footer-dark' : 'footer-light']">
     <RouterLink
-        v-if="route.path !== '/'"
-        to="/"
-        class="footer-logo"
+      v-if="route.path !== '/'"
+      to="/"
+      class="footer-logo"
     >
       Kloth
     </RouterLink>
