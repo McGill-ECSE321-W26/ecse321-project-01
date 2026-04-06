@@ -484,7 +484,6 @@ function formatPrice(price: number): string {
       </div>
 
       <div class="px-8 pt-8 pb-8 space-y-10">
-
         <!-- 1 : Specific Model Details -->
         <section>
           <div class="flex items-center justify-between mb-5">
