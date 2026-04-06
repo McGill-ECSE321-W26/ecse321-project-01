@@ -189,10 +189,10 @@ function getImagePath(color: string) {
     <!-- Show item -->
     <div
       v-else
-      class="grid grid-cols-1 md:grid-cols-8 pb-15 px-10 md:gap-3"
+      class="grid grid-cols-1 md:grid-cols-8 pb-15"
     >
       <!-- image -->
-      <div class="aspect-[3/4] w-full overflow-hidden bg-(--card-hover) md:col-span-4 border-[2px] border-(--text-light)">
+      <div class="aspect-[3/4] w-full overflow-hidden bg-(--card-hover) md:col-span-4">
         <img
           :src="currVariant?.imagePath"
           :alt="model?.name"
@@ -203,12 +203,12 @@ function getImagePath(color: string) {
 
       <!-- other color images -->
       <div
-        class="hidden md:flex flex-col w-full gap-3 md:col-span-1 md:pr-5"
+        class="hidden md:flex flex-col w-full md:col-span-1 md:pr-5"
       >
         <div
           v-for="color in colors"
           :key="color"
-          class="aspect-[3/4] w-full overflow-hidden bg-(--card-hover) cursor-pointer border-[2px] border-(--text-light)"
+          class="aspect-[3/4] w-full overflow-hidden bg-(--card-hover) cursor-pointer"
           @click="isColorAvailable(color) && selectColor(color)"
         >
           <img
