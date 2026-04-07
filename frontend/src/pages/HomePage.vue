@@ -98,7 +98,7 @@ onUnmounted(() => {
         Clothing for humans.
       </p>
       <div class="btn-group">
-        <template v-if="auth.isAuthenticated">
+        <template v-if="auth.isAuthenticated && auth.role === 'Customer'">
           <RouterLink
             to="/shop"
             class="btn btn-white"
@@ -106,6 +106,21 @@ onUnmounted(() => {
             View Catalog
           </RouterLink>
         </template>
+        <template v-else-if="auth.isAuthenticated && auth.role === 'Manager'">
+          <RouterLink
+              to="/manager"
+              class="btn btn-white"
+          >
+            Manager Dashboard
+          </RouterLink>
+        </template><template v-else-if="auth.isAuthenticated && auth.role === 'Employee'">
+        <RouterLink
+            to="/employee"
+            class="btn btn-white"
+        >
+          Go to Employee Dashboard
+        </RouterLink>
+      </template>
         <template v-else>
           <RouterLink
             to="/register"
@@ -204,7 +219,7 @@ onUnmounted(() => {
 
 .btn {
   width: 176px;
-  padding: 10px 0;
+  padding: 10px 5px;
   font-size: 11px;
   letter-spacing: 2.5px;
   text-transform: uppercase;
