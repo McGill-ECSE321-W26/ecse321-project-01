@@ -233,7 +233,7 @@ onUnmounted(() => {
 
 .form-title {
   font-family: 'Lexend Deca', serif;
-  font-size: 36px;
+  font-size: 30px;
   font-weight: 700;
   color: #111;
   margin: 0;
@@ -274,7 +274,7 @@ onUnmounted(() => {
   padding: 12px;
   font-family: 'Lexend Deca', sans-serif;
   font-size: 11px;
-  letter-spacing: 2.5px;
+  letter-spacing: 1px;
   text-transform: uppercase;
   cursor: pointer;
   width: 100%;
