@@ -62,10 +62,10 @@ function getVariantInfo(item: ItemResponseDto) {
     <!-- Heading -->
     <h1 class="detail-heading text-[40px] lg:text-[52px] font-normal tracking-tight leading-tight mb-2">
       <span class="text-(--text-muted)">Order</span>
-      <em class="text-(--text-light)"> Details</em>
+      <span class="text-(--text-light)"> Details</span>
     </h1>
     <div class="flex items-center justify-between mb-10 pb-6 border-b border-(--text-light)">
-      <p class="text-sm font-light text-(--text-muted)">
+      <p class="text-md font-light text-(--text-muted)">
         Full breakdown of your order contents.
       </p>
     </div>
@@ -211,7 +211,7 @@ function getVariantInfo(item: ItemResponseDto) {
 
 <style scoped>
 .detail-heading {
-  font-family: 'Playfair Display', serif;
+  font-family: 'Lexend Deca', sans-serif;
   letter-spacing: -1.5px;
 }
 
