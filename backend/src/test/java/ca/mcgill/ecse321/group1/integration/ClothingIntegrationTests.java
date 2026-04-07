@@ -1,10 +1,15 @@
 package ca.mcgill.ecse321.group1.integration;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import ca.mcgill.ecse321.group1.dto.ClothingModelAdminResponseDto;
 import ca.mcgill.ecse321.group1.dto.ClothingModelCreateRequestDto;
 import ca.mcgill.ecse321.group1.dto.ClothingModelListResponseDto;
 import ca.mcgill.ecse321.group1.dto.ClothingModelResponseDto;
+import ca.mcgill.ecse321.group1.dto.ClothingVariantAdminResponseDto;
 import ca.mcgill.ecse321.group1.dto.ClothingVariantCreateRequestDto;
 import ca.mcgill.ecse321.group1.dto.ClothingVariantResponseDto;
 import ca.mcgill.ecse321.group1.dto.ClothingVariantUpdateRequestDto;
@@ -698,5 +703,358 @@ public class ClothingIntegrationTests {
 
     // Assert
     assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+  }
+
+  // ── Manager-only admin endpoint tests ────────────────────────────────────────
+
+  @Test
+  @Order(25)
+  public void testGetAllModelsIncludingArchivedRequiresManager() {
+    // No Authorization header — should be denied
+    ResponseEntity<String> response =
+        client.get().uri("/api/clothing/manager").retrieve().toEntity(String.class);
+
+    assertEquals(HttpStatus.FORBIDDEN, response.getStatusCode());
+  }
+
+  @Test
+  @Order(26)
+  public void testGetAllModelsIncludingArchivedShowsArchived() {
+    // Arrange — create a fresh model then archive it
+    ClothingModelCreateRequestDto createReq =
+        new ClothingModelCreateRequestDto(
+            "Archived Test Model", "desc", VALID_BRAND, VALID_CATEGORY, 39.99f);
+
+    ResponseEntity<ClothingModelResponseDto> created =
+        client
+            .post()
+            .uri("/api/clothing")
+            .header("Authorization", "Bearer " + managerToken)
+            .contentType(MediaType.APPLICATION_JSON)
+            .body(createReq)
+            .retrieve()
+            .toEntity(ClothingModelResponseDto.class);
+    assertEquals(HttpStatus.CREATED, created.getStatusCode());
+    String archivedModelId = created.getBody().getClothingModelID();
+
+    client
+        .delete()
+        .uri("/api/clothing/" + archivedModelId)
+        .header("Authorization", "Bearer " + managerToken)
+        .retrieve()
+        .toBodilessEntity();
+
+    // Act — call manager endpoint, which includes archived
+    ResponseEntity<ClothingModelAdminResponseDto[]> response =
+        client
+            .get()
+            .uri("/api/clothing/manager")
+            .header("Authorization", "Bearer " + managerToken)
+            .retrieve()
+            .toEntity(ClothingModelAdminResponseDto[].class);
+
+    // Assert
+    assertEquals(HttpStatus.OK, response.getStatusCode());
+    ClothingModelAdminResponseDto[] body = response.getBody();
+    assertNotNull(body);
+    boolean foundArchived = false;
+    for (ClothingModelAdminResponseDto dto : body) {
+      if (archivedModelId.equals(dto.getClothingModelID())) {
+        assertTrue(dto.isArchived(), "Model should be archived");
+        foundArchived = true;
+        break;
+      }
+    }
+    assertTrue(foundArchived, "Archived model should appear in manager listing");
+
+    // Cleanup
+    modelRepository.deleteById(archivedModelId);
+  }
+
+  @Test
+  @Order(27)
+  public void testRestoreClothingModelValid() {
+    // Arrange — create, archive, then restore
+    ClothingModelCreateRequestDto createReq =
+        new ClothingModelCreateRequestDto(
+            "Restore Test Model", "desc", VALID_BRAND, VALID_CATEGORY, 59.99f);
+
+    ResponseEntity<ClothingModelResponseDto> created =
+        client
+            .post()
+            .uri("/api/clothing")
+            .header("Authorization", "Bearer " + managerToken)
+            .contentType(MediaType.APPLICATION_JSON)
+            .body(createReq)
+            .retrieve()
+            .toEntity(ClothingModelResponseDto.class);
+    assertEquals(HttpStatus.CREATED, created.getStatusCode());
+    String modelId = created.getBody().getClothingModelID();
+
+    client
+        .delete()
+        .uri("/api/clothing/" + modelId)
+        .header("Authorization", "Bearer " + managerToken)
+        .retrieve()
+        .toBodilessEntity();
+
+    // Act — restore
+    ResponseEntity<ClothingModelAdminResponseDto> restored =
+        client
+            .patch()
+            .uri("/api/clothing/manager/" + modelId + "/restore")
+            .header("Authorization", "Bearer " + managerToken)
+            .retrieve()
+            .toEntity(ClothingModelAdminResponseDto.class);
+
+    // Assert
+    assertEquals(HttpStatus.OK, restored.getStatusCode());
+    assertNotNull(restored.getBody());
+    assertFalse(restored.getBody().isArchived(), "Model should no longer be archived");
+
+    // Verify accessible at public endpoint
+    ResponseEntity<ClothingModelResponseDto> publicGet =
+        client
+            .get()
+            .uri("/api/clothing/" + modelId)
+            .retrieve()
+            .toEntity(ClothingModelResponseDto.class);
+    assertEquals(HttpStatus.OK, publicGet.getStatusCode());
+
+    // Cleanup
+    modelRepository.deleteById(modelId);
+  }
+
+  @Test
+  @Order(28)
+  public void testRestoreClothingModelNotFound() {
+    ResponseEntity<String> response =
+        client
+            .patch()
+            .uri("/api/clothing/manager/" + INVALID_MODEL_ID + "/restore")
+            .header("Authorization", "Bearer " + managerToken)
+            .retrieve()
+            .toEntity(String.class);
+
+    assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+  }
+
+  @Test
+  @Order(29)
+  public void testRestoreClothingModelNotArchived() {
+    // Arrange — create a fresh active model (not archived)
+    ClothingModelCreateRequestDto createReq =
+        new ClothingModelCreateRequestDto(
+            "Active Restore Test", "desc", VALID_BRAND, VALID_CATEGORY, 69.99f);
+
+    ResponseEntity<ClothingModelResponseDto> created =
+        client
+            .post()
+            .uri("/api/clothing")
+            .header("Authorization", "Bearer " + managerToken)
+            .contentType(MediaType.APPLICATION_JSON)
+            .body(createReq)
+            .retrieve()
+            .toEntity(ClothingModelResponseDto.class);
+    assertEquals(HttpStatus.CREATED, created.getStatusCode());
+    String modelId = created.getBody().getClothingModelID();
+
+    // Act — try to restore a model that is NOT archived
+    ResponseEntity<String> response =
+        client
+            .patch()
+            .uri("/api/clothing/manager/" + modelId + "/restore")
+            .header("Authorization", "Bearer " + managerToken)
+            .retrieve()
+            .toEntity(String.class);
+
+    // Assert
+    assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+
+    // Cleanup
+    modelRepository.deleteById(modelId);
+  }
+
+  @Test
+  @Order(30)
+  public void testGetAllVariantsIncludingArchived() {
+    // Arrange — create model + variant, archive the variant
+    ClothingModelCreateRequestDto modelReq =
+        new ClothingModelCreateRequestDto(
+            "Variant Archive Test Model", "desc", VALID_BRAND, VALID_CATEGORY, 49.99f);
+    ResponseEntity<ClothingModelResponseDto> modelCreated =
+        client
+            .post()
+            .uri("/api/clothing")
+            .header("Authorization", "Bearer " + managerToken)
+            .contentType(MediaType.APPLICATION_JSON)
+            .body(modelReq)
+            .retrieve()
+            .toEntity(ClothingModelResponseDto.class);
+    assertEquals(HttpStatus.CREATED, modelCreated.getStatusCode());
+    String testModelId = modelCreated.getBody().getClothingModelID();
+
+    ClothingVariantCreateRequestDto variantReq =
+        new ClothingVariantCreateRequestDto(ClothingVariant.Size.S, "#123456", "test.png", 3);
+    ResponseEntity<ClothingVariantResponseDto> variantCreated =
+        client
+            .post()
+            .uri("/api/clothing/" + testModelId + "/variants")
+            .header("Authorization", "Bearer " + managerToken)
+            .contentType(MediaType.APPLICATION_JSON)
+            .body(variantReq)
+            .retrieve()
+            .toEntity(ClothingVariantResponseDto.class);
+    assertEquals(HttpStatus.CREATED, variantCreated.getStatusCode());
+    String testVariantId = variantCreated.getBody().getClothingVariantID();
+
+    client
+        .delete()
+        .uri("/api/clothing/" + testModelId + "/variants/" + testVariantId)
+        .header("Authorization", "Bearer " + managerToken)
+        .retrieve()
+        .toBodilessEntity();
+
+    // Act — call manager endpoint for variants
+    ResponseEntity<ClothingVariantAdminResponseDto[]> response =
+        client
+            .get()
+            .uri("/api/clothing/manager/" + testModelId + "/variants")
+            .header("Authorization", "Bearer " + managerToken)
+            .retrieve()
+            .toEntity(ClothingVariantAdminResponseDto[].class);
+
+    // Assert
+    assertEquals(HttpStatus.OK, response.getStatusCode());
+    ClothingVariantAdminResponseDto[] body = response.getBody();
+    assertNotNull(body);
+    boolean foundArchivedVariant = false;
+    for (ClothingVariantAdminResponseDto dto : body) {
+      if (testVariantId.equals(dto.getClothingVariantID())) {
+        assertTrue(dto.isArchived(), "Variant should be archived");
+        foundArchivedVariant = true;
+        break;
+      }
+    }
+    assertTrue(foundArchivedVariant, "Archived variant should appear in manager listing");
+
+    // Cleanup
+    modelRepository.deleteById(testModelId);
+  }
+
+  @Test
+  @Order(31)
+  public void testRestoreVariantValid() {
+    // Arrange — create model + variant, archive, then restore variant
+    ClothingModelCreateRequestDto modelReq =
+        new ClothingModelCreateRequestDto(
+            "Variant Restore Test Model", "desc", VALID_BRAND, VALID_CATEGORY, 49.99f);
+    ResponseEntity<ClothingModelResponseDto> modelCreated =
+        client
+            .post()
+            .uri("/api/clothing")
+            .header("Authorization", "Bearer " + managerToken)
+            .contentType(MediaType.APPLICATION_JSON)
+            .body(modelReq)
+            .retrieve()
+            .toEntity(ClothingModelResponseDto.class);
+    assertEquals(HttpStatus.CREATED, modelCreated.getStatusCode());
+    String testModelId = modelCreated.getBody().getClothingModelID();
+
+    ClothingVariantCreateRequestDto variantReq =
+        new ClothingVariantCreateRequestDto(ClothingVariant.Size.XL, "#AABBCC", "restore.png", 7);
+    ResponseEntity<ClothingVariantResponseDto> variantCreated =
+        client
+            .post()
+            .uri("/api/clothing/" + testModelId + "/variants")
+            .header("Authorization", "Bearer " + managerToken)
+            .contentType(MediaType.APPLICATION_JSON)
+            .body(variantReq)
+            .retrieve()
+            .toEntity(ClothingVariantResponseDto.class);
+    assertEquals(HttpStatus.CREATED, variantCreated.getStatusCode());
+    String testVariantId = variantCreated.getBody().getClothingVariantID();
+
+    client
+        .delete()
+        .uri("/api/clothing/" + testModelId + "/variants/" + testVariantId)
+        .header("Authorization", "Bearer " + managerToken)
+        .retrieve()
+        .toBodilessEntity();
+
+    // Act — restore the variant
+    ResponseEntity<ClothingVariantAdminResponseDto> restored =
+        client
+            .patch()
+            .uri("/api/clothing/manager/" + testModelId + "/variants/" + testVariantId + "/restore")
+            .header("Authorization", "Bearer " + managerToken)
+            .retrieve()
+            .toEntity(ClothingVariantAdminResponseDto.class);
+
+    // Assert
+    assertEquals(HttpStatus.OK, restored.getStatusCode());
+    assertNotNull(restored.getBody());
+    assertFalse(restored.getBody().isArchived(), "Variant should no longer be archived");
+
+    // Verify accessible at public endpoint
+    ResponseEntity<ClothingVariantResponseDto> publicGet =
+        client
+            .get()
+            .uri("/api/clothing/" + testModelId + "/variants/" + testVariantId)
+            .retrieve()
+            .toEntity(ClothingVariantResponseDto.class);
+    assertEquals(HttpStatus.OK, publicGet.getStatusCode());
+
+    // Cleanup
+    modelRepository.deleteById(testModelId);
+  }
+
+  @Test
+  @Order(32)
+  public void testRestoreVariantNotArchived() {
+    // Arrange — create model + variant (active, not archived)
+    ClothingModelCreateRequestDto modelReq =
+        new ClothingModelCreateRequestDto(
+            "Active Variant Test Model", "desc", VALID_BRAND, VALID_CATEGORY, 49.99f);
+    ResponseEntity<ClothingModelResponseDto> modelCreated =
+        client
+            .post()
+            .uri("/api/clothing")
+            .header("Authorization", "Bearer " + managerToken)
+            .contentType(MediaType.APPLICATION_JSON)
+            .body(modelReq)
+            .retrieve()
+            .toEntity(ClothingModelResponseDto.class);
+    assertEquals(HttpStatus.CREATED, modelCreated.getStatusCode());
+    String testModelId = modelCreated.getBody().getClothingModelID();
+
+    ClothingVariantCreateRequestDto variantReq =
+        new ClothingVariantCreateRequestDto(ClothingVariant.Size.S, "#CCDDEE", "active.png", 2);
+    ResponseEntity<ClothingVariantResponseDto> variantCreated =
+        client
+            .post()
+            .uri("/api/clothing/" + testModelId + "/variants")
+            .header("Authorization", "Bearer " + managerToken)
+            .contentType(MediaType.APPLICATION_JSON)
+            .body(variantReq)
+            .retrieve()
+            .toEntity(ClothingVariantResponseDto.class);
+    assertEquals(HttpStatus.CREATED, variantCreated.getStatusCode());
+    String testVariantId = variantCreated.getBody().getClothingVariantID();
+
+    // Act — try to restore a variant that is NOT archived
+    ResponseEntity<String> response =
+        client
+            .patch()
+            .uri("/api/clothing/manager/" + testModelId + "/variants/" + testVariantId + "/restore")
+            .header("Authorization", "Bearer " + managerToken)
+            .retrieve()
+            .toEntity(String.class);
+
+    // Assert
+    assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+
+    // Cleanup
+    modelRepository.deleteById(testModelId);
   }
 }

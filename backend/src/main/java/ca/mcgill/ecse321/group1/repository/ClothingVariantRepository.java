@@ -6,4 +6,7 @@ import org.springframework.data.repository.CrudRepository;
 public interface ClothingVariantRepository extends CrudRepository<ClothingVariant, String> {
 
   ClothingVariant findByClothingVariantIDAndArchivedFalse(String id);
+
+  // Unfiltered — includes archived records (for manager-level lookups)
+  ClothingVariant findByClothingVariantID(String clothingVariantID);
 }

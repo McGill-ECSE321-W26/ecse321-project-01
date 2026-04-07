@@ -137,7 +137,7 @@ public class ClothingServiceTests {
     float price = 79.99f;
     ClothingModel saved =
         new ClothingModel(null, name, VALID_DESCRIPTION, VALID_BRAND, VALID_CATEGORY, price);
-    when(clothingModelRepository.findByNameAndArchivedFalse(name)).thenReturn(saved);
+    when(clothingModelRepository.findByName(name)).thenReturn(saved);
 
     // Act & Assert
     ResponseStatusException e =
@@ -286,7 +286,7 @@ public class ClothingServiceTests {
     ClothingModel exist =
         new ClothingModel("2", newName, VALID_DESCRIPTION, VALID_BRAND, VALID_CATEGORY, price);
     when(clothingModelRepository.findByClothingModelIDAndArchivedFalse(id)).thenReturn(saved);
-    when(clothingModelRepository.findByNameAndArchivedFalse(newName)).thenReturn(exist);
+    when(clothingModelRepository.findByName(newName)).thenReturn(exist);
 
     // Act & Assert
     ResponseStatusException e =
@@ -861,5 +861,231 @@ public class ClothingServiceTests {
             ResponseStatusException.class,
             () -> clothingService.updateVariantStock(modelId, variantId, -1));
     assertEquals("400 BAD_REQUEST \"Stock quantity must be >= 0\"", e.getMessage());
+  }
+
+  // ===== getAllClothingModelsIncludingArchived =====
+
+  @Test
+  public void testGetAllClothingModelsIncludingArchived() {
+    // Arrange
+    ClothingModel active =
+        new ClothingModel(
+            "1", "Active Jacket", VALID_DESCRIPTION, VALID_BRAND, VALID_CATEGORY, 79.99f);
+    ClothingModel archived =
+        new ClothingModel(
+            "2", "Archived Coat", VALID_DESCRIPTION, VALID_BRAND, VALID_CATEGORY, 49.99f);
+    archived.setArchived(true);
+    when(clothingModelRepository.findAll()).thenReturn(List.of(active, archived));
+
+    // Act
+    List<ClothingModel> result = clothingService.getAllClothingModelsIncludingArchived();
+
+    // Assert
+    assertNotNull(result);
+    assertEquals(2, result.size());
+  }
+
+  // ===== restoreClothingModel =====
+
+  @Test
+  public void testRestoreClothingModelValid() {
+    // Arrange
+    String modelId = "model1";
+    ClothingModel model =
+        new ClothingModel(
+            modelId, "Winter Coat", VALID_DESCRIPTION, VALID_BRAND, VALID_CATEGORY, 99.99f);
+    model.setArchived(true);
+    when(clothingModelRepository.findByClothingModelID(modelId)).thenReturn(model);
+    when(clothingModelRepository.findByName("Winter Coat")).thenReturn(model);
+    when(clothingModelRepository.save(any(ClothingModel.class))).thenAnswer(i -> i.getArgument(0));
+
+    // Act
+    ClothingModel result = clothingService.restoreClothingModel(modelId);
+
+    // Assert
+    assertNotNull(result);
+    assertEquals(false, result.getArchived());
+    verify(clothingModelRepository, times(1)).save(model);
+  }
+
+  @Test
+  public void testRestoreClothingModelNotFound() {
+    // Arrange
+    String modelId = "badModel";
+    when(clothingModelRepository.findByClothingModelID(modelId)).thenReturn(null);
+
+    // Act & Assert
+    ResponseStatusException e =
+        assertThrows(
+            ResponseStatusException.class, () -> clothingService.restoreClothingModel(modelId));
+    assertEquals(
+        "404 NOT_FOUND \"Clothing model with ID " + modelId + " not found\"", e.getMessage());
+  }
+
+  @Test
+  public void testRestoreClothingModelNotArchived() {
+    // Arrange
+    String modelId = "model1";
+    ClothingModel model =
+        new ClothingModel(
+            modelId, "Active Jacket", VALID_DESCRIPTION, VALID_BRAND, VALID_CATEGORY, 79.99f);
+    // archived is false by default
+    when(clothingModelRepository.findByClothingModelID(modelId)).thenReturn(model);
+
+    // Act & Assert
+    ResponseStatusException e =
+        assertThrows(
+            ResponseStatusException.class, () -> clothingService.restoreClothingModel(modelId));
+    assertEquals(
+        "400 BAD_REQUEST \"Clothing model with ID " + modelId + " is not archived\"",
+        e.getMessage());
+  }
+
+  @Test
+  public void testRestoreClothingModelDuplicateName() {
+    // Arrange: an archived model and a different live model that already has the same name
+    String modelId = "model1";
+    String name = "Shared Name";
+    ClothingModel archivedModel =
+        new ClothingModel(modelId, name, VALID_DESCRIPTION, VALID_BRAND, VALID_CATEGORY, 79.99f);
+    archivedModel.setArchived(true);
+    ClothingModel liveConflict =
+        new ClothingModel("model2", name, VALID_DESCRIPTION, VALID_BRAND, VALID_CATEGORY, 59.99f);
+    when(clothingModelRepository.findByClothingModelID(modelId)).thenReturn(archivedModel);
+    when(clothingModelRepository.findByName(name)).thenReturn(liveConflict);
+
+    // Act & Assert
+    ResponseStatusException e =
+        assertThrows(
+            ResponseStatusException.class, () -> clothingService.restoreClothingModel(modelId));
+    assertEquals(
+        String.format("409 CONFLICT \"A clothing model with name '%s' already exists\"", name),
+        e.getMessage());
+  }
+
+  // ===== getAllVariantsByModelIncludingArchived =====
+
+  @Test
+  public void testGetAllVariantsByModelIncludingArchived() {
+    // Arrange
+    String modelId = "model1";
+    ClothingModel model =
+        new ClothingModel(
+            modelId, "Summer Jacket", VALID_DESCRIPTION, VALID_BRAND, VALID_CATEGORY, 79.99f);
+    ClothingVariant active =
+        new ClothingVariant(
+            "v1", ClothingVariant.Size.M, "#FF0000", VALID_VARIANT_IMAGE, 10, model);
+    ClothingVariant archived =
+        new ClothingVariant("v2", ClothingVariant.Size.L, "#00FF00", VALID_VARIANT_IMAGE, 0, model);
+    archived.setArchived(true);
+    when(clothingModelRepository.findByClothingModelID(modelId)).thenReturn(model);
+
+    // Act
+    List<ClothingVariant> result = clothingService.getAllVariantsByModelIncludingArchived(modelId);
+
+    // Assert
+    assertNotNull(result);
+    assertEquals(2, result.size());
+    // Suppress unused variable warnings — variants are added to model via constructor side-effect
+    assertNotNull(active);
+    assertNotNull(archived);
+  }
+
+  // ===== restoreVariant =====
+
+  @Test
+  public void testRestoreVariantValid() {
+    // Arrange
+    String modelId = "model1";
+    String variantId = "variant1";
+    ClothingModel model =
+        new ClothingModel(
+            modelId, "Summer Jacket", VALID_DESCRIPTION, VALID_BRAND, VALID_CATEGORY, 79.99f);
+    ClothingVariant variant =
+        new ClothingVariant(
+            variantId, ClothingVariant.Size.M, "#FF0000", VALID_VARIANT_IMAGE, 10, model);
+    variant.setArchived(true);
+    when(clothingVariantRepository.findByClothingVariantID(variantId)).thenReturn(variant);
+    when(clothingVariantRepository.save(any(ClothingVariant.class)))
+        .thenAnswer(i -> i.getArgument(0));
+
+    // Act
+    ClothingVariant result = clothingService.restoreVariant(modelId, variantId);
+
+    // Assert
+    assertNotNull(result);
+    assertEquals(false, result.getArchived());
+    verify(clothingVariantRepository, times(1)).save(variant);
+  }
+
+  @Test
+  public void testRestoreVariantNotFound() {
+    // Arrange
+    String modelId = "model1";
+    String variantId = "badVariant";
+    when(clothingVariantRepository.findByClothingVariantID(variantId)).thenReturn(null);
+
+    // Act & Assert
+    ResponseStatusException e =
+        assertThrows(
+            ResponseStatusException.class,
+            () -> clothingService.restoreVariant(modelId, variantId));
+    assertEquals(
+        "404 NOT_FOUND \"Clothing variant with ID "
+            + variantId
+            + " not found under model "
+            + modelId
+            + "\"",
+        e.getMessage());
+  }
+
+  @Test
+  public void testRestoreVariantNotArchived() {
+    // Arrange
+    String modelId = "model1";
+    String variantId = "variant1";
+    ClothingModel model =
+        new ClothingModel(
+            modelId, "Summer Jacket", VALID_DESCRIPTION, VALID_BRAND, VALID_CATEGORY, 79.99f);
+    ClothingVariant variant =
+        new ClothingVariant(
+            variantId, ClothingVariant.Size.M, "#FF0000", VALID_VARIANT_IMAGE, 10, model);
+    // archived is false by default
+    when(clothingVariantRepository.findByClothingVariantID(variantId)).thenReturn(variant);
+
+    // Act & Assert
+    ResponseStatusException e =
+        assertThrows(
+            ResponseStatusException.class,
+            () -> clothingService.restoreVariant(modelId, variantId));
+    assertEquals(
+        "400 BAD_REQUEST \"Clothing variant with ID " + variantId + " is not archived\"",
+        e.getMessage());
+  }
+
+  @Test
+  public void testRestoreVariantDuplicateSizeColor() {
+    // Arrange: an archived variant and a different live variant with the same size+color
+    String modelId = "model1";
+    String variantId = "variant1";
+    ClothingModel model =
+        new ClothingModel(
+            modelId, "Summer Jacket", VALID_DESCRIPTION, VALID_BRAND, VALID_CATEGORY, 79.99f);
+    ClothingVariant archivedVariant =
+        new ClothingVariant(
+            variantId, ClothingVariant.Size.M, "#FF0000", VALID_VARIANT_IMAGE, 0, model);
+    archivedVariant.setArchived(true);
+    // A live variant with the same size+color already exists in the model
+    new ClothingVariant("other", ClothingVariant.Size.M, "#FF0000", VALID_VARIANT_IMAGE, 5, model);
+    when(clothingVariantRepository.findByClothingVariantID(variantId)).thenReturn(archivedVariant);
+
+    // Act & Assert
+    ResponseStatusException e =
+        assertThrows(
+            ResponseStatusException.class,
+            () -> clothingService.restoreVariant(modelId, variantId));
+    assertEquals(
+        "409 CONFLICT \"A variant with size M and color #FF0000 already exists for this clothing model\"",
+        e.getMessage());
   }
 }

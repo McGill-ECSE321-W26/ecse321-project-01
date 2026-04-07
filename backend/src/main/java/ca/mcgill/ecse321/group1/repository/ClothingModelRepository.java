@@ -11,4 +11,9 @@ public interface ClothingModelRepository extends ListCrudRepository<ClothingMode
   ClothingModel findByNameAndArchivedFalse(String name);
 
   List<ClothingModel> findByArchivedFalse();
+
+  // Unfiltered — includes archived records (for manager-level lookups)
+  ClothingModel findByClothingModelID(String clothingModelID);
+
+  ClothingModel findByName(String name);
 }

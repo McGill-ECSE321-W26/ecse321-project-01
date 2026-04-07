@@ -1,8 +1,10 @@
 package ca.mcgill.ecse321.group1.controller;
 
+import ca.mcgill.ecse321.group1.dto.ClothingModelAdminResponseDto;
 import ca.mcgill.ecse321.group1.dto.ClothingModelCreateRequestDto;
 import ca.mcgill.ecse321.group1.dto.ClothingModelListResponseDto;
 import ca.mcgill.ecse321.group1.dto.ClothingModelResponseDto;
+import ca.mcgill.ecse321.group1.dto.ClothingVariantAdminResponseDto;
 import ca.mcgill.ecse321.group1.dto.ClothingVariantCreateRequestDto;
 import ca.mcgill.ecse321.group1.dto.ClothingVariantResponseDto;
 import ca.mcgill.ecse321.group1.dto.ClothingVariantUpdateRequestDto;
@@ -104,5 +106,33 @@ public class ClothingController {
   @ResponseStatus(HttpStatus.NO_CONTENT)
   public void deleteVariant(@PathVariable String modelId, @PathVariable String variantId) {
     clothingService.deleteVariant(modelId, variantId);
+  }
+
+  // ── Manager-only endpoints (includes archived records) ───────────────────────
+
+  @GetMapping("/manager")
+  public List<ClothingModelAdminResponseDto> getAllClothingModelsIncludingArchived() {
+    return clothingService.getAllClothingModelsIncludingArchived().stream()
+        .map(ClothingModelAdminResponseDto::new)
+        .toList();
+  }
+
+  @PatchMapping("/manager/{modelId}/restore")
+  public ClothingModelAdminResponseDto restoreClothingModel(@PathVariable String modelId) {
+    return new ClothingModelAdminResponseDto(clothingService.restoreClothingModel(modelId));
+  }
+
+  @GetMapping("/manager/{modelId}/variants")
+  public List<ClothingVariantAdminResponseDto> getAllVariantsForModelIncludingArchived(
+      @PathVariable String modelId) {
+    return clothingService.getAllVariantsByModelIncludingArchived(modelId).stream()
+        .map(ClothingVariantAdminResponseDto::new)
+        .toList();
+  }
+
+  @PatchMapping("/manager/{modelId}/variants/{variantId}/restore")
+  public ClothingVariantAdminResponseDto restoreVariant(
+      @PathVariable String modelId, @PathVariable String variantId) {
+    return new ClothingVariantAdminResponseDto(clothingService.restoreVariant(modelId, variantId));
   }
 }
