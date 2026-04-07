@@ -1,13 +1,8 @@
 package ca.mcgill.ecse321.group1.service;
 
-import ca.mcgill.ecse321.group1.model.Customer;
-import ca.mcgill.ecse321.group1.model.Employee;
-import ca.mcgill.ecse321.group1.model.Item;
-import ca.mcgill.ecse321.group1.model.Order;
-import ca.mcgill.ecse321.group1.repository.CustomerRepository;
-import ca.mcgill.ecse321.group1.repository.EmployeeRepository;
-import ca.mcgill.ecse321.group1.repository.ItemRepository;
-import ca.mcgill.ecse321.group1.repository.OrderRepository;
+import ca.mcgill.ecse321.group1.model.*;
+import ca.mcgill.ecse321.group1.repository.*;
+
 import java.sql.Date;
 import java.time.LocalDate;
 import java.util.List;
@@ -23,16 +18,19 @@ public class OrderService {
   private final ItemRepository itemRepository;
   private final EmployeeRepository employeeRepository;
   static float loyaltyModifier = 0.2f; // Conversion rate: 1 loyalty point = $0.20
+  private final ClothingVariantRepository clothingVariantRepository;
 
   public OrderService(
       OrderRepository orderRepository,
       ItemRepository itemRepository,
       CustomerRepository customerRepository,
-      EmployeeRepository employeeRepository) {
+      EmployeeRepository employeeRepository,
+      ClothingVariantRepository clothingVariantRepository) {
     this.orderRepository = orderRepository;
     this.itemRepository = itemRepository;
     this.customerRepository = customerRepository;
     this.employeeRepository = employeeRepository;
+    this.clothingVariantRepository = clothingVariantRepository;
   }
 
   private Customer findCustomer(String customerID) {
@@ -149,6 +147,14 @@ public class OrderService {
       item.setPrice(itemPrice);
       total += item.getQuantity() * itemPrice;
 
+      // Decrement stock quantity
+      ClothingVariant variant = item.getClothingVariant();
+      if (item.getQuantity() > variant.getStockQuantity()) {
+        throw new ResponseStatusException(
+            HttpStatus.BAD_REQUEST, "There are not enough items in stock to check out.");
+      }
+      variant.setStockQuantity(variant.getStockQuantity() - item.getQuantity());
+
       // Swap items from the cart to the order
       order.addItem(item);
       customer.removeItem(item);
@@ -177,7 +183,11 @@ public class OrderService {
     Order order = initializeOrder(customer, deliveryDate);
     computeLoyaltyPoints(order, customer, usedLoyaltyPoints);
 
-    itemRepository.saveAll(order.getItems());
+    List<Item> items = order.getItems();
+    for (Item item : items) {
+      itemRepository.save(item);
+      clothingVariantRepository.save(item.getClothingVariant());
+    }
     customerRepository.save(customer);
     return orderRepository.save(order);
   }
@@ -209,14 +219,29 @@ public class OrderService {
     return orderRepository.save(order);
   }
 
-  @Transactional(readOnly = true)
-  public List<Order> getOrders() {
-    return orderRepository.findAll();
+  /**
+   * This function updates upon GET 
+   */
+  private void markDelivered(Order order) {
+    if (order.getOrderStatus() == Order.OrderStatus.Preparing
+        && !order.getDeliveryDate().toLocalDate().isAfter(LocalDate.now())) {
+      order.setOrderStatus(Order.OrderStatus.Delivered);
+      orderRepository.save(order);
+    }
   }
 
-  @Transactional(readOnly = true)
+  @Transactional
+  public List<Order> getOrders() {
+    List<Order> orders = orderRepository.findAll();
+    orders.forEach(this::markDelivered);
+    return orders;
+  }
+
+  @Transactional
   public Order getOrderByID(String orderID) {
-    return findOrder(orderID);
+    Order order = findOrder(orderID);
+    markDelivered(order);
+    return order;
   }
 
   @Transactional(readOnly = true)
@@ -224,10 +249,12 @@ public class OrderService {
     return findOrder(orderID).getItems();
   }
 
-  @Transactional(readOnly = true)
+  @Transactional
   public List<Order> getOrdersByCustomerID(String customerID) {
     Customer customer = findCustomer(customerID);
-    return orderRepository.findByCustomer(customer);
+    List<Order> orders = orderRepository.findByCustomer(customer);
+    orders.forEach(this::markDelivered);
+    return orders;
   }
 
   @Transactional(readOnly = true)
