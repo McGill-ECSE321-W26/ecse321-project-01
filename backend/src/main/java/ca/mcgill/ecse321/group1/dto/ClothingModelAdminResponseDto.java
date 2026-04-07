@@ -29,14 +29,15 @@ public class ClothingModelAdminResponseDto {
     this.price = model.getPrice();
     this.archived = model.getArchived();
     this.totalStockQuantity =
-        model.getClothingVariants().stream()
-            .mapToInt(ClothingVariant::getStockQuantity)
-            .sum();
+        model.getClothingVariants().stream().mapToInt(ClothingVariant::getStockQuantity).sum();
     Set<String> seenColors = new HashSet<>();
     this.variants =
         model.getClothingVariants().stream()
             .filter(v -> seenColors.add(v.getColor()))
-            .map(v -> new ClothingModelListResponseDto.VariantSummaryDto(v.getImagePath(), v.getColor()))
+            .map(
+                v ->
+                    new ClothingModelListResponseDto.VariantSummaryDto(
+                        v.getImagePath(), v.getColor()))
             .toList();
   }
 

@@ -325,8 +325,7 @@ public class ClothingService {
           HttpStatus.BAD_REQUEST,
           String.format("Clothing variant with ID %s is not archived", variantId));
     }
-    validateVariantUniqueness(
-        variant.getModel(), variant.getSize(), variant.getColor(), variantId);
+    validateVariantUniqueness(variant.getModel(), variant.getSize(), variant.getColor(), variantId);
     variant.setArchived(false);
     return clothingVariantRepository.save(variant);
   }

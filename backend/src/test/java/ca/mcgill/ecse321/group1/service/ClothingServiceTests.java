@@ -976,8 +976,7 @@ public class ClothingServiceTests {
         new ClothingVariant(
             "v1", ClothingVariant.Size.M, "#FF0000", VALID_VARIANT_IMAGE, 10, model);
     ClothingVariant archived =
-        new ClothingVariant(
-            "v2", ClothingVariant.Size.L, "#00FF00", VALID_VARIANT_IMAGE, 0, model);
+        new ClothingVariant("v2", ClothingVariant.Size.L, "#00FF00", VALID_VARIANT_IMAGE, 0, model);
     archived.setArchived(true);
     when(clothingModelRepository.findByClothingModelID(modelId)).thenReturn(model);
 
@@ -1029,7 +1028,8 @@ public class ClothingServiceTests {
     // Act & Assert
     ResponseStatusException e =
         assertThrows(
-            ResponseStatusException.class, () -> clothingService.restoreVariant(modelId, variantId));
+            ResponseStatusException.class,
+            () -> clothingService.restoreVariant(modelId, variantId));
     assertEquals(
         "404 NOT_FOUND \"Clothing variant with ID "
             + variantId
@@ -1056,7 +1056,8 @@ public class ClothingServiceTests {
     // Act & Assert
     ResponseStatusException e =
         assertThrows(
-            ResponseStatusException.class, () -> clothingService.restoreVariant(modelId, variantId));
+            ResponseStatusException.class,
+            () -> clothingService.restoreVariant(modelId, variantId));
     assertEquals(
         "400 BAD_REQUEST \"Clothing variant with ID " + variantId + " is not archived\"",
         e.getMessage());
@@ -1081,7 +1082,8 @@ public class ClothingServiceTests {
     // Act & Assert
     ResponseStatusException e =
         assertThrows(
-            ResponseStatusException.class, () -> clothingService.restoreVariant(modelId, variantId));
+            ResponseStatusException.class,
+            () -> clothingService.restoreVariant(modelId, variantId));
     assertEquals(
         "409 CONFLICT \"A variant with size M and color #FF0000 already exists for this clothing model\"",
         e.getMessage());

@@ -55,7 +55,8 @@ public class SecurityConfig {
                     .permitAll()
                     .requestMatchers(HttpMethod.POST, "/api/persons/customers")
                     .permitAll()
-                    // Managers can view all inventory including archived (must come before permitAll)
+                    // Managers can view all inventory including archived (must come before
+                    // permitAll)
                     .requestMatchers(HttpMethod.GET, "/api/clothing/manager/**")
                     .hasRole("Manager")
                     // Anyone can browse the catalog (GET only)

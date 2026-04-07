@@ -1,8 +1,8 @@
 package ca.mcgill.ecse321.group1.integration;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import ca.mcgill.ecse321.group1.dto.ClothingModelAdminResponseDto;
@@ -814,7 +814,11 @@ public class ClothingIntegrationTests {
 
     // Verify accessible at public endpoint
     ResponseEntity<ClothingModelResponseDto> publicGet =
-        client.get().uri("/api/clothing/" + modelId).retrieve().toEntity(ClothingModelResponseDto.class);
+        client
+            .get()
+            .uri("/api/clothing/" + modelId)
+            .retrieve()
+            .toEntity(ClothingModelResponseDto.class);
     assertEquals(HttpStatus.OK, publicGet.getStatusCode());
 
     // Cleanup
