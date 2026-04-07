@@ -244,7 +244,7 @@ const statCards = computed(() => [
 
           <RouterLink
             to="/manager/employees"
-             class="group flex items-center justify-between py-4 border-b border-(--text-light) hover:bg-(--card-hover) px-2 -mx-2 transition-colors"
+            class="group flex items-center justify-between py-4 border-b border-(--text-light) hover:bg-(--card-hover) px-2 -mx-2 transition-colors"
           >
             <div class="flex items-center gap-3">
               <UserCog class="w-4 h-4 text-(--text-muted)" />
@@ -254,8 +254,8 @@ const statCards = computed(() => [
           </RouterLink>
 
           <RouterLink
-             to="/manager/customers"
-             class="group flex items-center justify-between py-4 border-b border-(--text-light) hover:bg-(--card-hover) px-2 -mx-2 transition-colors"
+            to="/manager/customers"
+            class="group flex items-center justify-between py-4 border-b border-(--text-light) hover:bg-(--card-hover) px-2 -mx-2 transition-colors"
           >
             <div class="flex items-center gap-3">
               <Users class="w-4 h-4 text-(--text-muted)" />
