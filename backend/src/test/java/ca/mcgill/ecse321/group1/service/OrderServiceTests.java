@@ -9,6 +9,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import ca.mcgill.ecse321.group1.model.*;
+import ca.mcgill.ecse321.group1.repository.ClothingVariantRepository;
 import ca.mcgill.ecse321.group1.repository.CustomerRepository;
 import ca.mcgill.ecse321.group1.repository.EmployeeRepository;
 import ca.mcgill.ecse321.group1.repository.ItemRepository;
@@ -32,6 +33,7 @@ public class OrderServiceTests {
   @Mock private CustomerRepository customerRepository;
   @Mock private ItemRepository itemRepository;
   @Mock private EmployeeRepository employeeRepository;
+  @Mock private ClothingVariantRepository clothingVariantRepository;
 
   @InjectMocks private OrderService orderService;
 
@@ -44,6 +46,7 @@ public class OrderServiceTests {
     clothingModel.setPrice(price);
     ClothingVariant clothingVariant = new ClothingVariant();
     clothingVariant.setModel(clothingModel);
+    clothingVariant.setStockQuantity(10);
     Item item = new Item();
     item.setClothingVariant(clothingVariant);
     item.setQuantity(1);
