@@ -82,9 +82,9 @@ public class SecurityConfig {
                     .hasRole("Manager")
                     .requestMatchers(HttpMethod.PATCH, "/api/clothing/**")
                     .hasRole("Manager")
-                    // Only managers can list employees or customers
+                    // Managers and employees can list employees; only managers can list customers
                     .requestMatchers(HttpMethod.GET, "/api/persons/employees")
-                    .hasRole("Manager")
+                    .hasAnyRole("Manager", "Employee")
                     .requestMatchers(HttpMethod.GET, "/api/persons/customers")
                     .hasRole("Manager")
                     // Customers can fetch their own profile by customer ID
