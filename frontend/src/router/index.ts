@@ -20,6 +20,9 @@ import ItemPage from '../pages/ItemPage.vue'
 // List of routes that do not require auth
 const publicRoutes = ['home', 'login', 'register', 'not-found']
 
+// Routes only customers may access (managers/employees are redirected to their home)
+const customerOnlyRoutes = ['cart', 'orders']
+
 const router = createRouter({
   history: createWebHistory(),
   routes: [
@@ -73,6 +76,13 @@ router.beforeEach((to, _from, next) => {
   // All /employee/* routes are employee-only
   else if (to.path.startsWith('/employee') && role !== 'Employee') {
     next({ name: 'not-found' });
+  }
+  // Customer-only routes: redirect managers/employees to their respective home
+  else if (customerOnlyRoutes.includes(to.name as string) && role === 'Manager') {
+    next({ name: 'manager-dashboard' })
+  }
+  else if (customerOnlyRoutes.includes(to.name as string) && role === 'Employee') {
+    next({ name: 'employee-orders' })
   }
   else if (!isAuthenticated && !isRoutePublic) {
     next({ name: 'login' })
