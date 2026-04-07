@@ -148,9 +148,9 @@ function getName(email: string | undefined) {
                 <div class="space-y-2">
                   <Label for="address">New Address</Label>
                   <Input
-                    class="rounded-none"
                     id="address"
                     v-model="newAddress"
+                    class="rounded-none"
                     type="text"
                     placeholder=""
                   />
@@ -158,11 +158,17 @@ function getName(email: string | undefined) {
               </div>
               <DialogFooter>
                 <DialogClose as-child>
-                  <Button variant="outline" class="rounded-none bg-transparent border-(--text-light)">
+                  <Button
+                    variant="outline"
+                    class="rounded-none bg-transparent border-(--text-light)"
+                  >
                     Cancel
                   </Button>
                 </DialogClose>
-                <Button @click="handleAddressUpdate" class="rounded-none bg-(--text)">
+                <Button
+                  class="rounded-none bg-(--text)"
+                  @click="handleAddressUpdate"
+                >
                   Save Address
                 </Button>
               </DialogFooter>
@@ -214,9 +220,9 @@ function getName(email: string | undefined) {
               <div class="space-y-2">
                 <Label for="old-password">Current Password</Label>
                 <Input
-                  class="rounded-none"
                   id="old-password"
                   v-model="oldPassword"
+                  class="rounded-none"
                   type="password"
                   placeholder=""
                 />
@@ -224,9 +230,9 @@ function getName(email: string | undefined) {
               <div class="space-y-2">
                 <Label for="new-password">New Password</Label>
                 <Input
-                  class="rounded-none"
                   id="new-password"
                   v-model="newPassword"
+                  class="rounded-none"
                   type="password"
                   placeholder=""
                 />
@@ -234,9 +240,9 @@ function getName(email: string | undefined) {
               <div class="space-y-2">
                 <Label for="confirm-password">Confirm New Password</Label>
                 <Input
-                  class="rounded-none"
                   id="confirm-password"
                   v-model="confirmPassword"
+                  class="rounded-none"
                   type="password"
                   placeholder=""
                 />
@@ -244,11 +250,17 @@ function getName(email: string | undefined) {
             </div>
             <DialogFooter>
               <DialogClose as-child>
-                <Button variant="outline" class="rounded-none bg-transparent border-(--text-light)">
+                <Button
+                  variant="outline"
+                  class="rounded-none bg-transparent border-(--text-light)"
+                >
                   Cancel
                 </Button>
               </DialogClose>
-              <Button @click="handlePasswordUpdate" class="rounded-none bg-(--text)">
+              <Button
+                class="rounded-none bg-(--text)"
+                @click="handlePasswordUpdate"
+              >
                 Save Password
               </Button>
             </DialogFooter>

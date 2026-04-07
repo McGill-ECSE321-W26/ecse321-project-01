@@ -200,7 +200,10 @@ function getVariantInfo(item: ItemResponseDto) {
           </div>
           <span class="text-[13px] text-(--text) font-light">{{ getVariantInfo(item).name }}</span>
           <span class="text-[13px] text-(--text-muted) font-light uppercase">{{ getVariantInfo(item).size }}</span>
-          <div class="w-5 h-5 border border-(--text-light)" :style="{ backgroundColor: getVariantInfo(item).color }"></div>
+          <div
+            class="w-5 h-5 border border-(--text-light)"
+            :style="{ backgroundColor: getVariantInfo(item).color }"
+          />
           <span class="text-[13px] text-(--text-muted) font-light">${{ item.price.toFixed(2) }}</span>
           <span class="text-[13px] text-(--text-muted) font-light">× {{ item.quantity }}</span>
         </div>
