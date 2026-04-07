@@ -90,12 +90,12 @@ onMounted(async () => {
 <template>
   <div class="min-h-screen">
     <!-- Header -->
-    <div class="max-w-350 mx-auto px-5 md:px-10 pt-16 md:pt-24">
+    <div class="max-w-350 mx-auto px-5 md:px-10 pt-16 md:pt-16">
       <h1 class="shop-heading text-[32px] md:text-[42px] lg:text-[56px] font-normal tracking-tight leading-tight">
-        The <span class="text-(--text-muted)">Complete</span> <em class="text-(--text-light)">Catalogue</em>
+        The <span class="text-(--text-muted)">Complete</span> Catalogue
       </h1>
       <div class="flex items-center justify-between mt-5 pb-8 border-b border-(--text-light)">
-        <p class="text-sm font-light text-(--text-muted)">
+        <p class="text-sm md:text-[20px] font-light text-(--text-muted)">
           Browse our full collection of clothing and accessories.
         </p>
         <span class="text-[13px] text-(--text-light) tracking-wide hidden sm:inline">
@@ -197,7 +197,7 @@ onMounted(async () => {
           <p class="text-[11px] text-(--text-light) uppercase tracking-widest mb-1">
             {{ model.brand }}
           </p>
-          <p class="text-sm text-(--text) leading-snug mb-1.5">
+          <p class="text-[16px] text-(--text) leading-snug mb-1.5">
             {{ model.name }}
           </p>
           <p class="text-sm font-extrabold text-(--text)">
@@ -224,8 +224,9 @@ onMounted(async () => {
 
 <style scoped>
 .shop-heading {
-  font-family: 'Playfair Display', serif;
-  letter-spacing: -1.5px;
+  font-family: 'Lexend Deca', sans-serif;
+  letter-spacing: -1px;
+  color: var(--text)
 }
 
 .loading-spinner {
