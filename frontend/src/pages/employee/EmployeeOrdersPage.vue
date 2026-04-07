@@ -82,10 +82,10 @@ function formatDate(d: Date | null) {
     <!-- Heading -->
     <h1 class="orders-heading text-[40px] lg:text-[52px] font-normal tracking-tight leading-tight mb-2">
       <span class="text-(--text-muted)">Order</span>
-      <em class="text-(--text-light)"> Dashboard</em>
+      <span class="text-(--button-hover)"> Dashboard</span>
     </h1>
     <div class="flex items-center justify-between mb-10 pb-6 border-b border-(--text-light)">
-      <p class="text-sm font-light text-(--text-muted)">
+      <p class="text-md font-light text-(--text-muted)">
         Claim and fulfill customer orders.
       </p>
     </div>
@@ -199,7 +199,7 @@ function formatDate(d: Date | null) {
         <span
           class="text-[11px] uppercase tracking-widest"
           :class="{
-            'text-(--text-muted)': order.orderStatus === 'Delivered',
+            'text-(--button-hover) font-bold': order.orderStatus === 'Delivered',
             'text-(--text-light) line-through': order.orderStatus === 'Cancelled',
             'text-(--text)': order.orderStatus === 'Preparing',
           }"
@@ -247,8 +247,7 @@ function formatDate(d: Date | null) {
 
 <style scoped>
 .orders-heading {
-  font-family: 'Playfair Display', serif;
-  letter-spacing: -1.5px;
+  font-family: 'Lexend Deca', sans-serif;
 }
 
 @keyframes fadeUp {
