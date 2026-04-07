@@ -242,25 +242,30 @@ const statCards = computed(() => [
             <ArrowRight class="w-3.5 h-3.5 text-(--text-light) group-hover:text-(--text-muted) transition-colors" />
           </RouterLink>
 
-          <div class="group flex items-center justify-between py-4 border-b border-(--text-light) px-2 -mx-2 opacity-40 cursor-not-allowed">
+          <RouterLink
+            to="/manager/employees"
+            class="group flex items-center justify-between py-4 border-b border-(--text-light) hover:bg-(--card-hover) px-2 -mx-2 transition-colors"
+          >
             <div class="flex items-center gap-3">
               <UserCog class="w-4 h-4 text-(--text-muted)" />
               <span class="text-[13px] text-(--text-muted) tracking-wide">Manage employees</span>
             </div>
-            <span class="text-[10px] text-(--text-light) uppercase tracking-widest">Soon</span>
-          </div>
+            <ArrowRight class="w-3.5 h-3.5 text-(--text-light) group-hover:text-(--text-muted) transition-colors" />
+          </RouterLink>
 
-          <div class="group flex items-center justify-between py-4 px-2 -mx-2 opacity-40 cursor-not-allowed">
+          <RouterLink
+            to="/manager/customers"
+            class="group flex items-center justify-between py-4 border-b border-(--text-light) hover:bg-(--card-hover) px-2 -mx-2 transition-colors"
+          >
             <div class="flex items-center gap-3">
               <Users class="w-4 h-4 text-(--text-muted)" />
               <span class="text-[13px] text-(--text-muted) tracking-wide">Manage customers</span>
             </div>
-            <span class="text-[10px] text-(--text-light) uppercase tracking-widest">Soon</span>
-          </div>
+            <ArrowRight class="w-3.5 h-3.5 text-(--text-light) group-hover:text-(--text-muted) transition-colors" />
+          </RouterLink>
         </div>
       </div>
     </div>
-
     <!-- Recent Orders -->
     <div
       class="stat-card mt-0 border border-t-0 border-(--text-light)"

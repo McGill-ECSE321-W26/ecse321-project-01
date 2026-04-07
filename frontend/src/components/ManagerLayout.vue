@@ -19,7 +19,6 @@ const activeSection = computed(() => {
 const navItems = [
   { key: 'dashboard', label: 'Dashboard', icon: LayoutDashboard, to: '/manager' },
   { key: 'orders',    label: 'Orders',    icon: ShoppingBag,     to: '/manager/orders' },
-  { key: 'inventory', label: 'Inventory', icon: Boxes,           to: null },
   { key: 'customers', label: 'Customers', icon: Users,           to: '/manager/customers' },
   { key: 'employees', label: 'Employees', icon: UserCog,         to: '/manager/employees' },
   { key: 'inventory', label: 'Inventory', icon: Boxes,           to: '/manager/inventory' },
