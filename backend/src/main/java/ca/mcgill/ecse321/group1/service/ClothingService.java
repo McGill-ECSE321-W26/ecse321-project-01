@@ -51,6 +51,27 @@ public class ClothingService {
     return variant;
   }
 
+  // Unfiltered lookups — include archived records (for manager restore/admin operations)
+  private ClothingModel findModelIncludingArchived(String modelId) {
+    ClothingModel model = clothingModelRepository.findByClothingModelID(modelId);
+    if (model == null) {
+      throw new ResponseStatusException(
+          HttpStatus.NOT_FOUND, String.format("Clothing model with ID %s not found", modelId));
+    }
+    return model;
+  }
+
+  private ClothingVariant findVariantIncludingArchived(String modelId, String variantId) {
+    ClothingVariant variant = clothingVariantRepository.findByClothingVariantID(variantId);
+    if (variant == null || !variant.getModel().getClothingModelID().equals(modelId)) {
+      throw new ResponseStatusException(
+          HttpStatus.NOT_FOUND,
+          String.format(
+              "Clothing variant with ID %s not found under model %s", variantId, modelId));
+    }
+    return variant;
+  }
+
   private void validateName(String name) {
     if (name == null || name.isBlank()) {
       throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Name must not be blank");
@@ -69,10 +90,10 @@ public class ClothingService {
     }
   }
 
-  // Checks name uniqueness, optionally excluding a model ID (used during updates to allow keeping
-  // the same name)
+  // Checks name uniqueness across ALL models (archived or not), optionally excluding a model ID
+  // (used during updates/restores to allow keeping the same name)
   private void validateNameUniqueness(String name, String excludeModelId) {
-    ClothingModel existing = clothingModelRepository.findByNameAndArchivedFalse(name);
+    ClothingModel existing = clothingModelRepository.findByName(name);
     if (existing != null
         && (excludeModelId == null || !existing.getClothingModelID().equals(excludeModelId))) {
       throw new ResponseStatusException(
@@ -119,12 +140,15 @@ public class ClothingService {
     }
   }
 
+  // Checks size+color uniqueness across ALL variants (archived or not), optionally excluding a
+  // variant ID (used during restores to avoid a self-conflict)
   private void validateVariantUniqueness(
-      ClothingModel model, ClothingVariant.Size size, String color) {
+      ClothingModel model, ClothingVariant.Size size, String color, String excludeVariantId) {
     if (model.getClothingVariants().stream()
         .anyMatch(
             variant ->
-                !variant.getArchived()
+                (excludeVariantId == null
+                        || !variant.getClothingVariantID().equals(excludeVariantId))
                     && variant.getSize() == size
                     && variant.getColor().equals(color))) {
       throw new ResponseStatusException(
@@ -133,6 +157,11 @@ public class ClothingService {
               "A variant with size %s and color %s already exists for this clothing model",
               size, color));
     }
+  }
+
+  private void validateVariantUniqueness(
+      ClothingModel model, ClothingVariant.Size size, String color) {
+    validateVariantUniqueness(model, size, color, null);
   }
 
   // Propagates a model price change to all items sitting in customer carts (not yet ordered)
@@ -259,5 +288,46 @@ public class ClothingService {
     List<Item> cartItems = itemRepository.findByClothingVariantAndOrderIsNull(variant);
     itemRepository.deleteAll(cartItems);
     clothingVariantRepository.save(variant);
+  }
+
+  // ── Manager-only operations (archived + non-archived) ───────────────────────
+
+  @Transactional(readOnly = true)
+  public List<ClothingModel> getAllClothingModelsIncludingArchived() {
+    return clothingModelRepository.findAll();
+  }
+
+  @Transactional(readOnly = true)
+  public List<ClothingVariant> getAllVariantsByModelIncludingArchived(String modelId) {
+    ClothingModel model = findModelIncludingArchived(modelId);
+    return model.getClothingVariants().stream().toList();
+  }
+
+  @Transactional
+  public ClothingModel restoreClothingModel(String modelId) throws ResponseStatusException {
+    ClothingModel model = findModelIncludingArchived(modelId);
+    if (!model.getArchived()) {
+      throw new ResponseStatusException(
+          HttpStatus.BAD_REQUEST,
+          String.format("Clothing model with ID %s is not archived", modelId));
+    }
+    validateNameUniqueness(model.getName(), modelId);
+    model.setArchived(false);
+    return clothingModelRepository.save(model);
+  }
+
+  @Transactional
+  public ClothingVariant restoreVariant(String modelId, String variantId)
+      throws ResponseStatusException {
+    ClothingVariant variant = findVariantIncludingArchived(modelId, variantId);
+    if (!variant.getArchived()) {
+      throw new ResponseStatusException(
+          HttpStatus.BAD_REQUEST,
+          String.format("Clothing variant with ID %s is not archived", variantId));
+    }
+    validateVariantUniqueness(
+        variant.getModel(), variant.getSize(), variant.getColor(), variantId);
+    variant.setArchived(false);
+    return clothingVariantRepository.save(variant);
   }
 }
