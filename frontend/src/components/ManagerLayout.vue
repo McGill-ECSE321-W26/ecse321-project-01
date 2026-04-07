@@ -2,7 +2,7 @@
 import { computed } from 'vue'
 import { RouterLink, RouterView, useRoute } from 'vue-router'
 import {
-  ShoppingBag, Boxes, Users, UserCog, LayoutDashboard, ShieldCheck,
+  ShoppingBag, Boxes, Users, UserCog, LayoutDashboard, CircleUser,
 } from 'lucide-vue-next'
 
 const route = useRoute()
@@ -30,10 +30,10 @@ const navItems = [
     <!-- Sidebar -->
     <aside class="w-52 shrink-0 border-r border-(--text-light) flex flex-col pt-8 gap-1">
       <div class="flex flex-col items-center gap-2 pb-6 border-b border-(--text-light) px-4">
-        <div class="w-12 h-12 border border-(--text-light) flex items-center justify-center">
-          <ShieldCheck class="w-5 h-5 text-(--text-muted)" />
+        <div class="w-12 h-12 flex items-center justify-center">
+          <CircleUser class="w-8 h-8 text-(--text)" />
         </div>
-        <span class="text-[10px] text-(--text-light) uppercase tracking-[0.2em]">Manager</span>
+        <span class="text-[10px] text-(--text) uppercase tracking-[1px]">Manager</span>
       </div>
 
       <nav class="flex flex-col gap-0 px-0 pt-2">

@@ -97,10 +97,10 @@ function canModify(order: OrderResponseDto) {
     <!-- Heading -->
     <h1 class="orders-heading text-[40px] lg:text-[52px] font-normal tracking-tight leading-tight mb-2">
       <span class="text-(--text-muted)">My</span>
-      <em class="text-(--text-light)"> Orders</em>
+      <span class="text-(--text-light)"> Orders</span>
     </h1>
     <div class="flex items-center justify-between mb-10 pb-6 border-b border-(--text-light)">
-      <p class="text-sm font-light text-(--text-muted)">
+      <p class="text-md font-light text-(--text-muted)">
         Track and manage your current and past orders.
       </p>
     </div>
@@ -201,7 +201,7 @@ function canModify(order: OrderResponseDto) {
               >
               <button
                 :disabled="updatingOrder === order.orderID"
-                class="text-[10px] uppercase tracking-widest border border-(--text-light) px-2 py-1 text-(--text) hover:bg-(--button-hover) hover:text-(--bg) transition-colors disabled:opacity-40"
+                class="text-[10px] uppercase tracking-widest border border-(--button-hover) px-2 py-1 text-(--button-hover) hover:bg-(--button-hover) hover:text-(--bg) transition-colors disabled:opacity-40"
                 @click="saveDeliveryDate(order)"
               >
                 Save
@@ -240,7 +240,7 @@ function canModify(order: OrderResponseDto) {
         <span class="text-[13px] text-(--text-muted) font-light">${{ order.totalPrice?.toFixed(2) ?? '-' }}</span>
 
         <!-- Loyalty Savings -->
-        <span class="text-[13px] text-(--text-muted) font-light">${{ (order.loyaltySaving ?? 0).toFixed(2) }}</span>
+        <span class="text-[13px] text-(--button-hover) font-light">${{ (order.loyaltySaving ?? 0).toFixed(2) }}</span>
 
         <!-- Status -->
         <span
@@ -278,7 +278,7 @@ function canModify(order: OrderResponseDto) {
 
 <style scoped>
 .orders-heading {
-  font-family: 'Playfair Display', serif;
+  font-family: 'Lexend Deca', sans-serif;
   letter-spacing: -1.5px;
 }
 

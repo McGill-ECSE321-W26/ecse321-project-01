@@ -20,7 +20,7 @@ const props = withDefaults(defineProps<{
       Kloth
     </RouterLink>
     <div class="footer-links">
-      <span>© 2026 Kloth. Clothing for humans.</span>
+      <span>© 2026 &nbsp; Kloth &nbsp; Clothing for humans. &nbsp; |</span>
       <a href="https://github.com/McGill-ECSE321-W26/ecse321-project-01?tab=readme-ov-file">About</a><span>|</span>
       <a href="https://github.com/McGill-ECSE321-W26/ecse321-project-01?tab=readme-ov-file">Terms of Service</a><span>|</span>
       <a href="https://github.com/McGill-ECSE321-W26/ecse321-project-01?tab=readme-ov-file">Privacy Policy</a>

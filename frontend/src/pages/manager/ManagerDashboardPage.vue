@@ -84,10 +84,10 @@ const statCards = computed(() => [
     <!-- Page heading -->
     <h1 class="dashboard-heading text-[40px] lg:text-[52px] font-normal tracking-tight leading-tight mb-2">
       <span class="text-(--text-muted)">Welcome Back,</span>
-      <em class="text-(--text-light)">  Manager </em>
+      <span class="text-(--button-hover)">  Manager </span>
     </h1>
     <div class="flex items-center justify-between mb-10 pb-6 border-b border-(--text-light)">
-      <p class="text-sm font-light text-(--text-muted)">
+      <p class="text-md font-light text-(--text-muted)">
         Here's what's happening in your store today.
       </p>
       <span class="text-[12px] text-(--text-light) uppercase tracking-widest hidden sm:inline">
@@ -225,10 +225,10 @@ const statCards = computed(() => [
             class="group flex items-center justify-between py-4 border-b border-(--text-light) hover:bg-(--card-hover) px-2 -mx-2 transition-colors"
           >
             <div class="flex items-center gap-3">
-              <ShoppingBag class="w-4 h-4 text-(--text-muted)" />
-              <span class="text-[13px] text-(--text-muted) group-hover:text-(--text) transition-colors tracking-wide">View all orders</span>
+              <ShoppingBag class="w-4 h-4 text-(--text)" />
+              <span class="text-[13px] text-(--text) group-hover:text-(--text) transition-colors tracking-wide">View all orders</span>
             </div>
-            <ArrowRight class="w-3.5 h-3.5 text-(--text-light) group-hover:text-(--text-muted) transition-colors" />
+            <ArrowRight class="w-3.5 h-3.5 text-(--text) group-hover:text-(--text-muted) transition-colors" />
           </RouterLink>
 
           <RouterLink
@@ -236,10 +236,10 @@ const statCards = computed(() => [
             class="group flex items-center justify-between py-4 border-b border-(--text-light) hover:bg-(--card-hover) px-2 -mx-2 transition-colors"
           >
             <div class="flex items-center gap-3">
-              <Boxes class="w-4 h-4 text-(--text-muted)" />
-              <span class="text-[13px] text-(--text-muted) group-hover:text-(--text) transition-colors tracking-wide">Manage inventory</span>
+              <Boxes class="w-4 h-4 text-(--text)" />
+              <span class="text-[13px] text-(--text) group-hover:text-(--text) transition-colors tracking-wide">Manage inventory</span>
             </div>
-            <ArrowRight class="w-3.5 h-3.5 text-(--text-light) group-hover:text-(--text-muted) transition-colors" />
+            <ArrowRight class="w-3.5 h-3.5 text-(--text) group-hover:text-(--text-muted) transition-colors" />
           </RouterLink>
 
           <RouterLink
@@ -247,10 +247,10 @@ const statCards = computed(() => [
             class="group flex items-center justify-between py-4 border-b border-(--text-light) hover:bg-(--card-hover) px-2 -mx-2 transition-colors"
           >
             <div class="flex items-center gap-3">
-              <UserCog class="w-4 h-4 text-(--text-muted)" />
-              <span class="text-[13px] text-(--text-muted) tracking-wide">Manage employees</span>
+              <UserCog class="w-4 h-4 text-(--text)" />
+              <span class="text-[13px] text-(--text) tracking-wide">Manage employees</span>
             </div>
-            <ArrowRight class="w-3.5 h-3.5 text-(--text-light) group-hover:text-(--text-muted) transition-colors" />
+            <ArrowRight class="w-3.5 h-3.5 text-(--text) group-hover:text-(--text-muted) transition-colors" />
           </RouterLink>
 
           <RouterLink
@@ -258,10 +258,10 @@ const statCards = computed(() => [
             class="group flex items-center justify-between py-4 border-b border-(--text-light) hover:bg-(--card-hover) px-2 -mx-2 transition-colors"
           >
             <div class="flex items-center gap-3">
-              <Users class="w-4 h-4 text-(--text-muted)" />
-              <span class="text-[13px] text-(--text-muted) tracking-wide">Manage customers</span>
+              <Users class="w-4 h-4 text-(--text)" />
+              <span class="text-[13px] text-(--text) tracking-wide">Manage customers</span>
             </div>
-            <ArrowRight class="w-3.5 h-3.5 text-(--text-light) group-hover:text-(--text-muted) transition-colors" />
+            <ArrowRight class="w-3.5 h-3.5 text-(--text) group-hover:text-(--text-muted) transition-colors" />
           </RouterLink>
         </div>
       </div>
@@ -305,7 +305,7 @@ const statCards = computed(() => [
         <span class="text-[13px] text-(--text) tracking-wide font-light">#{{ order.orderID }}</span>
         <span
           class="text-[11px] uppercase tracking-widest"
-          :class="order.orderStatus === 'Delivered' ? 'text-(--text-muted)' : 'text-(--text-light)'"
+          :class="order.orderStatus === 'Delivered' ? 'text-(--button-hover) font-medium' : 'text-(--text-light)'"
         >
           {{ order.orderStatus }}
         </span>
@@ -316,8 +316,7 @@ const statCards = computed(() => [
 
 <style scoped>
 .dashboard-heading {
-  font-family: 'Playfair Display', serif;
-  letter-spacing: -1.5px;
+  font-family: 'Lexend Deca', sans-serif;
 }
 
 @keyframes fadeUp {

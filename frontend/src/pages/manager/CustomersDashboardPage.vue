@@ -70,10 +70,10 @@ function formatDate(d: Date | null) {
     <!-- Heading -->
     <h1 class="page-heading text-[40px] lg:text-[52px] font-normal tracking-tight leading-tight mb-2">
       <span class="text-(--text-muted)">Customer</span>
-      <em class="text-(--text-light)"> Directory</em>
+      <span class="text-(--button-hover)"> Directory</span>
     </h1>
     <div class="flex items-center justify-between mb-10 pb-6 border-b border-(--text-light)">
-      <p class="text-sm font-light text-(--text-muted)">
+      <p class="text-md font-light text-(--text-muted)">
         Browse registered customers and review their order history.
       </p>
       <span class="text-[12px] text-(--text-light) uppercase tracking-widest hidden sm:inline">Customers</span>
@@ -134,8 +134,8 @@ function formatDate(d: Date | null) {
         <span class="text-[13px] text-(--text) font-light">{{ customer.email }}</span>
         <span class="text-[13px] text-(--text-muted) font-light">{{ customer.address || '-' }}</span>
         <div class="flex items-center gap-1.5">
-          <Star class="w-3 h-3 text-(--text-light)" />
-          <span class="text-[13px] text-(--text-muted) font-light">{{ customer.loyaltyPoints ?? 0 }}</span>
+          <Star class="w-3 h-3 text-(--button-hover)" />
+          <span class="text-[13px] text-(--button-hover) font-light">{{ customer.loyaltyPoints ?? 0 }}</span>
         </div>
         <button
           class="text-[11px] uppercase tracking-widest text-(--text) border border-(--text-light) px-3 py-1.5 hover:bg-(--text) hover:text-(--bg) transition-colors w-fit"
@@ -199,7 +199,7 @@ function formatDate(d: Date | null) {
             <p class="text-[10px] uppercase tracking-[0.2em] text-(--text-light) mb-3">
               Loyalty Points
             </p>
-            <p class="text-[32px] font-light text-(--text) leading-none">
+            <p class="text-[32px] font-light text-(--button-hover) leading-none">
               {{ selectedCustomer.loyaltyPoints ?? 0 }}
             </p>
           </div>
@@ -295,7 +295,7 @@ function formatDate(d: Date | null) {
             <span
               class="text-[11px] uppercase tracking-widest"
               :class="{
-                'text-(--text-muted)': order.orderStatus === 'Delivered',
+                'text-(--button-hover) font-bold': order.orderStatus === 'Delivered',
                 'text-(--text-light) line-through': order.orderStatus === 'Cancelled',
                 'text-(--text)': order.orderStatus === 'Preparing',
               }"
@@ -313,8 +313,7 @@ function formatDate(d: Date | null) {
 
 <style scoped>
 .page-heading {
-  font-family: 'Playfair Display', serif;
-  letter-spacing: -1.5px;
+  font-family: 'Lexend Deca', sans-serif;
 }
 
 

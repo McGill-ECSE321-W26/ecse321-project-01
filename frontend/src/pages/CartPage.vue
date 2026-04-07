@@ -205,17 +205,17 @@ onMounted(loadCart)
                 <Button
                   variant="outline"
                   size="icon"
-                  class="h-7 w-7"
+                  class="h-7 w-7 rounded-none bg-(--light-grey) border-(--light-grey) hover:bg-(--dark-grey) hover:text-(--bg)"
                   :disabled="item.quantity <= 1"
                   @click="updateQuantity(item, -1)"
                 >
                   <Minus class="w-3 h-3" />
                 </Button>
-                <span class="w-6 text-center text-sm">{{ item.quantity }}</span>
+                <span class="w-6 text-center text-md font-regular">{{ item.quantity }}</span>
                 <Button
                   variant="outline"
                   size="icon"
-                  class="h-7 w-7"
+                  class="h-7 w-7 rounded-none bg-(--light-grey) border-(--light-grey) hover:bg-(--dark-grey) hover:text-(--bg)"
                   @click="updateQuantity(item, 1)"
                 >
                   <Plus class="w-3 h-3" />
@@ -244,7 +244,7 @@ onMounted(loadCart)
       </div>
 
       <Button
-        class="w-full mt-6"
+        class="w-full mt-6 bg-(--button-hover) rounded-none hover:bg-[#773f23] text-(--bg)"
         @click="openCheckout"
       >
         Proceed to checkout

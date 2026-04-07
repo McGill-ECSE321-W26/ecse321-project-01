@@ -421,10 +421,10 @@ function formatPrice(price: number): string {
     <!-- Heading -->
     <h1 class="inventory-heading text-[40px] lg:text-[52px] font-normal tracking-tight leading-tight mb-2">
       <span class="text-(--text-muted)">Inventory</span>
-      <em class="text-(--text-light)"> Management</em>
+      <span class="text-(--button-hover)"> Management</span>
     </h1>
     <div class="flex items-center justify-between mb-10 pb-6 border-b border-(--text-light)">
-      <p class="text-sm font-light text-(--text-muted)">
+      <p class="text-md font-light text-(--text-muted)">
         Manage clothing models and their variants.
       </p>
       <span class="text-[12px] text-(--text-light) uppercase tracking-widest hidden sm:inline">Inventory</span>
@@ -925,7 +925,7 @@ function formatPrice(price: number): string {
         <DialogClose as-child>
           <Button
             variant="outline"
-            class="rounded-none border-(--text-light) text-(--text-muted) hover:bg-(--card-hover) text-[12px] tracking-wide"
+            class="rounded-none border-(--text-light) bg-transparent text-(--text-muted) hover:bg-(--card-hover) text-[12px] tracking-wide"
           >
             Cancel
           </Button>
@@ -1085,7 +1085,7 @@ function formatPrice(price: number): string {
         <DialogClose as-child>
           <Button
             variant="outline"
-            class="rounded-none border-(--text-light) text-(--text-muted) hover:bg-(--card-hover) text-[12px] tracking-wide"
+            class="rounded-none border-(--text-light) bg-transparent text-(--text-muted) hover:bg-(--card-hover) text-[12px] tracking-wide"
           >
             Cancel
           </Button>
@@ -1136,8 +1136,7 @@ function formatPrice(price: number): string {
 
 <style scoped>
 .inventory-heading {
-  font-family: 'Playfair Display', serif;
-  letter-spacing: -1.5px;
+  font-family: 'Lexend Deca', sans-serif;
 }
 
 @keyframes fadeUp {
