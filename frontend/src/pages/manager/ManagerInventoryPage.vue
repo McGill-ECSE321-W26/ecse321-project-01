@@ -607,7 +607,7 @@ function formatPrice(price: number): string {
       <div class="px-8 pt-8 pb-8 space-y-10">
         <!-- 1 : Specific Model Details -->
         <section>
-          <div class="flex items-center justify-between mb-5 ">
+          <div class="flex items-center justify-between mb-5">
             <p class="text-[10px] uppercase tracking-[0.2em] text-(--text-light)">
               Model Details
             </p>
@@ -683,9 +683,28 @@ function formatPrice(price: number): string {
               </div>
             </div>
           </div>
+
+          <div class="flex items-center justify-between mt-5 pt-5 border-t border-(--text-light)">
+            <button
+              class="flex items-center gap-1.5 p-1.5 border border-(--text-light) text-(--text-muted) hover:bg-destructive hover:text-(--bg) transition-colors"
+              title="Delete model"
+              @click="openDeleteModel(selectedModel)"
+            >
+              <Trash2 class="w-3.5 h-3.5" />
+              <span class="text-[11px] uppercase tracking-widest pr-1">Delete Model</span>
+            </button>
+            <button
+              :disabled="savingModel"
+              class="text-[11px] uppercase tracking-widest border border-(--text-light) px-5 py-2 text-(--text) hover:bg-(--button-hover) hover:text-(--bg) transition-colors disabled:opacity-40"
+              @click="saveModel"
+            >
+              {{ savingModel ? 'Saving...' : 'Save Changes' }}
+            </button>
+          </div>
         </section>
+
         <!-- 2 : Variants -->
-        <section class="border-t border-(--text-light) pt-10">
+        <section>
           <div class="flex items-center justify-between mb-5">
             <div class="flex items-center gap-2">
               <Package class="w-3.5 h-3.5 text-(--text-light)" />
