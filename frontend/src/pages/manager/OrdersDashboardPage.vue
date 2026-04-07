@@ -146,6 +146,13 @@ function formatDate(d: Date | null) {
   return new Date(d).toLocaleDateString('en-CA', { year: 'numeric', month: 'short', day: 'numeric' })
 }
 
+function getEmployeeName(id: string | null | undefined) {
+  if (!id) return '-'
+  const emp = employees.value.find(e => e.id === id)
+  if (!emp) return 'Unknown'
+  return emp.email.substring(0, emp.email.indexOf('@')).replace('.', ' ')
+}
+
 </script>
 
 <template>
@@ -274,9 +281,9 @@ function formatDate(d: Date | null) {
         </span>
         <span
           v-if="order.employeeID"
-          class="text-[12px] text-(--text-muted) tracking-wide"
+          class="text-[12px] text-(--text-muted) tracking-wide capitalize"
         >
-          #{{ order.employeeID.slice(0, 8) }}…
+          {{ getEmployeeName(order.employeeID) }}
         </span>
         <span
           v-else
@@ -382,8 +389,8 @@ function formatDate(d: Date | null) {
             </p>
             <span
               v-if="selectedOrder.employeeID"
-              class="text-[13px] font-light text-(--text) font-mono"
-            >#{{ selectedOrder.employeeID }}</span>
+              class="text-[13px] font-light text-(--text) capitalize"
+            >{{ getEmployeeName(selectedOrder.employeeID) }}</span>
             <span
               v-else
               class="text-[13px] font-light text-(--text-light)"
@@ -525,8 +532,8 @@ function formatDate(d: Date | null) {
               <User class="w-6 h-6 text-(--text-muted)" />
             </div>
             <div>
-              <p class="text-[12px] text-(--text) leading-snug break-all">
-                {{ emp.email }}
+              <p class="text-[12px] text-(--text) leading-snug capitalize">
+                {{ getEmployeeName(emp.id) }}
               </p>
               <p class="text-[8px] uppercase tracking-widest text-(--text-light) mt-1">
                 Click to select

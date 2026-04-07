@@ -3,6 +3,7 @@ import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { api } from '@/api/client'
 import type { OrderResponseDto } from '@/api/types/order'
+import type { EmployeeResponseDto } from '@/api/types/person'
 import { useAuthStore } from '@/stores/auth'
 
 const router = useRouter()
@@ -10,6 +11,7 @@ const auth = useAuthStore()
 const employeeID = auth.person?.id ?? ''
 
 const orders = ref<OrderResponseDto[]>([])
+const employees = ref<EmployeeResponseDto[]>([])
 const loading = ref(true)
 const activeFilter = ref<'all' | 'available' | 'mine'>('all')
 const updatingStatus = ref<string | null>(null)
@@ -20,6 +22,9 @@ onMounted(async () => {
   } catch { /* empty */ } finally {
     loading.value = false
   }
+  try {
+    employees.value = await api<EmployeeResponseDto[]>('/persons/employees')
+  } catch { /* empty */ }
 })
 
 function filteredOrders() {
@@ -74,6 +79,13 @@ function canMarkDelivered(order: OrderResponseDto) {
 function formatDate(d: Date | null) {
   if (!d) return '-'
   return new Date(d).toLocaleDateString('en-CA', { year: 'numeric', month: 'short', day: 'numeric' })
+}
+
+function getEmployeeName(id: string | null | undefined) {
+  if (!id) return '-'
+  const emp = employees.value.find(e => e.id === id)
+  if (!emp) return 'Unknown'
+  return emp.email.substring(0, emp.email.indexOf('@')).replace('.', ' ')
 }
 </script>
 
@@ -205,13 +217,9 @@ function formatDate(d: Date | null) {
           }"
         >{{ order.orderStatus }}</span>
         <span
-          v-if="order.employeeID === employeeID"
-          class="text-[12px] text-(--text) tracking-wide"
-        >Me</span>
-        <span
-          v-else-if="order.employeeID"
-          class="text-[12px] text-(--text-muted) tracking-wide"
-        >#{{ order.employeeID.slice(0, 8) }}…</span>
+          v-if="order.employeeID"
+          class="text-[12px] text-(--text-muted) tracking-wide capitalize"
+        >{{ getEmployeeName(order.employeeID) }}</span>
         <span
           v-else
           class="text-[12px] text-(--text-light)"
