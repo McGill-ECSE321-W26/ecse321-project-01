@@ -2,7 +2,6 @@ package ca.mcgill.ecse321.group1.service;
 
 import ca.mcgill.ecse321.group1.model.*;
 import ca.mcgill.ecse321.group1.repository.*;
-
 import java.sql.Date;
 import java.time.LocalDate;
 import java.util.List;
@@ -219,9 +218,7 @@ public class OrderService {
     return orderRepository.save(order);
   }
 
-  /**
-   * This function updates upon GET 
-   */
+  /** This function updates upon GET */
   private void markDelivered(Order order) {
     if (order.getOrderStatus() == Order.OrderStatus.Preparing
         && !order.getDeliveryDate().toLocalDate().isAfter(LocalDate.now())) {
