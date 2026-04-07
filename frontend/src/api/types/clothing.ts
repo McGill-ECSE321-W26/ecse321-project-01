@@ -18,6 +18,11 @@ export interface ClothingModelListResponseDto {
   variants: VariantSummaryDto[]
 }
 
+// Manager-only: includes archived field (used for GET /api/clothing/manager)
+export interface ClothingModelAdminResponseDto extends ClothingModelListResponseDto {
+  archived: boolean
+}
+
 // Matches backend ClothingModelResponseDto (used for GET /api/clothing/{modelId})
 export interface ClothingModelResponseDto {
   clothingModelID: string
@@ -37,6 +42,11 @@ export interface ClothingVariantResponseDto {
   imagePath: string
   stockQuantity: number
   modelId: string
+}
+
+// Manager-only: includes archived field (used for GET /api/clothing/manager/{id}/variants)
+export interface ClothingVariantAdminResponseDto extends ClothingVariantResponseDto {
+  archived: boolean
 }
 
 // Request DTOs

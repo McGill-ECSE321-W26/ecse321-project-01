@@ -2,9 +2,12 @@
 import { ref, computed, onMounted } from 'vue'
 import { ArrowLeft, User } from 'lucide-vue-next'
 import { api } from '@/api/client.ts'
+import { useToastStore } from '@/stores/toast'
 import type { OrderResponseDto } from '@/api/types/order.ts'
 import type { EmployeeResponseDto } from '@/api/types/person.ts'
 import type { ItemResponseDto } from '@/api/types/item.ts'
+
+const toast = useToastStore()
 
 // ── Data ────────────────────────────────────────────────────────────────────
 const orders = ref<OrderResponseDto[]>([])
@@ -63,6 +66,7 @@ async function openDetail(order: OrderResponseDto) {
     detailItems.value = await api<ItemResponseDto[]>(`/orders/${order.orderID}/items`)
   } catch (e: unknown) {
     detailError.value = e instanceof Error ? e.message : 'Failed to load order details.'
+    toast.error(detailError.value)
   } finally {
     detailLoading.value = false
   }
@@ -103,8 +107,10 @@ async function assignEmployee(employee: EmployeeResponseDto) {
     if (idx !== -1) orders.value[idx] = updated
     selectedOrder.value = updated
     currentView.value = 'detail'
+    toast.success(`Employee assigned to order #${updated.orderID}.`)
   } catch (e: unknown) {
     assignError.value = e instanceof Error ? e.message : 'Failed to assign employee.'
+    toast.error(assignError.value)
   } finally {
     assigning.value = false
   }
@@ -127,8 +133,9 @@ async function updateStatus(order: OrderResponseDto, status: string) {
     if (selectedOrder.value?.orderID === updated.orderID) {
       selectedOrder.value = updated
     }
-  } catch {
-    // silently ignore
+    toast.success(`Order status updated to ${status}.`)
+  } catch (e: unknown) {
+    toast.error(e instanceof Error ? e.message : 'Failed to update order status.')
   } finally {
     updatingStatus.value = null
   }

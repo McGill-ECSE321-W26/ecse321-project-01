@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
 import {
   ArrowLeft, Pencil, Trash2, Plus, Package,
 } from 'lucide-vue-next'
@@ -20,15 +20,20 @@ import { useToastStore } from '@/stores/toast'
 const toast = useToastStore()
 import type {
   ClothingModelListResponseDto,
+  ClothingModelAdminResponseDto,
   ClothingModelResponseDto,
   ClothingVariantResponseDto,
+  ClothingVariantAdminResponseDto,
   ClothingCategory,
 } from '@/api/types/clothing'
 
 // ── Data ────────────────────────────────────────────────────────────────────
-const models = ref<ClothingModelListResponseDto[]>([])
+const models = ref<(ClothingModelListResponseDto | ClothingModelAdminResponseDto)[]>([])
 const loading = ref(true)
 const error = ref<string | null>(null)
+
+// Archive toggle — when true, fetches all models including archived
+const showArchived = ref(false)
 
 // Filters
 const activeCategory = ref<'All' | ClothingCategory>('All')
@@ -40,8 +45,9 @@ const currentView = ref<'list' | 'detail'>('list')
 const selectedModel = ref<ClothingModelListResponseDto | null>(null)
 
 // Detail panel — variants
-const detailVariants = ref<ClothingVariantResponseDto[]>([])
+const detailVariants = ref<(ClothingVariantResponseDto | ClothingVariantAdminResponseDto)[]>([])
 const detailVariantsLoading = ref(false)
+const showArchivedVariants = ref(false)
 
 interface VariantEditForm {
   stockQuantity: number
@@ -117,17 +123,52 @@ const filteredModels = computed(() => {
 const totalModels = computed(() => models.value.length)
 
 // ── Data Loading ────────────────────────────────────────────────────────────
-onMounted(async () => {
+async function loadModels() {
+  loading.value = true
+  error.value = null
   try {
-    models.value = await api<ClothingModelListResponseDto[]>('/clothing')
+    if (showArchived.value) {
+      models.value = await api<ClothingModelAdminResponseDto[]>('/clothing/manager')
+    } else {
+      models.value = await api<ClothingModelListResponseDto[]>('/clothing')
+    }
   } catch (e: unknown) {
     error.value = e instanceof Error ? e.message : 'Failed to load inventory'
   } finally {
     loading.value = false
   }
-})
+}
+
+onMounted(loadModels)
+watch(showArchived, loadModels)
 
 // ── Detailed Edit Panel ─────────────────────────────────────────────────────────────
+async function loadDetailVariants(modelId: string) {
+  detailVariantsLoading.value = true
+  detailVariants.value = []
+  variantForms.value = {}
+  try {
+    const variantsUrl = showArchivedVariants.value
+      ? `/clothing/manager/${modelId}/variants`
+      : `/clothing/${modelId}/variants`
+    const loaded = await api<(ClothingVariantResponseDto | ClothingVariantAdminResponseDto)[]>(variantsUrl)
+    detailVariants.value = loaded
+    const forms: Record<string, VariantEditForm> = {}
+    for (const v of loaded) {
+      forms[v.clothingVariantID] = { stockQuantity: v.stockQuantity, saving: false, error: null }
+    }
+    variantForms.value = forms
+  } catch {
+    // leave empty
+  } finally {
+    detailVariantsLoading.value = false
+  }
+}
+
+watch(showArchivedVariants, () => {
+  if (selectedModel.value) loadDetailVariants(selectedModel.value.clothingModelID)
+})
+
 async function openEditDetails(model: ClothingModelListResponseDto) {
   selectedModel.value = model
   modelForm.value = {
@@ -138,27 +179,9 @@ async function openEditDetails(model: ClothingModelListResponseDto) {
     price: model.price,
   }
   modelError.value = null
+  showArchivedVariants.value = false  // reset toggle when opening a new model
   currentView.value = 'detail'
-  detailVariantsLoading.value = true
-  detailVariants.value = []
-  variantForms.value = {}
-  try {
-    const loaded = await api<ClothingVariantResponseDto[]>(`/clothing/${model.clothingModelID}/variants`)
-    detailVariants.value = loaded
-    const forms: Record<string, VariantEditForm> = {}
-    for (const v of loaded) {
-      forms[v.clothingVariantID] = {
-        stockQuantity: v.stockQuantity,
-        saving: false,
-        error: null,
-      }
-    }
-    variantForms.value = forms
-  } catch {
-    // leave empty
-  } finally {
-    detailVariantsLoading.value = false
-  }
+  await loadDetailVariants(model.clothingModelID)
 }
 
 // ── Model CRUD ──────────────────────────────────────────────────────────────
@@ -186,7 +209,7 @@ async function createModel() {
       method: 'POST',
       body: JSON.stringify(modelForm.value),
     })
-    models.value = await api<ClothingModelListResponseDto[]>('/clothing')
+    await loadModels()
     showCreateModelDialog.value = false
     toast.success('Model created successfully.')
   } catch (e: unknown) {
@@ -221,7 +244,7 @@ async function saveModel() {
       method: 'PUT',
       body: JSON.stringify(modelForm.value),
     })
-    models.value = await api<ClothingModelListResponseDto[]>('/clothing')
+    await loadModels()
     const updated = models.value.find(m => m.clothingModelID === selectedModel.value!.clothingModelID)
     if (updated) selectedModel.value = updated
     toast.success('Model saved successfully.')
@@ -243,11 +266,11 @@ async function confirmDeleteModel() {
   deletingModelLoading.value = true
   try {
     await api<void>(`/clothing/${deletingModel.value.clothingModelID}`, { method: 'DELETE' })
-    models.value = models.value.filter(m => m.clothingModelID !== deletingModel.value!.clothingModelID)
     if (selectedModel.value?.clothingModelID === deletingModel.value.clothingModelID) {
       currentView.value = 'list'
       selectedModel.value = null
     }
+    await loadModels()
     showDeleteModelDialog.value = false
     deletingModel.value = null
     toast.success('Model deleted.')
@@ -285,18 +308,8 @@ async function createVariant() {
       method: 'POST',
       body: JSON.stringify(variantForm.value),
     })
-    const loaded = await api<ClothingVariantResponseDto[]>(`/clothing/${modelId}/variants`)
-    detailVariants.value = loaded
-    for (const v of loaded) {
-      if (!variantForms.value[v.clothingVariantID]) {
-        variantForms.value[v.clothingVariantID] = {
-          stockQuantity: v.stockQuantity,
-          saving: false,
-          error: null,
-        }
-      }
-    }
-    models.value = await api<ClothingModelListResponseDto[]>('/clothing')
+    await loadDetailVariants(modelId)
+    await loadModels()
     showVariantDialog.value = false
     toast.success('Variant created successfully.')
   } catch (e: unknown) {
@@ -329,13 +342,7 @@ async function saveVariantEdit(variantId: string) {
       `/clothing/${modelId}/variants/${variantId}`,
       { method: 'PATCH', body: JSON.stringify({ stockQuantity: form.stockQuantity }) },
     )
-    const refreshed = await api<ClothingVariantResponseDto[]>(`/clothing/${modelId}/variants`)
-    detailVariants.value = refreshed
-    for (const v of refreshed) {
-      if (variantForms.value[v.clothingVariantID]) {
-        variantForms.value[v.clothingVariantID].stockQuantity = v.stockQuantity
-      }
-    }
+    await loadDetailVariants(modelId)
     toast.success('Stock updated.')
   } catch (e: unknown) {
     form.error = e instanceof Error ? e.message : 'Failed to update stock.'
@@ -363,7 +370,7 @@ async function confirmDeleteVariant() {
     const updatedForms = { ...variantForms.value }
     delete updatedForms[deletingVariant.value.clothingVariantID]
     variantForms.value = updatedForms
-    models.value = await api<ClothingModelListResponseDto[]>('/clothing')
+    await loadModels()
     showDeleteVariantDialog.value = false
     deletingVariant.value = null
     toast.success('Variant deleted.')
@@ -371,6 +378,35 @@ async function confirmDeleteVariant() {
     toast.error(e instanceof Error ? e.message : 'Failed to delete variant.')
   } finally {
     deletingVariantLoading.value = false
+  }
+}
+
+// ── Restore actions ─────────────────────────────────────────────────────────
+async function restoreModel(model: ClothingModelAdminResponseDto) {
+  try {
+    await api<ClothingModelAdminResponseDto>(
+      `/clothing/manager/${model.clothingModelID}/restore`,
+      { method: 'PATCH' },
+    )
+    await loadModels()
+    toast.success(`"${model.name}" restored.`)
+  } catch (e: unknown) {
+    toast.error(e instanceof Error ? e.message : 'Failed to restore model.')
+  }
+}
+
+async function restoreVariant(variant: ClothingVariantAdminResponseDto) {
+  const modelId = selectedModel.value!.clothingModelID
+  try {
+    await api<ClothingVariantAdminResponseDto>(
+      `/clothing/manager/${modelId}/variants/${variant.clothingVariantID}/restore`,
+      { method: 'PATCH' },
+    )
+    await loadDetailVariants(modelId)
+    await loadModels()
+    toast.success('Variant restored.')
+  } catch (e: unknown) {
+    toast.error(e instanceof Error ? e.message : 'Failed to restore variant.')
   }
 }
 
@@ -449,7 +485,14 @@ function formatPrice(price: number): string {
           {{ cat }}
         </button>
         <button
-          class="ml-auto flex items-center gap-2 px-5 py-3.5 text-[11px] uppercase tracking-widest text-(--text) hover:bg-(--card-hover) transition-colors"
+          class="ml-auto flex items-center gap-2 px-5 py-3.5 text-[11px] uppercase tracking-widest transition-colors border-r border-(--text-light)"
+          :class="showArchived ? 'bg-(--card-hover) text-(--text)' : 'text-(--text-muted) hover:bg-(--card-hover)'"
+          @click="showArchived = !showArchived"
+        >
+          {{ showArchived ? 'Hide Archived' : 'Show Archived' }}
+        </button>
+        <button
+          class="flex items-center gap-2 px-5 py-3.5 text-[11px] uppercase tracking-widest text-(--text) hover:bg-(--card-hover) transition-colors"
           @click="openCreateModel"
         >
           <Plus class="w-3.5 h-3.5" />
@@ -497,28 +540,46 @@ function formatPrice(price: number): string {
           v-for="(model, i) in filteredModels"
           :key="model.clothingModelID"
           class="grid grid-cols-[2fr_1.5fr_1fr_1fr_1fr_auto] px-6 py-4 border-b border-(--text-light) hover:bg-(--card-hover) transition-colors items-center row-card"
+          :class="{ 'opacity-50': (model as ClothingModelAdminResponseDto).archived }"
           :style="{ animationDelay: `${0.3 + i * 0.04}s` }"
         >
-          <span class="text-[13px] text-(--text) font-light tracking-wide">{{ model.name }}</span>
+          <span class="text-[13px] text-(--text) font-light tracking-wide flex items-center gap-2">
+            {{ model.name }}
+            <span
+              v-if="(model as ClothingModelAdminResponseDto).archived"
+              class="text-[9px] uppercase tracking-widest border border-(--text-light) px-1.5 py-0.5 text-(--text-light)"
+            >Archived</span>
+          </span>
           <span class="text-[13px] text-(--text) font-light">{{ model.brand }}</span>
           <span class="text-[11px] uppercase tracking-widest text-(--text-muted)">{{ model.category }}</span>
           <span class="text-[13px] text-(--text) font-light">${{ formatPrice(model.price) }}</span>
           <span class="text-[13px] text-(--text) font-light">{{ model.totalStockQuantity }}</span>
           <div class="flex items-center gap-2">
-            <button
-              class="p-1.5 border border-(--text-light) text-(--text-muted) hover:bg-(--button-hover) hover:text-(--bg) transition-colors"
-              title="Edit model"
-              @click="openEditDetails(model)"
-            >
-              <Pencil class="w-3.5 h-3.5" />
-            </button>
-            <button
-              class="p-1.5 border border-(--text-light) text-(--text-muted) hover:bg-destructive hover:text-(--bg) transition-colors"
-              title="Delete model"
-              @click="openDeleteModel(model)"
-            >
-              <Trash2 class="w-3.5 h-3.5" />
-            </button>
+            <template v-if="(model as ClothingModelAdminResponseDto).archived">
+              <button
+                class="px-2 py-1 text-[10px] uppercase tracking-widest border border-(--text-light) text-(--text-muted) hover:bg-(--button-hover) hover:text-(--bg) transition-colors"
+                title="Restore model"
+                @click="restoreModel(model as ClothingModelAdminResponseDto)"
+              >
+                Restore
+              </button>
+            </template>
+            <template v-else>
+              <button
+                class="p-1.5 border border-(--text-light) text-(--text-muted) hover:bg-(--button-hover) hover:text-(--bg) transition-colors"
+                title="Edit model"
+                @click="openEditDetails(model)"
+              >
+                <Pencil class="w-3.5 h-3.5" />
+              </button>
+              <button
+                class="p-1.5 border border-(--text-light) text-(--text-muted) hover:bg-destructive hover:text-(--bg) transition-colors"
+                title="Delete model"
+                @click="openDeleteModel(model)"
+              >
+                <Trash2 class="w-3.5 h-3.5" />
+              </button>
+            </template>
           </div>
         </div>
       </template>
@@ -546,7 +607,7 @@ function formatPrice(price: number): string {
       <div class="px-8 pt-8 pb-8 space-y-10">
         <!-- 1 : Specific Model Details -->
         <section>
-          <div class="flex items-center justify-between mb-5">
+          <div class="flex items-center justify-between mb-5 ">
             <p class="text-[10px] uppercase tracking-[0.2em] text-(--text-light)">
               Model Details
             </p>
@@ -622,28 +683,9 @@ function formatPrice(price: number): string {
               </div>
             </div>
           </div>
-
-          <div class="flex items-center justify-between mt-5 pt-5 border-t border-(--text-light)">
-            <button
-              class="flex items-center gap-1.5 p-1.5 border border-(--text-light) text-(--text-muted) hover:bg-destructive hover:text-(--bg) transition-colors"
-              title="Delete model"
-              @click="openDeleteModel(selectedModel)"
-            >
-              <Trash2 class="w-3.5 h-3.5" />
-              <span class="text-[11px] uppercase tracking-widest pr-1">Delete Model</span>
-            </button>
-            <button
-              :disabled="savingModel"
-              class="text-[11px] uppercase tracking-widest border border-(--text-light) px-5 py-2 text-(--text) hover:bg-(--button-hover) hover:text-(--bg) transition-colors disabled:opacity-40"
-              @click="saveModel"
-            >
-              {{ savingModel ? 'Saving...' : 'Save Changes' }}
-            </button>
-          </div>
         </section>
-
         <!-- 2 : Variants -->
-        <section>
+        <section class="border-t border-(--text-light) pt-10">
           <div class="flex items-center justify-between mb-5">
             <div class="flex items-center gap-2">
               <Package class="w-3.5 h-3.5 text-(--text-light)" />
@@ -651,12 +693,21 @@ function formatPrice(price: number): string {
                 Variants ({{ detailVariants.length }})
               </p>
             </div>
-            <button
-              class="flex items-center gap-1.5 text-[11px] uppercase tracking-widest text-(--text) hover:text-(--text-muted) transition-colors"
-              @click="openCreateVariant"
-            >
-              <Plus class="w-3 h-3" /> Add Variant
-            </button>
+            <div class="flex items-center gap-3">
+              <button
+                class="text-[10px] uppercase tracking-widest border border-(--text-light) px-3 py-1 transition-colors"
+                :class="showArchivedVariants ? 'bg-(--card-hover) text-(--text)' : 'text-(--text-light) hover:bg-(--card-hover)'"
+                @click="showArchivedVariants = !showArchivedVariants"
+              >
+                {{ showArchivedVariants ? 'Hide Archived' : 'Show Archived' }}
+              </button>
+              <button
+                class="flex items-center gap-1.5 text-[11px] uppercase tracking-widest text-(--text) hover:text-(--text-muted) transition-colors"
+                @click="openCreateVariant"
+              >
+                <Plus class="w-3 h-3" /> Add Variant
+              </button>
+            </div>
           </div>
 
           <div
@@ -682,6 +733,7 @@ function formatPrice(price: number): string {
               v-for="variant in detailVariants"
               :key="variant.clothingVariantID"
               class="border border-(--text-light) p-4 flex flex-col gap-3"
+              :class="{ 'opacity-50': (variant as ClothingVariantAdminResponseDto).archived }"
             >
               <!-- Image preview -->
               <img
@@ -692,9 +744,15 @@ function formatPrice(price: number): string {
               >
 
               <!-- Size badge (read-only) -->
-              <span class="text-[10px] uppercase tracking-widest border border-(--text-light) px-2 py-0.5 w-fit text-(--text-muted)">
-                {{ variant.size }}
-              </span>
+              <div class="flex items-center gap-2">
+                <span class="text-[10px] uppercase tracking-widest border border-(--text-light) px-2 py-0.5 w-fit text-(--text-muted)">
+                  {{ variant.size }}
+                </span>
+                <span
+                  v-if="(variant as ClothingVariantAdminResponseDto).archived"
+                  class="text-[9px] uppercase tracking-widest border border-(--text-light) px-1.5 py-0.5 text-(--text-light)"
+                >Archived</span>
+              </div>
 
               <!-- Color: display-only picker + hex code -->
               <div class="space-y-1.5">
@@ -711,14 +769,15 @@ function formatPrice(price: number): string {
                 </div>
               </div>
 
-              <!-- Stock -->
+              <!-- Stock (read-only for archived variants) -->
               <div class="space-y-1.5">
                 <Label class="text-[10px] uppercase tracking-widest text-(--text-light)">Stock</Label>
                 <Input
                   v-model.number="variantForms[variant.clothingVariantID].stockQuantity"
                   type="number"
                   min="0"
-                  class="rounded-none border-(--text-light) bg-transparent text-(--text) text-[13px] focus-visible:ring-0 focus-visible:border-(--text-muted)"
+                  :disabled="(variant as ClothingVariantAdminResponseDto).archived"
+                  class="rounded-none border-(--text-light) bg-transparent text-(--text) text-[13px] focus-visible:ring-0 focus-visible:border-(--text-muted) disabled:opacity-40"
                 />
               </div>
 
@@ -729,22 +788,32 @@ function formatPrice(price: number): string {
                 {{ variantForms[variant.clothingVariantID].error }}
               </p>
 
-              <!-- Actions (Save/Delete) -->
+              <!-- Actions: Restore (archived) or Save/Delete (active) -->
               <div class="flex items-center gap-2 mt-auto pt-2 border-t border-(--text-light)">
-                <button
-                  :disabled="variantForms[variant.clothingVariantID]?.saving"
-                  class="flex-1 text-[11px] uppercase tracking-widest border border-(--text-light) px-3 py-1.5 text-(--text) hover:bg-(--button-hover) hover:text-(--bg) transition-colors disabled:opacity-40"
-                  @click="saveVariantEdit(variant.clothingVariantID)"
-                >
-                  {{ variantForms[variant.clothingVariantID]?.saving ? 'Saving...' : 'Save' }}
-                </button>
-                <button
-                  class="p-1.5 border border-(--text-light) text-(--text-muted) hover:bg-destructive hover:text-(--bg) transition-colors"
-                  title="Delete variant"
-                  @click="openDeleteVariant(variant)"
-                >
-                  <Trash2 class="w-3.5 h-3.5" />
-                </button>
+                <template v-if="(variant as ClothingVariantAdminResponseDto).archived">
+                  <button
+                    class="flex-1 text-[11px] uppercase tracking-widest border border-(--text-light) px-3 py-1.5 text-(--text) hover:bg-(--button-hover) hover:text-(--bg) transition-colors"
+                    @click="restoreVariant(variant as ClothingVariantAdminResponseDto)"
+                  >
+                    Restore
+                  </button>
+                </template>
+                <template v-else>
+                  <button
+                    :disabled="variantForms[variant.clothingVariantID]?.saving"
+                    class="flex-1 text-[11px] uppercase tracking-widest border border-(--text-light) px-3 py-1.5 text-(--text) hover:bg-(--button-hover) hover:text-(--bg) transition-colors disabled:opacity-40"
+                    @click="saveVariantEdit(variant.clothingVariantID)"
+                  >
+                    {{ variantForms[variant.clothingVariantID]?.saving ? 'Saving...' : 'Save' }}
+                  </button>
+                  <button
+                    class="p-1.5 border border-(--text-light) text-(--text-muted) hover:bg-destructive hover:text-(--bg) transition-colors"
+                    title="Delete variant"
+                    @click="openDeleteVariant(variant)"
+                  >
+                    <Trash2 class="w-3.5 h-3.5" />
+                  </button>
+                </template>
               </div>
             </div>
           </div>
