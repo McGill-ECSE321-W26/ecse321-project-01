@@ -108,19 +108,19 @@ onUnmounted(() => {
         </template>
         <template v-else-if="auth.isAuthenticated && auth.role === 'Manager'">
           <RouterLink
-              to="/manager"
-              class="btn btn-white"
+            to="/manager"
+            class="btn btn-white"
           >
             Manager Dashboard
           </RouterLink>
         </template><template v-else-if="auth.isAuthenticated && auth.role === 'Employee'">
-        <RouterLink
+          <RouterLink
             to="/employee"
             class="btn btn-white"
-        >
-          Go to Employee Dashboard
-        </RouterLink>
-      </template>
+          >
+            Go to Employee Dashboard
+          </RouterLink>
+        </template>
         <template v-else>
           <RouterLink
             to="/register"
