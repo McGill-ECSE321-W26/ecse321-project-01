@@ -97,32 +97,32 @@ function getName(email: string | undefined) {
   <main class="px-10 pt-16 pb-20 max-w-2xl mx-auto">
     <!-- Heading -->
     <h1
-      class="account-heading fade-up text-[40px] lg:text-[52px] font-normal tracking-tight leading-tight mb-2"
+      class="account-heading fade-up text-[40px] lg:text-[46px] font-normal tracking-tight leading-tight mb-2"
       style="animation-delay: 0s"
     >
-      <span class="text-(--text-muted)">Welcome <em class="text-(--text-light)">back</em><span class="text-(--text-light) capitalize">, {{ getName(person?.email ?? auth.person?.email) }}</span></span>
+      <span class="text-(--text-muted)">Welcome back, <span class="text-(--text) capitalize"> {{ getName(person?.email ?? auth.person?.email) }}</span></span>
     </h1>
-    <div class="mb-10 pb-6 border-b border-(--text-light)" />
+    <div class="mb-5 pb-6 border-b border-(--text-light)" />
 
     <div
-      class="fade-up border border-(--text-light) px-7 pt-6 pb-7 space-y-6"
+      class="fade-up px-2 pb-7 space-y-6"
       style="animation-delay: 0.15s"
     >
       <div>
-        <p class="text-[12px] uppercase tracking-[0.2em] text-(--text-light) mb-2">
+        <p class="text-[16px] uppercase tracking-[1px] text-(--text-light) mb-2">
           Email
         </p>
-        <p class="text-[15px] font-light text-(--text-muted)">
+        <p class="text-[20px] font-light text-(--text-muted)">
           {{ person?.email ?? auth.person?.email }}
         </p>
       </div>
 
       <div>
-        <p class="text-[12px] uppercase tracking-[0.2em] text-(--text-light) mb-2">
+        <p class="text-[16px] uppercase tracking-[1px] text-(--text-light) mb-2">
           Address
         </p>
         <div class="flex items-center gap-2">
-          <p class="text-[15px] font-light text-(--text-muted)">
+          <p class="text-[20px] font-light text-(--text-muted)">
             {{ person?.address ?? 'N/A' }}
           </p>
           <Dialog v-model:open="addressDialogOpen">
@@ -131,23 +131,24 @@ function getName(email: string | undefined) {
                 class="text-(--text-light) hover:text-(--text-muted) transition-colors"
                 title="Change address"
               >
-                <Pencil class="w-3.5 h-3.5" />
+                <Pencil class="w-5 h-5" />
               </button>
             </DialogTrigger>
-            <DialogContent>
+            <DialogContent class="rounded-sm bg-(--bg)">
               <DialogHeader>
                 <DialogTitle>Update Address</DialogTitle>
               </DialogHeader>
               <div class="space-y-4">
                 <div
                   v-if="addressError"
-                  class="rounded-md bg-red-50 border border-red-200 p-3 text-sm text-red-800"
+                  class="rounded-none bg-red-50 border border-red-200 p-3 text-sm text-red-800"
                 >
                   {{ addressError }}
                 </div>
                 <div class="space-y-2">
                   <Label for="address">New Address</Label>
                   <Input
+                    class="rounded-none"
                     id="address"
                     v-model="newAddress"
                     type="text"
@@ -157,11 +158,11 @@ function getName(email: string | undefined) {
               </div>
               <DialogFooter>
                 <DialogClose as-child>
-                  <Button variant="outline">
+                  <Button variant="outline" class="rounded-none bg-transparent border-(--text-light)">
                     Cancel
                   </Button>
                 </DialogClose>
-                <Button @click="handleAddressUpdate">
+                <Button @click="handleAddressUpdate" class="rounded-none bg-(--text)">
                   Save Address
                 </Button>
               </DialogFooter>
@@ -171,19 +172,19 @@ function getName(email: string | undefined) {
       </div>
 
       <div>
-        <p class="text-[12px] uppercase tracking-[0.2em] text-(--text-light) mb-2">
+        <p class="text-[16px] uppercase tracking-[1px] text-(--text-light) mb-2">
           Loyalty Points
         </p>
         <div class="flex items-center gap-2">
-          <p class="text-[15px] font-light text-(--text-muted)">
+          <p class="text-[20px] font-light font-medium text-(--button-hover)">
             {{ person?.loyaltyPoints ?? 0 }}
           </p>
           <button
-            class="text-(--text-light) hover:text-(--text-muted) transition-colors"
+            class="text-(--button-hover) hover:text-(--text-muted) transition-colors"
             title="Spend points in the store"
             @click="router.push({ name: 'shop' })"
           >
-            <ShoppingBag class="w-3.5 h-3.5" />
+            <ShoppingBag class="w-5 h-5" />
           </button>
         </div>
       </div>
@@ -191,11 +192,15 @@ function getName(email: string | undefined) {
       <div class="pt-2">
         <Dialog v-model:open="passwordDialogOpen">
           <DialogTrigger as-child>
-            <Button size="sm">
+            <Button 
+              size="sm" 
+              class="rounded-none border-(--text-light) text-[16px] bg-transparent text-(--text-muted) hover:bg-(--card-hover) hover:border-(--text-muted)" 
+              :variant="'outline'"
+            >
               Change Password
             </Button>
           </DialogTrigger>
-          <DialogContent>
+          <DialogContent class="rounded-sm bg-(--bg)">
             <DialogHeader>
               <DialogTitle>Change Password</DialogTitle>
             </DialogHeader>
@@ -209,6 +214,7 @@ function getName(email: string | undefined) {
               <div class="space-y-2">
                 <Label for="old-password">Current Password</Label>
                 <Input
+                  class="rounded-none"
                   id="old-password"
                   v-model="oldPassword"
                   type="password"
@@ -218,6 +224,7 @@ function getName(email: string | undefined) {
               <div class="space-y-2">
                 <Label for="new-password">New Password</Label>
                 <Input
+                  class="rounded-none"
                   id="new-password"
                   v-model="newPassword"
                   type="password"
@@ -227,6 +234,7 @@ function getName(email: string | undefined) {
               <div class="space-y-2">
                 <Label for="confirm-password">Confirm New Password</Label>
                 <Input
+                  class="rounded-none"
                   id="confirm-password"
                   v-model="confirmPassword"
                   type="password"
@@ -236,11 +244,11 @@ function getName(email: string | undefined) {
             </div>
             <DialogFooter>
               <DialogClose as-child>
-                <Button variant="outline">
+                <Button variant="outline" class="rounded-none bg-transparent border-(--text-light)">
                   Cancel
                 </Button>
               </DialogClose>
-              <Button @click="handlePasswordUpdate">
+              <Button @click="handlePasswordUpdate" class="rounded-none bg-(--text)">
                 Save Password
               </Button>
             </DialogFooter>
@@ -253,8 +261,7 @@ function getName(email: string | undefined) {
 
 <style scoped>
 .account-heading {
-  font-family: 'Playfair Display', serif;
-  letter-spacing: -1.5px;
+  font-family: 'Lexend Deca', sans-serif;
 }
 
 @keyframes fadeUp {
