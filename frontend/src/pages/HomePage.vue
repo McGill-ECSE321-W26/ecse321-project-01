@@ -194,19 +194,17 @@ onUnmounted(() => {
 .brand-name {
   font-family: 'Lexend Deca', serif;
   font-size: 64px;
-  font-weight: 700;
-  color: #fff;
-  letter-spacing: 3px;
+  font-weight: 500;
+  color: var(--bg);
   margin: 0;
-  line-height: 1;
+  line-height: .5;
 }
 
 .brand-slogan {
-  font-size: 12px;
-  font-weight: 300;
-  color: rgba(255, 255, 255, 0.8);
-  letter-spacing: 4px;
-  text-transform: uppercase;
+  font-family: 'Lexend Deca';
+  font-size: 20px;
+  font-weight: 500;
+  color: var(--bg);
   margin: 0 0 12px;
 }
 
@@ -229,7 +227,7 @@ onUnmounted(() => {
   display: block;
 }
 
-.btn-white { background: #fff; color: var(--text); }
+.btn-white { background: var(--bg); color: var(--text); }
 .btn-ghost { background: rgba(255,255,255,0.1); color: #fff; border: 1px solid rgba(255,255,255,0.5); backdrop-filter: blur(6px); }
 .btn:hover { opacity: 0.85; }
 
