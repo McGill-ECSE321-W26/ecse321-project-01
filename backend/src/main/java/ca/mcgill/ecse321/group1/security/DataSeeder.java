@@ -447,20 +447,20 @@ public class DataSeeder {
             wideLegPants,
             "#C2B49A",
             12,
-            "https://cdn.media.amplience.net/i/harryrosen/20162692066?maxW=3840&fmt=auto");
+            "https://imagescdn.simons.ca/images/20069/26110/12/A2_1.jpg?__=9");
     ClothingVariant wideLegTanS = wideLegTanAll[0], wideLegTanM = wideLegTanAll[1];
     ClothingVariant[] wideLegBlackAll =
         createAllSizes(
             wideLegPants,
             "#1A1A18",
             10,
-            "https://cdn.media.amplience.net/i/harryrosen/20162690047?maxW=3840&fmt=auto");
+            "https://imagescdn.simons.ca/images/20069/26110/4/A2_1.jpg?__=9");
     ClothingVariant wideLegBlackM = wideLegBlackAll[1];
     createAllSizes(
         wideLegPants,
         "#1E2646",
         8,
-        "https://cdn.media.amplience.net/i/harryrosen/20162668047?maxW=3840&fmt=auto");
+        "https://imagescdn.simons.ca/images/20069/26110/41/A2_1.jpg?__=9");
 
     // Denim Jacket
     // Indigo Denim Jacket — indigo
@@ -538,14 +538,14 @@ public class DataSeeder {
             "Lightweight linen trousers with a relaxed straight cut and elastic waistband. Naturally breathable and perfect for warm-weather dressing, from beach to brunch.");
     createAllSizes(
         linenPants,
-        "#B0D4E8",
+        "#b2b3a1",
         20,
-        "https://cdn.media.amplience.net/i/harryrosen/20157916041?maxW=3840&fmt=auto");
+        "https://imagescdn.simons.ca/images/20069/26100/4/A2_1.jpg?__=9");
     createAllSizes(
         linenPants,
         "#F5F0E8",
         20,
-        "https://cdn.media.amplience.net/i/harryrosen/20157911070?maxW=3840&fmt=auto");
+        "https://imagescdn.simons.ca/images/20069/26100/14/A2_1.jpg?__=9");
 
     // Puffer Jacket — black
     ClothingModel pufferJacket =
