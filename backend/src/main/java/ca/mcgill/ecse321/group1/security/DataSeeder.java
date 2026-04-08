@@ -525,6 +525,21 @@ public class DataSeeder {
             "https://static.massimodutti.net/assets/public/6e82/4d4c/a2cb4feda5c8/5dade8157a53/03127433717-o1/03127433717-o1.jpg?ts=1775050514551&w=1440&f=auto");
     ClothingVariant coachBlackM = coachBlackAll[1], coachBlackL = coachBlackAll[2];
 
+    // Retro Sunglasses — light blue, light green
+    ClothingModel retroSunglasses =
+        createClothingModel(
+            "Retro Sunglasses", "Kloth Accessories", ClothingModel.Category.Accessories, 100f);
+    createAllSizes(
+        retroSunglasses,
+        "#AED6F1",
+        20,
+        "https://cdn.media.amplience.net/i/harryrosen/20179741067?maxW=3840&fmt=auto");
+    createAllSizes(
+        retroSunglasses,
+        "#A8D5B5",
+        20,
+        "https://cdn.media.amplience.net/i/harryrosen/20179740068?maxW=3840&fmt=auto");
+
     // Orders
     // cust1: 2 delivered, 1 preparing
     Order order1 =
