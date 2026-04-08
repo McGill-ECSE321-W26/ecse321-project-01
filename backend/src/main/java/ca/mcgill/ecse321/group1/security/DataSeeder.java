@@ -187,9 +187,7 @@ public class DataSeeder {
             "#3a2728",
             10,
             "https://dam.dynamiteclothing.com/m/17817c7723843918/original/100096517_8F4_alt3_1920x2880.jpg?sw=740&sh=1110");
-    ClothingVariant dressFloralBrownS = dressFloralBrown[0],
-        dressFloralBrownM = dressFloralBrown[1],
-        dressFloralBrownL = dressFloralBrown[2];
+
     // Braided Belt — brown, olive, beige
     ClothingModel braidedBelt =
         createClothingModel(
