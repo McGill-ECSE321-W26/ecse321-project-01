@@ -314,8 +314,8 @@ function getImagePath(color: string) {
         </Button>
         <Transition name="fade">
           <div
-          v-show="detailsOpen"
-          class="mt-3 text-(--text-muted) leading-relaxed"
+            v-show="detailsOpen"
+            class="mt-3 text-(--text-muted) leading-relaxed"
           >
             {{ model?.description }}
           </div>
