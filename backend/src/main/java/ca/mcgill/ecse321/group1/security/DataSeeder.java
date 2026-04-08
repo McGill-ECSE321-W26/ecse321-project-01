@@ -181,7 +181,6 @@ public class DataSeeder {
         dressFloralM = dressFloralWhite[1],
         dressFloralL = dressFloralWhite[2];
 
-    ClothingVariant[] dressFloralBrown =
         createAllSizes(
             dress,
             "#3a2728",
@@ -825,11 +824,6 @@ public class DataSeeder {
     cust.setAddress(address);
     cust.setLoyaltyPoints(loyaltyPoints);
     return customerRepository.save(cust);
-  }
-
-  private ClothingModel createClothingModel(
-      String name, String brand, ClothingModel.Category category, float price) {
-    return createClothingModel(name, brand, category, price, "");
   }
 
   private ClothingModel createClothingModel(
