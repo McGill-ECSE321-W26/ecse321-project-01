@@ -150,7 +150,7 @@ function getImagePath(color: string) {
 <template>
   <div class="min-h-screen">
     <!-- Back to shop button -->
-    <div class="max-w-350 px-5 py-5 pt-6 align-start">
+    <div class="max-w-350 px-10 py-5 pt-6 align-start">
       <RouterLink to="/shop">
         <Button
           size="sm"
@@ -199,7 +199,7 @@ function getImagePath(color: string) {
       class="grid grid-cols-1 md:grid-cols-8 pb-15 px-10 md:gap-3"
     >
       <!-- image -->
-      <div class="aspect-[3/4] w-full overflow-hidden bg-(--card-hover) md:col-span-5 border-[2px] border-(--card-hover)">
+      <div class="aspect-[3/4] w-full overflow-hidden bg-(--card-hover) md:col-span-4 border-[2px] border-(--card-hover)">
         <img
           :src="currVariant?.imagePath"
           :alt="model?.name"
@@ -228,7 +228,7 @@ function getImagePath(color: string) {
       </div>
 
       <!-- info -->
-      <div class="flex flex-col items-start pt-8 col-span-2">
+      <div class="flex flex-col items-center pt-20 col-span-3">
         <!-- brand name -->
         <p class="text-(--text-light)">
           {{ model?.brand }}
@@ -291,7 +291,7 @@ function getImagePath(color: string) {
         >
           Add to Cart &nbsp; {{ model?.price }}$
         </Button></span>
-        <span class="pb-55"><p
+        <span class="pb-30"><p
           v-if="!inStock"
           class="text-(--text-light) text-[15px]"
         >
