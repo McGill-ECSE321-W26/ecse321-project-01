@@ -150,7 +150,7 @@ function getImagePath(color: string) {
 <template>
   <div class="min-h-screen">
     <!-- Back to shop button -->
-    <div class="max-w-350 px-10 py-5 pt-6 align-start">
+    <div class="max-w-350 px-10 align-start">
       <RouterLink to="/shop">
         <Button
           size="sm"
@@ -196,7 +196,7 @@ function getImagePath(color: string) {
     <!-- Show item -->
     <div
       v-else
-      class="grid grid-cols-1 md:grid-cols-8"
+      class="grid grid-cols-1 md:grid-cols-8 p-10"
     >
       <!-- image -->
       <div class="aspect-[3/4] w-full overflow-hidden bg-(--card-hover) md:col-span-4 border-[2px] border-(--card-hover)">
