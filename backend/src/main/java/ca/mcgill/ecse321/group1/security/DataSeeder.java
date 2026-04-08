@@ -114,7 +114,7 @@ public class DataSeeder {
             "#1C1C1C",
             15,
             "https://static.zara.net/assets/public/0363/18a9/60e149328a0b/634299cd4403/00761370800-000-e1/00761370800-000-e1.jpg?ts=1754985838610&w=750");
-    ClothingVariant hoodieBlackL = hoodieBlackAll[2], hoodieBlackXL = hoodieBlackAll[3];
+    ClothingVariant hoodieBlackL = hoodieBlackAll[2];
     ClothingVariant[] hoodieGrayAll =
         createAllSizes(
             hoodie,
@@ -147,9 +147,7 @@ public class DataSeeder {
             "#4e6e8f",
             15,
             "https://imagescdn.simons.ca/images/19659/226836/45/A2_1.jpg?__=4");
-    ClothingVariant jeansNavyS = jeansBlueAll[0],
-        jeansBlueM = jeansBlueAll[1],
-        jeansBlueL = jeansBlueAll[2];
+    ClothingVariant jeansBlueM = jeansBlueAll[1], jeansBlueL = jeansBlueAll[2];
     ClothingVariant[] jeansIndigoAll =
         createAllSizes(
             jeans,
@@ -365,13 +363,12 @@ public class DataSeeder {
         "#d4d0cf",
         0,
         "https://media.weekday.com/assets/003/e7/1f/e71fcaac58a6bb80a055bdb6b40a5cdbae10d39a_xxl-1.jpg?imwidth=1600");
-    ClothingVariant rareTeeBlackM =
-        createVariant(
-            rareItem,
-            Size.M,
-            "#d4d0cf",
-            0,
-            "https://media.weekday.com/assets/003/e7/1f/e71fcaac58a6bb80a055bdb6b40a5cdbae10d39a_xxl-1.jpg?imwidth=1600");
+    createVariant(
+        rareItem,
+        Size.M,
+        "#d4d0cf",
+        0,
+        "https://media.weekday.com/assets/003/e7/1f/e71fcaac58a6bb80a055bdb6b40a5cdbae10d39a_xxl-1.jpg?imwidth=1600");
     ClothingVariant rareTeeBlackL =
         createVariant(
             rareItem,
@@ -400,8 +397,7 @@ public class DataSeeder {
             "#C2B49A",
             15,
             "https://imagescdn.simons.ca/images/20546/228072/23/A2_1.jpg?__=10");
-    ClothingVariant cargoTrousersTanM = cargoTrousersTanAll[1],
-        cargoTrousersTanL = cargoTrousersTanAll[2];
+    ClothingVariant cargoTrousersTanM = cargoTrousersTanAll[1];
     createAllSizes(
         cargoTrousers,
         "#3B3A32",
@@ -448,7 +444,7 @@ public class DataSeeder {
             "#C2B49A",
             12,
             "https://imagescdn.simons.ca/images/20069/26110/12/A2_1.jpg?__=9");
-    ClothingVariant wideLegTanS = wideLegTanAll[0], wideLegTanM = wideLegTanAll[1];
+    ClothingVariant wideLegTanS = wideLegTanAll[0];
     ClothingVariant[] wideLegBlackAll =
         createAllSizes(
             wideLegPants,
@@ -498,7 +494,7 @@ public class DataSeeder {
             "#EDEDEB",
             10,
             "https://i.pinimg.com/1200x/1b/db/6c/1bdb6ccae4a4f417cee45cee454258e9.jpg");
-    ClothingVariant campShirtTanM = campShirtTanAll[1], campShirtTanL = campShirtTanAll[2];
+    ClothingVariant campShirtTanM = campShirtTanAll[1];
 
     createAllSizes(
         campShirt,
@@ -520,7 +516,7 @@ public class DataSeeder {
             "#1A1A18",
             15,
             "https://cdn.media.amplience.net/i/harryrosen/20165937075-2?maxW=3840&fmt=auto");
-    ClothingVariant crossbodyBlackS = crossbodyBlackAll[0], crossbodyBlackM = crossbodyBlackAll[1];
+    ClothingVariant crossbodyBlackM = crossbodyBlackAll[1];
     ClothingVariant[] crossbodyOliveAll =
         createAllSizes(
             crossbodyBag,
@@ -582,7 +578,7 @@ public class DataSeeder {
             "#3B3A32",
             8,
             "https://static.massimodutti.net/assets/public/6e82/4d4c/a2cb4feda5c8/5dade8157a53/03127433717-o1/03127433717-o1.jpg?ts=1775050514551&w=1440&f=auto");
-    ClothingVariant coachBlackM = coachBlackAll[1], coachBlackL = coachBlackAll[2];
+    ClothingVariant coachBlackM = coachBlackAll[1];
 
     // Retro Sunglasses — light blue, light green
     ClothingModel retroSunglasses =
@@ -853,16 +849,6 @@ public class DataSeeder {
     item.setQuantity(quantity);
     item.setPrice(unitPrice * quantity);
     item.setOrder(order);
-    itemRepository.save(item);
-  }
-
-  private void createCartItem(
-      Customer customer, ClothingVariant variant, int quantity, float unitPrice) {
-    Item item = new Item();
-    item.setClothingVariant(variant);
-    item.setQuantity(quantity);
-    item.setPrice(unitPrice * quantity);
-    item.setCustomer(customer);
     itemRepository.save(item);
   }
 
