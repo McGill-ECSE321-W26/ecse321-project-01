@@ -137,7 +137,7 @@ public class DataSeeder {
     ClothingModel jeans =
         createClothingModel(
             "Straight Fit Jeans",
-            "Kloth Essentials",
+            "Kloth Denim",
             ClothingModel.Category.Bottoms,
             90f,
             "Classic straight-leg denim with a mid-rise waist and five-pocket construction. Made from durable stretch denim for a comfortable fit throughout the day.");
@@ -475,7 +475,7 @@ public class DataSeeder {
     ClothingModel indigoDenimJacket =
         createClothingModel(
             "Indigo Denim Jacket",
-            "Naked & Famous Denim",
+            "Kloth Denim",
             ClothingModel.Category.Tops,
             80f,
             "A fashion forward denim jacket in deep indigo selvedge denim. Features chest flap pockets, adjustable side tabs, and a sturdy metal button placket that gets better with age.");
