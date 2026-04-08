@@ -32,13 +32,15 @@ const existingItem = computed(() =>
 )
 const detailsOpen = ref(false)
 
+const SIZE_ORDER = ['XS', 'S', 'M', 'L', 'XL', 'XXL']
 const selectedColor = ref<string | null>(null)
 const selectedSize = ref<string | null>(null)
 const colors = computed(() => {
   return [...new Set(variants.value.map(v => v.color))]
 })
 const sizes = computed(() => {
-  return [...new Set(variants.value.map(v => v.size))]
+  const uniqueSizes = [...new Set(variants.value.map(v => v.size))]
+  return uniqueSizes.sort((a, b) => SIZE_ORDER.indexOf(a) - SIZE_ORDER.indexOf(b))
 })
 const inStock = computed(() => {
   return (
