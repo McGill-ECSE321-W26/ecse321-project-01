@@ -128,7 +128,8 @@ async function loadModels() {
   error.value = null
   try {
     if (showArchived.value) {
-      models.value = await api<ClothingModelAdminResponseDto[]>('/clothing/manager')
+      const all = await api<ClothingModelAdminResponseDto[]>('/clothing/manager')
+      models.value = all.filter(m => m.archived)
     } else {
       models.value = await api<ClothingModelListResponseDto[]>('/clothing')
     }
@@ -151,7 +152,10 @@ async function loadDetailVariants(modelId: string) {
     const variantsUrl = showArchivedVariants.value
       ? `/clothing/manager/${modelId}/variants`
       : `/clothing/${modelId}/variants`
-    const loaded = await api<(ClothingVariantResponseDto | ClothingVariantAdminResponseDto)[]>(variantsUrl)
+    let loaded = await api<(ClothingVariantResponseDto | ClothingVariantAdminResponseDto)[]>(variantsUrl)
+    if (showArchivedVariants.value) {
+      loaded = loaded.filter(v => (v as ClothingVariantAdminResponseDto).archived)
+    }
     detailVariants.value = loaded
     const forms: Record<string, VariantEditForm> = {}
     for (const v of loaded) {
