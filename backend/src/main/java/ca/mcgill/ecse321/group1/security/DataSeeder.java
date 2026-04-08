@@ -73,7 +73,10 @@ public class DataSeeder {
     // Classic T-Shirt — white, black, cream
     ClothingModel tshirt =
         createClothingModel(
-            "Classic T-Shirt", "Kloth Essentials", ClothingModel.Category.Tops, 25f,
+            "Classic T-Shirt",
+            "Kloth Essentials",
+            ClothingModel.Category.Tops,
+            25f,
             "A wardrobe staple crafted from soft 100% cotton. Features a relaxed crew neck and a clean, minimalist cut that pairs effortlessly with anything.");
     ClothingVariant[] tshirtWhiteAll =
         createAllSizes(
@@ -99,7 +102,11 @@ public class DataSeeder {
 
     // Premium Hoodie — black, gray, white, brown
     ClothingModel hoodie =
-        createClothingModel("Premium Hoodie", "Kloth Originals", ClothingModel.Category.Tops, 60f,
+        createClothingModel(
+            "Premium Hoodie",
+            "Kloth Originals",
+            ClothingModel.Category.Tops,
+            60f,
             "A heavyweight fleece hoodie built for comfort and durability. Features a kangaroo pocket, adjustable drawstring hood, and a cozy brushed interior.");
     ClothingVariant[] hoodieBlackAll =
         createAllSizes(
@@ -129,7 +136,10 @@ public class DataSeeder {
     // Straight fit jeans - blue, dark indigo, navy
     ClothingModel jeans =
         createClothingModel(
-            "Straight Fit Jeans", "Kloth Essentials", ClothingModel.Category.Bottoms, 90f,
+            "Straight Fit Jeans",
+            "Kloth Essentials",
+            ClothingModel.Category.Bottoms,
+            90f,
             "Classic straight-leg denim with a mid-rise waist and five-pocket construction. Made from durable stretch denim for a comfortable fit throughout the day.");
     ClothingVariant[] jeansBlueAll =
         createAllSizes(
@@ -156,7 +166,10 @@ public class DataSeeder {
     // Summer Floral Dress — white, brown
     ClothingModel dress =
         createClothingModel(
-            "Summer Dress", "Kloth Studio", ClothingModel.Category.Dresses, 70f,
+            "Summer Dress",
+            "Kloth Studio",
+            ClothingModel.Category.Dresses,
+            70f,
             "A breezy summer dress draping to the ankles. Made from lightweight woven fabric, perfect for warm-weather occasions.");
     ClothingVariant[] dressFloralWhite =
         createAllSizes(
@@ -180,7 +193,10 @@ public class DataSeeder {
     // Braided Belt — brown, olive, beige
     ClothingModel braidedBelt =
         createClothingModel(
-            "Braided Belt", "Kloth Accessories", ClothingModel.Category.Accessories, 55f,
+            "Braided Belt",
+            "Kloth Accessories",
+            ClothingModel.Category.Accessories,
+            55f,
             "A handcrafted braided leather belt with a smooth silver buckle. Adds a polished, artisanal touch to both casual and smart-casual outfits.");
     createAllSizes(
         braidedBelt,
@@ -201,7 +217,10 @@ public class DataSeeder {
     // Polo Shirt — blue, brown, green, pink
     ClothingModel polo2 =
         createClothingModel(
-            "Polo Shirt", "Kloth Essentials", ClothingModel.Category.Tops, 60f,
+            "Polo Shirt",
+            "Kloth Essentials",
+            ClothingModel.Category.Tops,
+            60f,
             "A refined piqué cotton polo with a two-button placket and ribbed collar and cuffs. Effortlessly bridges the gap between casual comfort and polished style.");
     createAllSizes(
         polo2,
@@ -227,7 +246,10 @@ public class DataSeeder {
     // Bomber Jacket — olive, black
     ClothingModel jacket =
         createClothingModel(
-            "Bomber Jacket", "Kloth Originals", ClothingModel.Category.Outerwear, 270f,
+            "Bomber Jacket",
+            "Kloth Originals",
+            ClothingModel.Category.Outerwear,
+            270f,
             "A sleek bomber jacket with a satin shell, ribbed collar, cuffs, and hem. Features two side zip pockets and a clean silhouette ideal for layering.");
     ClothingVariant[] jacketOliveAll =
         createAllSizes(
@@ -244,11 +266,14 @@ public class DataSeeder {
             "https://cdn.media.amplience.net/i/harryrosen/20182499047?maxW=3840&fmt=auto");
     ClothingVariant jacketBlackL = jacketBlackAll[2], jacketBlackXL = jacketBlackAll[3];
 
-    //Shirts
+    // Shirts
     // Shirt — gray, beige, light blue
     ClothingModel shirt =
         createClothingModel(
-            "Shirt", "Kloth Essentials", ClothingModel.Category.Tops, 80f,
+            "Shirt",
+            "Kloth Essentials",
+            ClothingModel.Category.Tops,
+            80f,
             "A tailored dress shirt cut from wrinkle-resistant poplin fabric. Features a spread collar and a single-button cuffs for a sharp everyday look.");
     createAllSizes(
         shirt,
@@ -269,7 +294,10 @@ public class DataSeeder {
     // Classic Polo Shirt — white, navy
     ClothingModel polo =
         createClothingModel(
-            "Classic Polo Shirt", "Kloth Essentials", ClothingModel.Category.Tops, 40f,
+            "Classic Polo Shirt",
+            "Kloth Essentials",
+            ClothingModel.Category.Tops,
+            40f,
             "A timeless polo shirt in smooth piqué cotton with a classic fit. An iconic silhouette that stands the test of time.");
     ClothingVariant[] poloWhiteAll =
         createAllSizes(
@@ -298,7 +326,10 @@ public class DataSeeder {
     // Wool Bomber — gray
     ClothingModel woolBomber =
         createClothingModel(
-            "Wool Bomber", "Kloth Originals", ClothingModel.Category.Outerwear, 450f,
+            "Wool Bomber",
+            "Kloth Originals",
+            ClothingModel.Category.Outerwear,
+            450f,
             "A premium wool-blend bomber with a structured silhouette and satin lining. The ribbed collar, cuffs, and hem give it a sporty edge with a sophisticated finish.");
     createAllSizes(
         woolBomber,
@@ -308,7 +339,11 @@ public class DataSeeder {
 
     // Cargo Shorts — khaki, black
     ClothingModel shorts =
-        createClothingModel("Cargo Shorts", "Kloth Originals", ClothingModel.Category.Bottoms, 35f,
+        createClothingModel(
+            "Cargo Shorts",
+            "Kloth Originals",
+            ClothingModel.Category.Bottoms,
+            35f,
             "Relaxed-fit cargo shorts with multiple utility pockets. Made from durable ripstop fabric, designed for comfort on the move.");
     ClothingVariant[] shortsKhakiAll =
         createAllSizes(
@@ -330,7 +365,10 @@ public class DataSeeder {
     // Limited Edition Tee — white (mostly out-of-stock for UI edge-case testing)
     ClothingModel rareItem =
         createClothingModel(
-            "Limited Edition Tee", "Kloth Studio", ClothingModel.Category.Tops, 90f,
+            "Limited Edition Tee",
+            "Kloth Studio",
+            ClothingModel.Category.Tops,
+            90f,
             "A collector's piece from our limited Kloth Studio drop. Crafted from premium Supima cotton with a subtle tonal graphic, this tee won't be restocked once it's gone.");
     createVariant(
         rareItem,
@@ -362,7 +400,10 @@ public class DataSeeder {
     // Relaxed Cargo Trousers — tan, dark, taupe
     ClothingModel cargoTrousers =
         createClothingModel(
-            "Relaxed Cargo Trousers", "Kloth Essentials", ClothingModel.Category.Bottoms, 98f,
+            "Relaxed Cargo Trousers",
+            "Kloth Essentials",
+            ClothingModel.Category.Bottoms,
+            98f,
             "Easy-fitting cargo trousers with a tapered leg and multiple side pockets. The relaxed cut and elasticated waistband make them a versatile go-to for everyday wear.");
     ClothingVariant[] cargoTrousersTanAll =
         createAllSizes(
@@ -388,7 +429,10 @@ public class DataSeeder {
     // Midi Dress — red, white
     ClothingModel midiDress =
         createClothingModel(
-            "Midi Dress", "Kloth Studio", ClothingModel.Category.Dresses, 90f,
+            "Midi Dress",
+            "Kloth Studio",
+            ClothingModel.Category.Dresses,
+            90f,
             "An elegant midi-length dress with a fitted bodice and flowy skirt. Crafted from fluid fabric that drapes beautifully, transitioning seamlessly from day to evening.");
     createAllSizes(
         midiDress,
@@ -404,7 +448,10 @@ public class DataSeeder {
     // Pleated Wide-Leg Pants — tan, black, navy
     ClothingModel wideLegPants =
         createClothingModel(
-            "Pleated Wide-Leg Pants", "Kloth Essentials", ClothingModel.Category.Bottoms, 115f,
+            "Pleated Wide-Leg Pants",
+            "Kloth Essentials",
+            ClothingModel.Category.Bottoms,
+            115f,
             "Sophisticated wide-leg trousers with front pleats and a high-rise waist. Cut from a smooth suiting fabric that gives a structured, elevated look for any occasion.");
     ClothingVariant[] wideLegTanAll =
         createAllSizes(
@@ -426,11 +473,14 @@ public class DataSeeder {
         8,
         "https://cdn.media.amplience.net/i/harryrosen/20162668047?maxW=3840&fmt=auto");
 
-    //Denim Jacket
+    // Denim Jacket
     // Indigo Denim Jacket — indigo
     ClothingModel indigoDenimJacket =
         createClothingModel(
-            "Indigo Denim Jacket", "Naked & Famous Denim", ClothingModel.Category.Tops, 80f,
+            "Indigo Denim Jacket",
+            "Naked & Famous Denim",
+            ClothingModel.Category.Tops,
+            80f,
             "A fashion forward denim jacket in deep indigo selvedge denim. Features chest flap pockets, adjustable side tabs, and a sturdy metal button placket that gets better with age.");
     createAllSizes(
         indigoDenimJacket,
@@ -441,7 +491,10 @@ public class DataSeeder {
     // Linen Blend Camp Shirt — Taupe, cream, black
     ClothingModel campShirt =
         createClothingModel(
-            "Linen Blend Camp Shirt", "Kloth Studio", ClothingModel.Category.Tops, 75f,
+            "Linen Blend Camp Shirt",
+            "Kloth Studio",
+            ClothingModel.Category.Tops,
+            75f,
             "A relaxed camp-collar shirt in a breathable linen-cotton blend. The open collar and straight hem give it an effortlessly laid-back resort aesthetic.");
     ClothingVariant[] campShirtCreamAll =
         createAllSizes(
@@ -467,7 +520,10 @@ public class DataSeeder {
     // Nylon Crossbody Bag — black, beige
     ClothingModel crossbodyBag =
         createClothingModel(
-            "Nylon Crossbody Bag", "Kloth Accessories", ClothingModel.Category.Accessories, 55f,
+            "Nylon Crossbody Bag",
+            "Kloth Accessories",
+            ClothingModel.Category.Accessories,
+            55f,
             "A compact and lightweight nylon crossbody bag with an adjustable strap and multiple zip compartments. Practical enough for daily use, stylish enough for special occasions.");
     ClothingVariant[] crossbodyBlackAll =
         createAllSizes(
@@ -486,7 +542,10 @@ public class DataSeeder {
     // Linen Pants — baby blue, cream
     ClothingModel linenPants =
         createClothingModel(
-            "Linen Pants", "Kloth Essentials", ClothingModel.Category.Bottoms, 125f,
+            "Linen Pants",
+            "Kloth Essentials",
+            ClothingModel.Category.Bottoms,
+            125f,
             "Lightweight linen trousers with a relaxed straight cut and elastic waistband. Naturally breathable and perfect for warm-weather dressing, from beach to brunch.");
     createAllSizes(
         linenPants,
@@ -502,7 +561,10 @@ public class DataSeeder {
     // Puffer Jacket — black
     ClothingModel pufferJacket =
         createClothingModel(
-            "Puffer Jacket", "Kloth Originals", ClothingModel.Category.Outerwear, 500f,
+            "Puffer Jacket",
+            "Kloth Originals",
+            ClothingModel.Category.Outerwear,
+            500f,
             "A warmth-first puffer jacket with 600-fill-power down insulation and a water-repellent shell. Quilted baffling and a high-zip collar protect against the coldest of days.");
     createAllSizes(
         pufferJacket,
@@ -513,7 +575,10 @@ public class DataSeeder {
     // Layered Coach Jacket — navy, black
     ClothingModel coachJacket =
         createClothingModel(
-            "Layered Coach Jacket", "Kloth Originals", ClothingModel.Category.Outerwear, 390f,
+            "Layered Coach Jacket",
+            "Kloth Originals",
+            ClothingModel.Category.Outerwear,
+            390f,
             "A refined coach jacket with a snap-button front and a subtle layered construction for added depth. Finished with a woven inner lining and chest pocket for a put-together look.");
     ClothingVariant[] coachNavyAll =
         createAllSizes(
@@ -533,7 +598,10 @@ public class DataSeeder {
     // Retro Sunglasses — light blue, light green
     ClothingModel retroSunglasses =
         createClothingModel(
-            "Retro Sunglasses", "Kloth Accessories", ClothingModel.Category.Accessories, 100f,
+            "Retro Sunglasses",
+            "Kloth Accessories",
+            ClothingModel.Category.Accessories,
+            100f,
             "Vintage-inspired oval sunglasses with tinted lenses and a slim metal frame. UV400 protective lenses and a lightweight build make them a stylish everyday essential.");
     createAllSizes(
         retroSunglasses,
