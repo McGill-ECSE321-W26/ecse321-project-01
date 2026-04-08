@@ -160,7 +160,7 @@ function getImagePath(color: string) {
           <ArrowLeft
             :size="10"
             :stroke-width="3"
-          /> Back to shopping
+          /> Back to Shop
         </Button>
       </RouterLink>
     </div>
@@ -196,7 +196,7 @@ function getImagePath(color: string) {
     <!-- Show item -->
     <div
       v-else
-      class="grid grid-cols-1 md:grid-cols-8 p-10"
+      class="grid grid-cols-1 md:grid-cols-8 px-10 py-6"
     >
       <!-- image -->
       <div class="aspect-[3/4] w-full overflow-hidden bg-(--card-hover) md:col-span-4 border-[2px] border-(--card-hover)">
@@ -210,7 +210,7 @@ function getImagePath(color: string) {
 
       <!-- other color images -->
       <div
-        class="hidden md:flex flex-col w-full gap-3 md:col-span-1 px-2"
+        class="hidden md:flex flex-col w-full gap-2 md:col-span-1 px-2"
       >
         <div
           v-for="color in colors"
@@ -228,13 +228,13 @@ function getImagePath(color: string) {
       </div>
 
       <!-- info -->
-      <div class="flex flex-col items-center pt-20 col-span-3 min-h-screen px-10 py-10 sticky top-0 self-start">
+      <div class="flex flex-col items-center text-center pt-20 col-span-3 min-h-screen px-10 py-10 sticky top-0 self-start">
         <!-- brand name -->
         <p class="text-(--text-light)">
           {{ model?.brand }}
         </p>
         <!-- item name -->
-        <p class="text-[40px]">
+        <p class="text-[40px] leading-none">
           {{ model?.name }}
         </p>
 
