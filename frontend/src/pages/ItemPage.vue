@@ -312,13 +312,28 @@ function getImagePath(color: string) {
             :class="{ 'rotate-180': detailsOpen }"
           />
         </Button>
-        <div
+        <Transition name="fade">
+          <div
           v-show="detailsOpen"
           class="mt-3 text-(--text-muted) leading-relaxed"
-        >
-          {{ model?.description }}
-        </div>
+          >
+            {{ model?.description }}
+          </div>
+        </Transition>
       </div>
     </div>
   </div>
 </template>
+
+<style scoped>
+.fade-enter-active,
+.fade-leave-active {
+  transition: all 0.3s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+  transform: translateY(-5px);
+}
+</style>
