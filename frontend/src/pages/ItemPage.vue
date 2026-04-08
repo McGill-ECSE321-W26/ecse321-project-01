@@ -206,7 +206,7 @@ function getImagePath(color: string) {
           :src="currVariant?.imagePath"
           :alt="model?.name"
           loading="lazy"
-          class="w-full h-full object-cover"
+          class="w-full h-auto min-h-full"
         >
       </div>
 
@@ -224,7 +224,7 @@ function getImagePath(color: string) {
             :src="getImagePath(color)"
             :alt="color"
             loading="lazy"
-            class="w-full h-full object-cover"
+            class="w-full h-auto min-h-full"
           >
         </div>
       </div>
