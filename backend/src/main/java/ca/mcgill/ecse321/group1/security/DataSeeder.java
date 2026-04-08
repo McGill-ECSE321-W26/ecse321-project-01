@@ -109,7 +109,7 @@ public class DataSeeder {
     ClothingVariant[] hoodieGrayAll =
         createAllSizes(
             hoodie,
-            "#738C89",
+            "#c7c8c8",
             20,
             "https://static.zara.net/assets/public/5f99/0231/d3814b679341/3283b69fc286/00761370803-000-e1/00761370803-000-e1.jpg?ts=1754985839053&w=750");
     ClothingVariant hoodieGrayM = hoodieGrayAll[1], hoodieGrayL = hoodieGrayAll[2];
@@ -131,7 +131,7 @@ public class DataSeeder {
     ClothingVariant[] jeansBlueAll =
         createAllSizes(
             jeans,
-            "#4098DE",
+            "#4e6e8f",
             15,
             "https://cdn.media.amplience.net/i/harryrosen/20178920041?maxW=3840&fmt=auto");
     ClothingVariant jeansNavyS = jeansBlueAll[0],
@@ -140,13 +140,13 @@ public class DataSeeder {
     ClothingVariant[] jeansIndigoAll =
         createAllSizes(
             jeans,
-            "#1E2646",
+            "#373238",
             14,
             "https://cdn.media.amplience.net/i/harryrosen/20178921047?maxW=3840&fmt=auto");
     ClothingVariant jeansIndigoM = jeansIndigoAll[1];
     createAllSizes(
         jeans,
-        "#092B4F",
+        "#1d2a3d",
         20,
         "https://cdn.media.amplience.net/i/harryrosen/20178922047?maxW=3840&fmt=auto");
 
@@ -157,7 +157,7 @@ public class DataSeeder {
     ClothingVariant[] dressFloralWhite =
         createAllSizes(
             dress,
-            "#E8A0BF",
+            "#e4e2df",
             10,
             "https://dam.dynamiteclothing.com/m/43f1a6cf410a6be7/original/100096517_0QO_alt3_1920x2880.jpg?sw=740&sh=1110");
     ClothingVariant dressFloralS = dressFloralWhite[0],
@@ -167,7 +167,7 @@ public class DataSeeder {
     ClothingVariant[] dressFloralBrown =
         createAllSizes(
             dress,
-            "#A0522D",
+            "#3a2728",
             10,
             "https://dam.dynamiteclothing.com/m/17817c7723843918/original/100096517_8F4_alt3_1920x2880.jpg?sw=740&sh=1110");
     ClothingVariant dressFloralBrownS = dressFloralBrown[0],
@@ -179,12 +179,12 @@ public class DataSeeder {
             "Braided Belt", "Kloth Accessories", ClothingModel.Category.Accessories, 55f);
     createAllSizes(
         braidedBelt,
-        "#6B4226",
+        "#3a2728",
         20,
         "https://cdn.media.amplience.net/i/harryrosen/20175420068?maxW=3840&fmt=auto");
     createAllSizes(
         braidedBelt,
-        "#556B2F",
+        "#5c5751",
         20,
         "https://cdn.media.amplience.net/i/harryrosen/20175413038?maxW=3840&fmt=auto");
     createAllSizes(
@@ -199,17 +199,17 @@ public class DataSeeder {
             "Polo Shirt", "Kloth Essentials", ClothingModel.Category.Tops, 60f);
     createAllSizes(
         polo2,
-        "#1E3A5F",
+        "#475f88",
         20,
         "https://cdn.media.amplience.net/i/harryrosen/20177733046?maxW=3840&fmt=auto");
     createAllSizes(
         polo2,
-        "#6B3A2A",
+        "#b19e93",
         20,
         "https://cdn.media.amplience.net/i/harryrosen/20177745038?maxW=3840&fmt=auto");
     createAllSizes(
         polo2,
-        "#2D5A27",
+        "#b3b9ae",
         20,
         "https://cdn.media.amplience.net/i/harryrosen/20177790035?maxW=3840&fmt=auto");
     createAllSizes(
@@ -225,7 +225,7 @@ public class DataSeeder {
     ClothingVariant[] jacketOliveAll =
         createAllSizes(
             jacket,
-            "#556B2F",
+            "#75746d",
             8,
             "https://cdn.media.amplience.net/i/harryrosen/20179677035?maxW=3840&fmt=auto");
     ClothingVariant jacketOliveM = jacketOliveAll[1], jacketOliveL = jacketOliveAll[2];
@@ -318,7 +318,7 @@ public class DataSeeder {
     ClothingVariant[] shortsKhakiAll =
         createAllSizes(
             shorts,
-            "#928D79",
+            "#3c3a22",
             18,
             "https://static.zara.net/assets/public/e7e2/1c48/e3e44f7bac71/2d18f8c31388/02342407505-e1/02342407505-e1.jpg?ts=1772725935172&w=750");
     ClothingVariant shortsKhakiS = shortsKhakiAll[0],
@@ -339,27 +339,27 @@ public class DataSeeder {
     createVariant(
         rareItem,
         Size.S,
-        "#1C1C1C",
+        "#d4d0cf",
         0,
         "https://cdn.media.amplience.net/i/harryrosen/20181317070?maxW=3840&fmt=auto");
     ClothingVariant rareTeeBlackM =
         createVariant(
             rareItem,
             Size.M,
-            "#1C1C1C",
+            "#d4d0cf",
             0,
             "https://cdn.media.amplience.net/i/harryrosen/20181317070?maxW=3840&fmt=auto");
     ClothingVariant rareTeeBlackL =
         createVariant(
             rareItem,
             Size.L,
-            "#1C1C1C",
+            "#d4d0cf",
             2,
             "https://cdn.media.amplience.net/i/harryrosen/20181317070?maxW=3840&fmt=auto");
     createVariant(
         rareItem,
         Size.XL,
-        "#1C1C1C",
+        "#d4d0cf",
         0,
         "https://cdn.media.amplience.net/i/harryrosen/20181317070?maxW=3840&fmt=auto");
 
@@ -372,20 +372,20 @@ public class DataSeeder {
             cargoTrousers,
             "#C2B49A",
             15,
-            "https://i.pinimg.com/736x/2f/0c/02/2f0c02c0dc68e1fd7da4a58b6249e7d1.jpg");
+            "https://static.zara.net/assets/public/baf5/d51f/e9464f6bbf70/a6a77a1e7e88/00108402710-e1/00108402710-e1.jpg?ts=1770725432041&w=750");
     ClothingVariant cargoTrousersTanM = cargoTrousersTanAll[1],
         cargoTrousersTanL = cargoTrousersTanAll[2];
     createAllSizes(
         cargoTrousers,
         "#3B3A32",
         15,
-        "https://i.pinimg.com/736x/04/45/b8/0445b8b4567a01b3acee022f3c34e92a.jpg");
+        "https://static.zara.net/assets/public/b9e7/63a7/214a4c108a68/6b7facca1518/00108402800-e1/00108402800-e1.jpg?ts=1770725431685&w=750");
     ClothingVariant[] cargoTrousersOliveAll =
         createAllSizes(
             cargoTrousers,
             "#6B6455",
             10,
-            "https://i.pinimg.com/1200x/c6/54/eb/c654eb35700ce012b0a3e5b49b996aec.jpg");
+            "https://static.zara.net/assets/public/49f3/4496/67be46b1b3e0/0cb5ceb385de/00108402505-e1/00108402505-e1.jpg?ts=1770724289119&w=750");
     ClothingVariant cargoTrousersOliveL = cargoTrousersOliveAll[2];
 
     // Midi Dress — red, white
