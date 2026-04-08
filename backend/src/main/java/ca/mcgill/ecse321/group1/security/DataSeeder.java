@@ -158,10 +158,7 @@ public class DataSeeder {
             "https://imagescdn.simons.ca/images/19659/226837/1/A2_1.jpg?__=3");
     ClothingVariant jeansIndigoM = jeansIndigoAll[1];
     createAllSizes(
-        jeans,
-        "#1d2a3d",
-        20,
-        "https://imagescdn.simons.ca/images/6652/26107/40/A2_1.jpg?__=3");
+        jeans, "#1d2a3d", 20, "https://imagescdn.simons.ca/images/6652/26107/40/A2_1.jpg?__=3");
 
     // Summer Floral Dress — white, brown
     ClothingModel dress =
