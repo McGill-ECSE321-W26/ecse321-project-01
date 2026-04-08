@@ -779,18 +779,6 @@ public class DataSeeder {
     addItemToOrder(order13, wideLegTanS, 1, wideLegPants.getPrice());
     addItemToOrder(order13, campShirtWhiteS, 1, campShirt.getPrice());
     addItemToOrder(order13, coachNavyM, 1, coachJacket.getPrice());
-
-    // Cart items (in-cart, not yet ordered)
-    createCartItem(cust3, hoodieBlackXL, 1, hoodie.getPrice());
-    createCartItem(cust3, wideLegTanM, 1, wideLegPants.getPrice());
-    createCartItem(cust5, tshirtBlackM, 2, tshirt.getPrice());
-    createCartItem(cust5, jeansNavyS, 1, jeans.getPrice());
-    createCartItem(cust5, crossbodyBlackS, 1, crossbodyBag.getPrice());
-    createCartItem(cust1, coachBlackL, 1, coachJacket.getPrice());
-    createCartItem(cust1, cargoTrousersTanL, 2, cargoTrousers.getPrice());
-    createCartItem(cust2, campShirtTanL, 1, campShirt.getPrice());
-    // rareTeeBlackM is 0-stock useful for testing "out of stock" display in catalog
-    createCartItem(cust4, rareTeeBlackM, 1, rareItem.getPrice());
   }
 
   // Helpers
