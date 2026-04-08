@@ -70,7 +70,7 @@ public class DataSeeder {
 
     // Clothing Models & Variants — each model gets a variant for every size (S M L XL) per color
 
-    // Classic T-Shirt — white, black, navy
+    // Classic T-Shirt — white, black, cream
     ClothingModel tshirt =
         createClothingModel(
             "Classic T-Shirt", "Kloth Essentials", ClothingModel.Category.Tops, 25f);
@@ -79,81 +79,81 @@ public class DataSeeder {
             tshirt,
             "#FFFFFF",
             30,
-            "https://i.pinimg.com/1200x/06/7d/03/067d0313c3e9482aef3804296aadd53c.jpg");
+            "https://cdn.media.amplience.net/i/harryrosen/20157344070?maxW=3840&fmt=auto");
     ClothingVariant tshirtWhiteS = tshirtWhiteAll[0], tshirtWhiteM = tshirtWhiteAll[1];
     ClothingVariant[] tshirtBlackAll =
         createAllSizes(
             tshirt,
             "#1C1C1C",
             30,
-            "https://i.pinimg.com/1200x/fb/7f/6a/fb7f6a6963520f0ff5b638f73404a176.jpg");
+            "https://cdn.media.amplience.net/i/harryrosen/20152307075?maxW=3840&fmt=auto");
     ClothingVariant tshirtBlackM = tshirtBlackAll[1], tshirtBlackL = tshirtBlackAll[2];
     ClothingVariant[] tshirtCreamAll =
         createAllSizes(
             tshirt,
-            "#D4C8B8",
+            "#FBFAE9",
             15,
-            "https://i.pinimg.com/1200x/2d/7b/21/2d7b21a072cd538589f63358fbd35520.jpg");
+            "https://cdn.media.amplience.net/i/harryrosen/20175002061?maxW=3840&fmt=auto");
     ClothingVariant tshirtCreamXL = tshirtCreamAll[3];
 
-    // Premium Hoodie — gray, black
+    // Premium Hoodie — black, gray, white, brown
     ClothingModel hoodie =
         createClothingModel("Premium Hoodie", "Kloth Originals", ClothingModel.Category.Tops, 60f);
-    ClothingVariant[] hoodieTealAll =
-        createAllSizes(
-            hoodie,
-            "#738C89",
-            20,
-            "https://i.pinimg.com/1200x/fe/5e/0d/fe5e0d2891819e1981e996b5e7670516.jpg");
-    ClothingVariant hoodieTealM = hoodieTealAll[1], hoodieTealL = hoodieTealAll[2];
     ClothingVariant[] hoodieBlackAll =
         createAllSizes(
             hoodie,
             "#1C1C1C",
             15,
-            "https://i.pinimg.com/736x/f7/67/9c/f7679c84bd40669b7b66c021244205cd.jpg");
+            "https://nakedandfamousdenim.com/cdn/shop/files/130445686_01.jpg?v=1761625305&width=1000");
     ClothingVariant hoodieBlackL = hoodieBlackAll[2], hoodieBlackXL = hoodieBlackAll[3];
+    ClothingVariant[] hoodieGrayAll =
+        createAllSizes(
+            hoodie,
+            "#738C89",
+            20,
+            "https://nakedandfamousdenim.com/cdn/shop/files/130456086_01.jpg?v=1761625297&width=1000");
+    ClothingVariant hoodieGrayM = hoodieGrayAll[1], hoodieGrayL = hoodieGrayAll[2];
     createAllSizes(
         hoodie,
-        "#F0F0F0",
+        "#F1BFF8",
         25,
-        "https://i.pinimg.com/1200x/12/db/1e/12db1e73ed55afba605c3a4f2fa846c1.jpg");
+        "https://nakedandfamousdenim.com/cdn/shop/files/130441586_01.jpg?v=1761624918&width=1000");
     createAllSizes(
         hoodie,
         "#BA8C5D",
         20,
-        "https://i.pinimg.com/736x/6c/84/18/6c841808f0bce9dbdead9b03cd4e95ef.jpg");
+        "https://nakedandfamousdenim.com/cdn/shop/files/130445386_01.jpg?v=1761625322&width=1000");
 
-    // Straight fit jeans - blue indigo navy
+    // Straight fit jeans - blue, dark indigo, navy
     ClothingModel jeans =
         createClothingModel(
             "Straight Fit Jeans", "Kloth Essentials", ClothingModel.Category.Bottoms, 90f);
     ClothingVariant[] jeansBlueAll =
         createAllSizes(
             jeans,
-            "#1E2646",
+            "#4098DE",
             15,
             "https://cdn.media.amplience.net/i/harryrosen/20178920041?maxW=3840&fmt=auto");
     ClothingVariant jeansNavyS = jeansBlueAll[0],
-        jeansNavyM = jeansBlueAll[1],
-        jeansNavyL = jeansBlueAll[2];
-    ClothingVariant[] jeansBlackAll =
+        jeansBlueM = jeansBlueAll[1],
+        jeansBlueL = jeansBlueAll[2];
+    ClothingVariant[] jeansIndigoAll =
         createAllSizes(
             jeans,
-            "#1C1C1C",
+            "#1E2646",
             14,
             "https://cdn.media.amplience.net/i/harryrosen/20178921047?maxW=3840&fmt=auto");
-    ClothingVariant jeansBlackM = jeansBlackAll[1];
+    ClothingVariant jeansIndigoM = jeansIndigoAll[1];
     createAllSizes(
         jeans,
-        "#7D91B2",
+        "#092B4F",
         20,
         "https://cdn.media.amplience.net/i/harryrosen/20178922047?maxW=3840&fmt=auto");
 
-    // Summer Floral Dress — pink, brown
+    // Summer Floral Dress — white, brown
     ClothingModel dress =
         createClothingModel(
-            "Summer Floral Dress", "Kloth Studio", ClothingModel.Category.Dresses, 70f);
+            "Summer Dress", "Kloth Studio", ClothingModel.Category.Dresses, 70f);
     ClothingVariant[] dressFloralWhite =
         createAllSizes(
             dress,
@@ -173,12 +173,30 @@ public class DataSeeder {
     ClothingVariant dressFloralBrownS = dressFloralBrown[0],
         dressFloralBrownM = dressFloralBrown[1],
         dressFloralBrownL = dressFloralBrown[2];
+    // Braided Belt — brown, olive, beige
+    ClothingModel braidedBelt =
+        createClothingModel(
+            "Braided Belt", "Kloth Accessories", ClothingModel.Category.Accessories, 55f);
+    createAllSizes(
+        braidedBelt,
+        "#6B4226",
+        20,
+        "https://cdn.media.amplience.net/i/harryrosen/20175420068?maxW=3840&fmt=auto");
+    createAllSizes(
+        braidedBelt,
+        "#556B2F",
+        20,
+        "https://cdn.media.amplience.net/i/harryrosen/20175413038?maxW=3840&fmt=auto");
+    createAllSizes(
+        braidedBelt,
+        "#E8DCC8",
+        20,
+        "https://cdn.media.amplience.net/i/harryrosen/20175412061?maxW=3840&fmt=auto");
 
-    //Polos
     // Polo Shirt — blue, brown, green, pink
     ClothingModel polo2 =
         createClothingModel(
-            "Polo Shirt", "Kloth Essentials", ClothingModel.Category.Tops, 40f);
+            "Polo Shirt", "Kloth Essentials", ClothingModel.Category.Tops, 60f);
     createAllSizes(
         polo2,
         "#1E3A5F",
@@ -203,7 +221,7 @@ public class DataSeeder {
     // Bomber Jacket — olive, black
     ClothingModel jacket =
         createClothingModel(
-            "Bomber Jacket", "Kloth Originals", ClothingModel.Category.Outerwear, 120f);
+            "Bomber Jacket", "Kloth Originals", ClothingModel.Category.Outerwear, 270f);
     ClothingVariant[] jacketOliveAll =
         createAllSizes(
             jacket,
@@ -223,7 +241,7 @@ public class DataSeeder {
     // Shirt — gray, beige, light blue
     ClothingModel shirt =
         createClothingModel(
-            "Shirt", "Kloth Essentials", ClothingModel.Category.Tops, 40f);
+            "Shirt", "Kloth Essentials", ClothingModel.Category.Tops, 80f);
     createAllSizes(
         shirt,
         "#9E9E9E",
@@ -283,6 +301,17 @@ public class DataSeeder {
         "#19181C",
         15,
         "https://i.pinimg.com/1200x/5d/13/f4/5d13f484d8f6a06f5f754edb9fa6bc81.jpg");
+
+    // Wool Bomber — gray
+    ClothingModel woolBomber =
+        createClothingModel(
+            "Wool Bomber", "Kloth Originals", ClothingModel.Category.Outerwear, 450f);
+    createAllSizes(
+        woolBomber,
+        "#808080",
+        20,
+        "https://cdn.media.amplience.net/i/harryrosen/20167556072?maxW=3840&fmt=auto");
+
     // Cargo Shorts — khaki, black
     ClothingModel shorts =
         createClothingModel("Cargo Shorts", "Kloth Originals", ClothingModel.Category.Bottoms, 35f);
@@ -303,7 +332,7 @@ public class DataSeeder {
             "https://i.pinimg.com/736x/6a/89/7f/6a897f9ee86159a8b8272a6b4164c09c.jpg");
     ClothingVariant shortsBlackM = shortsBlackAll[1];
 
-    // Limited Edition Tee — black (mostly out-of-stock for UI edge-case testing)
+    // Limited Edition Tee — white (mostly out-of-stock for UI edge-case testing)
     ClothingModel rareItem =
         createClothingModel(
             "Limited Edition Tee", "Kloth Studio", ClothingModel.Category.Tops, 90f);
@@ -362,7 +391,7 @@ public class DataSeeder {
     // Midi Dress — red, white
     ClothingModel midiDress =
         createClothingModel(
-            "Midi Dress", "Kloth Studio", ClothingModel.Category.Dresses, 60f);
+            "Midi Dress", "Kloth Studio", ClothingModel.Category.Dresses, 90f);
     createAllSizes(
         midiDress,
         "#C0392B",
@@ -374,7 +403,7 @@ public class DataSeeder {
         20,
         "https://static.massimodutti.net/assets/public/84c3/c721/24da4a49b9f9/f82ebee55677/06620748250-o1/06620748250-o1.jpg?ts=1774953540327&w=1440&f=auto");
 
-    // Pleated Wide-Leg Pants — tan, black, taupe
+    // Pleated Wide-Leg Pants — tan, black, navy
     ClothingModel wideLegPants =
         createClothingModel(
             "Pleated Wide-Leg Pants", "Kloth Essentials", ClothingModel.Category.Bottoms, 115f);
@@ -409,10 +438,10 @@ public class DataSeeder {
         20,
         "https://nakedandfamousdenim.com/cdn/shop/files/164056664_01.jpg?v=1761623683&width=1800");
 
-    // Linen Blend Camp Shirt — cream, tan
+    // Linen Blend Camp Shirt — Taupe, cream, black
     ClothingModel campShirt =
         createClothingModel(
-            "Linen Blend Camp Shirt", "Kloth Studio", ClothingModel.Category.Tops, 78f);
+            "Linen Blend Camp Shirt", "Kloth Studio", ClothingModel.Category.Tops, 75f);
     ClothingVariant[] campShirtCreamAll =
         createAllSizes(
             campShirt,
@@ -434,10 +463,10 @@ public class DataSeeder {
         15,
         "https://i.pinimg.com/1200x/aa/2f/e9/aa2fe9071a9e77654f4b9ac97d8ad2ec.jpg");
 
-    // Nylon Crossbody Bag — black, olive
+    // Nylon Crossbody Bag — black, beige
     ClothingModel crossbodyBag =
         createClothingModel(
-            "Nylon Crossbody Bag", "Kloth Accessories", ClothingModel.Category.Accessories, 65f);
+            "Nylon Crossbody Bag", "Kloth Accessories", ClothingModel.Category.Accessories, 55f);
     ClothingVariant[] crossbodyBlackAll =
         createAllSizes(
             crossbodyBag,
@@ -452,11 +481,25 @@ public class DataSeeder {
             10,
             "https://i.pinimg.com/1200x/38/59/59/385959b4ac8b1645520c6c5f75dc9fb3.jpg");
     ClothingVariant crossbodyOliveS = crossbodyOliveAll[0];
+    // Linen Pants — baby blue, cream
+    ClothingModel linenPants =
+        createClothingModel(
+            "Linen Pants", "Kloth Essentials", ClothingModel.Category.Bottoms, 125f);
+    createAllSizes(
+        linenPants,
+        "#B0D4E8",
+        20,
+        "https://cdn.media.amplience.net/i/harryrosen/20157916041?maxW=3840&fmt=auto");
+    createAllSizes(
+        linenPants,
+        "#F5F0E8",
+        20,
+        "https://cdn.media.amplience.net/i/harryrosen/20157911070?maxW=3840&fmt=auto");
 
     // Puffer Jacket — black
     ClothingModel pufferJacket =
         createClothingModel(
-            "Puffer Jacket", "Kloth Originals", ClothingModel.Category.Outerwear, 40f);
+            "Puffer Jacket", "Kloth Originals", ClothingModel.Category.Outerwear, 500f);
     createAllSizes(
         pufferJacket,
         "#1C1C1C",
@@ -466,7 +509,7 @@ public class DataSeeder {
     // Layered Coach Jacket — navy, black
     ClothingModel coachJacket =
         createClothingModel(
-            "Layered Coach Jacket", "Kloth Originals", ClothingModel.Category.Outerwear, 165f);
+            "Layered Coach Jacket", "Kloth Originals", ClothingModel.Category.Outerwear, 390f);
     ClothingVariant[] coachNavyAll =
         createAllSizes(
             coachJacket,
@@ -494,7 +537,7 @@ public class DataSeeder {
             "123 Maple St, Montreal, QC H3A 1B1",
             0f);
     addItemToOrder(order1, tshirtBlackM, 2, tshirt.getPrice());
-    addItemToOrder(order1, hoodieTealM, 1, hoodie.getPrice());
+    addItemToOrder(order1, hoodieGrayM, 1, hoodie.getPrice());
 
     Order order2 =
         createOrder(
@@ -505,7 +548,7 @@ public class DataSeeder {
             date("2026-02-12"),
             "123 Maple St, Montreal, QC H3A 1B1",
             5f);
-    addItemToOrder(order2, jeansNavyL, 1, jeans.getPrice());
+    addItemToOrder(order2, jeansBlueL, 1, jeans.getPrice());
     addItemToOrder(order2, poloNavyM, 2, polo.getPrice());
 
     Order order3 =
@@ -581,7 +624,7 @@ public class DataSeeder {
             date("2026-01-09"),
             "321 Elm Blvd, Longueuil, QC J4K 2F7",
             20f);
-    addItemToOrder(order8, jeansBlackM, 1, jeans.getPrice());
+    addItemToOrder(order8, jeansIndigoM, 1, jeans.getPrice());
     addItemToOrder(order8, hoodieBlackL, 1, hoodie.getPrice());
     addItemToOrder(order8, wideLegBlackM, 1, wideLegPants.getPrice());
     addItemToOrder(order8, coachNavyL, 1, coachJacket.getPrice());
@@ -623,8 +666,8 @@ public class DataSeeder {
             date("2026-03-15"),
             "789 Pine Rd, Laval, QC H7N 4E5",
             0f);
-    addItemToOrder(order11, jeansNavyM, 1, jeans.getPrice());
-    addItemToOrder(order11, hoodieTealL, 1, hoodie.getPrice());
+    addItemToOrder(order11, jeansBlueM, 1, jeans.getPrice());
+    addItemToOrder(order11, hoodieGrayL, 1, hoodie.getPrice());
     addItemToOrder(order11, shortsKhakiL, 1, shorts.getPrice());
     addItemToOrder(order11, dressFloralL, 1, dress.getPrice());
     addItemToOrder(order11, poloNavyL, 1, polo.getPrice());
