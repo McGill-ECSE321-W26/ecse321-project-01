@@ -60,6 +60,7 @@ onMounted(() => {
         </RouterLink>
       </Button>
       <Button
+        v-if="auth.role === 'Customer'"
         variant="ghost"
         size="icon"
         class="hover:bg-(--card-hover)"
@@ -127,6 +128,7 @@ onMounted(() => {
               </RouterLink>
             </Button>
             <Button
+              v-if="auth.role === 'Customer'"
               variant="ghost"
               class="justify-start gap-3"
               as-child
@@ -138,6 +140,7 @@ onMounted(() => {
               </RouterLink>
             </Button>
             <Button
+              v-if="auth.role === 'Customer'"
               variant="ghost"
               class="justify-start gap-3"
               as-child
