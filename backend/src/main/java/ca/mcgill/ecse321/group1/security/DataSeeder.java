@@ -104,25 +104,25 @@ public class DataSeeder {
             hoodie,
             "#1C1C1C",
             15,
-            "https://nakedandfamousdenim.com/cdn/shop/files/130445686_01.jpg?v=1761625305&width=1000");
+            "https://static.zara.net/assets/public/0363/18a9/60e149328a0b/634299cd4403/00761370800-000-e1/00761370800-000-e1.jpg?ts=1754985838610&w=750");
     ClothingVariant hoodieBlackL = hoodieBlackAll[2], hoodieBlackXL = hoodieBlackAll[3];
     ClothingVariant[] hoodieGrayAll =
         createAllSizes(
             hoodie,
             "#738C89",
             20,
-            "https://nakedandfamousdenim.com/cdn/shop/files/130456086_01.jpg?v=1761625297&width=1000");
+            "https://static.zara.net/assets/public/5f99/0231/d3814b679341/3283b69fc286/00761370803-000-e1/00761370803-000-e1.jpg?ts=1754985839053&w=750");
     ClothingVariant hoodieGrayM = hoodieGrayAll[1], hoodieGrayL = hoodieGrayAll[2];
     createAllSizes(
         hoodie,
-        "#F1BFF8",
+        "#797491",
         25,
-        "https://nakedandfamousdenim.com/cdn/shop/files/130441586_01.jpg?v=1761624918&width=1000");
+        "https://static.zara.net/assets/public/f3d0/b7a4/e4874e648553/513e8762a2d5/00761370519-000-e1/00761370519-000-e1.jpg?ts=1774604187856&w=750");
     createAllSizes(
         hoodie,
-        "#BA8C5D",
+        "#8f9358",
         20,
-        "https://nakedandfamousdenim.com/cdn/shop/files/130445386_01.jpg?v=1761625322&width=1000");
+        "https://static.zara.net/assets/public/f491/a7b1/c4ee43ba9c5a/c8584d6a9759/00761370648-000-e1/00761370648-000-e1.jpg?ts=1774604206634&w=750");
 
     // Straight fit jeans - blue, dark indigo, navy
     ClothingModel jeans =
@@ -320,7 +320,7 @@ public class DataSeeder {
             shorts,
             "#928D79",
             18,
-            "https://i.pinimg.com/1200x/34/1a/bc/341abc0a9fdebd4539b312d48af5b961.jpg");
+            "https://static.zara.net/assets/public/e7e2/1c48/e3e44f7bac71/2d18f8c31388/02342407505-e1/02342407505-e1.jpg?ts=1772725935172&w=750");
     ClothingVariant shortsKhakiS = shortsKhakiAll[0],
         shortsKhakiM = shortsKhakiAll[1],
         shortsKhakiL = shortsKhakiAll[2];
@@ -329,7 +329,7 @@ public class DataSeeder {
             shorts,
             "#1C1C1C",
             20,
-            "https://i.pinimg.com/736x/6a/89/7f/6a897f9ee86159a8b8272a6b4164c09c.jpg");
+            "https://static.zara.net/assets/public/45e4/74d8/1a0249729c9c/0cb74befcad8/04350315401-e1/04350315401-e1.jpg?ts=1769680144864&w=750");
     ClothingVariant shortsBlackM = shortsBlackAll[1];
 
     // Limited Edition Tee — white (mostly out-of-stock for UI edge-case testing)
@@ -436,7 +436,7 @@ public class DataSeeder {
         indigoDenimJacket,
         "#3B4A6B",
         20,
-        "https://nakedandfamousdenim.com/cdn/shop/files/164056664_01.jpg?v=1761623683&width=1800");
+        "https://cdn.media.amplience.net/i/harryrosen/20178736075?maxW=3840&fmt=auto");
 
     // Linen Blend Camp Shirt — Taupe, cream, black
     ClothingModel campShirt =
