@@ -21,8 +21,8 @@ public class CustomerResponseDto {
     this.email = customer.getPerson().getEmail();
     this.address = customer.getAddress();
     this.loyaltyPoints = customer.getLoyaltyPoints();
-    for (PersonRole r : customer.getPerson().getRoles()) {
-      if (r instanceof Employee) {
+    for (PersonRole role : customer.getPerson().getRoles()) {
+      if (role instanceof Employee) {
         this.isEmployee = true;
         break;
       }
