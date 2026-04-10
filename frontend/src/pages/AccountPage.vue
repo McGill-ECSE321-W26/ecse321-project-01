@@ -28,6 +28,22 @@ const newPassword = ref('')
 const confirmPassword = ref('')
 const passwordError = ref('')
 const passwordDialogOpen = ref(false)
+const deleteDialogOpen = ref(false)
+const deleteLoading = ref(false)
+const deleteError = ref('')
+
+async function handleDeleteAccount() {
+  deleteError.value = ''
+  deleteLoading.value = true
+  try {
+    await api(`/persons/${auth.personId}`, { method: 'DELETE' })
+    auth.logout()
+    await router.push('/')
+  } catch (e) {
+    deleteError.value = e instanceof Error ? e.message : 'Something went wrong. Please try again.'
+    deleteLoading.value = false
+  }
+}
 
 const newAddress = ref(person.value?.address ?? '')
 const addressError = ref('')
@@ -195,7 +211,7 @@ function getName(email: string | undefined) {
         </div>
       </div>
 
-      <div class="pt-2">
+      <div class="pt-2 flex items-center gap-3">
         <Dialog v-model:open="passwordDialogOpen">
           <DialogTrigger as-child>
             <Button 
@@ -262,6 +278,54 @@ function getName(email: string | undefined) {
                 @click="handlePasswordUpdate"
               >
                 Save Password
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
+        <Dialog
+          v-if="auth.role !== 'Manager'"
+          v-model:open="deleteDialogOpen"
+        >
+          <DialogTrigger as-child>
+            <Button
+              size="sm"
+              class="rounded-none border-red-300 text-[16px] bg-transparent text-red-400 hover:bg-red-50 hover:border-red-400"
+              variant="outline"
+            >
+              Delete Account
+            </Button>
+          </DialogTrigger>
+          <DialogContent class="rounded-sm bg-(--bg)">
+            <DialogHeader>
+              <DialogTitle>Delete Account</DialogTitle>
+            </DialogHeader>
+            <div class="space-y-4">
+              <p class="text-sm text-(--text-muted)">
+                This will permanently delete your account and all associated data. This action cannot be undone.
+              </p>
+              <div
+                v-if="deleteError"
+                class="rounded-none bg-red-50 border border-red-200 p-3 text-sm text-red-800"
+              >
+                {{ deleteError }}
+              </div>
+            </div>
+            <DialogFooter>
+              <DialogClose as-child>
+                <Button
+                  variant="outline"
+                  class="rounded-none bg-transparent border-(--text-light)"
+                >
+                  Cancel
+                </Button>
+              </DialogClose>
+              <Button
+                class="rounded-none bg-red-500 hover:bg-red-600 text-white"
+                :disabled="deleteLoading"
+                @click="handleDeleteAccount"
+              >
+                {{ deleteLoading ? 'Deleting…' : 'Delete Account' }}
               </Button>
             </DialogFooter>
           </DialogContent>

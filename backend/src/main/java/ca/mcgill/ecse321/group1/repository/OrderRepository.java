@@ -20,6 +20,10 @@ public interface OrderRepository extends ListCrudRepository<Order, String> {
   @Query("UPDATE Order o SET o.employee = null WHERE o.employee = :employee")
   void unassignEmployee(@Param("employee") Employee employee);
 
+  @Modifying
+  @Query("UPDATE Order o SET o.customer = null WHERE o.customer = :customer")
+  void unassignCustomer(@Param("customer") Customer customer);
+
   List<Order> findByOrderStatus(Order.OrderStatus orderStatus);
 
   List<Order> findByCustomerAndOrderStatus(Customer customer, Order.OrderStatus orderStatus);

@@ -258,11 +258,16 @@ public class PersonService {
   public void deleteAccount(String id) {
     Person person = findPersonOrThrow(id);
 
-    // Prevent manager from deleting their own account
     for (PersonRole role : person.getRoles()) {
       if (role instanceof Manager) {
         throw new ResponseStatusException(
             HttpStatus.BAD_REQUEST, "The manager cannot delete their own account.");
+      }
+      if (role instanceof Employee employee) {
+        orderRepository.unassignEmployee(employee);
+      }
+      if (role instanceof Customer customer) {
+        orderRepository.unassignCustomer(customer);
       }
     }
 
