@@ -117,7 +117,7 @@ function getName(email: string | undefined) {
         </p>
       </div>
 
-      <div>
+      <div v-if="auth.role === 'Customer'">
         <p class="text-[16px] uppercase tracking-[1px] text-(--text-light) mb-2">
           Address
         </p>
@@ -177,7 +177,7 @@ function getName(email: string | undefined) {
         </div>
       </div>
 
-      <div>
+      <div v-if="auth.role === 'Customer'">
         <p class="text-[16px] uppercase tracking-[1px] text-(--text-light) mb-2">
           Loyalty Points
         </p>

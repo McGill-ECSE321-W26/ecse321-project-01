@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class DataSeeder {
 
-  private static final String MANAGER_EMAIL = "manager@admin.com";
+  private static final String MANAGER_EMAIL = "manager@kloth.com";
   private static final String MANAGER_PASSWORD = "manager123";
 
   private final PersonRepository personRepository;
@@ -53,9 +53,9 @@ public class DataSeeder {
     managerRepository.save(manager);
 
     // Employees
-    Employee emp1 = createEmployee("alice.employee@store.com");
-    Employee emp2 = createEmployee("bob.employee@store.com");
-    Employee emp3 = createEmployee("carol.employee@store.com");
+    Employee emp1 = createEmployee("alice.parker@kloth.com");
+    Employee emp2 = createEmployee("bob.builder@kloth.com");
+    Employee emp3 = createEmployee("carol.ann@kloth.com");
 
     // Customers
     Customer cust1 =
@@ -70,123 +70,222 @@ public class DataSeeder {
 
     // Clothing Models & Variants — each model gets a variant for every size (S M L XL) per color
 
-    // Classic T-Shirt — white, black, navy
+    // Classic T-Shirt — white, black, cream
     ClothingModel tshirt =
         createClothingModel(
-            "Classic T-Shirt", "Kloth Essentials", ClothingModel.Category.Tops, 25f);
+            "Classic Boxy T-Shirt",
+            "Kloth Essentials",
+            ClothingModel.Category.Tops,
+            25f,
+            "A wardrobe staple crafted from soft 100% cotton. Features a relaxed crew neck and a clean, minimalist cut that pairs effortlessly with anything.");
     ClothingVariant[] tshirtWhiteAll =
         createAllSizes(
             tshirt,
             "#FFFFFF",
             30,
-            "https://i.pinimg.com/1200x/06/7d/03/067d0313c3e9482aef3804296aadd53c.jpg");
+            "https://media.weekday.com/assets/003/79/94/7994ab87c6312ad8dd511d0490ca525609d3a01a_xxl-1.jpg?imwidth=1600");
     ClothingVariant tshirtWhiteS = tshirtWhiteAll[0], tshirtWhiteM = tshirtWhiteAll[1];
     ClothingVariant[] tshirtBlackAll =
         createAllSizes(
             tshirt,
             "#1C1C1C",
             30,
-            "https://i.pinimg.com/1200x/fb/7f/6a/fb7f6a6963520f0ff5b638f73404a176.jpg");
+            "https://media.weekday.com/assets/003/52/e8/52e8ebf91e143ff620dbe8c17d3b1c0d5b8a83f0_xxl-1.jpg?imwidth=1600");
     ClothingVariant tshirtBlackM = tshirtBlackAll[1], tshirtBlackL = tshirtBlackAll[2];
     ClothingVariant[] tshirtCreamAll =
         createAllSizes(
             tshirt,
-            "#D4C8B8",
+            "#FBFAE9",
             15,
-            "https://i.pinimg.com/1200x/2d/7b/21/2d7b21a072cd538589f63358fbd35520.jpg");
+            "https://media.weekday.com/assets/003/a7/e8/a7e809c082e61667af6486917c3416f8c7a23824_xxl-1.jpg?imwidth=1600");
     ClothingVariant tshirtCreamXL = tshirtCreamAll[3];
 
-    // Premium Hoodie — gray, black
+    // Premium Hoodie — black, gray, white, brown
     ClothingModel hoodie =
-        createClothingModel("Premium Hoodie", "Kloth Originals", ClothingModel.Category.Tops, 60f);
-    ClothingVariant[] hoodieTealAll =
-        createAllSizes(
-            hoodie,
-            "#738C89",
-            20,
-            "https://i.pinimg.com/1200x/fe/5e/0d/fe5e0d2891819e1981e996b5e7670516.jpg");
-    ClothingVariant hoodieTealM = hoodieTealAll[1], hoodieTealL = hoodieTealAll[2];
+        createClothingModel(
+            "Premium Hoodie",
+            "Kloth Originals",
+            ClothingModel.Category.Tops,
+            60f,
+            "A heavyweight fleece hoodie built for comfort and durability. Features a kangaroo pocket, adjustable drawstring hood, and a cozy brushed interior.");
     ClothingVariant[] hoodieBlackAll =
         createAllSizes(
             hoodie,
             "#1C1C1C",
             15,
-            "https://i.pinimg.com/736x/f7/67/9c/f7679c84bd40669b7b66c021244205cd.jpg");
-    ClothingVariant hoodieBlackL = hoodieBlackAll[2], hoodieBlackXL = hoodieBlackAll[3];
+            "https://static.zara.net/assets/public/0363/18a9/60e149328a0b/634299cd4403/00761370800-000-e1/00761370800-000-e1.jpg?ts=1754985838610&w=750");
+    ClothingVariant hoodieBlackL = hoodieBlackAll[2];
+    ClothingVariant[] hoodieGrayAll =
+        createAllSizes(
+            hoodie,
+            "#c7c8c8",
+            20,
+            "https://static.zara.net/assets/public/5f99/0231/d3814b679341/3283b69fc286/00761370803-000-e1/00761370803-000-e1.jpg?ts=1754985839053&w=750");
+    ClothingVariant hoodieGrayM = hoodieGrayAll[1], hoodieGrayL = hoodieGrayAll[2];
     createAllSizes(
         hoodie,
-        "#F0F0F0",
+        "#797491",
         25,
-        "https://i.pinimg.com/1200x/12/db/1e/12db1e73ed55afba605c3a4f2fa846c1.jpg");
+        "https://static.zara.net/assets/public/f3d0/b7a4/e4874e648553/513e8762a2d5/00761370519-000-e1/00761370519-000-e1.jpg?ts=1774604187856&w=750");
     createAllSizes(
         hoodie,
-        "#BA8C5D",
+        "#8f9358",
         20,
-        "https://i.pinimg.com/736x/6c/84/18/6c841808f0bce9dbdead9b03cd4e95ef.jpg");
+        "https://static.zara.net/assets/public/f491/a7b1/c4ee43ba9c5a/c8584d6a9759/00761370648-000-e1/00761370648-000-e1.jpg?ts=1774604206634&w=750");
 
-    // Slim Fit Jeans — blue, black
+    // Straight fit jeans - blue, dark indigo, navy
     ClothingModel jeans =
         createClothingModel(
-            "Slim Fit Jeans", "Kloth Essentials", ClothingModel.Category.Bottoms, 80f);
-    ClothingVariant[] jeansNavyAll =
+            "Straight Fit Jeans",
+            "Kloth Denim",
+            ClothingModel.Category.Bottoms,
+            90f,
+            "Classic straight-leg denim with a mid-rise waist and five-pocket construction. Made from durable stretch denim for a comfortable fit throughout the day.");
+    ClothingVariant[] jeansBlueAll =
         createAllSizes(
             jeans,
-            "#1E2646",
+            "#4e6e8f",
             15,
-            "https://i.pinimg.com/736x/60/1b/81/601b81e9cddcf47572109478ec6dcc9f.jpg");
-    ClothingVariant jeansNavyS = jeansNavyAll[0],
-        jeansNavyM = jeansNavyAll[1],
-        jeansNavyL = jeansNavyAll[2];
-    ClothingVariant[] jeansBlackAll =
+            "https://imagescdn.simons.ca/images/19659/226836/45/A2_1.jpg?__=4");
+    ClothingVariant jeansBlueM = jeansBlueAll[1], jeansBlueL = jeansBlueAll[2];
+    ClothingVariant[] jeansIndigoAll =
         createAllSizes(
             jeans,
-            "#1C1C1C",
+            "#373238",
             14,
-            "https://i.pinimg.com/1200x/97/15/2b/97152b14dca6a17d97d4ddde72fed822.jpg");
-    ClothingVariant jeansBlackM = jeansBlackAll[1];
+            "https://imagescdn.simons.ca/images/19659/226837/1/A2_1.jpg?__=3");
+    ClothingVariant jeansIndigoM = jeansIndigoAll[1];
     createAllSizes(
-        jeans,
-        "#7D91B2",
-        20,
-        "https://i.pinimg.com/736x/be/d4/96/bed4962afa439eff895791b265e50f44.jpg");
+        jeans, "#1d2a3d", 20, "https://imagescdn.simons.ca/images/6652/26107/40/A2_1.jpg?__=3");
 
-    // Summer Floral Dress — pink
+    // Summer Floral Dress — white, brown
     ClothingModel dress =
         createClothingModel(
-            "Summer Floral Dress", "Kloth Studio", ClothingModel.Category.Dresses, 50f);
-    ClothingVariant[] dressFloralAll =
+            "Summer Dress",
+            "Kloth Studio",
+            ClothingModel.Category.Dresses,
+            70f,
+            "A breezy summer dress draping to the ankles. Made from lightweight woven fabric, perfect for warm-weather occasions.");
+    ClothingVariant[] dressFloralWhite =
         createAllSizes(
             dress,
-            "#E8A0BF",
+            "#e4e2df",
             10,
-            "https://i.pinimg.com/736x/17/b3/22/17b322a3ad5739100771ef76a8d3caaf.jpg");
-    ClothingVariant dressFloralS = dressFloralAll[0],
-        dressFloralM = dressFloralAll[1],
-        dressFloralL = dressFloralAll[2];
+            "https://dam.dynamiteclothing.com/m/43f1a6cf410a6be7/original/100096517_0QO_alt3_1920x2880.jpg?sw=740&sh=1110");
+    ClothingVariant dressFloralS = dressFloralWhite[0],
+        dressFloralM = dressFloralWhite[1],
+        dressFloralL = dressFloralWhite[2];
+
+    createAllSizes(
+        dress,
+        "#3a2728",
+        10,
+        "https://dam.dynamiteclothing.com/m/17817c7723843918/original/100096517_8F4_alt3_1920x2880.jpg?sw=740&sh=1110");
+
+    // Braided Belt — brown, olive, beige
+    ClothingModel braidedBelt =
+        createClothingModel(
+            "Braided Belt",
+            "Kloth Accessories",
+            ClothingModel.Category.Accessories,
+            55f,
+            "A handcrafted braided leather belt with a smooth silver buckle. Adds a polished, artisanal touch to both casual and smart-casual outfits.");
+    createAllSizes(
+        braidedBelt,
+        "#3a2728",
+        20,
+        "https://cdn.media.amplience.net/i/harryrosen/20175420068?maxW=3840&fmt=auto");
+    createAllSizes(
+        braidedBelt,
+        "#5c5751",
+        20,
+        "https://cdn.media.amplience.net/i/harryrosen/20175413038?maxW=3840&fmt=auto");
+    createAllSizes(
+        braidedBelt,
+        "#E8DCC8",
+        20,
+        "https://cdn.media.amplience.net/i/harryrosen/20175412061?maxW=3840&fmt=auto");
+
+    // Polo Shirt — blue, brown, green, pink
+    ClothingModel polo2 =
+        createClothingModel(
+            "Fresh Polo Shirt",
+            "Kloth Essentials",
+            ClothingModel.Category.Tops,
+            60f,
+            "A refined piqué cotton polo with a two-button placket and ribbed collar and cuffs. Effortlessly bridges the gap between casual comfort and polished style.");
+    createAllSizes(
+        polo2,
+        "#334461",
+        20,
+        "https://www.privatewhitevc.com/cdn/shop/files/TheCivyPolo-Navy.png?v=1750389454");
+    createAllSizes(
+        polo2,
+        "#ebdfd8",
+        20,
+        "https://www.privatewhitevc.com/cdn/shop/files/TheCivyPolo-FlakeWhite.png?v=1751233163");
+    createAllSizes(
+        polo2,
+        "#e9d4c1",
+        20,
+        "https://www.privatewhitevc.com/cdn/shop/files/THEJACKSPOLO-ALABASTER.png?v=1751203712");
 
     // Bomber Jacket — olive, black
     ClothingModel jacket =
         createClothingModel(
-            "Bomber Jacket", "Kloth Originals", ClothingModel.Category.Outerwear, 120f);
+            "Polar Fleece Jacket",
+            "Kloth Originals",
+            ClothingModel.Category.Outerwear,
+            270f,
+            "With its relaxed fit as well as a new luxurious and comfortable fabric, this Polar Fleece won't leave your side from the moment you put it on.");
     ClothingVariant[] jacketOliveAll =
         createAllSizes(
             jacket,
-            "#556B2F",
+            "#e2c79e",
             8,
-            "https://i.pinimg.com/1200x/19/b8/c8/19b8c859b11a00767e73519129819f8a.jpg");
+            "https://www.privatewhitevc.com/cdn/shop/files/TheFleeceZipThrough-Pebble.png?v=1756843285");
     ClothingVariant jacketOliveM = jacketOliveAll[1], jacketOliveL = jacketOliveAll[2];
     ClothingVariant[] jacketBlackAll =
         createAllSizes(
             jacket,
             "#1C1C1C",
             8,
-            "https://i.pinimg.com/736x/64/af/d8/64afd894c2c6ef02e57c2d8298eb3fd4.jpg");
+            "https://www.privatewhitevc.com/cdn/shop/files/TheFleeceZipThrough-Ink.png?v=1756842774");
     ClothingVariant jacketBlackL = jacketBlackAll[2], jacketBlackXL = jacketBlackAll[3];
+
+    // Shirts
+    // Shirt — gray, beige, light blue
+    ClothingModel shirt =
+        createClothingModel(
+            "Shirt",
+            "Kloth Essentials",
+            ClothingModel.Category.Tops,
+            80f,
+            "A tailored dress shirt cut from wrinkle-resistant poplin fabric. Features a spread collar and a single-button cuffs for a sharp everyday look.");
+    createAllSizes(
+        shirt,
+        "#9E9E9E",
+        20,
+        "https://www.privatewhitevc.com/cdn/shop/files/THECIVVYSHIRT-WHITE.png?v=1750879193");
+    createAllSizes(
+        shirt,
+        "#C8B89A",
+        20,
+        "https://www.privatewhitevc.com/cdn/shop/files/TheSleeperShirt-Ecru.png?v=1751028825");
+    createAllSizes(
+        shirt,
+        "#ADD8E6",
+        20,
+        "https://www.privatewhitevc.com/cdn/shop/files/THECIVVYSHIRT-AZURE.png?v=1750615162");
 
     // Classic Polo Shirt — white, navy
     ClothingModel polo =
         createClothingModel(
-            "Classic Polo Shirt", "Kloth Essentials", ClothingModel.Category.Tops, 40f);
+            "Classic Polo Shirt",
+            "Kloth Essentials",
+            ClothingModel.Category.Tops,
+            40f,
+            "A timeless polo shirt in smooth piqué cotton with a classic fit. An iconic silhouette that stands the test of time.");
     ClothingVariant[] poloWhiteAll =
         createAllSizes(
             polo,
@@ -211,30 +310,34 @@ public class DataSeeder {
         "#641826",
         25,
         "https://i.pinimg.com/1200x/21/03/d2/2103d260cb11f09909454ad4731bac47.jpg");
+    // Wool Bomber — gray
+    ClothingModel woolBomber =
+        createClothingModel(
+            "Suede Bomber Jacket",
+            "Kloth Originals",
+            ClothingModel.Category.Outerwear,
+            450f,
+            "A premium suede-blend bomber with a structured silhouette and satin lining. The ribbed collar, cuffs, and hem give it a sporty edge with a sophisticated finish.");
     createAllSizes(
-        polo,
-        "#8E6E57",
+        woolBomber,
+        "#292e46",
         20,
-        "https://i.pinimg.com/736x/9e/cb/7b/9ecb7bc67d9960862250ce997d5dd738.jpg");
-    createAllSizes(
-        polo,
-        "#93928E",
-        35,
-        "https://i.pinimg.com/1200x/35/31/3e/35313ea8a71b08015b84a8e459a64614.jpg");
-    createAllSizes(
-        polo,
-        "#19181C",
-        15,
-        "https://i.pinimg.com/1200x/5d/13/f4/5d13f484d8f6a06f5f754edb9fa6bc81.jpg");
+        "https://www.privatewhitevc.com/cdn/shop/files/ThePSReversibleSuedeBomber-Brown-toNavy.png?v=1752082510");
+
     // Cargo Shorts — khaki, black
     ClothingModel shorts =
-        createClothingModel("Cargo Shorts", "Kloth Originals", ClothingModel.Category.Bottoms, 35f);
+        createClothingModel(
+            "Cargo Shorts",
+            "Kloth Originals",
+            ClothingModel.Category.Bottoms,
+            35f,
+            "Relaxed-fit cargo shorts with multiple utility pockets. Made from durable ripstop fabric, designed for comfort on the move.");
     ClothingVariant[] shortsKhakiAll =
         createAllSizes(
             shorts,
-            "#928D79",
+            "#3c3a22",
             18,
-            "https://i.pinimg.com/1200x/34/1a/bc/341abc0a9fdebd4539b312d48af5b961.jpg");
+            "https://imagescdn.simons.ca/images/15128/138254/40/A2_1.jpg?__=4");
     ClothingVariant shortsKhakiS = shortsKhakiAll[0],
         shortsKhakiM = shortsKhakiAll[1],
         shortsKhakiL = shortsKhakiAll[2];
@@ -243,93 +346,141 @@ public class DataSeeder {
             shorts,
             "#1C1C1C",
             20,
-            "https://i.pinimg.com/736x/6a/89/7f/6a897f9ee86159a8b8272a6b4164c09c.jpg");
+            "https://imagescdn.simons.ca/images/20546/227047/1/A2_1.jpg?__=11");
     ClothingVariant shortsBlackM = shortsBlackAll[1];
 
-    // Limited Edition Tee — black (mostly out-of-stock for UI edge-case testing)
+    // Limited Edition Tee — white (mostly out-of-stock for UI edge-case testing)
     ClothingModel rareItem =
         createClothingModel(
-            "Limited Edition Tee", "Kloth Studio", ClothingModel.Category.Tops, 90f);
+            "Limited Edition Tee",
+            "Kloth Studio",
+            ClothingModel.Category.Tops,
+            90f,
+            "A collector's piece from our limited Kloth Studio drop. Crafted from premium Supima cotton with a subtle tonal graphic, this tee won't be restocked once it's gone.");
     createVariant(
         rareItem,
         Size.S,
-        "#1C1C1C",
+        "#d4d0cf",
         0,
-        "https://i.pinimg.com/1200x/3b/2a/b7/3b2ab7abb02ed11a1f497b9938df5e6a.jpg");
-    ClothingVariant rareTeeBlackM =
-        createVariant(
-            rareItem,
-            Size.M,
-            "#1C1C1C",
-            0,
-            "https://i.pinimg.com/1200x/3b/2a/b7/3b2ab7abb02ed11a1f497b9938df5e6a.jpg");
+        "https://media.weekday.com/assets/003/e7/1f/e71fcaac58a6bb80a055bdb6b40a5cdbae10d39a_xxl-1.jpg?imwidth=1600");
+    createVariant(
+        rareItem,
+        Size.M,
+        "#d4d0cf",
+        0,
+        "https://media.weekday.com/assets/003/e7/1f/e71fcaac58a6bb80a055bdb6b40a5cdbae10d39a_xxl-1.jpg?imwidth=1600");
     ClothingVariant rareTeeBlackL =
         createVariant(
             rareItem,
             Size.L,
-            "#1C1C1C",
+            "#d4d0cf",
             2,
-            "https://i.pinimg.com/1200x/3b/2a/b7/3b2ab7abb02ed11a1f497b9938df5e6a.jpg");
+            "https://media.weekday.com/assets/003/e7/1f/e71fcaac58a6bb80a055bdb6b40a5cdbae10d39a_xxl-1.jpg?imwidth=1600");
     createVariant(
         rareItem,
         Size.XL,
-        "#1C1C1C",
+        "#d4d0cf",
         0,
-        "https://i.pinimg.com/1200x/3b/2a/b7/3b2ab7abb02ed11a1f497b9938df5e6a.jpg");
+        "https://media.weekday.com/assets/003/e7/1f/e71fcaac58a6bb80a055bdb6b40a5cdbae10d39a_xxl-1.jpg?imwidth=1600");
 
     // Relaxed Cargo Trousers — tan, dark, taupe
     ClothingModel cargoTrousers =
         createClothingModel(
-            "Relaxed Cargo Trousers", "Kloth Essentials", ClothingModel.Category.Bottoms, 98f);
+            "Relaxed Cargo Trousers",
+            "Kloth Essentials",
+            ClothingModel.Category.Bottoms,
+            98f,
+            "Easy-fitting cargo trousers with a tapered leg and multiple side pockets. The relaxed cut and elasticated waistband make them a versatile go-to for everyday wear.");
     ClothingVariant[] cargoTrousersTanAll =
         createAllSizes(
             cargoTrousers,
             "#C2B49A",
             15,
-            "https://i.pinimg.com/736x/2f/0c/02/2f0c02c0dc68e1fd7da4a58b6249e7d1.jpg");
-    ClothingVariant cargoTrousersTanM = cargoTrousersTanAll[1],
-        cargoTrousersTanL = cargoTrousersTanAll[2];
+            "https://imagescdn.simons.ca/images/20546/228072/23/A2_1.jpg?__=10");
+    ClothingVariant cargoTrousersTanM = cargoTrousersTanAll[1];
     createAllSizes(
         cargoTrousers,
         "#3B3A32",
         15,
-        "https://i.pinimg.com/736x/04/45/b8/0445b8b4567a01b3acee022f3c34e92a.jpg");
+        "https://imagescdn.simons.ca/images/20546/228072/1/A2_1.jpg?__=10");
     ClothingVariant[] cargoTrousersOliveAll =
         createAllSizes(
             cargoTrousers,
             "#6B6455",
             10,
-            "https://i.pinimg.com/1200x/c6/54/eb/c654eb35700ce012b0a3e5b49b996aec.jpg");
+            "https://imagescdn.simons.ca/images/20546/228072/31/A2_1.jpg?__=10");
     ClothingVariant cargoTrousersOliveL = cargoTrousersOliveAll[2];
 
-    // Pleated Wide-Leg Pants — tan, black, taupe
+    // Midi Dress — red, white
+    ClothingModel midiDress =
+        createClothingModel(
+            "Midi Dress",
+            "Kloth Studio",
+            ClothingModel.Category.Dresses,
+            90f,
+            "An elegant midi-length dress with a fitted bodice and flowy skirt. Crafted from fluid fabric that drapes beautifully, transitioning seamlessly from day to evening.");
+    createAllSizes(
+        midiDress,
+        "#C0392B",
+        20,
+        "https://static.massimodutti.net/assets/public/7ac0/1373/72b34dbaa2b0/41e48e8fdf26/06620748599-o1/06620748599-o1.jpg?ts=1772463171413&w=1440&f=auto");
+    createAllSizes(
+        midiDress,
+        "#FFFFFF",
+        20,
+        "https://static.massimodutti.net/assets/public/84c3/c721/24da4a49b9f9/f82ebee55677/06620748250-o1/06620748250-o1.jpg?ts=1774953540327&w=1440&f=auto");
+
+    // Pleated Wide-Leg Pants — tan, black, navy
     ClothingModel wideLegPants =
         createClothingModel(
-            "Pleated Wide-Leg Pants", "Kloth Essentials", ClothingModel.Category.Bottoms, 115f);
+            "Pleated Wide-Leg Pants",
+            "Kloth Essentials",
+            ClothingModel.Category.Bottoms,
+            115f,
+            "Sophisticated wide-leg trousers with front pleats and a high-rise waist. Cut from a smooth suiting fabric that gives a structured, elevated look for any occasion.");
     ClothingVariant[] wideLegTanAll =
         createAllSizes(
             wideLegPants,
             "#C2B49A",
             12,
-            "https://i.pinimg.com/736x/ba/98/3b/ba983bea4447a4d9607f057cf7bc390a.jpg");
-    ClothingVariant wideLegTanS = wideLegTanAll[0], wideLegTanM = wideLegTanAll[1];
+            "https://imagescdn.simons.ca/images/20069/26110/12/A2_1.jpg?__=9");
+    ClothingVariant wideLegTanS = wideLegTanAll[0];
     ClothingVariant[] wideLegBlackAll =
         createAllSizes(
             wideLegPants,
             "#1A1A18",
             10,
-            "https://i.pinimg.com/736x/cb/5f/66/cb5f662a291bbc94dbee403d719c65fc.jpg");
+            "https://imagescdn.simons.ca/images/20069/26110/4/A2_1.jpg?__=9");
     ClothingVariant wideLegBlackM = wideLegBlackAll[1];
     createAllSizes(
         wideLegPants,
-        "#6B6455",
+        "#1E2646",
         8,
-        "https://i.pinimg.com/736x/b9/d1/b6/b9d1b699f95b34d74167aba7120f28a4.jpg");
+        "https://imagescdn.simons.ca/images/20069/26110/41/A2_1.jpg?__=9");
 
-    // Linen Blend Camp Shirt — cream, tan
+    // Denim Jacket
+    // Indigo Denim Jacket — indigo
+    ClothingModel indigoDenimJacket =
+        createClothingModel(
+            "Indigo Denim Jacket",
+            "Kloth Denim",
+            ClothingModel.Category.Tops,
+            80f,
+            "A fashion forward denim jacket in deep indigo selvedge denim. Features chest flap pockets, adjustable side tabs, and a sturdy metal button placket that gets better with age.");
+    createAllSizes(
+        indigoDenimJacket,
+        "#3B4A6B",
+        20,
+        "https://media.weekday.com/assets/003/f1/14/f11405a369525a4d2a4337807b24f97dcfcafaf6_xxl-1.jpg?imwidth=1600");
+
+    // Linen Blend Camp Shirt — Taupe, cream, black
     ClothingModel campShirt =
         createClothingModel(
-            "Linen Blend Camp Shirt", "Kloth Studio", ClothingModel.Category.Tops, 78f);
+            "Linen Blend Camp Shirt",
+            "Kloth Studio",
+            ClothingModel.Category.Tops,
+            75f,
+            "A relaxed camp-collar shirt in a breathable linen-cotton blend. The open collar and straight hem give it an effortlessly laid-back resort aesthetic.");
     ClothingVariant[] campShirtCreamAll =
         createAllSizes(
             campShirt,
@@ -343,7 +494,7 @@ public class DataSeeder {
             "#EDEDEB",
             10,
             "https://i.pinimg.com/1200x/1b/db/6c/1bdb6ccae4a4f417cee45cee454258e9.jpg");
-    ClothingVariant campShirtTanM = campShirtTanAll[1], campShirtTanL = campShirtTanAll[2];
+    ClothingVariant campShirtTanM = campShirtTanAll[1];
 
     createAllSizes(
         campShirt,
@@ -351,43 +502,102 @@ public class DataSeeder {
         15,
         "https://i.pinimg.com/1200x/aa/2f/e9/aa2fe9071a9e77654f4b9ac97d8ad2ec.jpg");
 
-    // Nylon Crossbody Bag — black, olive
+    // Nylon Crossbody Bag — black, beige
     ClothingModel crossbodyBag =
         createClothingModel(
-            "Nylon Crossbody Bag", "Kloth Accessories", ClothingModel.Category.Accessories, 65f);
+            "Nylon Crossbody Bag",
+            "Kloth Accessories",
+            ClothingModel.Category.Accessories,
+            55f,
+            "A compact and lightweight nylon crossbody bag with an adjustable strap and multiple zip compartments. Practical enough for daily use, stylish enough for special occasions.");
     ClothingVariant[] crossbodyBlackAll =
         createAllSizes(
             crossbodyBag,
             "#1A1A18",
             15,
-            "https://i.pinimg.com/1200x/4b/9e/e3/4b9ee37cf344ddc311721688b4e6e735.jpg");
-    ClothingVariant crossbodyBlackS = crossbodyBlackAll[0], crossbodyBlackM = crossbodyBlackAll[1];
+            "https://cdn.media.amplience.net/i/harryrosen/20165937075-2?maxW=3840&fmt=auto");
+    ClothingVariant crossbodyBlackM = crossbodyBlackAll[1];
     ClothingVariant[] crossbodyOliveAll =
         createAllSizes(
             crossbodyBag,
             "#E6DFD1",
             10,
-            "https://i.pinimg.com/1200x/38/59/59/385959b4ac8b1645520c6c5f75dc9fb3.jpg");
+            "https://cdn.media.amplience.net/i/harryrosen/20165957070-2?maxW=3840&fmt=auto");
     ClothingVariant crossbodyOliveS = crossbodyOliveAll[0];
+    // Linen Pants — baby blue, cream
+    ClothingModel linenPants =
+        createClothingModel(
+            "Linen Pants",
+            "Kloth Essentials",
+            ClothingModel.Category.Bottoms,
+            125f,
+            "Lightweight linen trousers with a relaxed straight cut and elastic waistband. Naturally breathable and perfect for warm-weather dressing, from beach to brunch.");
+    createAllSizes(
+        linenPants,
+        "#b2b3a1",
+        20,
+        "https://imagescdn.simons.ca/images/20069/26100/4/A2_1.jpg?__=9");
+    createAllSizes(
+        linenPants,
+        "#F5F0E8",
+        20,
+        "https://imagescdn.simons.ca/images/20069/26100/14/A2_1.jpg?__=9");
+
+    // Puffer Jacket — black
+    ClothingModel pufferJacket =
+        createClothingModel(
+            "Leather Jacket",
+            "Kloth Originals",
+            ClothingModel.Category.Outerwear,
+            500f,
+            "A genuine leather jacket that combines style and functionality. Quilted baffling and a high-zip collar protect against the coldest of days.");
+    createAllSizes(
+        pufferJacket,
+        "#502e18",
+        20,
+        "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fmensflair.com%2Fwp-content%2Fuploads%2F2023%2F07%2Fprivate-white-twin-track-brown.jpg&f=1&nofb=1&ipt=444be83c218c9cc448f22f8ef6140ae23116e36f6d83cbc1445dd9a7d160e16e");
 
     // Layered Coach Jacket — navy, black
     ClothingModel coachJacket =
         createClothingModel(
-            "Layered Coach Jacket", "Kloth Originals", ClothingModel.Category.Outerwear, 165f);
+            "Layered Coach Jacket",
+            "Kloth Originals",
+            ClothingModel.Category.Outerwear,
+            390f,
+            "A refined coach jacket with a snap-button front and a subtle layered construction for added depth. Finished with a woven inner lining and chest pocket for a put-together look.");
     ClothingVariant[] coachNavyAll =
         createAllSizes(
             coachJacket,
             "#2C3040",
             8,
-            "https://i.pinimg.com/1200x/9c/19/30/9c19307112b6085044fde3642dcf02a0.jpg");
+            "https://static.massimodutti.net/assets/public/3e91/8f31/7b3441b0b869/5e2532e63359/03127433401-o1/03127433401-o1.jpg?ts=1775050466011&w=1440&f=auto");
     ClothingVariant coachNavyM = coachNavyAll[1], coachNavyL = coachNavyAll[2];
     ClothingVariant[] coachBlackAll =
         createAllSizes(
             coachJacket,
             "#3B3A32",
             8,
-            "https://i.pinimg.com/1200x/6d/80/c2/6d80c240d452822ce23d8db480c43cd1.jpg");
-    ClothingVariant coachBlackM = coachBlackAll[1], coachBlackL = coachBlackAll[2];
+            "https://static.massimodutti.net/assets/public/6e82/4d4c/a2cb4feda5c8/5dade8157a53/03127433717-o1/03127433717-o1.jpg?ts=1775050514551&w=1440&f=auto");
+    ClothingVariant coachBlackM = coachBlackAll[1];
+
+    // Retro Sunglasses — light blue, light green
+    ClothingModel retroSunglasses =
+        createClothingModel(
+            "Retro Sunglasses",
+            "Kloth Accessories",
+            ClothingModel.Category.Accessories,
+            100f,
+            "Vintage-inspired oval sunglasses with tinted lenses and a slim metal frame. UV400 protective lenses and a lightweight build make them a stylish everyday essential.");
+    createAllSizes(
+        retroSunglasses,
+        "#AED6F1",
+        20,
+        "https://cdn.media.amplience.net/i/harryrosen/20179741067?maxW=3840&fmt=auto");
+    createAllSizes(
+        retroSunglasses,
+        "#A8D5B5",
+        20,
+        "https://cdn.media.amplience.net/i/harryrosen/20179740068?maxW=3840&fmt=auto");
 
     // Orders
     // cust1: 2 delivered, 1 preparing
@@ -401,7 +611,7 @@ public class DataSeeder {
             "123 Maple St, Montreal, QC H3A 1B1",
             0f);
     addItemToOrder(order1, tshirtBlackM, 2, tshirt.getPrice());
-    addItemToOrder(order1, hoodieTealM, 1, hoodie.getPrice());
+    addItemToOrder(order1, hoodieGrayM, 1, hoodie.getPrice());
 
     Order order2 =
         createOrder(
@@ -412,7 +622,7 @@ public class DataSeeder {
             date("2026-02-12"),
             "123 Maple St, Montreal, QC H3A 1B1",
             5f);
-    addItemToOrder(order2, jeansNavyL, 1, jeans.getPrice());
+    addItemToOrder(order2, jeansBlueL, 1, jeans.getPrice());
     addItemToOrder(order2, poloNavyM, 2, polo.getPrice());
 
     Order order3 =
@@ -488,7 +698,7 @@ public class DataSeeder {
             date("2026-01-09"),
             "321 Elm Blvd, Longueuil, QC J4K 2F7",
             20f);
-    addItemToOrder(order8, jeansBlackM, 1, jeans.getPrice());
+    addItemToOrder(order8, jeansIndigoM, 1, jeans.getPrice());
     addItemToOrder(order8, hoodieBlackL, 1, hoodie.getPrice());
     addItemToOrder(order8, wideLegBlackM, 1, wideLegPants.getPrice());
     addItemToOrder(order8, coachNavyL, 1, coachJacket.getPrice());
@@ -530,8 +740,8 @@ public class DataSeeder {
             date("2026-03-15"),
             "789 Pine Rd, Laval, QC H7N 4E5",
             0f);
-    addItemToOrder(order11, jeansNavyM, 1, jeans.getPrice());
-    addItemToOrder(order11, hoodieTealL, 1, hoodie.getPrice());
+    addItemToOrder(order11, jeansBlueM, 1, jeans.getPrice());
+    addItemToOrder(order11, hoodieGrayL, 1, hoodie.getPrice());
     addItemToOrder(order11, shortsKhakiL, 1, shorts.getPrice());
     addItemToOrder(order11, dressFloralL, 1, dress.getPrice());
     addItemToOrder(order11, poloNavyL, 1, polo.getPrice());
@@ -565,18 +775,6 @@ public class DataSeeder {
     addItemToOrder(order13, wideLegTanS, 1, wideLegPants.getPrice());
     addItemToOrder(order13, campShirtWhiteS, 1, campShirt.getPrice());
     addItemToOrder(order13, coachNavyM, 1, coachJacket.getPrice());
-
-    // Cart items (in-cart, not yet ordered)
-    createCartItem(cust3, hoodieBlackXL, 1, hoodie.getPrice());
-    createCartItem(cust3, wideLegTanM, 1, wideLegPants.getPrice());
-    createCartItem(cust5, tshirtBlackM, 2, tshirt.getPrice());
-    createCartItem(cust5, jeansNavyS, 1, jeans.getPrice());
-    createCartItem(cust5, crossbodyBlackS, 1, crossbodyBag.getPrice());
-    createCartItem(cust1, coachBlackL, 1, coachJacket.getPrice());
-    createCartItem(cust1, cargoTrousersTanL, 2, cargoTrousers.getPrice());
-    createCartItem(cust2, campShirtTanL, 1, campShirt.getPrice());
-    // rareTeeBlackM is 0-stock useful for testing "out of stock" display in catalog
-    createCartItem(cust4, rareTeeBlackM, 1, rareItem.getPrice());
   }
 
   // Helpers
@@ -605,12 +803,13 @@ public class DataSeeder {
   }
 
   private ClothingModel createClothingModel(
-      String name, String brand, ClothingModel.Category category, float price) {
+      String name, String brand, ClothingModel.Category category, float price, String description) {
     ClothingModel model = new ClothingModel();
     model.setName(name);
     model.setBrand(brand);
     model.setCategory(category);
     model.setPrice(price);
+    model.setDescription(description);
     return clothingModelRepository.save(model);
   }
 
@@ -650,16 +849,6 @@ public class DataSeeder {
     item.setQuantity(quantity);
     item.setPrice(unitPrice * quantity);
     item.setOrder(order);
-    itemRepository.save(item);
-  }
-
-  private void createCartItem(
-      Customer customer, ClothingVariant variant, int quantity, float unitPrice) {
-    Item item = new Item();
-    item.setClothingVariant(variant);
-    item.setQuantity(quantity);
-    item.setPrice(unitPrice * quantity);
-    item.setCustomer(customer);
     itemRepository.save(item);
   }
 

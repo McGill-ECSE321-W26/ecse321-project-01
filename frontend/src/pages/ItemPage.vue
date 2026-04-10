@@ -32,13 +32,15 @@ const existingItem = computed(() =>
 )
 const detailsOpen = ref(false)
 
+const SIZE_ORDER = ['XS', 'S', 'M', 'L', 'XL', 'XXL']
 const selectedColor = ref<string | null>(null)
 const selectedSize = ref<string | null>(null)
 const colors = computed(() => {
   return [...new Set(variants.value.map(v => v.color))]
 })
 const sizes = computed(() => {
-  return [...new Set(variants.value.map(v => v.size))]
+  const uniqueSizes = [...new Set(variants.value.map(v => v.size))]
+  return uniqueSizes.sort((a, b) => SIZE_ORDER.indexOf(a) - SIZE_ORDER.indexOf(b))
 })
 const inStock = computed(() => {
   return (
@@ -204,7 +206,7 @@ function getImagePath(color: string) {
           :src="currVariant?.imagePath"
           :alt="model?.name"
           loading="lazy"
-          class="w-full h-full object-cover"
+          class="w-full h-auto min-h-full"
         >
       </div>
 
@@ -222,7 +224,7 @@ function getImagePath(color: string) {
             :src="getImagePath(color)"
             :alt="color"
             loading="lazy"
-            class="w-full h-full object-cover"
+            class="w-full h-auto min-h-full"
           >
         </div>
       </div>
@@ -310,13 +312,28 @@ function getImagePath(color: string) {
             :class="{ 'rotate-180': detailsOpen }"
           />
         </Button>
-        <div
-          v-show="detailsOpen"
-          class="mt-3 text-(--text-muted) leading-relaxed"
-        >
-          {{ model?.description }}
-        </div>
+        <Transition name="fade">
+          <div
+            v-show="detailsOpen"
+            class="mt-3 text-(--text-muted) leading-relaxed"
+          >
+            {{ model?.description }}
+          </div>
+        </Transition>
       </div>
     </div>
   </div>
 </template>
+
+<style scoped>
+.fade-enter-active,
+.fade-leave-active {
+  transition: all 0.3s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+  transform: translateY(-5px);
+}
+</style>
