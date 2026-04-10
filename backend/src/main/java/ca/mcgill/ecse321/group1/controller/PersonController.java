@@ -144,6 +144,12 @@ public class PersonController {
     return new CustomerResponseDto(c);
   }
 
+  @DeleteMapping("/{id}/roles/employee")
+  @ResponseStatus(HttpStatus.NO_CONTENT)
+  public void removeEmployeeRole(@PathVariable String id) {
+    personService.removeEmployeeRole(id);
+  }
+
   @DeleteMapping("/{id}")
   @ResponseStatus(HttpStatus.NO_CONTENT)
   public void deleteAccount(@PathVariable String id) {

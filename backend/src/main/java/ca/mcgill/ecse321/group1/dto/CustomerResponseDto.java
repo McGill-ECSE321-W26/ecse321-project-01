@@ -1,6 +1,8 @@
 package ca.mcgill.ecse321.group1.dto;
 
 import ca.mcgill.ecse321.group1.model.Customer;
+import ca.mcgill.ecse321.group1.model.Employee;
+import ca.mcgill.ecse321.group1.model.PersonRole;
 
 public class CustomerResponseDto {
   private final String role = "Customer";
@@ -9,6 +11,7 @@ public class CustomerResponseDto {
   private String email;
   private String address;
   private int loyaltyPoints;
+  private boolean isEmployee;
 
   public CustomerResponseDto() {}
 
@@ -18,6 +21,12 @@ public class CustomerResponseDto {
     this.email = customer.getPerson().getEmail();
     this.address = customer.getAddress();
     this.loyaltyPoints = customer.getLoyaltyPoints();
+    for (PersonRole r : customer.getPerson().getRoles()) {
+      if (r instanceof Employee) {
+        this.isEmployee = true;
+        break;
+      }
+    }
   }
 
   public String getRole() {
@@ -42,6 +51,10 @@ public class CustomerResponseDto {
 
   public int getLoyaltyPoints() {
     return loyaltyPoints;
+  }
+
+  public boolean getIsEmployee() {
+    return isEmployee;
   }
 
   public void setId(String id) {

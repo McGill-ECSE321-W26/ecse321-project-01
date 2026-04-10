@@ -70,8 +70,10 @@ public class SecurityConfig {
                     .permitAll()
 
                     // --- Manager-only endpoints ---
-                    // Only managers can add roles to existing users
+                    // Only managers can add or remove roles on existing users
                     .requestMatchers(HttpMethod.POST, "/api/persons/*/roles/**")
+                    .hasRole("Manager")
+                    .requestMatchers(HttpMethod.DELETE, "/api/persons/*/roles/**")
                     .hasRole("Manager")
                     // Only managers can modify the clothing catalog (create, update, delete)
                     .requestMatchers(HttpMethod.POST, "/api/clothing/**")

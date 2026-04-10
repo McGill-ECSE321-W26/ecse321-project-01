@@ -7,6 +7,7 @@ import ca.mcgill.ecse321.group1.model.Person;
 import ca.mcgill.ecse321.group1.model.PersonRole;
 import ca.mcgill.ecse321.group1.repository.CustomerRepository;
 import ca.mcgill.ecse321.group1.repository.EmployeeRepository;
+import ca.mcgill.ecse321.group1.repository.OrderRepository;
 import ca.mcgill.ecse321.group1.repository.PersonRepository;
 import java.util.List;
 import org.springframework.http.HttpStatus;
@@ -21,15 +22,18 @@ public class PersonService {
   private final PersonRepository personRepository;
   private final CustomerRepository customerRepository;
   private final EmployeeRepository employeeRepository;
+  private final OrderRepository orderRepository;
   private final BCryptPasswordEncoder passwordEncoder;
 
   public PersonService(
       PersonRepository personRepository,
       CustomerRepository customerRepository,
-      EmployeeRepository employeeRepository) {
+      EmployeeRepository employeeRepository,
+      OrderRepository orderRepository) {
     this.personRepository = personRepository;
     this.customerRepository = customerRepository;
     this.employeeRepository = employeeRepository;
+    this.orderRepository = orderRepository;
     this.passwordEncoder = new BCryptPasswordEncoder();
   }
 
@@ -234,6 +238,20 @@ public class PersonService {
     employeeRepository.save(employee);
 
     return personRepository.findByPersonID(id);
+  }
+
+  @Transactional
+  public void removeEmployeeRole(String id) {
+    Person person = findPersonOrThrow(id);
+    for (PersonRole role : person.getRoles()) {
+      if (role instanceof Employee employee) {
+        orderRepository.unassignEmployee(employee);
+        employeeRepository.deleteByRoleId(employee.getRoleID());
+        return;
+      }
+    }
+    throw new ResponseStatusException(
+        HttpStatus.BAD_REQUEST, "Person with ID " + id + " does not have an employee role.");
   }
 
   @Transactional
