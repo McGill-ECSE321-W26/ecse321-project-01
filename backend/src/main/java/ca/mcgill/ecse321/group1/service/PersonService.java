@@ -106,13 +106,22 @@ public class PersonService {
   }
 
   @Transactional
-  public Employee createEmployee(String email, String password) {
+  public Employee createEmployee(String email, String password, String address) {
     validateNewPerson(email, password);
+    if (address == null || address.isBlank()) {
+      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Address cannot be empty.");
+    }
 
     Person person = new Person();
     person.setEmail(email);
     person.setPassword(passwordEncoder.encode(password));
     person = personRepository.save(person);
+
+    Customer customer = new Customer();
+    customer.setAddress(address);
+    customer.setLoyaltyPoints(0);
+    customer.setPerson(person);
+    customerRepository.save(customer);
 
     Employee employee = new Employee();
     employee.setPerson(person);

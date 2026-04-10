@@ -55,6 +55,9 @@ public class SecurityConfig {
                     .permitAll()
                     .requestMatchers(HttpMethod.POST, "/api/persons/customers")
                     .permitAll()
+                    // Employee self-signup is also public
+                    .requestMatchers(HttpMethod.POST, "/api/persons/employees")
+                    .permitAll()
                     // Managers can view all inventory including archived (must come before
                     // permitAll)
                     .requestMatchers(HttpMethod.GET, "/api/clothing/manager/**")
@@ -67,9 +70,6 @@ public class SecurityConfig {
                     .permitAll()
 
                     // --- Manager-only endpoints ---
-                    // Only managers can create employee accounts
-                    .requestMatchers(HttpMethod.POST, "/api/persons/employees")
-                    .hasRole("Manager")
                     // Only managers can add roles to existing users
                     .requestMatchers(HttpMethod.POST, "/api/persons/*/roles/**")
                     .hasRole("Manager")

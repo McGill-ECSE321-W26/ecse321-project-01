@@ -43,7 +43,7 @@ public class PersonController {
   @PostMapping("/employees")
   @ResponseStatus(HttpStatus.CREATED)
   public EmployeeResponseDto createEmployee(@RequestBody EmployeeCreateRequestDto dto) {
-    Employee e = personService.createEmployee(dto.getEmail(), dto.getPassword());
+    Employee e = personService.createEmployee(dto.getEmail(), dto.getPassword(), dto.getAddress());
     return new EmployeeResponseDto(e);
   }
 

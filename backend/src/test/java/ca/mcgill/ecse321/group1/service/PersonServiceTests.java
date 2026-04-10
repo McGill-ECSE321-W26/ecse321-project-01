@@ -82,12 +82,14 @@ public class PersonServiceTests {
   public void testCreateValidEmployee() {
     String email = "bob@mail.mcgill.ca";
     String password = "12345678";
+    String address = "123 Main St";
     Person accountTest = new Person("generated-id", email, password);
 
     when(personRepository.save(any(Person.class))).thenReturn(accountTest);
+    when(customerRepository.save(any(Customer.class))).thenAnswer(i -> i.getArgument(0));
     when(employeeRepository.save(any(Employee.class))).thenAnswer(i -> i.getArgument(0));
 
-    Employee createdEmployee = service.createEmployee(email, password);
+    Employee createdEmployee = service.createEmployee(email, password, address);
 
     assertNotNull(createdEmployee);
     assertEquals(email, createdEmployee.getPerson().getEmail());
@@ -127,9 +129,11 @@ public class PersonServiceTests {
   public void testCreatePersonInvalidEmail() {
     String email = "bobmcgill.ca";
     String password = "12345678";
+    String address = "123 Main St";
 
     ResponseStatusException e =
-        assertThrows(ResponseStatusException.class, () -> service.createEmployee(email, password));
+        assertThrows(
+            ResponseStatusException.class, () -> service.createEmployee(email, password, address));
     assertEquals(HttpStatus.BAD_REQUEST, e.getStatusCode());
     assertEquals("Invalid email address.", e.getReason());
   }
@@ -138,12 +142,14 @@ public class PersonServiceTests {
   public void testCreatePersonDuplicateEmail() {
     String email = "bob@mail.mcgill.ca";
     String password = "12345678";
+    String address = "123 Main St";
     Person existing = new Person("otherId", email, password);
 
     when(personRepository.findByEmail(email)).thenReturn(existing);
 
     ResponseStatusException e =
-        assertThrows(ResponseStatusException.class, () -> service.createEmployee(email, password));
+        assertThrows(
+            ResponseStatusException.class, () -> service.createEmployee(email, password, address));
     assertEquals(HttpStatus.CONFLICT, e.getStatusCode());
     assertEquals("Email " + email + " is already in use.", e.getReason());
   }
@@ -188,9 +194,11 @@ public class PersonServiceTests {
   public void testCreatePersonInvalidPassword() {
     String email = "bob@mail.mcgill.ca";
     String password = "1";
+    String address = "123 Main St";
 
     ResponseStatusException e =
-        assertThrows(ResponseStatusException.class, () -> service.createEmployee(email, password));
+        assertThrows(
+            ResponseStatusException.class, () -> service.createEmployee(email, password, address));
     assertEquals(HttpStatus.BAD_REQUEST, e.getStatusCode());
     assertEquals("Password must be at least 8 characters.", e.getReason());
   }

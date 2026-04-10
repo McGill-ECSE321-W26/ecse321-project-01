@@ -487,32 +487,35 @@ public class PersonIntegrationTests {
 
   @Test
   @Order(23)
-  public void testCreateEmployeeUnauthorized() {
-    // Arrange
-    RestClient customerClient =
+  public void testCreateEmployeePublicSignup() {
+    // Employee signup is now public (no token required), anyone can self-register as an employee
+    RestClient publicClient =
         RestClient.builder()
             .baseUrl("http://localhost:" + port)
-            .defaultHeader("Authorization", "Bearer " + customerToken)
             .defaultStatusHandler(HttpStatusCode::isError, (req, res) -> {})
             .build();
 
     EmployeeCreateRequestDto dto = new EmployeeCreateRequestDto();
-    dto.setEmail("unauthorized.employee@test.com");
+    dto.setEmail("public.employee.signup@test.com");
     dto.setPassword(VALID_PASSWORD);
+    dto.setAddress("456 Public Ave");
 
     // Act
-    ResponseEntity<String> response =
-        customerClient
+    ResponseEntity<EmployeeResponseDto> response =
+        publicClient
             .post()
             .uri("/api/persons/employees")
             .contentType(MediaType.APPLICATION_JSON)
             .body(dto)
             .retrieve()
-            .toEntity(String.class);
+            .toEntity(EmployeeResponseDto.class);
 
     // Assert
     assertNotNull(response);
-    assertEquals(HttpStatus.FORBIDDEN, response.getStatusCode());
+    assertEquals(HttpStatus.CREATED, response.getStatusCode());
+    EmployeeResponseDto body = response.getBody();
+    assertNotNull(body);
+    assertEquals("public.employee.signup@test.com", body.getEmail());
   }
 
   @Test
@@ -523,6 +526,7 @@ public class PersonIntegrationTests {
     EmployeeCreateRequestDto dto = new EmployeeCreateRequestDto();
     dto.setEmail(createdEmployeeEmail);
     dto.setPassword(VALID_PASSWORD);
+    dto.setAddress("123 Employee St");
 
     // Act
     ResponseEntity<EmployeeResponseDto> response =
@@ -596,29 +600,25 @@ public class PersonIntegrationTests {
 
   @Test
   @Order(27)
-  public void testAddCustomerRoleToEmployeeValid() {
-    // Arrange
-    // createdEmployeeId has only an Employee role
+  public void testAddCustomerRoleToEmployeeAlreadyHasCustomer() {
+    // Employee signup now creates both Employee and Customer roles, so adding a customer
+    // role to an existing employee account should return CONFLICT
     AddressDto dto = new AddressDto();
     dto.setAddress("100 Role St");
 
     // Act
-    ResponseEntity<CustomerResponseDto> response =
+    ResponseEntity<String> response =
         managerClient
             .post()
             .uri("/api/persons/" + createdEmployeeId + "/roles/customer")
             .contentType(MediaType.APPLICATION_JSON)
             .body(dto)
             .retrieve()
-            .toEntity(CustomerResponseDto.class);
+            .toEntity(String.class);
 
     // Assert
     assertNotNull(response);
-    assertEquals(HttpStatus.CREATED, response.getStatusCode());
-    CustomerResponseDto body = response.getBody();
-    assertNotNull(body);
-    assertEquals("100 Role St", body.getAddress());
-    assertEquals(createdEmployeeId, body.getPersonId());
+    assertEquals(HttpStatus.CONFLICT, response.getStatusCode());
   }
 
   // ==== POST /api/persons/{id}/roles/employee ====

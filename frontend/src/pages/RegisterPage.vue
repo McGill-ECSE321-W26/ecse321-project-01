@@ -10,6 +10,7 @@ const auth = useAuthStore()
 const email = ref('')
 const password = ref('')
 const address = ref('')
+const isEmployee = ref(false)
 const error = ref('')
 const loading = ref(false)
 
@@ -21,7 +22,11 @@ async function handleSubmit() {
   }
   loading.value = true
   try {
-    await auth.register(email.value, password.value, address.value)
+    if (isEmployee.value) {
+      await auth.registerEmployee(email.value, password.value, address.value)
+    } else {
+      await auth.register(email.value, password.value, address.value)
+    }
     await router.push({ path: '/login', query: { registered: 'true' } })
   } catch (e) {
     error.value = e instanceof Error ? e.message : 'Something went wrong. Please try again.'
@@ -142,6 +147,13 @@ onUnmounted(() => {
               placeholder="123 Main St"
             >
           </div>
+          <label class="checkbox-field">
+            <input
+              v-model="isEmployee"
+              type="checkbox"
+            >
+            I am an employee
+          </label>
           <button
             type="submit"
             class="btn-submit"
@@ -266,6 +278,22 @@ onUnmounted(() => {
 
 .field input::placeholder { color: #bbb; }
 .field input:focus { border-color: #111; }
+
+.checkbox-field {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: #555;
+  cursor: pointer;
+}
+
+.checkbox-field input[type='checkbox'] {
+  width: 14px;
+  height: 14px;
+  accent-color: #111;
+  cursor: pointer;
+}
 
 .btn-submit {
   background: #111;

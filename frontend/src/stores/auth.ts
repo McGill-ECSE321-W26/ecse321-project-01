@@ -41,6 +41,14 @@ export const useAuthStore = defineStore('auth', () => {
     })
   }
 
+  // Sends POST /api/persons/employees (also creates a customer role with the given address)
+  async function registerEmployee(email: string, password: string, address: string) {
+    await api('/persons/employees', {
+      method: 'POST',
+      body: JSON.stringify({ email, password, address }),
+    })
+  }
+
   // Logout is simple, just
   function logout() {
     token.value = null
@@ -66,6 +74,7 @@ export const useAuthStore = defineStore('auth', () => {
     personId,
     login,
     register,
+    registerEmployee,
     logout,
     updatePerson,
   }
