@@ -24,7 +24,13 @@ async function handleSubmit() {
   loading.value = true
   try {
     await auth.login(email.value, password.value, role.value)
-    await router.push('/shop')
+    if (role.value === 'Manager') {
+      await router.push('/manager')
+    } else if (role.value === 'Employee') {
+      await router.push('/employee/orders')
+    } else {
+      await router.push('/shop')
+    }
   } catch (e) {
     error.value = e instanceof Error ? e.message : 'Something went wrong. Please try again.'
   } finally {
