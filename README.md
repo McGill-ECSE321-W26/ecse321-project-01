@@ -1,5 +1,13 @@
-# ECSE 321 - Project Group 01
+<h1 align="center" style="font-family: 'Lexend Deca'; font-size: xx-large ">Kloth</h1>
+
+<p align="center" style="font-family: 'Lexend Deca'">
+<strong>ECSE 321 - Project Group 01</strong> <br>
 McGill University, Winter 2026
+</p>
+
+![Kloth GIF](docs/kloth-gif-demo.gif)
+
+---
 
 ## Introduction
 In this project, we will create an online platform for ordering, managing and delivering clothes.
@@ -66,7 +74,12 @@ Following is a table containing an overview of our contributions (in hours) for 
 | Project management + documentation                  |    3     |   2    |   1    |   2   |   2   |   1   |   1   |  12   |
 | **Deliverable 2 Totals**                            |    10    |   10   |   9    |  12   |  13   |  11   |  12   |  76   |
 | **Deliverable 3**                                   |   ---    |  ---   |  ---   |  ---  |  ---  |  ---  |  ---  |  ---  |
-| **Grand Total**                                     |   18.5   |  16.5  |  15.5  | 20.5  | 19.5  | 17.5  | 19.5  | 127.5 |
+| Architecture Modelling                              |          |        |        |       |   3   |       |       |       |
+| Web Frontend                                        |    8     |   8    |   8    |   8   |   8   |   8   |   8   |  56   |
+| Fixing the backend                                  |          |   3    |        |   3   |       |       |   3   |   9   |
+| Project management + documentation                  |    3     |        |        |   1   |       |       |       |   4   |
+| **Deliverable 3 Totals**                            |    11    |   11   |   8    |  12   |  11   |   8   |  11   |  72   |
+| **Grand Total**                                     |   29.5   |  27.5  |  23.5  | 32.5  | 30.5  | 25.5  | 30.5  | 199.5 |
 
 ## Project Deliverable 1 (12%)
 For all details regarding this deliverable, please refer to the [Deliverable 1 Wiki Page](https://github.com/McGill-ECSE321-W26/ecse321-project-01/wiki/Project-Deliverable-1).
@@ -79,7 +92,9 @@ For all details regarding this deliverable, please refer to the [Deliverable 2 W
 The report for this deliverable can also be found in the Wiki, right [here](https://github.com/McGill-ECSE321-W26/ecse321-project-01/wiki/Deliverable-2-Project-Management-and-Report).
 
 ## Project Deliverable 3 (12%)
-This project deliverable has not started yet.
+For all details regarding this deliverable, please refer to the [Deliverable 3 Wiki Page](https://github.com/McGill-ECSE321-W26/ecse321-project-01/wiki/Project-Deliverable-3).
+
+The report for this deliverable can also be found in the Wiki, right [here](https://github.com/McGill-ECSE321-W26/ecse321-project-01/wiki/Deliverable-3-Project-Management-and-Report).
 
 ## Group presentation (4%)
-This deliverable has not started yet.
+The slides for the group presentation + Demo can be found [here](https://github.com/McGill-ECSE321-W26/ecse321-project-01/blob/main/docs/kloth-demo.pdf).
