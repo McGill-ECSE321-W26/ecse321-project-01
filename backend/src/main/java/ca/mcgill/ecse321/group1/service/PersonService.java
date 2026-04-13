@@ -7,6 +7,7 @@ import ca.mcgill.ecse321.group1.model.Person;
 import ca.mcgill.ecse321.group1.model.PersonRole;
 import ca.mcgill.ecse321.group1.repository.CustomerRepository;
 import ca.mcgill.ecse321.group1.repository.EmployeeRepository;
+import ca.mcgill.ecse321.group1.repository.ItemRepository;
 import ca.mcgill.ecse321.group1.repository.OrderRepository;
 import ca.mcgill.ecse321.group1.repository.PersonRepository;
 import java.util.List;
@@ -23,17 +24,20 @@ public class PersonService {
   private final CustomerRepository customerRepository;
   private final EmployeeRepository employeeRepository;
   private final OrderRepository orderRepository;
+  private final ItemRepository itemRepository;
   private final BCryptPasswordEncoder passwordEncoder;
 
   public PersonService(
       PersonRepository personRepository,
       CustomerRepository customerRepository,
       EmployeeRepository employeeRepository,
-      OrderRepository orderRepository) {
+      OrderRepository orderRepository,
+      ItemRepository itemRepository) {
     this.personRepository = personRepository;
     this.customerRepository = customerRepository;
     this.employeeRepository = employeeRepository;
     this.orderRepository = orderRepository;
+    this.itemRepository = itemRepository;
     this.passwordEncoder = new BCryptPasswordEncoder();
   }
 
@@ -245,8 +249,11 @@ public class PersonService {
     Person person = findPersonOrThrow(id);
     for (PersonRole role : person.getRoles()) {
       if (role instanceof Employee employee) {
-        orderRepository.unassignEmployee(employee);
-        employeeRepository.deleteByRoleId(employee.getRoleID());
+        orderRepository.findByEmployee(employee).forEach(o -> { o.setEmployee(null); orderRepository.save(o); });
+        // Use UMPLE delete() to remove from person.roles; orphanRemoval handles the DB deletion.
+        // Do NOT use employeeRepository.deleteByRoleID() directly — Person (still managed) has
+        // cascade=PERSIST on roles, which would re-insert the REMOVED employee at flush time.
+        employee.delete();
         return;
       }
     }
@@ -264,10 +271,12 @@ public class PersonService {
             HttpStatus.BAD_REQUEST, "The manager cannot delete their own account.");
       }
       if (role instanceof Employee employee) {
-        orderRepository.unassignEmployee(employee);
+        orderRepository.findByEmployee(employee).forEach(o -> { o.setEmployee(null); orderRepository.save(o); });
       }
       if (role instanceof Customer customer) {
-        orderRepository.unassignCustomer(customer);
+        orderRepository.findByCustomer(customer).forEach(o -> { o.setCustomer(null); orderRepository.save(o); });
+        // Cart items hold a FK to Customer; they must be deleted before the Customer row is removed.
+        itemRepository.deleteByCustomer(customer);
       }
     }
 

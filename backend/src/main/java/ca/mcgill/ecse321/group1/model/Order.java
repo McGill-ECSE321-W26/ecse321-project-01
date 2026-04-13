@@ -57,16 +57,6 @@ public class Order
     deliveryDate = aDeliveryDate;
     loyaltySaving = aLoyaltySaving;
     address = aAddress;
-    boolean didAddEmployee = setEmployee(aEmployee);
-    if (!didAddEmployee)
-    {
-      throw new RuntimeException("Unable to create preparingOrder due to employee. See https://manual.umple.org?RE002ViolationofAssociationMultiplicity.html");
-    }
-    boolean didAddCustomer = setCustomer(aCustomer);
-    if (!didAddCustomer)
-    {
-      throw new RuntimeException("Unable to create order due to customer. See https://manual.umple.org?RE002ViolationofAssociationMultiplicity.html");
-    }
     items = new ArrayList<Item>();
   }
 
@@ -156,10 +146,22 @@ public class Order
   {
     return employee;
   }
+
+  public boolean hasEmployee()
+  {
+    boolean has = employee != null;
+    return has;
+  }
   /* Code from template association_GetOne */
   public Customer getCustomer()
   {
     return customer;
+  }
+
+  public boolean hasCustomer()
+  {
+    boolean has = customer != null;
+    return has;
   }
   /* Code from template association_GetMany */
   public Item getItem(int index)
@@ -191,41 +193,37 @@ public class Order
     int index = items.indexOf(aItem);
     return index;
   }
-  /* Code from template association_SetOneToMany */
+  /* Code from template association_SetOptionalOneToMany */
   public boolean setEmployee(Employee aEmployee)
   {
     boolean wasSet = false;
-    if (aEmployee == null)
-    {
-      return wasSet;
-    }
-
     Employee existingEmployee = employee;
     employee = aEmployee;
     if (existingEmployee != null && !existingEmployee.equals(aEmployee))
     {
       existingEmployee.removePreparingOrder(this);
     }
-    employee.addPreparingOrder(this);
+    if (aEmployee != null)
+    {
+      aEmployee.addPreparingOrder(this);
+    }
     wasSet = true;
     return wasSet;
   }
-  /* Code from template association_SetOneToMany */
+  /* Code from template association_SetOptionalOneToMany */
   public boolean setCustomer(Customer aCustomer)
   {
     boolean wasSet = false;
-    if (aCustomer == null)
-    {
-      return wasSet;
-    }
-
     Customer existingCustomer = customer;
     customer = aCustomer;
     if (existingCustomer != null && !existingCustomer.equals(aCustomer))
     {
       existingCustomer.removeOrder(this);
     }
-    customer.addOrder(this);
+    if (aCustomer != null)
+    {
+      aCustomer.addOrder(this);
+    }
     wasSet = true;
     return wasSet;
   }
@@ -303,16 +301,16 @@ public class Order
 
   public void delete()
   {
-    Employee placeholderEmployee = employee;
-    this.employee = null;
-    if(placeholderEmployee != null)
+    if (employee != null)
     {
+      Employee placeholderEmployee = employee;
+      this.employee = null;
       placeholderEmployee.removePreparingOrder(this);
     }
-    Customer placeholderCustomer = customer;
-    this.customer = null;
-    if(placeholderCustomer != null)
+    if (customer != null)
     {
+      Customer placeholderCustomer = customer;
+      this.customer = null;
       placeholderCustomer.removeOrder(this);
     }
     while( !items.isEmpty() )

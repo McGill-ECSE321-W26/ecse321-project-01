@@ -18,14 +18,14 @@ class Manager {
 
 class Employee {
   isA PersonRole;
-  1 -- * Order preparingOrders;
+  0..1 -- * Order preparingOrders;
 }
 
 class Customer {
   isA PersonRole;
   address;
   int loyaltyPoints;
-  1 -- * Order orders;
+  0..1 -- * Order orders;
   0..1 -- * Item;
 }
 

@@ -302,7 +302,7 @@ function getName(email: string | undefined) {
             </DialogHeader>
             <div class="space-y-4">
               <p class="text-sm text-(--text-muted)">
-                This will permanently delete your account and all associated data. This action cannot be undone.
+                This will permanently delete your account and all associated data, including any employee role if you have one. This action cannot be undone.
               </p>
               <div
                 v-if="deleteError"

@@ -5,7 +5,6 @@ export interface CustomerResponseDto {
   email: string
   address: string
   loyaltyPoints: number
-  isEmployee: boolean
 }
 
 export interface CustomerCreateRequestDto {

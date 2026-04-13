@@ -2,12 +2,13 @@
 import { ref, computed, onMounted } from 'vue'
 import { ArrowLeft, Star } from 'lucide-vue-next'
 import { api } from '@/api/client.ts'
-import type { CustomerResponseDto } from '@/api/types/person.ts'
+import type { CustomerResponseDto, EmployeeResponseDto } from '@/api/types/person.ts'
 import type { OrderResponseDto } from '@/api/types/order.ts'
 
 
 // ── Data ─────────────────────────────────────────────────────────────────────
 const customers = ref<CustomerResponseDto[]>([])
+const employees = ref<EmployeeResponseDto[]>([])
 const loading = ref(true)
 
 
@@ -18,11 +19,13 @@ const detailLoading = ref(false)
 const detailError = ref<string | null>(null)
 const actionId = ref<string | null>(null)
 
+const employeePersonIds = computed(() => new Set(employees.value.map(e => e.personId)))
+
 async function hireCustomer(customer: CustomerResponseDto) {
   actionId.value = customer.personId
   try {
-    await api(`/persons/${customer.personId}/roles/employee`, { method: 'POST' })
-    customer.isEmployee = true
+    const newEmployee = await api<EmployeeResponseDto>(`/persons/${customer.personId}/roles/employee`, { method: 'POST' })
+    employees.value.push(newEmployee)
   } catch (e: unknown) {
     alert(e instanceof Error ? e.message : 'Failed to add employee role.')
   } finally {
@@ -33,7 +36,10 @@ async function hireCustomer(customer: CustomerResponseDto) {
 
 onMounted(async () => {
   try {
-    customers.value = await api<CustomerResponseDto[]>('/persons/customers')
+    [customers.value, employees.value] = await Promise.all([
+      api<CustomerResponseDto[]>('/persons/customers'),
+      api<EmployeeResponseDto[]>('/persons/employees'),
+    ])
   } catch {
     // leave empty
   } finally {
@@ -159,13 +165,13 @@ function formatDate(d: Date | null) {
           </button>
           <button
             class="text-[11px] uppercase tracking-widest border px-3 py-1.5 transition-colors disabled:opacity-40"
-            :class="customer.isEmployee
+            :class="employeePersonIds.has(customer.personId)
               ? 'text-(--text-light) border-(--text-light) cursor-default'
               : 'text-green-600 border-green-600 hover:bg-green-600 hover:text-white'"
-            :disabled="actionId === customer.personId || customer.isEmployee"
+            :disabled="actionId === customer.personId || employeePersonIds.has(customer.personId)"
             @click="hireCustomer(customer)"
           >
-            {{ actionId === customer.personId ? '…' : customer.isEmployee ? 'Hired' : 'Hire' }}
+            {{ actionId === customer.personId ? '…' : employeePersonIds.has(customer.personId) ? 'Hired' : 'Hire' }}
           </button>
         </div>
       </div>
