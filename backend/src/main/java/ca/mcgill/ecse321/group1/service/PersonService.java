@@ -1,10 +1,6 @@
 package ca.mcgill.ecse321.group1.service;
 
-import ca.mcgill.ecse321.group1.model.Customer;
-import ca.mcgill.ecse321.group1.model.Employee;
-import ca.mcgill.ecse321.group1.model.Manager;
-import ca.mcgill.ecse321.group1.model.Person;
-import ca.mcgill.ecse321.group1.model.PersonRole;
+import ca.mcgill.ecse321.group1.model.*;
 import ca.mcgill.ecse321.group1.repository.CustomerRepository;
 import ca.mcgill.ecse321.group1.repository.EmployeeRepository;
 import ca.mcgill.ecse321.group1.repository.ItemRepository;
@@ -247,22 +243,19 @@ public class PersonService {
   @Transactional
   public void removeEmployeeRole(String id) {
     Person person = findPersonOrThrow(id);
+
     for (PersonRole role : person.getRoles()) {
       if (role instanceof Employee employee) {
-        orderRepository
-            .findByEmployee(employee)
-            .forEach(
-                o -> {
-                  o.setEmployee(null);
-                  orderRepository.save(o);
-                });
-        // Use UMPLE delete() to remove from person.roles; orphanRemoval handles the DB deletion.
-        // Do NOT use employeeRepository.deleteByRoleID() directly — Person (still managed) has
-        // cascade=PERSIST on roles, which would re-insert the REMOVED employee at flush time.
+        List<Order> assignedOrders = orderRepository.findByEmployee(employee);
+        for (Order order : assignedOrders) {
+          order.setEmployee(null);
+          orderRepository.save(order);
+        }
         employee.delete();
         return;
       }
     }
+
     throw new ResponseStatusException(
         HttpStatus.BAD_REQUEST, "Person with ID " + id + " does not have an employee role.");
   }
@@ -276,25 +269,21 @@ public class PersonService {
         throw new ResponseStatusException(
             HttpStatus.BAD_REQUEST, "The manager cannot delete their own account.");
       }
+
       if (role instanceof Employee employee) {
-        orderRepository
-            .findByEmployee(employee)
-            .forEach(
-                o -> {
-                  o.setEmployee(null);
-                  orderRepository.save(o);
-                });
+        List<Order> assignedOrders = orderRepository.findByEmployee(employee);
+        for (Order order : assignedOrders) {
+          order.setEmployee(null);
+          orderRepository.save(order);
+        }
       }
+
       if (role instanceof Customer customer) {
-        orderRepository
-            .findByCustomer(customer)
-            .forEach(
-                o -> {
-                  o.setCustomer(null);
-                  orderRepository.save(o);
-                });
-        // Cart items hold a FK to Customer; they must be deleted before the Customer row is
-        // removed.
+        List<Order> assignedOrders = orderRepository.findByCustomer(customer);
+        for (Order order : assignedOrders) {
+          order.setCustomer(null);
+          orderRepository.save(order);
+        }
         itemRepository.deleteByCustomer(customer);
       }
     }
