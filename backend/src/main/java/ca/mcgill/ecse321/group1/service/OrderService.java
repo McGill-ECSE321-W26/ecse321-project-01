@@ -99,7 +99,10 @@ public class OrderService {
 
   private void validateEmployeeNotCustomer(Employee employee, Order order) {
     if (order.getCustomer() != null
-        && employee.getPerson().getPersonID().equals(order.getCustomer().getPerson().getPersonID())) {
+        && employee
+            .getPerson()
+            .getPersonID()
+            .equals(order.getCustomer().getPerson().getPersonID())) {
       throw new ResponseStatusException(
           HttpStatus.BAD_REQUEST, "The employee cannot be assigned to their own order.");
     }
