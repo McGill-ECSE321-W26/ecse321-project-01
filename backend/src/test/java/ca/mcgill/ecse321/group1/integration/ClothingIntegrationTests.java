@@ -1,9 +1,6 @@
 package ca.mcgill.ecse321.group1.integration;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 import ca.mcgill.ecse321.group1.dto.ClothingModelAdminResponseDto;
 import ca.mcgill.ecse321.group1.dto.ClothingModelCreateRequestDto;
@@ -627,9 +624,19 @@ public class ClothingIntegrationTests {
         .retrieve()
         .toBodilessEntity();
 
-    // Assert - confirm it's gone
-    ResponseEntity<String> response = client.get().uri(url).retrieve().toEntity(String.class);
-    assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+    // Assert - confirm it's gone from the variants list
+    ResponseEntity<ClothingVariantResponseDto[]> response =
+        client
+            .get()
+            .uri("/api/clothing/" + this.validModelId + "/variants")
+            .retrieve()
+            .toEntity(ClothingVariantResponseDto[].class);
+    assertEquals(HttpStatus.OK, response.getStatusCode());
+    ClothingVariantResponseDto[] variants = response.getBody();
+    assertNotNull(variants);
+    for (ClothingVariantResponseDto variant : variants) {
+      assertNotEquals(validVariantId, variant.getClothingVariantID());
+    }
   }
 
   @Test
@@ -961,14 +968,23 @@ public class ClothingIntegrationTests {
     assertNotNull(restored.getBody());
     assertFalse(restored.getBody().isArchived(), "Variant should no longer be archived");
 
-    // Verify accessible at public endpoint
-    ResponseEntity<ClothingVariantResponseDto> publicGet =
+    // Verify accessible at public endpoint via variants list
+    ResponseEntity<ClothingVariantResponseDto[]> publicGet =
         client
             .get()
-            .uri("/api/clothing/" + testModelId + "/variants/" + testVariantId)
+            .uri("/api/clothing/" + testModelId + "/variants")
             .retrieve()
-            .toEntity(ClothingVariantResponseDto.class);
+            .toEntity(ClothingVariantResponseDto[].class);
     assertEquals(HttpStatus.OK, publicGet.getStatusCode());
+    ClothingVariantResponseDto[] variants = publicGet.getBody();
+    assertNotNull(variants);
+    boolean isRestored = false;
+    for (ClothingVariantResponseDto variant : variants) {
+      if (testVariantId.equals(variant.getClothingVariantID())) {
+        isRestored = true;
+      }
+    }
+    assertTrue(isRestored);
 
     // Cleanup
     modelRepository.deleteById(testModelId);
