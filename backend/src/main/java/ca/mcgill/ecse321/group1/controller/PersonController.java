@@ -43,7 +43,7 @@ public class PersonController {
   @PostMapping("/employees")
   @ResponseStatus(HttpStatus.CREATED)
   public EmployeeResponseDto createEmployee(@RequestBody EmployeeCreateRequestDto dto) {
-    Employee e = personService.createEmployee(dto.getEmail(), dto.getPassword());
+    Employee e = personService.createEmployee(dto.getEmail(), dto.getPassword(), dto.getAddress());
     return new EmployeeResponseDto(e);
   }
 
@@ -142,6 +142,12 @@ public class PersonController {
       @PathVariable String id, @RequestBody AddressDto dto) {
     Customer c = personService.updateCustomerAddress(id, dto.getAddress());
     return new CustomerResponseDto(c);
+  }
+
+  @DeleteMapping("/{id}/roles/employee")
+  @ResponseStatus(HttpStatus.NO_CONTENT)
+  public void removeEmployeeRole(@PathVariable String id) {
+    personService.removeEmployeeRole(id);
   }
 
   @DeleteMapping("/{id}")

@@ -1,12 +1,10 @@
 package ca.mcgill.ecse321.group1.service;
 
-import ca.mcgill.ecse321.group1.model.Customer;
-import ca.mcgill.ecse321.group1.model.Employee;
-import ca.mcgill.ecse321.group1.model.Manager;
-import ca.mcgill.ecse321.group1.model.Person;
-import ca.mcgill.ecse321.group1.model.PersonRole;
+import ca.mcgill.ecse321.group1.model.*;
 import ca.mcgill.ecse321.group1.repository.CustomerRepository;
 import ca.mcgill.ecse321.group1.repository.EmployeeRepository;
+import ca.mcgill.ecse321.group1.repository.ItemRepository;
+import ca.mcgill.ecse321.group1.repository.OrderRepository;
 import ca.mcgill.ecse321.group1.repository.PersonRepository;
 import java.util.List;
 import org.springframework.http.HttpStatus;
@@ -21,15 +19,21 @@ public class PersonService {
   private final PersonRepository personRepository;
   private final CustomerRepository customerRepository;
   private final EmployeeRepository employeeRepository;
+  private final OrderRepository orderRepository;
+  private final ItemRepository itemRepository;
   private final BCryptPasswordEncoder passwordEncoder;
 
   public PersonService(
       PersonRepository personRepository,
       CustomerRepository customerRepository,
-      EmployeeRepository employeeRepository) {
+      EmployeeRepository employeeRepository,
+      OrderRepository orderRepository,
+      ItemRepository itemRepository) {
     this.personRepository = personRepository;
     this.customerRepository = customerRepository;
     this.employeeRepository = employeeRepository;
+    this.orderRepository = orderRepository;
+    this.itemRepository = itemRepository;
     this.passwordEncoder = new BCryptPasswordEncoder();
   }
 
@@ -106,13 +110,22 @@ public class PersonService {
   }
 
   @Transactional
-  public Employee createEmployee(String email, String password) {
+  public Employee createEmployee(String email, String password, String address) {
     validateNewPerson(email, password);
+    if (address == null || address.isBlank()) {
+      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Address cannot be empty.");
+    }
 
     Person person = new Person();
     person.setEmail(email);
     person.setPassword(passwordEncoder.encode(password));
     person = personRepository.save(person);
+
+    Customer customer = new Customer();
+    customer.setAddress(address);
+    customer.setLoyaltyPoints(0);
+    customer.setPerson(person);
+    customerRepository.save(customer);
 
     Employee employee = new Employee();
     employee.setPerson(person);
@@ -228,14 +241,50 @@ public class PersonService {
   }
 
   @Transactional
+  public void removeEmployeeRole(String id) {
+    Person person = findPersonOrThrow(id);
+
+    for (PersonRole role : person.getRoles()) {
+      if (role instanceof Employee employee) {
+        List<Order> assignedOrders = orderRepository.findByEmployee(employee);
+        for (Order order : assignedOrders) {
+          order.setEmployee(null);
+          orderRepository.save(order);
+        }
+        employee.delete();
+        return;
+      }
+    }
+
+    throw new ResponseStatusException(
+        HttpStatus.BAD_REQUEST, "Person with ID " + id + " does not have an employee role.");
+  }
+
+  @Transactional
   public void deleteAccount(String id) {
     Person person = findPersonOrThrow(id);
 
-    // Prevent manager from deleting their own account
     for (PersonRole role : person.getRoles()) {
       if (role instanceof Manager) {
         throw new ResponseStatusException(
             HttpStatus.BAD_REQUEST, "The manager cannot delete their own account.");
+      }
+
+      if (role instanceof Employee employee) {
+        List<Order> assignedOrders = orderRepository.findByEmployee(employee);
+        for (Order order : assignedOrders) {
+          order.setEmployee(null);
+          orderRepository.save(order);
+        }
+      }
+
+      if (role instanceof Customer customer) {
+        List<Order> assignedOrders = orderRepository.findByCustomer(customer);
+        for (Order order : assignedOrders) {
+          order.setCustomer(null);
+          orderRepository.save(order);
+        }
+        itemRepository.deleteByCustomer(customer);
       }
     }
 

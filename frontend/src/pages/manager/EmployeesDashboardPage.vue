@@ -16,6 +16,19 @@ const selectedEmployee = ref<EmployeeResponseDto | null>(null)
 const employeeOrders = ref<OrderResponseDto[]>([])
 const detailLoading = ref(false)
 const detailError = ref<string | null>(null)
+const actionId = ref<string | null>(null)
+
+async function fireEmployee(employee: EmployeeResponseDto) {
+  actionId.value = employee.personId
+  try {
+    await api(`/persons/${employee.personId}/roles/employee`, { method: 'DELETE' })
+    employees.value = employees.value.filter(e => e.personId !== employee.personId)
+  } catch (e: unknown) {
+    alert(e instanceof Error ? e.message : 'Failed to remove employee role.')
+  } finally {
+    actionId.value = null
+  }
+}
 
 
 onMounted(async () => {
@@ -107,10 +120,10 @@ function formatDate(d: Date | null) {
       style="animation-delay: 0.1s"
     >
       <!-- Table header -->
-      <div class="grid grid-cols-[3fr_2fr_0.6fr] px-6 py-2.5 border-b border-(--text-light)">
+      <div class="grid grid-cols-[3fr_2fr_1.5fr] px-6 py-2.5 border-b border-(--text-light)">
         <span class="text-[10px] uppercase tracking-[0.18em] text-(--text-light)">Email</span>
         <span class="text-[10px] uppercase tracking-[0.18em] text-(--text-light)">Person ID</span>
-        <span class="text-[10px] uppercase tracking-[0.18em] text-(--text-light)">View</span>
+        <span class="text-[10px] uppercase tracking-[0.18em] text-(--text-light)">Actions</span>
       </div>
 
 
@@ -131,7 +144,7 @@ function formatDate(d: Date | null) {
       <div
         v-for="(employee, i) in employees"
         :key="employee.id"
-        class="grid grid-cols-[3fr_2fr_0.6fr] px-6 py-4 border-b border-(--text-light) last:border-b-0 hover:bg-(--card-hover) transition-colors items-center row-card"
+        class="grid grid-cols-[3fr_2fr_1.5fr] px-6 py-4 border-b border-(--text-light) last:border-b-0 hover:bg-(--card-hover) transition-colors items-center row-card"
         :style="{ animationDelay: `${0.1 + i * 0.04}s` }"
       >
         <div class="flex items-center gap-3">
@@ -141,12 +154,21 @@ function formatDate(d: Date | null) {
           <span class="text-[13px] text-(--text) font-light">{{ employee.email }}</span>
         </div>
         <span class="text-[12px] text-(--text-light) font-mono">{{ employee.personId }}</span>
-        <button
-          class="text-[11px] uppercase tracking-widest text-(--text) border border-(--text-light) px-3 py-1.5 hover:bg-(--text) hover:text-(--bg) transition-colors w-fit"
-          @click="openDetail(employee)"
-        >
-          View
-        </button>
+        <div class="flex items-center gap-2">
+          <button
+            class="text-[11px] uppercase tracking-widest text-(--text) border border-(--text-light) px-3 py-1.5 hover:bg-(--text) hover:text-(--bg) transition-colors"
+            @click="openDetail(employee)"
+          >
+            View
+          </button>
+          <button
+            class="text-[11px] uppercase tracking-widest text-red-400 border border-red-400 px-3 py-1.5 hover:bg-red-400 hover:text-white transition-colors disabled:opacity-40"
+            :disabled="actionId === employee.personId"
+            @click="fireEmployee(employee)"
+          >
+            {{ actionId === employee.personId ? '…' : 'Fire' }}
+          </button>
+        </div>
       </div>
     </div>
 

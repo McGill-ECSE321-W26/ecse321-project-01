@@ -2,12 +2,13 @@
 import { ref, computed, onMounted } from 'vue'
 import { ArrowLeft, Star } from 'lucide-vue-next'
 import { api } from '@/api/client.ts'
-import type { CustomerResponseDto } from '@/api/types/person.ts'
+import type { CustomerResponseDto, EmployeeResponseDto } from '@/api/types/person.ts'
 import type { OrderResponseDto } from '@/api/types/order.ts'
 
 
 // ── Data ─────────────────────────────────────────────────────────────────────
 const customers = ref<CustomerResponseDto[]>([])
+const employees = ref<EmployeeResponseDto[]>([])
 const loading = ref(true)
 
 
@@ -16,11 +17,29 @@ const selectedCustomer = ref<CustomerResponseDto | null>(null)
 const customerOrders = ref<OrderResponseDto[]>([])
 const detailLoading = ref(false)
 const detailError = ref<string | null>(null)
+const actionId = ref<string | null>(null)
+
+const employeePersonIds = computed(() => new Set(employees.value.map(e => e.personId)))
+
+async function hireCustomer(customer: CustomerResponseDto) {
+  actionId.value = customer.personId
+  try {
+    const newEmployee = await api<EmployeeResponseDto>(`/persons/${customer.personId}/roles/employee`, { method: 'POST' })
+    employees.value.push(newEmployee)
+  } catch (e: unknown) {
+    alert(e instanceof Error ? e.message : 'Failed to add employee role.')
+  } finally {
+    actionId.value = null
+  }
+}
 
 
 onMounted(async () => {
   try {
-    customers.value = await api<CustomerResponseDto[]>('/persons/customers')
+    [customers.value, employees.value] = await Promise.all([
+      api<CustomerResponseDto[]>('/persons/customers'),
+      api<EmployeeResponseDto[]>('/persons/employees'),
+    ])
   } catch {
     // leave empty
   } finally {
@@ -103,11 +122,11 @@ function formatDate(d: Date | null) {
       style="animation-delay: 0.3s"
     >
       <!-- Table header -->
-      <div class="grid grid-cols-[2.5fr_2fr_1fr_0.6fr] px-6 py-2.5 border-b border-(--text-light)">
+      <div class="grid grid-cols-[2.5fr_2fr_1fr_1.5fr] px-6 py-2.5 border-b border-(--text-light)">
         <span class="text-[10px] uppercase tracking-[0.18em] text-(--text-light)">Email</span>
         <span class="text-[10px] uppercase tracking-[0.18em] text-(--text-light)">Address</span>
         <span class="text-[10px] uppercase tracking-[0.18em] text-(--text-light)">Loyalty Pts</span>
-        <span class="text-[10px] uppercase tracking-[0.18em] text-(--text-light)">View</span>
+        <span class="text-[10px] uppercase tracking-[0.18em] text-(--text-light)">Actions</span>
       </div>
 
 
@@ -128,7 +147,7 @@ function formatDate(d: Date | null) {
       <div
         v-for="(customer, i) in customers"
         :key="customer.id"
-        class="grid grid-cols-[2.5fr_2fr_1fr_0.6fr] px-6 py-4 border-b border-(--text-light) last:border-b-0 hover:bg-(--card-hover) transition-colors items-center row-card"
+        class="grid grid-cols-[2.5fr_2fr_1fr_1.5fr] px-6 py-4 border-b border-(--text-light) last:border-b-0 hover:bg-(--card-hover) transition-colors items-center row-card"
         :style="{ animationDelay: `${0.3 + i * 0.04}s` }"
       >
         <span class="text-[13px] text-(--text) font-light">{{ customer.email }}</span>
@@ -137,12 +156,24 @@ function formatDate(d: Date | null) {
           <Star class="w-3 h-3 text-(--button-hover)" />
           <span class="text-[13px] text-(--button-hover) font-light">{{ customer.loyaltyPoints ?? 0 }}</span>
         </div>
-        <button
-          class="text-[11px] uppercase tracking-widest text-(--text) border border-(--text-light) px-3 py-1.5 hover:bg-(--text) hover:text-(--bg) transition-colors w-fit"
-          @click="openDetail(customer)"
-        >
-          View
-        </button>
+        <div class="flex items-center gap-2">
+          <button
+            class="text-[11px] uppercase tracking-widest text-(--text) border border-(--text-light) px-3 py-1.5 hover:bg-(--text) hover:text-(--bg) transition-colors"
+            @click="openDetail(customer)"
+          >
+            View
+          </button>
+          <button
+            class="text-[11px] uppercase tracking-widest border px-3 py-1.5 transition-colors disabled:opacity-40"
+            :class="employeePersonIds.has(customer.personId)
+              ? 'text-(--text-light) border-(--text-light) cursor-default'
+              : 'text-green-600 border-green-600 hover:bg-green-600 hover:text-white'"
+            :disabled="actionId === customer.personId || employeePersonIds.has(customer.personId)"
+            @click="hireCustomer(customer)"
+          >
+            {{ actionId === customer.personId ? '…' : employeePersonIds.has(customer.personId) ? 'Hired' : 'Hire' }}
+          </button>
+        </div>
       </div>
     </div>
 

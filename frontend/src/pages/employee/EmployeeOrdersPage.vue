@@ -3,15 +3,17 @@ import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { api } from '@/api/client'
 import type { OrderResponseDto } from '@/api/types/order'
-import type { EmployeeResponseDto } from '@/api/types/person'
+import type { EmployeeResponseDto, CustomerResponseDto } from '@/api/types/person'
 import { useAuthStore } from '@/stores/auth'
 
 const router = useRouter()
 const auth = useAuthStore()
 const employeeID = auth.person?.id ?? ''
+const employeePersonId = auth.person?.personId ?? ''
 
 const orders = ref<OrderResponseDto[]>([])
 const employees = ref<EmployeeResponseDto[]>([])
+const customers = ref<CustomerResponseDto[]>([])
 const loading = ref(true)
 const activeFilter = ref<'all' | 'available' | 'mine'>('all')
 const updatingStatus = ref<string | null>(null)
@@ -24,6 +26,9 @@ onMounted(async () => {
   }
   try {
     employees.value = await api<EmployeeResponseDto[]>('/persons/employees')
+  } catch { /* empty */ }
+  try {
+    customers.value = await api<CustomerResponseDto[]>('/persons/customers')
   } catch { /* empty */ }
 })
 
@@ -50,30 +55,11 @@ async function assignSelf(order: OrderResponseDto) {
   }
 }
 
-async function markDelivered(order: OrderResponseDto) {
-  updatingStatus.value = order.orderID
-  try {
-    const updated = await api<OrderResponseDto>(`/orders/${order.orderID}`, {
-      method: 'PATCH',
-      body: JSON.stringify({
-        employeeID: order.employeeID,
-        deliveryDate: order.deliveryDate,
-        orderStatus: 'Delivered',
-      }),
-    })
-    const index = orders.value.findIndex(o => o.orderID === updated.orderID)
-    if (index !== -1) orders.value[index] = updated
-  } catch { /* empty */ } finally {
-    updatingStatus.value = null
-  }
-}
-
 function canAssignSelf(order: OrderResponseDto) {
-  return order.orderStatus === 'Preparing' && !order.employeeID
-}
-
-function canMarkDelivered(order: OrderResponseDto) {
-  return order.orderStatus === 'Preparing' && order.employeeID === employeeID
+  if (order.orderStatus !== 'Preparing' || order.employeeID) return false
+  const customer = customers.value.find(c => c.id === order.customerID)
+  if (customer && customer.personId === employeePersonId) return false
+  return true
 }
 
 function formatDate(d: Date | null) {
@@ -238,14 +224,6 @@ function getEmployeeName(id: string | null | undefined) {
             @click="assignSelf(order)"
           >
             Assign Me
-          </button>
-          <button
-            v-if="canMarkDelivered(order)"
-            :disabled="updatingStatus === order.orderID"
-            class="text-[11px] uppercase tracking-widest border border-(--text-light) px-3 py-1.5 text-(--text) hover:bg-(--button-hover) hover:text-(--bg) transition-colors disabled:opacity-40"
-            @click="markDelivered(order)"
-          >
-            Delivered
           </button>
         </div>
       </div>

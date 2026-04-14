@@ -137,21 +137,20 @@ public class Customer extends PersonRole
   {
     return 0;
   }
-  /* Code from template association_AddManyToOne */
-  public Order addOrder(String aOrderID, Order.OrderStatus aOrderStatus, Date aOrderDate, Date aDeliveryDate, float aLoyaltySaving, String aAddress, Employee aEmployee)
-  {
-    return new Order(aOrderID, aOrderStatus, aOrderDate, aDeliveryDate, aLoyaltySaving, aAddress, aEmployee, this);
-  }
-
+  /* Code from template association_AddManyToOptionalOne */
   public boolean addOrder(Order aOrder)
   {
     boolean wasAdded = false;
     if (orders.contains(aOrder)) { return false; }
     Customer existingCustomer = aOrder.getCustomer();
-    boolean isNewCustomer = existingCustomer != null && !this.equals(existingCustomer);
-    if (isNewCustomer)
+    if (existingCustomer == null)
     {
       aOrder.setCustomer(this);
+    }
+    else if (!this.equals(existingCustomer))
+    {
+      existingCustomer.removeOrder(aOrder);
+      addOrder(aOrder);
     }
     else
     {
@@ -164,10 +163,10 @@ public class Customer extends PersonRole
   public boolean removeOrder(Order aOrder)
   {
     boolean wasRemoved = false;
-    //Unable to remove aOrder, as it must always have a customer
-    if (!this.equals(aOrder.getCustomer()))
+    if (orders.contains(aOrder))
     {
       orders.remove(aOrder);
+      aOrder.setCustomer(null);
       wasRemoved = true;
     }
     return wasRemoved;
@@ -278,10 +277,9 @@ public class Customer extends PersonRole
 
   public void delete()
   {
-    for(int i=orders.size(); i > 0; i--)
+    while( !orders.isEmpty() )
     {
-      Order aOrder = orders.get(i - 1);
-      aOrder.delete();
+      orders.get(0).setCustomer(null);
     }
     while( !items.isEmpty() )
     {

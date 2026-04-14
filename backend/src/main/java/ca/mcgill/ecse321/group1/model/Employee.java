@@ -71,21 +71,20 @@ public class Employee extends PersonRole
   {
     return 0;
   }
-  /* Code from template association_AddManyToOne */
-  public Order addPreparingOrder(String aOrderID, Order.OrderStatus aOrderStatus, Date aOrderDate, Date aDeliveryDate, float aLoyaltySaving, String aAddress, Customer aCustomer)
-  {
-    return new Order(aOrderID, aOrderStatus, aOrderDate, aDeliveryDate, aLoyaltySaving, aAddress, this, aCustomer);
-  }
-
+  /* Code from template association_AddManyToOptionalOne */
   public boolean addPreparingOrder(Order aPreparingOrder)
   {
     boolean wasAdded = false;
     if (preparingOrders.contains(aPreparingOrder)) { return false; }
     Employee existingEmployee = aPreparingOrder.getEmployee();
-    boolean isNewEmployee = existingEmployee != null && !this.equals(existingEmployee);
-    if (isNewEmployee)
+    if (existingEmployee == null)
     {
       aPreparingOrder.setEmployee(this);
+    }
+    else if (!this.equals(existingEmployee))
+    {
+      existingEmployee.removePreparingOrder(aPreparingOrder);
+      addPreparingOrder(aPreparingOrder);
     }
     else
     {
@@ -98,10 +97,10 @@ public class Employee extends PersonRole
   public boolean removePreparingOrder(Order aPreparingOrder)
   {
     boolean wasRemoved = false;
-    //Unable to remove aPreparingOrder, as it must always have a employee
-    if (!this.equals(aPreparingOrder.getEmployee()))
+    if (preparingOrders.contains(aPreparingOrder))
     {
       preparingOrders.remove(aPreparingOrder);
+      aPreparingOrder.setEmployee(null);
       wasRemoved = true;
     }
     return wasRemoved;
@@ -141,10 +140,9 @@ public class Employee extends PersonRole
 
   public void delete()
   {
-    for(int i=preparingOrders.size(); i > 0; i--)
+    while( !preparingOrders.isEmpty() )
     {
-      Order aPreparingOrder = preparingOrders.get(i - 1);
-      aPreparingOrder.delete();
+      preparingOrders.get(0).setEmployee(null);
     }
     super.delete();
   }
