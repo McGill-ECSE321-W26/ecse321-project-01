@@ -93,6 +93,11 @@ function cancelAssign() {
 
 async function assignEmployee(employee: EmployeeResponseDto) {
   if (!selectedOrder.value) return
+  if (selectedOrder.value.employeeID === employee.id) {
+    currentView.value = 'detail'
+    toast.info('No changes to save.')
+    return
+  }
   assigning.value = true
   assignError.value = null
   try {
@@ -118,6 +123,10 @@ async function assignEmployee(employee: EmployeeResponseDto) {
 
 // ── Update status ─────────────────────────────────────────────────────────────
 async function updateStatus(order: OrderResponseDto, status: string) {
+  if (order.orderStatus === status) {
+    toast.info('No changes to save.')
+    return
+  }
   updatingStatus.value = order.orderID
   try {
     const updated = await api<OrderResponseDto>(`/orders/${order.orderID}`, {
