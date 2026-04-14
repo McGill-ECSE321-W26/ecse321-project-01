@@ -4,6 +4,9 @@ import { ArrowLeft, Star } from 'lucide-vue-next'
 import { api } from '@/api/client.ts'
 import type { CustomerResponseDto, EmployeeResponseDto } from '@/api/types/person.ts'
 import type { OrderResponseDto } from '@/api/types/order.ts'
+import { useToastStore } from '@/stores/toast.ts'
+
+const toast = useToastStore()
 
 
 // ── Data ─────────────────────────────────────────────────────────────────────
@@ -26,8 +29,9 @@ async function hireCustomer(customer: CustomerResponseDto) {
   try {
     const newEmployee = await api<EmployeeResponseDto>(`/persons/${customer.personId}/roles/employee`, { method: 'POST' })
     employees.value.push(newEmployee)
+    toast.success(`Hired ${customer.email}.`)
   } catch (e: unknown) {
-    alert(e instanceof Error ? e.message : 'Failed to add employee role.')
+    toast.error(e instanceof Error ? e.message : 'Failed to add employee role.')
   } finally {
     actionId.value = null
   }
