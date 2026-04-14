@@ -16,7 +16,7 @@ public class OrderService {
   private final CustomerRepository customerRepository;
   private final ItemRepository itemRepository;
   private final EmployeeRepository employeeRepository;
-  static float loyaltyModifier = 0.2f; // Conversion rate: 1 loyalty point = $0.20
+  static final float loyaltyModifier = 0.2f; // Conversion rate: 1 loyalty point = $0.20
   private final ClothingVariantRepository clothingVariantRepository;
 
   public OrderService(
@@ -98,7 +98,8 @@ public class OrderService {
   }
 
   private void validateEmployeeNotCustomer(Employee employee, Order order) {
-    if (employee.getPerson().getPersonID().equals(order.getCustomer().getPerson().getPersonID())) {
+    if (order.getCustomer() != null
+        && employee.getPerson().getPersonID().equals(order.getCustomer().getPerson().getPersonID())) {
       throw new ResponseStatusException(
           HttpStatus.BAD_REQUEST, "The employee cannot be assigned to their own order.");
     }
@@ -258,25 +259,5 @@ public class OrderService {
   public List<Order> getOrdersByEmployeeID(String employeeID) {
     Employee employee = findEmployee(employeeID);
     return orderRepository.findByEmployee(employee);
-  }
-
-  @Transactional(readOnly = true)
-  public List<Order> getOrdersByOrderStatus(String orderStatus) {
-    Order.OrderStatus orderStatusEnum = parseOrderStatus(orderStatus);
-    return orderRepository.findByOrderStatus(orderStatusEnum);
-  }
-
-  @Transactional(readOnly = true)
-  public List<Order> getOrdersByCustomerIDAndStatus(String customerID, String orderStatus) {
-    Customer customer = findCustomer(customerID);
-    Order.OrderStatus orderStatusEnum = parseOrderStatus(orderStatus);
-    return orderRepository.findByCustomerAndOrderStatus(customer, orderStatusEnum);
-  }
-
-  @Transactional(readOnly = true)
-  public List<Order> getOrdersByEmployeeIDAndStatus(String employeeID, String orderStatus) {
-    Employee employee = findEmployee(employeeID);
-    Order.OrderStatus orderStatusEnum = parseOrderStatus(orderStatus);
-    return orderRepository.findByEmployeeAndOrderStatus(employee, orderStatusEnum);
   }
 }

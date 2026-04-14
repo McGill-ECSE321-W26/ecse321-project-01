@@ -407,41 +407,6 @@ public class ClothingIntegrationTests {
     assertTrue(body.length > 0, "Should return at least one variant.");
   }
 
-  @Test
-  @Order(12)
-  public void testGetVariantByValidId() {
-    // Arrange
-    String url = "/api/clothing/" + this.validModelId + "/variants/" + this.validVariantId;
-
-    // Act
-    ResponseEntity<ClothingVariantResponseDto> response =
-        client.get().uri(url).retrieve().toEntity(ClothingVariantResponseDto.class);
-
-    // Assert
-    assertNotNull(response);
-    assertEquals(HttpStatus.OK, response.getStatusCode());
-    ClothingVariantResponseDto body = response.getBody();
-    assertNotNull(body);
-    assertEquals(this.validVariantId, body.getClothingVariantID());
-    assertEquals(VALID_SIZE, body.getSize());
-    assertEquals(VALID_COLOR, body.getColor());
-    assertEquals(VALID_VARIANT_IMAGE, body.getImagePath());
-  }
-
-  @Test
-  @Order(13)
-  public void testGetVariantByInvalidId() {
-    // Arrange
-    String url = "/api/clothing/" + this.validModelId + "/variants/" + INVALID_VARIANT_ID;
-
-    // Act
-    ResponseEntity<String> response = client.get().uri(url).retrieve().toEntity(String.class);
-
-    // Assert
-    assertNotNull(response);
-    assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
-  }
-
   // ==== PUT /api/clothing/{modelId} ====
 
   @Test

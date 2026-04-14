@@ -16,6 +16,7 @@ export interface CustomerCreateRequestDto {
 export interface EmployeeCreateRequestDto {
   email: string
   password: string
+  address: string
 }
 
 export interface EmployeeResponseDto {

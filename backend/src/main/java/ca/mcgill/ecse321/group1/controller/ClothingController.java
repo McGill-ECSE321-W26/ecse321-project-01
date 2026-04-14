@@ -74,12 +74,6 @@ public class ClothingController {
         .toList();
   }
 
-  @GetMapping("/{modelId}/variants/{variantId}")
-  public ClothingVariantResponseDto getVariant(
-      @PathVariable String modelId, @PathVariable String variantId) {
-    return new ClothingVariantResponseDto(clothingService.getVariant(modelId, variantId));
-  }
-
   @PostMapping("/{modelId}/variants")
   @ResponseStatus(HttpStatus.CREATED)
   public ClothingVariantResponseDto addVariantToModel(

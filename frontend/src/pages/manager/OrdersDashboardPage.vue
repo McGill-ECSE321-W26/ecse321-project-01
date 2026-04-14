@@ -398,7 +398,7 @@ function getEmployeeName(id: string | null | undefined) {
           </div>
           <div class="p-6 flex items-end gap-2">
             <button
-              v-if="!selectedOrder.employeeID && selectedOrder.orderStatus !== 'Cancelled'"
+              v-if="!selectedOrder.employeeID && selectedOrder.orderStatus !== 'Cancelled' && selectedOrder.customerID != null"
               class="text-[11px] uppercase tracking-widest text-(--text) border border-(--text-light) px-4 py-2 hover:bg-(--button-hover) hover:text-(--bg) transition-colors"
               @click="openAssign"
             >

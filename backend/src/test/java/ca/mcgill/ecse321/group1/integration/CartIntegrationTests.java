@@ -220,40 +220,6 @@ public class CartIntegrationTests {
     assertTrue(items.stream().anyMatch(i -> validItemID.equals(i.getItemID())));
   }
 
-  // ==== GET /api/carts/{customerID}/items/{itemID} ====
-
-  @Test
-  @Order(6)
-  public void testGetItemByInvalidID() {
-    ResponseEntity<String> response =
-        client
-            .get()
-            .uri("/api/carts/" + testCustomer.getRoleID() + "/items/" + INVALID_ID)
-            .retrieve()
-            .toEntity(String.class);
-
-    assertNotNull(response);
-    assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
-  }
-
-  @Test
-  @Order(7)
-  public void testGetItemByValidID() {
-    ResponseEntity<ItemResponseDto> response =
-        client
-            .get()
-            .uri("/api/carts/" + testCustomer.getRoleID() + "/items/" + validItemID)
-            .retrieve()
-            .toEntity(ItemResponseDto.class);
-
-    assertNotNull(response);
-    assertEquals(HttpStatus.OK, response.getStatusCode());
-    ItemResponseDto body = response.getBody();
-    assertNotNull(body);
-    assertEquals(validItemID, body.getItemID());
-    assertEquals(testVariant.getClothingVariantID(), body.getClothingVariantID());
-  }
-
   // ==== GET /api/carts/{customerID} ====
 
   @Test

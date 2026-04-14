@@ -68,22 +68,6 @@ public class CartService {
     }
   }
 
-  @Transactional(readOnly = true)
-  public Item getItemByID(String customerID, String itemID) {
-    Item item = itemRepository.findByItemID(itemID);
-    Customer customer = customerRepository.findByRoleID(customerID);
-    validateItemExists(item, itemID);
-    validateCustomerExists(customer, customerID);
-
-    if (!customer.getItems().contains(item)) {
-      throw new ResponseStatusException(
-          HttpStatus.BAD_REQUEST,
-          "The item with id " + itemID + "is not part of customer's " + customerID + "cart.");
-    }
-
-    return item;
-  }
-
   @Transactional
   public List<Item> getCartItems(String customerID) {
     Customer customer = customerRepository.findByRoleID(customerID);
@@ -128,13 +112,6 @@ public class CartService {
     }
 
     itemRepository.delete(item);
-  }
-
-  @Transactional
-  public int removeAllItems(String customerID) {
-    Customer customer = customerRepository.findByRoleID(customerID);
-    validateCustomerExists(customer, customerID);
-    return itemRepository.deleteByCustomer(customer);
   }
 
   @Transactional

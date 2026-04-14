@@ -5,6 +5,4 @@ import org.springframework.data.repository.ListCrudRepository;
 
 public interface EmployeeRepository extends ListCrudRepository<Employee, String> {
   Employee findByRoleID(String employeeID);
-
-  void deleteByRoleID(String roleId);
 }
