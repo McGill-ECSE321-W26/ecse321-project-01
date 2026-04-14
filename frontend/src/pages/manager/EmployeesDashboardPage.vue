@@ -4,6 +4,9 @@ import { ArrowLeft, User } from 'lucide-vue-next'
 import { api } from '@/api/client.ts'
 import type { EmployeeResponseDto } from '@/api/types/person.ts'
 import type { OrderResponseDto } from '@/api/types/order.ts'
+import { useToastStore } from '@/stores/toast.ts'
+
+const toast = useToastStore()
 
 
 // ── Data ─────────────────────────────────────────────────────────────────────
@@ -23,8 +26,9 @@ async function fireEmployee(employee: EmployeeResponseDto) {
   try {
     await api(`/persons/${employee.personId}/roles/employee`, { method: 'DELETE' })
     employees.value = employees.value.filter(e => e.personId !== employee.personId)
+    toast.success(`Fired ${employee.email}.`)
   } catch (e: unknown) {
-    alert(e instanceof Error ? e.message : 'Failed to remove employee role.')
+    toast.error(e instanceof Error ? e.message : 'Failed to remove employee role.')
   } finally {
     actionId.value = null
   }
