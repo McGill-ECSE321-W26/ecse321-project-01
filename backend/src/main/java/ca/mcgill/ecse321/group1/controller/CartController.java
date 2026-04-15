@@ -46,22 +46,10 @@ public class CartController {
     return cartService.getCartItems(customerID).stream().map(ItemResponseDto::new).toList();
   }
 
-  @DeleteMapping("/{customerID}/items")
-  @ResponseStatus(HttpStatus.NO_CONTENT)
-  public void removeAllItems(@PathVariable String customerID) {
-    cartService.removeAllItems(customerID);
-  }
-
   @DeleteMapping("/{customerID}/items/{itemID}")
   @ResponseStatus(HttpStatus.NO_CONTENT)
   public void removeItem(@PathVariable String customerID, @PathVariable String itemID) {
     cartService.removeItem(itemID, customerID);
-  }
-
-  @GetMapping("/{customerID}/items/{itemID}")
-  public ItemResponseDto getItemByID(@PathVariable String customerID, @PathVariable String itemID) {
-    Item item = cartService.getItemByID(customerID, itemID);
-    return new ItemResponseDto(item);
   }
 
   @PatchMapping("/{customerID}/items/{itemID}")

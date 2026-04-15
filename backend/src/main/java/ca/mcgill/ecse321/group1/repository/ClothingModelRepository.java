@@ -8,8 +8,6 @@ public interface ClothingModelRepository extends ListCrudRepository<ClothingMode
 
   ClothingModel findByClothingModelIDAndArchivedFalse(String clothingModelID);
 
-  ClothingModel findByNameAndArchivedFalse(String name);
-
   List<ClothingModel> findByArchivedFalse();
 
   // Unfiltered — includes archived records (for manager-level lookups)

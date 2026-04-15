@@ -53,9 +53,11 @@ public class DataSeeder {
     managerRepository.save(manager);
 
     // Employees
-    Employee emp1 = createEmployee("alice.parker@kloth.com");
-    Employee emp2 = createEmployee("bob.builder@kloth.com");
-    Employee emp3 = createEmployee("carol.ann@kloth.com");
+    Employee emp1 =
+        createEmployee("alice.parker@kloth.com", "76 Gerrard St E, Toronto, ON M5G 2A7", 50);
+    Employee emp2 =
+        createEmployee("bob.builder@kloth.com", "1281 Bloor St W, Toronto, ON M6H 1N7", 25);
+    Employee emp3 = createEmployee("carol.ann@kloth.com", "524 Oakwood Ave, York, ON M6E 2X1", 0);
 
     // Customers
     Customer cust1 =
@@ -786,20 +788,25 @@ public class DataSeeder {
     return personRepository.save(person);
   }
 
-  private Employee createEmployee(String email) {
+  private Employee createEmployee(String email, String address, int loyaltyPoints) {
     Person person = createPerson(email, "password123");
-    Employee emp = new Employee();
-    emp.setPerson(person);
-    return employeeRepository.save(emp);
+    Employee employee = new Employee();
+    employee.setPerson(person);
+    Customer customer = new Customer();
+    customer.setAddress(address);
+    customer.setLoyaltyPoints(loyaltyPoints);
+    customer.setPerson(person);
+    customerRepository.save(customer);
+    return employeeRepository.save(employee);
   }
 
   private Customer createCustomer(String email, String address, int loyaltyPoints) {
     Person person = createPerson(email, "password123");
-    Customer cust = new Customer();
-    cust.setPerson(person);
-    cust.setAddress(address);
-    cust.setLoyaltyPoints(loyaltyPoints);
-    return customerRepository.save(cust);
+    Customer customer = new Customer();
+    customer.setPerson(person);
+    customer.setAddress(address);
+    customer.setLoyaltyPoints(loyaltyPoints);
+    return customerRepository.save(customer);
   }
 
   private ClothingModel createClothingModel(

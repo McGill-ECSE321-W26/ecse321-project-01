@@ -61,11 +61,6 @@ public class PersonService {
   }
 
   @Transactional(readOnly = true)
-  public List<Person> getPeople() {
-    return personRepository.findAll();
-  }
-
-  @Transactional(readOnly = true)
   public List<Employee> getEmployees() {
     return employeeRepository.findAll();
   }
@@ -83,11 +78,6 @@ public class PersonService {
           HttpStatus.NOT_FOUND, "There is no customer with ID " + id + ".");
     }
     return customer;
-  }
-
-  @Transactional(readOnly = true)
-  public Person getPersonById(String id) {
-    return findPersonOrThrow(id);
   }
 
   @Transactional
@@ -186,37 +176,6 @@ public class PersonService {
   }
 
   @Transactional
-  public Person addCustomerRoleToEmployee(String id, String address) {
-    Person person = findPersonOrThrow(id);
-    if (address == null || address.isBlank()) {
-      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Address cannot be empty.");
-    }
-
-    // Check that this person actually has an employee role
-    boolean hasEmployee = false;
-    for (PersonRole role : person.getRoles()) {
-      if (role instanceof Customer) {
-        throw new ResponseStatusException(
-            HttpStatus.CONFLICT, "This person already has a customer role.");
-      }
-      if (role instanceof Employee) {
-        hasEmployee = true;
-      }
-    }
-    if (!hasEmployee) {
-      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "This person is not an employee.");
-    }
-
-    Customer customer = new Customer();
-    customer.setAddress(address);
-    customer.setLoyaltyPoints(0);
-    customer.setPerson(person);
-    customerRepository.save(customer);
-
-    return personRepository.findByPersonID(id);
-  }
-
-  @Transactional
   public Person addEmployeeRoleToCustomer(String id) {
     Person person = findPersonOrThrow(id);
     boolean hasCustomer = false;
@@ -281,6 +240,9 @@ public class PersonService {
       if (role instanceof Customer customer) {
         List<Order> assignedOrders = orderRepository.findByCustomer(customer);
         for (Order order : assignedOrders) {
+          if (order.getOrderStatus() != Order.OrderStatus.Delivered) {
+            order.setOrderStatus(Order.OrderStatus.Cancelled);
+          }
           order.setCustomer(null);
           orderRepository.save(order);
         }
@@ -289,15 +251,5 @@ public class PersonService {
     }
 
     personRepository.delete(person);
-  }
-
-  @Transactional(readOnly = true)
-  public Person getPersonByEmail(String email) {
-    Person person = personRepository.findByEmail(email);
-    if (person == null) {
-      throw new ResponseStatusException(
-          HttpStatus.NOT_FOUND, "There is no person with email " + email + ".");
-    }
-    return person;
   }
 }

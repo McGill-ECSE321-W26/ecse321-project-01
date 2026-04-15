@@ -1,9 +1,6 @@
 package ca.mcgill.ecse321.group1.integration;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 import ca.mcgill.ecse321.group1.dto.ClothingModelAdminResponseDto;
 import ca.mcgill.ecse321.group1.dto.ClothingModelCreateRequestDto;
@@ -283,7 +280,7 @@ public class ClothingIntegrationTests {
   @Test
   @Order(8)
   public void testGetAllClothingModelsDeduplicatesVariantsByColor() {
-    // Arrange — add a second variant with the SAME color but different size
+    // Arrange - add a second variant with the SAME color but different size
     String url = "/api/clothing/" + this.validModelId + "/variants";
     ClothingVariantCreateRequestDto request =
         new ClothingVariantCreateRequestDto(ClothingVariant.Size.L, VALID_COLOR, "variant2.png", 5);
@@ -314,7 +311,7 @@ public class ClothingIntegrationTests {
             .toEntity(ClothingVariantResponseDto.class);
     assertEquals(HttpStatus.CREATED, createResponse2.getStatusCode());
 
-    // Act — get all models
+    // Act - get all models
     ResponseEntity<ClothingModelListResponseDto[]> response =
         client.get().uri("/api/clothing").retrieve().toEntity(ClothingModelListResponseDto[].class);
 
@@ -405,41 +402,6 @@ public class ClothingIntegrationTests {
     ClothingVariantResponseDto[] body = response.getBody();
     assertNotNull(body);
     assertTrue(body.length > 0, "Should return at least one variant.");
-  }
-
-  @Test
-  @Order(12)
-  public void testGetVariantByValidId() {
-    // Arrange
-    String url = "/api/clothing/" + this.validModelId + "/variants/" + this.validVariantId;
-
-    // Act
-    ResponseEntity<ClothingVariantResponseDto> response =
-        client.get().uri(url).retrieve().toEntity(ClothingVariantResponseDto.class);
-
-    // Assert
-    assertNotNull(response);
-    assertEquals(HttpStatus.OK, response.getStatusCode());
-    ClothingVariantResponseDto body = response.getBody();
-    assertNotNull(body);
-    assertEquals(this.validVariantId, body.getClothingVariantID());
-    assertEquals(VALID_SIZE, body.getSize());
-    assertEquals(VALID_COLOR, body.getColor());
-    assertEquals(VALID_VARIANT_IMAGE, body.getImagePath());
-  }
-
-  @Test
-  @Order(13)
-  public void testGetVariantByInvalidId() {
-    // Arrange
-    String url = "/api/clothing/" + this.validModelId + "/variants/" + INVALID_VARIANT_ID;
-
-    // Act
-    ResponseEntity<String> response = client.get().uri(url).retrieve().toEntity(String.class);
-
-    // Assert
-    assertNotNull(response);
-    assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
   }
 
   // ==== PUT /api/clothing/{modelId} ====
@@ -662,9 +624,19 @@ public class ClothingIntegrationTests {
         .retrieve()
         .toBodilessEntity();
 
-    // Assert - confirm it's gone
-    ResponseEntity<String> response = client.get().uri(url).retrieve().toEntity(String.class);
-    assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+    // Assert - confirm it's gone from the variants list
+    ResponseEntity<ClothingVariantResponseDto[]> response =
+        client
+            .get()
+            .uri("/api/clothing/" + this.validModelId + "/variants")
+            .retrieve()
+            .toEntity(ClothingVariantResponseDto[].class);
+    assertEquals(HttpStatus.OK, response.getStatusCode());
+    ClothingVariantResponseDto[] variants = response.getBody();
+    assertNotNull(variants);
+    for (ClothingVariantResponseDto variant : variants) {
+      assertNotEquals(validVariantId, variant.getClothingVariantID());
+    }
   }
 
   @Test
@@ -710,7 +682,7 @@ public class ClothingIntegrationTests {
   @Test
   @Order(25)
   public void testGetAllModelsIncludingArchivedRequiresManager() {
-    // No Authorization header — should be denied
+    // No Authorization header - should be denied
     ResponseEntity<String> response =
         client.get().uri("/api/clothing/manager").retrieve().toEntity(String.class);
 
@@ -720,7 +692,7 @@ public class ClothingIntegrationTests {
   @Test
   @Order(26)
   public void testGetAllModelsIncludingArchivedShowsArchived() {
-    // Arrange — create a fresh model then archive it
+    // Arrange - create a fresh model then archive it
     ClothingModelCreateRequestDto createReq =
         new ClothingModelCreateRequestDto(
             "Archived Test Model", "desc", VALID_BRAND, VALID_CATEGORY, 39.99f);
@@ -744,7 +716,7 @@ public class ClothingIntegrationTests {
         .retrieve()
         .toBodilessEntity();
 
-    // Act — call manager endpoint, which includes archived
+    // Act - call manager endpoint, which includes archived
     ResponseEntity<ClothingModelAdminResponseDto[]> response =
         client
             .get()
@@ -774,7 +746,7 @@ public class ClothingIntegrationTests {
   @Test
   @Order(27)
   public void testRestoreClothingModelValid() {
-    // Arrange — create, archive, then restore
+    // Arrange - create, archive, then restore
     ClothingModelCreateRequestDto createReq =
         new ClothingModelCreateRequestDto(
             "Restore Test Model", "desc", VALID_BRAND, VALID_CATEGORY, 59.99f);
@@ -798,7 +770,7 @@ public class ClothingIntegrationTests {
         .retrieve()
         .toBodilessEntity();
 
-    // Act — restore
+    // Act - restore
     ResponseEntity<ClothingModelAdminResponseDto> restored =
         client
             .patch()
@@ -842,7 +814,7 @@ public class ClothingIntegrationTests {
   @Test
   @Order(29)
   public void testRestoreClothingModelNotArchived() {
-    // Arrange — create a fresh active model (not archived)
+    // Arrange - create a fresh active model (not archived)
     ClothingModelCreateRequestDto createReq =
         new ClothingModelCreateRequestDto(
             "Active Restore Test", "desc", VALID_BRAND, VALID_CATEGORY, 69.99f);
@@ -859,7 +831,7 @@ public class ClothingIntegrationTests {
     assertEquals(HttpStatus.CREATED, created.getStatusCode());
     String modelId = created.getBody().getClothingModelID();
 
-    // Act — try to restore a model that is NOT archived
+    // Act - try to restore a model that is NOT archived
     ResponseEntity<String> response =
         client
             .patch()
@@ -878,7 +850,7 @@ public class ClothingIntegrationTests {
   @Test
   @Order(30)
   public void testGetAllVariantsIncludingArchived() {
-    // Arrange — create model + variant, archive the variant
+    // Arrange - create model + variant, archive the variant
     ClothingModelCreateRequestDto modelReq =
         new ClothingModelCreateRequestDto(
             "Variant Archive Test Model", "desc", VALID_BRAND, VALID_CATEGORY, 49.99f);
@@ -915,7 +887,7 @@ public class ClothingIntegrationTests {
         .retrieve()
         .toBodilessEntity();
 
-    // Act — call manager endpoint for variants
+    // Act - call manager endpoint for variants
     ResponseEntity<ClothingVariantAdminResponseDto[]> response =
         client
             .get()
@@ -945,7 +917,7 @@ public class ClothingIntegrationTests {
   @Test
   @Order(31)
   public void testRestoreVariantValid() {
-    // Arrange — create model + variant, archive, then restore variant
+    // Arrange - create model + variant, archive, then restore variant
     ClothingModelCreateRequestDto modelReq =
         new ClothingModelCreateRequestDto(
             "Variant Restore Test Model", "desc", VALID_BRAND, VALID_CATEGORY, 49.99f);
@@ -982,7 +954,7 @@ public class ClothingIntegrationTests {
         .retrieve()
         .toBodilessEntity();
 
-    // Act — restore the variant
+    // Act - restore the variant
     ResponseEntity<ClothingVariantAdminResponseDto> restored =
         client
             .patch()
@@ -996,14 +968,23 @@ public class ClothingIntegrationTests {
     assertNotNull(restored.getBody());
     assertFalse(restored.getBody().isArchived(), "Variant should no longer be archived");
 
-    // Verify accessible at public endpoint
-    ResponseEntity<ClothingVariantResponseDto> publicGet =
+    // Verify accessible at public endpoint via variants list
+    ResponseEntity<ClothingVariantResponseDto[]> publicGet =
         client
             .get()
-            .uri("/api/clothing/" + testModelId + "/variants/" + testVariantId)
+            .uri("/api/clothing/" + testModelId + "/variants")
             .retrieve()
-            .toEntity(ClothingVariantResponseDto.class);
+            .toEntity(ClothingVariantResponseDto[].class);
     assertEquals(HttpStatus.OK, publicGet.getStatusCode());
+    ClothingVariantResponseDto[] variants = publicGet.getBody();
+    assertNotNull(variants);
+    boolean isRestored = false;
+    for (ClothingVariantResponseDto variant : variants) {
+      if (testVariantId.equals(variant.getClothingVariantID())) {
+        isRestored = true;
+      }
+    }
+    assertTrue(isRestored);
 
     // Cleanup
     modelRepository.deleteById(testModelId);
@@ -1012,7 +993,7 @@ public class ClothingIntegrationTests {
   @Test
   @Order(32)
   public void testRestoreVariantNotArchived() {
-    // Arrange — create model + variant (active, not archived)
+    // Arrange - create model + variant (active, not archived)
     ClothingModelCreateRequestDto modelReq =
         new ClothingModelCreateRequestDto(
             "Active Variant Test Model", "desc", VALID_BRAND, VALID_CATEGORY, 49.99f);
@@ -1042,7 +1023,7 @@ public class ClothingIntegrationTests {
     assertEquals(HttpStatus.CREATED, variantCreated.getStatusCode());
     String testVariantId = variantCreated.getBody().getClothingVariantID();
 
-    // Act — try to restore a variant that is NOT archived
+    // Act - try to restore a variant that is NOT archived
     ResponseEntity<String> response =
         client
             .patch()

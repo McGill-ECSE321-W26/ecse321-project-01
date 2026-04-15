@@ -47,20 +47,6 @@ public class PersonController {
     return new EmployeeResponseDto(e);
   }
 
-  @PostMapping("/{id}/roles/customer")
-  @ResponseStatus(HttpStatus.CREATED)
-  public CustomerResponseDto addCustomerRoleToEmployee(
-      @PathVariable String id, @RequestBody AddressDto dto) {
-    Person p = personService.addCustomerRoleToEmployee(id, dto.getAddress());
-    Customer c =
-        p.getRoles().stream()
-            .filter(r -> r instanceof Customer)
-            .map(r -> (Customer) r)
-            .findFirst()
-            .orElseThrow();
-    return new CustomerResponseDto(c);
-  }
-
   @PostMapping("/{id}/roles/employee")
   @ResponseStatus(HttpStatus.CREATED)
   public EmployeeResponseDto addEmployeeRoleToCustomer(@PathVariable String id) {

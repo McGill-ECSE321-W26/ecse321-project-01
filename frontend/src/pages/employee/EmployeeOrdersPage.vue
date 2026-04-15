@@ -61,7 +61,7 @@ async function assignSelf(order: OrderResponseDto) {
 }
 
 function canAssignSelf(order: OrderResponseDto) {
-  if (order.orderStatus !== 'Preparing' || order.employeeID) return false
+  if (order.orderStatus !== 'Preparing' || order.employeeID || !order.customerID) return false
   const customer = customers.value.find(c => c.id === order.customerID)
   if (customer && customer.personId === employeePersonId) return false
   return true

@@ -245,12 +245,6 @@ public class ClothingService {
   }
 
   @Transactional(readOnly = true)
-  public ClothingVariant getVariant(String modelId, String variantId)
-      throws ResponseStatusException {
-    return findVariant(modelId, variantId);
-  }
-
-  @Transactional(readOnly = true)
   public List<ClothingVariant> getVariantsByModel(String modelId) {
     ClothingModel model = findModel(modelId);
     return model.getClothingVariants().stream().filter(v -> !v.getArchived()).toList();

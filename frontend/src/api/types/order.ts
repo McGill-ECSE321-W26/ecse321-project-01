@@ -12,7 +12,7 @@ export interface OrderResponseDto {
   loyaltySaving: number
   totalPrice: number
   address: string
-  customerID: string
+  customerID: string | null
   employeeID: string | null
   itemIDs: string[]
 }

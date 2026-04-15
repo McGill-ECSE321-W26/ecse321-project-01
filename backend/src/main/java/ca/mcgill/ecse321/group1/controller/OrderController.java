@@ -40,14 +40,8 @@ public class OrderController {
   }
 
   @GetMapping
-  public List<OrderResponseDto> getOrders(@RequestParam(required = false) String orderStatus) {
-    List<Order> orders;
-    if (orderStatus == null) {
-      orders = orderService.getOrders();
-    } else {
-      orders = orderService.getOrdersByOrderStatus(orderStatus);
-    }
-
+  public List<OrderResponseDto> getOrders() {
+    List<Order> orders = orderService.getOrders();
     List<OrderResponseDto> ordersDTO = new ArrayList<>();
     for (Order order : orders) {
       ordersDTO.add(new OrderResponseDto(order));
@@ -56,28 +50,18 @@ public class OrderController {
   }
 
   @GetMapping("/customer/{customerID}")
-  public List<OrderResponseDto> getOrdersByCustomerID(
-      @PathVariable String customerID, @RequestParam(required = false) String orderStatus) {
-    List<Order> orders;
-    if (orderStatus == null) {
-      orders = orderService.getOrdersByCustomerID(customerID);
-    } else {
-      orders = orderService.getOrdersByCustomerIDAndStatus(customerID, orderStatus);
+  public List<OrderResponseDto> getOrdersByCustomerID(@PathVariable String customerID) {
+    List<Order> orders = orderService.getOrdersByCustomerID(customerID);
+    List<OrderResponseDto> ordersDTO = new ArrayList<>();
+    for (Order order : orders) {
+      ordersDTO.add(new OrderResponseDto(order));
     }
-
-    return orders.stream().map(OrderResponseDto::new).toList();
+    return ordersDTO;
   }
 
   @GetMapping("/employee/{employeeID}")
-  public List<OrderResponseDto> getOrdersByEmployeeID(
-      @PathVariable String employeeID, @RequestParam(required = false) String orderStatus) {
-    List<Order> orders;
-    if (orderStatus == null) {
-      orders = orderService.getOrdersByEmployeeID(employeeID);
-    } else {
-      orders = orderService.getOrdersByEmployeeIDAndStatus(employeeID, orderStatus);
-    }
-
+  public List<OrderResponseDto> getOrdersByEmployeeID(@PathVariable String employeeID) {
+    List<Order> orders = orderService.getOrdersByEmployeeID(employeeID);
     List<OrderResponseDto> ordersDTO = new ArrayList<>();
     for (Order order : orders) {
       ordersDTO.add(new OrderResponseDto(order));

@@ -1,9 +1,6 @@
 package ca.mcgill.ecse321.group1.integration;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 import ca.mcgill.ecse321.group1.dto.*;
 import ca.mcgill.ecse321.group1.model.*;
@@ -220,40 +217,6 @@ public class CartIntegrationTests {
     assertTrue(items.stream().anyMatch(i -> validItemID.equals(i.getItemID())));
   }
 
-  // ==== GET /api/carts/{customerID}/items/{itemID} ====
-
-  @Test
-  @Order(6)
-  public void testGetItemByInvalidID() {
-    ResponseEntity<String> response =
-        client
-            .get()
-            .uri("/api/carts/" + testCustomer.getRoleID() + "/items/" + INVALID_ID)
-            .retrieve()
-            .toEntity(String.class);
-
-    assertNotNull(response);
-    assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
-  }
-
-  @Test
-  @Order(7)
-  public void testGetItemByValidID() {
-    ResponseEntity<ItemResponseDto> response =
-        client
-            .get()
-            .uri("/api/carts/" + testCustomer.getRoleID() + "/items/" + validItemID)
-            .retrieve()
-            .toEntity(ItemResponseDto.class);
-
-    assertNotNull(response);
-    assertEquals(HttpStatus.OK, response.getStatusCode());
-    ItemResponseDto body = response.getBody();
-    assertNotNull(body);
-    assertEquals(validItemID, body.getItemID());
-    assertEquals(testVariant.getClothingVariantID(), body.getClothingVariantID());
-  }
-
   // ==== GET /api/carts/{customerID} ====
 
   @Test
@@ -385,45 +348,7 @@ public class CartIntegrationTests {
     assertNotNull(response);
     assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
 
-    // Verify it's gone
-    ResponseEntity<String> getResponse =
-        client
-            .get()
-            .uri("/api/carts/" + testCustomer.getRoleID() + "/items/" + validItemID)
-            .retrieve()
-            .toEntity(String.class);
-    assertEquals(HttpStatus.NOT_FOUND, getResponse.getStatusCode());
-  }
-
-  // ==== DELETE /api/carts/{customerID}/items ====
-
-  @Test
-  @Order(15)
-  public void testRemoveAllItemsValid() {
-    // Add a fresh item to the cart first
-    ItemCreateRequestDto dto = new ItemCreateRequestDto();
-    dto.setClothingVariantID(testVariant.getClothingVariantID());
-    dto.setQuantity(1);
-    client
-        .post()
-        .uri("/api/carts/" + testCustomer.getRoleID() + "/items")
-        .contentType(MediaType.APPLICATION_JSON)
-        .body(dto)
-        .retrieve()
-        .toBodilessEntity();
-
-    // Delete all
-    ResponseEntity<Void> response =
-        client
-            .delete()
-            .uri("/api/carts/" + testCustomer.getRoleID() + "/items")
-            .retrieve()
-            .toEntity(Void.class);
-
-    assertNotNull(response);
-    assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
-
-    // Verify cart is empty
+    // Verify it's gone by checking the full cart list
     ResponseEntity<List<ItemResponseDto>> getResponse =
         client
             .get()
@@ -431,6 +356,8 @@ public class CartIntegrationTests {
             .retrieve()
             .toEntity(new ParameterizedTypeReference<>() {});
     assertNotNull(getResponse.getBody());
-    assertTrue(getResponse.getBody().isEmpty());
+    for (ItemResponseDto item : getResponse.getBody()) {
+      assertNotEquals(item.getItemID(), validItemID);
+    }
   }
 }
