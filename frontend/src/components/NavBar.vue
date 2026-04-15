@@ -44,7 +44,7 @@ onMounted(() => {
       Kloth
     </p>
   </div>
-  <nav class="fixed top-0 right-0 z-50">
+  <nav class="top-nav fixed top-0 right-0 z-50">
     <div class="flex justify-end items-center gap-4 px-8 h-16">
       <Button
         variant="ghost"
@@ -102,7 +102,7 @@ onMounted(() => {
             >
               <RouterLink to="/manager">
                 <AppWindowMac class="size-5" />
-                Control Panel
+                Control Panels
               </RouterLink>
             </Button>
             <Button
