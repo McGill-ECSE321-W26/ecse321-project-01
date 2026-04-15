@@ -347,6 +347,9 @@ async function saveVariantEdit(variantId: string) {
       { method: 'PATCH', body: JSON.stringify({ stockQuantity: form.stockQuantity }) },
     )
     await loadDetailVariants(modelId)
+    await loadModels()
+    const updated = models.value.find(m => m.clothingModelID === modelId)
+    if (updated) selectedModel.value = updated
     toast.success('Stock updated.')
   } catch (e: unknown) {
     form.error = e instanceof Error ? e.message : 'Failed to update stock.'

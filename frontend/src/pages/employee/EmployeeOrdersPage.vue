@@ -5,9 +5,11 @@ import { api } from '@/api/client'
 import type { OrderResponseDto } from '@/api/types/order'
 import type { EmployeeResponseDto, CustomerResponseDto } from '@/api/types/person'
 import { useAuthStore } from '@/stores/auth'
+import { useToastStore } from '@/stores/toast'
 
 const router = useRouter()
 const auth = useAuthStore()
+const toast = useToastStore()
 const employeeID = auth.person?.id ?? ''
 const employeePersonId = auth.person?.personId ?? ''
 
@@ -50,7 +52,10 @@ async function assignSelf(order: OrderResponseDto) {
     })
     const index = orders.value.findIndex(o => o.orderID === updated.orderID)
     if (index !== -1) orders.value[index] = updated
-  } catch { /* empty */ } finally {
+    toast.success('Order assigned to you.')
+  } catch (e: unknown) {
+    toast.error(e instanceof Error ? e.message : 'Failed to assign order.')
+  } finally {
     updatingStatus.value = null
   }
 }

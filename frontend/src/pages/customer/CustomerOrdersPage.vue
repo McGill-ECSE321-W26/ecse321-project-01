@@ -5,9 +5,11 @@ import { Pencil, X } from 'lucide-vue-next'
 import { api } from '@/api/client'
 import type { OrderResponseDto } from '@/api/types/order'
 import { useAuthStore } from '@/stores/auth'
+import { useToastStore } from '@/stores/toast'
 
 const router = useRouter()
 const auth = useAuthStore()
+const toast = useToastStore()
 
 const orders = ref<OrderResponseDto[]>([])
 const loading = ref(true)
@@ -39,7 +41,10 @@ async function cancelOrder(order: OrderResponseDto) {
     })
     const index = orders.value.findIndex(o => o.orderID === updated.orderID)
     if (index !== -1) orders.value[index] = updated
-  } catch { /* empty */ } finally {
+    toast.success('Order cancelled.')
+  } catch (e) {
+    toast.error(e instanceof Error ? e.message : 'Failed to cancel order.')
+  } finally {
     updatingOrder.value = null
   }
 }
@@ -59,6 +64,16 @@ function cancelEditDelivery() {
 
 async function saveDeliveryDate(order: OrderResponseDto) {
   if (!editDeliveryValue.value) return
+
+  const originalDate = order.deliveryDate
+    ? new Date(order.deliveryDate).toISOString().slice(0, 10)
+    : ''
+  if (editDeliveryValue.value === originalDate) {
+    editingDelivery.value = null
+    toast.info('No changes to save.')
+    return
+  }
+
   updatingOrder.value = order.orderID
   saveDeliveryError.value = null
   try {
@@ -75,8 +90,10 @@ async function saveDeliveryDate(order: OrderResponseDto) {
     const index = orders.value.findIndex(o => o.orderID === updated.orderID)
     if (index !== -1) orders.value[index] = updated
     editingDelivery.value = null
+    toast.success('Delivery date updated.')
   } catch (e: unknown) {
     saveDeliveryError.value = e instanceof Error ? e.message : 'Failed to update delivery date.'
+    toast.error(saveDeliveryError.value)
   } finally {
     updatingOrder.value = null
   }

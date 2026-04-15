@@ -16,10 +16,12 @@ import {Label} from '@/components/ui/label'
 import {useRouter} from 'vue-router'
 import {useAuthStore} from '@/stores/auth'
 import {api} from '@/api/client'
+import {useToastStore} from '@/stores/toast'
 import type {CustomerResponseDto} from '@/api/types/person'
 
 const auth = useAuthStore()
 const router = useRouter()
+const toast = useToastStore()
 
 const person = computed(() => auth.person as CustomerResponseDto | null)
 
@@ -39,8 +41,10 @@ async function handleDeleteAccount() {
     await api(`/persons/${auth.personId}`, { method: 'DELETE' })
     auth.logout()
     await router.push('/')
+    toast.success('Account deleted.')
   } catch (e) {
     deleteError.value = e instanceof Error ? e.message : 'Something went wrong. Please try again.'
+    toast.error(deleteError.value)
     deleteLoading.value = false
   }
 }
@@ -77,8 +81,10 @@ async function handlePasswordUpdate() {
     oldPassword.value = ''
     newPassword.value = ''
     confirmPassword.value = ''
+    toast.success('Password updated.')
   } catch (e) {
     passwordError.value = e instanceof Error ? e.message : 'Something went wrong. Please try again.'
+    toast.error(passwordError.value)
   }
 }
 
@@ -90,6 +96,12 @@ async function handleAddressUpdate() {
     return
   }
 
+  if (newAddress.value === (person.value?.address ?? '')) {
+    addressDialogOpen.value = false
+    toast.info('No changes to save.')
+    return
+  }
+
   try {
     // Update address
     const updated = await api<CustomerResponseDto>(`/persons/${auth.personId}/address`, {
@@ -98,8 +110,10 @@ async function handleAddressUpdate() {
     })
     auth.updatePerson(updated)
     addressDialogOpen.value = false
+    toast.success('Address updated.')
   } catch (e) {
     addressError.value = e instanceof Error ? e.message : 'Something went wrong. Please try again.'
+    toast.error(addressError.value)
   }
 }
 
