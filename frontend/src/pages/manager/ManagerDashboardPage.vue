@@ -6,6 +6,7 @@ import { api } from '@/api/client.ts'
 import type { CustomerResponseDto, EmployeeResponseDto } from '@/api/types/person.ts'
 import type { OrderResponseDto } from '@/api/types/order.ts'
 
+// Data refs
 const totalOrders = ref<number | null>(null)
 const totalCustomers = ref<number | null>(null)
 const totalEmployees = ref<number | null>(null)
@@ -14,6 +15,7 @@ const pendingOrders = ref(0)
 const cancelOrders = ref(0)
 const recentOrders = ref<OrderResponseDto[]>([])
 
+// Load customers, employees, and orders on load
 onMounted(async () => {
   try {
     const [customers, employees] = await Promise.all([
@@ -39,10 +41,12 @@ onMounted(async () => {
   }
 })
 
+// Chart info
 const PIE_R = 60
 const PIE_CX = 80
 const PIE_CY = 80
 
+// Computed
 const totalOrdersForChart = computed(() =>
   completedOrders.value + pendingOrders.value + cancelOrders.value
 )
@@ -55,6 +59,7 @@ const cancelledFraction = computed(() =>
   totalOrdersForChart.value === 0 ? 0 : cancelOrders.value / totalOrdersForChart.value
 )
 
+// Helpers for chart
 function polarToCartesian(cx: number, cy: number, r: number, angleDeg: number) {
   const rad = ((angleDeg - 90) * Math.PI) / 180
   return { x: cx + r * Math.cos(rad), y: cy + r * Math.sin(rad) }

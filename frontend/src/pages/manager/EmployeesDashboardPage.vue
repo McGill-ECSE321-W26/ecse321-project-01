@@ -8,12 +8,11 @@ import { useToastStore } from '@/stores/toast.ts'
 
 const toast = useToastStore()
 
-
-// ── Data ─────────────────────────────────────────────────────────────────────
+// Data refs
 const employees = ref<EmployeeResponseDto[]>([])
 const loading = ref(true)
 
-
+// View refs
 const currentView = ref<'list' | 'detail'>('list')
 const selectedEmployee = ref<EmployeeResponseDto | null>(null)
 const employeeOrders = ref<OrderResponseDto[]>([])
@@ -24,6 +23,7 @@ const actionId = ref<string | null>(null)
 async function fireEmployee(employee: EmployeeResponseDto) {
   actionId.value = employee.personId
   try {
+    // Find person object for employee
     await api(`/persons/${employee.personId}/roles/employee`, { method: 'DELETE' })
     employees.value = employees.value.filter(e => e.personId !== employee.personId)
     toast.success(`Fired ${employee.email}.`)
@@ -34,7 +34,7 @@ async function fireEmployee(employee: EmployeeResponseDto) {
   }
 }
 
-
+// Load all employees on mount
 onMounted(async () => {
   try {
     employees.value = await api<EmployeeResponseDto[]>('/persons/employees')
@@ -46,10 +46,8 @@ onMounted(async () => {
 })
 
 
-// ── Computed ──────────────────────────────────────────────────────────────────
+// Computed
 const totalEmployees = computed(() => employees.value.length)
-
-
 const employeeOrderCount = computed(() => employeeOrders.value.length)
 const employeeDelivered = computed(() =>
     employeeOrders.value.filter(o => o.orderStatus === 'Delivered').length,
@@ -62,7 +60,7 @@ const employeeCancelled = computed(() =>
 )
 
 
-// ── Open detail ───────────────────────────────────────────────────────────────
+// Detail
 async function openDetail(employee: EmployeeResponseDto) {
   selectedEmployee.value = employee
   currentView.value = 'detail'
@@ -78,13 +76,11 @@ async function openDetail(employee: EmployeeResponseDto) {
   }
 }
 
-
 function formatDate(d: Date | null) {
   if (!d) return '-'
   return new Date(d).toLocaleDateString('en-CA', { year: 'numeric', month: 'short', day: 'numeric' })
 }
 </script>
-
 
 <template>
   <main class="flex-1 px-10 pt-16 pb-20">
@@ -99,7 +95,6 @@ function formatDate(d: Date | null) {
       </p>
       <span class="text-[12px] text-(--text-light) uppercase tracking-widest hidden sm:inline">Employees</span>
     </div>
-
 
     <!-- Stats -->
     <div class="grid grid-cols-1 gap-0 border border-(--text-light) mb-10">
@@ -116,7 +111,6 @@ function formatDate(d: Date | null) {
       </div>
     </div>
 
-
     <!-- ── Employee list ── -->
     <div
       v-if="currentView === 'list'"
@@ -130,7 +124,6 @@ function formatDate(d: Date | null) {
         <span class="text-[10px] uppercase tracking-[0.18em] text-(--text-light)">Actions</span>
       </div>
 
-
       <div
         v-if="loading"
         class="px-6 py-10 text-[13px] text-(--text-light)"
@@ -143,7 +136,6 @@ function formatDate(d: Date | null) {
       >
         No employees found.
       </div>
-
 
       <div
         v-for="(employee, i) in employees"
@@ -176,7 +168,6 @@ function formatDate(d: Date | null) {
       </div>
     </div>
 
-
     <!-- ── Employee detail ── -->
     <div
       v-else-if="currentView === 'detail' && selectedEmployee"
@@ -195,7 +186,6 @@ function formatDate(d: Date | null) {
           Employee <strong class="text-(--text-muted)">{{ selectedEmployee.email }}</strong>
         </span>
       </div>
-
 
       <div class="px-8 pt-8 pb-8">
         <!-- Profile info -->
@@ -223,7 +213,6 @@ function formatDate(d: Date | null) {
             </p>
           </div>
         </div>
-
 
         <!-- Order stats -->
         <div class="grid grid-cols-4 gap-0 border border-(--text-light) mb-8">
@@ -273,7 +262,6 @@ function formatDate(d: Date | null) {
           </div>
         </div>
 
-
         <!-- Orders table -->
         <div
           class="stat-card border border-(--text-light)"
@@ -283,7 +271,6 @@ function formatDate(d: Date | null) {
             <span class="text-[10px] uppercase tracking-[0.2em] text-(--text-light)">Assigned Orders</span>
           </div>
 
-
           <div class="grid grid-cols-[2fr_1.5fr_1fr_1.2fr_2fr] px-6 py-2.5 border-b border-(--text-light)">
             <span class="text-[10px] uppercase tracking-[0.18em] text-(--text-light)">Order ID</span>
             <span class="text-[10px] uppercase tracking-[0.18em] text-(--text-light)">Date</span>
@@ -291,7 +278,6 @@ function formatDate(d: Date | null) {
             <span class="text-[10px] uppercase tracking-[0.18em] text-(--text-light)">Status</span>
             <span class="text-[10px] uppercase tracking-[0.18em] text-(--text-light)">Delivery Date</span>
           </div>
-
 
           <div
             v-if="detailLoading"
@@ -311,7 +297,6 @@ function formatDate(d: Date | null) {
           >
             No orders assigned.
           </div>
-
 
           <div
             v-for="(order, i) in employeeOrders"
@@ -338,22 +323,18 @@ function formatDate(d: Date | null) {
   </main>
 </template>
 
-
 <style scoped>
 .page-heading {
   font-family: 'Lexend Deca', sans-serif;
 }
-
 
 @keyframes fadeUp {
   from { opacity: 0; transform: translateY(20px); }
   to   { opacity: 1; transform: translateY(0); }
 }
 
-
 .stat-card,
 .row-card {
   animation: fadeUp 0.6s ease both;
 }
 </style>
-

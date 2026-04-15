@@ -9,20 +9,18 @@ import { useToastStore } from '@/stores/toast.ts'
 const toast = useToastStore()
 
 
-// ── Data ─────────────────────────────────────────────────────────────────────
+// Data refs
 const customers = ref<CustomerResponseDto[]>([])
 const employees = ref<EmployeeResponseDto[]>([])
 const loading = ref(true)
 
-
+// View refs
 const currentView = ref<'list' | 'detail'>('list')
 const selectedCustomer = ref<CustomerResponseDto | null>(null)
 const customerOrders = ref<OrderResponseDto[]>([])
 const detailLoading = ref(false)
 const detailError = ref<string | null>(null)
 const actionId = ref<string | null>(null)
-
-const employeePersonIds = computed(() => new Set(employees.value.map(e => e.personId)))
 
 async function hireCustomer(customer: CustomerResponseDto) {
   actionId.value = customer.personId
@@ -37,7 +35,7 @@ async function hireCustomer(customer: CustomerResponseDto) {
   }
 }
 
-
+// Get customers and employees on initial load
 onMounted(async () => {
   try {
     [customers.value, employees.value] = await Promise.all([
@@ -51,10 +49,9 @@ onMounted(async () => {
   }
 })
 
-
-// ── Computed ──────────────────────────────────────────────────────────────────
+// Computed
+const employeePersonIds = computed(() => new Set(employees.value.map(e => e.personId)))
 const totalCustomers = computed(() => customers.value.length)
-
 const customerOrderCount = computed(() =>
     customerOrders.value.length,
 )
@@ -65,8 +62,7 @@ const customerOrdersDelivered = computed(() =>
     customerOrders.value.filter(o => o.orderStatus === 'Delivered').length,
 )
 
-
-// ── Open detail ───────────────────────────────────────────────────────────────
+// Detail
 async function openDetail(customer: CustomerResponseDto) {
   selectedCustomer.value = customer
   currentView.value = 'detail'
@@ -87,7 +83,6 @@ function formatDate(d: Date | null) {
 }
 </script>
 
-
 <template>
   <main class="flex-1 px-10 pt-16 pb-20">
     <!-- Heading -->
@@ -101,7 +96,6 @@ function formatDate(d: Date | null) {
       </p>
       <span class="text-[12px] text-(--text-light) uppercase tracking-widest hidden sm:inline">Customers</span>
     </div>
-
 
     <!-- Stats -->
     <div class="grid grid-cols-3 gap-0 border border-(--text-light) mb-10">
@@ -118,7 +112,6 @@ function formatDate(d: Date | null) {
       </div>
     </div>
 
-
     <!-- ── Customer list ── -->
     <div
       v-if="currentView === 'list'"
@@ -133,7 +126,6 @@ function formatDate(d: Date | null) {
         <span class="text-[10px] uppercase tracking-[0.18em] text-(--text-light)">Actions</span>
       </div>
 
-
       <div
         v-if="loading"
         class="px-6 py-10 text-[13px] text-(--text-light)"
@@ -146,7 +138,6 @@ function formatDate(d: Date | null) {
       >
         No customers found.
       </div>
-
 
       <div
         v-for="(customer, i) in customers"
@@ -181,7 +172,6 @@ function formatDate(d: Date | null) {
       </div>
     </div>
 
-
     <!-- ── Customer detail ── -->
     <div
       v-else-if="currentView === 'detail' && selectedCustomer"
@@ -200,7 +190,6 @@ function formatDate(d: Date | null) {
           Customer <strong class="text-(--text-muted)">{{ selectedCustomer.email }}</strong>
         </span>
       </div>
-
 
       <div class="px-8 pt-8 pb-8">
         <!-- Profile info -->
@@ -278,7 +267,6 @@ function formatDate(d: Date | null) {
           </div>
         </div>
 
-
         <!-- Orders table -->
         <div
           class="stat-card border border-(--text-light)"
@@ -288,7 +276,6 @@ function formatDate(d: Date | null) {
             <span class="text-[10px] uppercase tracking-[0.2em] text-(--text-light)">Order History</span>
           </div>
 
-
           <div class="grid grid-cols-[2fr_1.5fr_1fr_1.2fr_1.5fr] px-6 py-2.5 border-b border-(--text-light)">
             <span class="text-[10px] uppercase tracking-[0.18em] text-(--text-light)">Order ID</span>
             <span class="text-[10px] uppercase tracking-[0.18em] text-(--text-light)">Date</span>
@@ -296,7 +283,6 @@ function formatDate(d: Date | null) {
             <span class="text-[10px] uppercase tracking-[0.18em] text-(--text-light)">Status</span>
             <span class="text-[10px] uppercase tracking-[0.18em] text-(--text-light)">Loyalty Saved</span>
           </div>
-
 
           <div
             v-if="detailLoading"
@@ -316,7 +302,6 @@ function formatDate(d: Date | null) {
           >
             No orders found.
           </div>
-
 
           <div
             v-for="(order, i) in customerOrders"
@@ -345,22 +330,18 @@ function formatDate(d: Date | null) {
   </main>
 </template>
 
-
 <style scoped>
 .page-heading {
   font-family: 'Lexend Deca', sans-serif;
 }
-
 
 @keyframes fadeUp {
   from { opacity: 0; transform: translateY(20px); }
   to   { opacity: 1; transform: translateY(0); }
 }
 
-
 .stat-card,
 .row-card {
   animation: fadeUp 0.6s ease both;
 }
 </style>
-

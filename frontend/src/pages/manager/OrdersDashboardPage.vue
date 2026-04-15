@@ -9,26 +9,27 @@ import type { ItemResponseDto } from '@/api/types/item.ts'
 
 const toast = useToastStore()
 
-// ── Data ────────────────────────────────────────────────────────────────────
+// Data refs
 const orders = ref<OrderResponseDto[]>([])
 const employees = ref<EmployeeResponseDto[]>([])
 const loading = ref(true)
 const activeFilter = ref<'all' | 'unassigned'>('all')
 const updatingStatus = ref<string | null>(null)
 
-// view: 'list' | 'detail' | 'assign'
+// View refs: 'list' | 'detail' | 'assign'
 const currentView = ref<'list' | 'detail' | 'assign'>('list')
 const selectedOrder = ref<OrderResponseDto | null>(null)
 
-// detail panel state
+// Detail panel state refs
 const detailItems = ref<ItemResponseDto[]>([])
 const detailLoading = ref(false)
 const detailError = ref<string | null>(null)
 
-// assign panel state
+// Assign panel state refs
 const assigning = ref(false)
 const assignError = ref<string | null>(null)
 
+// Load orders and employees on load
 onMounted(async () => {
   try {
     const [ordersData, employeesData] = await Promise.all([
@@ -44,7 +45,7 @@ onMounted(async () => {
   }
 })
 
-// ── Computed ─────────────────────────────────────────────────────────────────
+// Computed
 const totalOrders = computed(() => orders.value.length)
 const notAssigned = computed(() => orders.value.filter(o => !o.employeeID).length)
 const completed = computed(() => orders.value.filter(o => o.orderStatus === 'Delivered').length)
@@ -55,7 +56,7 @@ const filteredOrders = computed(() =>
     : orders.value,
 )
 
-// ── View order detail ─────────────────────────────────────────────────────────
+// Detail
 async function openDetail(order: OrderResponseDto) {
   selectedOrder.value = order
   currentView.value = 'detail'
@@ -80,7 +81,7 @@ function getVariantInfo(item: ItemResponseDto) {
   }
 }
 
-// ── Assign employee ───────────────────────────────────────────────────────────
+// Assign employee functions
 function openAssign() {
   assignError.value = null
   currentView.value = 'assign'
@@ -93,6 +94,8 @@ function cancelAssign() {
 
 async function assignEmployee(employee: EmployeeResponseDto) {
   if (!selectedOrder.value) return
+
+  // Check if employee is already assigned
   if (selectedOrder.value.employeeID === employee.id) {
     currentView.value = 'detail'
     toast.info('No changes to save.')
@@ -100,6 +103,8 @@ async function assignEmployee(employee: EmployeeResponseDto) {
   }
   assigning.value = true
   assignError.value = null
+
+  // Get order and try to assign
   try {
     const updated = await api<OrderResponseDto>(`/orders/${selectedOrder.value.orderID}`, {
       method: 'PATCH',
@@ -121,13 +126,14 @@ async function assignEmployee(employee: EmployeeResponseDto) {
   }
 }
 
-// ── Update status ─────────────────────────────────────────────────────────────
 async function updateStatus(order: OrderResponseDto, status: string) {
   if (order.orderStatus === status) {
     toast.info('No changes to save.')
     return
   }
   updatingStatus.value = order.orderID
+
+  // Try to update status
   try {
     const updated = await api<OrderResponseDto>(`/orders/${order.orderID}`, {
       method: 'PATCH',
@@ -155,6 +161,7 @@ function formatDate(d: Date | null) {
   return new Date(d).toLocaleDateString('en-CA', { year: 'numeric', month: 'short', day: 'numeric' })
 }
 
+// Get employee name from email
 function getEmployeeName(id: string | null | undefined) {
   if (!id) return '-'
   const emp = employees.value.find(e => e.id === id)

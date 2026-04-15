@@ -27,12 +27,12 @@ import type {
   ClothingCategory,
 } from '@/api/types/clothing'
 
-// ── Data ────────────────────────────────────────────────────────────────────
+// Data
 const models = ref<(ClothingModelListResponseDto | ClothingModelAdminResponseDto)[]>([])
 const loading = ref(true)
 const error = ref<string | null>(null)
 
-// Archive toggle. when true, fetches all models including archived
+// Archive toggle
 const showArchived = ref(false)
 
 // Filters
@@ -44,7 +44,7 @@ const categoryOptions = ['Tops', 'Bottoms', 'Dresses', 'Outerwear', 'Accessories
 const currentView = ref<'list' | 'detail'>('list')
 const selectedModel = ref<ClothingModelListResponseDto | null>(null)
 
-// Detail panel variants
+// Detail panel
 const detailVariants = ref<(ClothingVariantResponseDto | ClothingVariantAdminResponseDto)[]>([])
 const detailVariantsLoading = ref(false)
 const showArchivedVariants = ref(false)
@@ -114,7 +114,7 @@ async function uploadImage(event: Event) {
   }
 }
 
-// ── Computed ────────────────────────────────────────────────────────────────
+// Computed
 const filteredModels = computed(() => {
   if (activeCategory.value === 'All') return models.value
   return models.value.filter(m => m.category === activeCategory.value)
@@ -122,7 +122,7 @@ const filteredModels = computed(() => {
 
 const totalModels = computed(() => models.value.length)
 
-// ── Data Loading ────────────────────────────────────────────────────────────
+// Loading
 async function loadModels() {
   loading.value = true
   error.value = null
@@ -143,7 +143,7 @@ async function loadModels() {
 onMounted(loadModels)
 watch(showArchived, loadModels)
 
-// ── Detailed Edit Panel ─────────────────────────────────────────────────────────────
+// Loading Variants
 async function loadDetailVariants(modelId: string) {
   detailVariantsLoading.value = true
   detailVariants.value = []
@@ -183,18 +183,19 @@ async function openEditDetails(model: ClothingModelListResponseDto) {
     price: model.price,
   }
   modelError.value = null
-  showArchivedVariants.value = false  // reset toggle when opening a new model
+  showArchivedVariants.value = false  // Reset toggle when opening a new model
   currentView.value = 'detail'
   await loadDetailVariants(model.clothingModelID)
 }
 
-// ── Model CRUD ──────────────────────────────────────────────────────────────
+// Model CRUD
 function openCreateModel() {
   modelForm.value = { name: '', description: '', brand: '', category: 'Tops', price: 0 }
   modelError.value = null
   showCreateModelDialog.value = true
 }
 
+// Check form info
 function validateModel(): string | null {
   if (!modelForm.value.name.trim()) return 'Name is required.'
   if (!modelForm.value.brand.trim()) return 'Brand is required.'
@@ -206,6 +207,7 @@ async function createModel() {
   const err = validateModel()
   if (err) { modelError.value = err; return }
 
+  // Try to send to API
   savingModel.value = true
   modelError.value = null
   try {
@@ -241,6 +243,7 @@ async function saveModel() {
     return
   }
 
+  // Try to save changes to API
   savingModel.value = true
   modelError.value = null
   try {
@@ -285,7 +288,7 @@ async function confirmDeleteModel() {
   }
 }
 
-// ── Variant CRUD ────────────────────────────────────────────────────────────
+// Variant CRUD
 function openCreateVariant() {
   variantForm.value = { size: 'S', color: '#000000', imagePath: '', stockQuantity: 0 }
   variantError.value = null
@@ -388,7 +391,7 @@ async function confirmDeleteVariant() {
   }
 }
 
-// ── Restore actions ─────────────────────────────────────────────────────────
+// Restore model (unarchive)
 async function restoreModel(model: ClothingModelAdminResponseDto) {
   try {
     await api<ClothingModelAdminResponseDto>(
@@ -402,6 +405,7 @@ async function restoreModel(model: ClothingModelAdminResponseDto) {
   }
 }
 
+// Restore variant (unarchive)
 async function restoreVariant(variant: ClothingVariantAdminResponseDto) {
   const modelId = selectedModel.value!.clothingModelID
   try {
@@ -417,7 +421,7 @@ async function restoreVariant(variant: ClothingVariantAdminResponseDto) {
   }
 }
 
-// ── Helpers ─────────────────────────────────────────────────────────────────
+// Helper
 function formatPrice(price: number): string {
   return Number.isInteger(price) ? `${price}` : price.toFixed(2)
 }
