@@ -15,6 +15,7 @@ import {
 import { api } from '@/api/client'
 import { useAuthStore } from '@/stores/auth'
 import { useCartStore } from '@/stores/cart'
+import { useToastStore } from '@/stores/toast'
 import type { CustomerResponseDto } from '@/api/types/person'
 import type { ItemResponseDto } from '@/api/types/item'
 import type { CartTotalDto, CompleteCartItem } from '@/api/types/cart'
@@ -23,6 +24,7 @@ import type { OrderResponseDto, OrderCreateRequestDto } from '@/api/types/order'
 const auth = useAuthStore()
 const cart = useCartStore()
 const router = useRouter()
+const toast = useToastStore()
 
 const customerId = computed(() => (auth.person as CustomerResponseDto)?.id)
 const availableLoyaltyPoints = computed(() => (auth.person as CustomerResponseDto)?.loyaltyPoints ?? 0)
@@ -84,8 +86,10 @@ async function updateQuantity(item: CompleteCartItem, delta: number) {
     if (storeItem) storeItem.quantity = newQty
     const totalDto = await api<CartTotalDto>(`/carts/${customerId.value}`)
     cartTotal.value = totalDto.cartTotal
+    toast.success('Cart updated.')
   } catch (e) {
     error.value = e instanceof Error ? e.message : 'Failed to update quantity.'
+    toast.error(error.value)
   }
 }
 
@@ -96,8 +100,10 @@ async function removeItem(itemID: string) {
     cart.items = cart.items.filter(i => i.itemID !== itemID)
     const totalDto = await api<CartTotalDto>(`/carts/${customerId.value}`)
     cartTotal.value = totalDto.cartTotal
+    toast.success('Item removed from cart.')
   } catch (e) {
     error.value = e instanceof Error ? e.message : 'Failed to remove item.'
+    toast.error(error.value)
   }
 }
 
@@ -127,9 +133,11 @@ async function placeOrder() {
     auth.updatePerson(updated)
     cart.clearCart()
     checkoutOpen.value = false
-    router.push({ name: 'shop' })
+    await router.push({name: 'shop'})
+    toast.success('Order placed.')
   } catch (e) {
     checkoutError.value = e instanceof Error ? e.message : 'Failed to place order.'
+    toast.error(checkoutError.value)
   } finally {
     checkoutLoading.value = false
   }
@@ -161,13 +169,6 @@ onMounted(loadCart)
         </div>
         <Skeleton class="h-4 w-12" />
       </div>
-    </div>
-
-    <div
-      v-else-if="error"
-      class="rounded-md bg-red-50 border border-red-200 p-4 text-sm text-red-800"
-    >
-      {{ error }}
     </div>
 
     <div

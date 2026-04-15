@@ -4,14 +4,14 @@ import LoginPage from '../pages/LoginPage.vue'
 import RegisterPage from '../pages/RegisterPage.vue'
 import NotFoundPage from '../pages/NotFoundPage.vue'
 import AccountPage from '../pages/AccountPage.vue'
-import CartPage from '../pages/CartPage.vue'
+import CartPage from '../pages/customer/CartPage.vue'
 import ShopPage from '../pages/ShopPage.vue'
 import OrdersDashboardPage from '../pages/manager/OrdersDashboardPage.vue'
-import CustomerOrdersPage from '../pages/CustomerOrdersPage.vue'
+import CustomerOrdersPage from '../pages/customer/CustomerOrdersPage.vue'
 import OrderDetailPage from '../pages/OrderDetailPage.vue'
 import ManagerDashboardPage from '../pages/manager/ManagerDashboardPage.vue'
 import ManagerLayout from '../components/ManagerLayout.vue'
-import ManagerInventoryPage from '../pages/manager/ManagerInventoryPage.vue'
+import InventoryDashboardPage from '../pages/manager/InventoryDashboardPage.vue'
 import EmployeeOrdersPage from '../pages/employee/EmployeeOrdersPage.vue'
 import CustomersDashboardPage from "@/pages/manager/CustomersDashboardPage.vue";
 import EmployeesDashboardPage from "@/pages/manager/EmployeesDashboardPage.vue";
@@ -44,8 +44,7 @@ const router = createRouter({
         { path: 'orders', name: 'manager-orders',    component: OrdersDashboardPage },
         { path: 'customers', name: 'manager-customers',    component: CustomersDashboardPage },
         { path: 'employees', name: 'manager-employees',    component: EmployeesDashboardPage },
-
-          { path: 'inventory', name: 'manager-inventory', component: ManagerInventoryPage },
+        { path: 'inventory', name: 'manager-inventory', component: InventoryDashboardPage },
       ],
     },
     { path: '/:pathMatch(.*)*', name: 'not-found', component: NotFoundPage },
