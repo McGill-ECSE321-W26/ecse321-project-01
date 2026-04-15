@@ -133,7 +133,7 @@ async function placeOrder() {
     auth.updatePerson(updated)
     cart.clearCart()
     checkoutOpen.value = false
-    router.push({ name: 'shop' })
+    await router.push({name: 'shop'})
     toast.success('Order placed.')
   } catch (e) {
     checkoutError.value = e instanceof Error ? e.message : 'Failed to place order.'
