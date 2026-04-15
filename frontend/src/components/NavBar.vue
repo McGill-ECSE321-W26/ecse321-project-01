@@ -96,7 +96,7 @@ onMounted(() => {
           <nav class="flex flex-col gap-2 p-4">
             <Button
               variant="ghost"
-              :class="['justify-start gap-3', (auth.role !== 'Manager')?'hidden':null]"
+              :class="['justify-start gap-3 hover:bg-(--card-hover)', (auth.role !== 'Manager')?'hidden':null]"
               as-child
               @click="sidebarOpen = false"
             >
@@ -107,7 +107,7 @@ onMounted(() => {
             </Button>
             <Button
               variant="ghost"
-              :class="['justify-start gap-3', (auth.role !== 'Employee')?'hidden':null]"
+              :class="['justify-start gap-3 hover:bg-(--card-hover)', (auth.role !== 'Employee')?'hidden':null]"
               as-child
               @click="sidebarOpen = false"
             >
@@ -118,7 +118,7 @@ onMounted(() => {
             </Button>
             <Button
               variant="ghost"
-              class="justify-start gap-3"
+              class="justify-start gap-3 hover:bg-(--card-hover)"
               as-child
               @click="sidebarOpen = false"
             >
@@ -130,7 +130,7 @@ onMounted(() => {
             <Button
               v-if="auth.role === 'Customer'"
               variant="ghost"
-              class="justify-start gap-3"
+              class="justify-start gap-3 hover:bg-(--card-hover)"
               as-child
               @click="sidebarOpen = false"
             >
@@ -142,7 +142,7 @@ onMounted(() => {
             <Button
               v-if="auth.role === 'Customer'"
               variant="ghost"
-              class="justify-start gap-3"
+              class="justify-start gap-3 hover:bg-(--card-hover)"
               as-child
               @click="sidebarOpen = false"
             >
@@ -153,7 +153,7 @@ onMounted(() => {
             </Button>
             <Button
               variant="ghost"
-              class="justify-start gap-3"
+              class="justify-start gap-3 hover:bg-(--card-hover)"
               as-child
               @click="sidebarOpen = false"
             >
