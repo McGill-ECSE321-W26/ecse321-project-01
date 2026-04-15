@@ -32,7 +32,7 @@ const models = ref<(ClothingModelListResponseDto | ClothingModelAdminResponseDto
 const loading = ref(true)
 const error = ref<string | null>(null)
 
-// Archive toggle — when true, fetches all models including archived
+// Archive toggle. when true, fetches all models including archived
 const showArchived = ref(false)
 
 // Filters
@@ -44,7 +44,7 @@ const categoryOptions = ['Tops', 'Bottoms', 'Dresses', 'Outerwear', 'Accessories
 const currentView = ref<'list' | 'detail'>('list')
 const selectedModel = ref<ClothingModelListResponseDto | null>(null)
 
-// Detail panel — variants
+// Detail panel variants
 const detailVariants = ref<(ClothingVariantResponseDto | ClothingVariantAdminResponseDto)[]>([])
 const detailVariantsLoading = ref(false)
 const showArchivedVariants = ref(false)

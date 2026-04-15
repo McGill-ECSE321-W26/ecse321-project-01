@@ -70,9 +70,9 @@ public class DataSeeder {
     Customer cust5 =
         createCustomer("alex.tremblay@example.com", "654 Cedar Dr, Brossard, QC J4Y 1M8", 0);
 
-    // Clothing Models & Variants — each model gets a variant for every size (S M L XL) per color
+    // Clothing Models & Variants. each model gets a variant for every size (S M L XL) per color
 
-    // Classic T-Shirt — white, black, cream
+    // Classic T-Shirt :white, black, cream
     ClothingModel tshirt =
         createClothingModel(
             "Classic Boxy T-Shirt",
@@ -232,7 +232,7 @@ public class DataSeeder {
         20,
         "https://www.privatewhitevc.com/cdn/shop/files/THEJACKSPOLO-ALABASTER.png?v=1751203712");
 
-    // Bomber Jacket — olive, black
+    // Bomber Jacket: olive, black
     ClothingModel jacket =
         createClothingModel(
             "Polar Fleece Jacket",
@@ -256,7 +256,7 @@ public class DataSeeder {
     ClothingVariant jacketBlackL = jacketBlackAll[2], jacketBlackXL = jacketBlackAll[3];
 
     // Shirts
-    // Shirt — gray, beige, light blue
+    // Shirt: gray, beige, light blue
     ClothingModel shirt =
         createClothingModel(
             "Shirt",
@@ -326,7 +326,7 @@ public class DataSeeder {
         20,
         "https://www.privatewhitevc.com/cdn/shop/files/ThePSReversibleSuedeBomber-Brown-toNavy.png?v=1752082510");
 
-    // Cargo Shorts — khaki, black
+    // Cargo Shorts: khaki, black
     ClothingModel shorts =
         createClothingModel(
             "Cargo Shorts",
@@ -351,7 +351,7 @@ public class DataSeeder {
             "https://imagescdn.simons.ca/images/20546/227047/1/A2_1.jpg?__=11");
     ClothingVariant shortsBlackM = shortsBlackAll[1];
 
-    // Limited Edition Tee — white (mostly out-of-stock for UI edge-case testing)
+    // Limited Edition Tee: white (mostly out-of-stock for UI edge-case testing)
     ClothingModel rareItem =
         createClothingModel(
             "Limited Edition Tee",
@@ -385,7 +385,7 @@ public class DataSeeder {
         0,
         "https://media.weekday.com/assets/003/e7/1f/e71fcaac58a6bb80a055bdb6b40a5cdbae10d39a_xxl-1.jpg?imwidth=1600");
 
-    // Relaxed Cargo Trousers — tan, dark, taupe
+    // Relaxed Cargo Trousers: tan, dark, taupe
     ClothingModel cargoTrousers =
         createClothingModel(
             "Relaxed Cargo Trousers",
@@ -413,7 +413,7 @@ public class DataSeeder {
             "https://imagescdn.simons.ca/images/20546/228072/31/A2_1.jpg?__=10");
     ClothingVariant cargoTrousersOliveL = cargoTrousersOliveAll[2];
 
-    // Midi Dress — red, white
+    // Midi Dress: red, white
     ClothingModel midiDress =
         createClothingModel(
             "Midi Dress",
@@ -432,7 +432,7 @@ public class DataSeeder {
         20,
         "https://static.massimodutti.net/assets/public/84c3/c721/24da4a49b9f9/f82ebee55677/06620748250-o1/06620748250-o1.jpg?ts=1774953540327&w=1440&f=auto");
 
-    // Pleated Wide-Leg Pants — tan, black, navy
+    // Pleated Wide-Leg Pants: tan, black, navy
     ClothingModel wideLegPants =
         createClothingModel(
             "Pleated Wide-Leg Pants",
@@ -461,7 +461,7 @@ public class DataSeeder {
         "https://imagescdn.simons.ca/images/20069/26110/41/A2_1.jpg?__=9");
 
     // Denim Jacket
-    // Indigo Denim Jacket — indigo
+    // Indigo Denim Jacket : indigo
     ClothingModel indigoDenimJacket =
         createClothingModel(
             "Indigo Denim Jacket",
@@ -475,7 +475,7 @@ public class DataSeeder {
         20,
         "https://media.weekday.com/assets/003/f1/14/f11405a369525a4d2a4337807b24f97dcfcafaf6_xxl-1.jpg?imwidth=1600");
 
-    // Linen Blend Camp Shirt — Taupe, cream, black
+    // Linen Blend Camp Shirt: Taupe, cream, black
     ClothingModel campShirt =
         createClothingModel(
             "Linen Blend Camp Shirt",
@@ -504,7 +504,7 @@ public class DataSeeder {
         15,
         "https://i.pinimg.com/1200x/aa/2f/e9/aa2fe9071a9e77654f4b9ac97d8ad2ec.jpg");
 
-    // Nylon Crossbody Bag — black, beige
+    // Nylon Crossbody Bag : black, beige
     ClothingModel crossbodyBag =
         createClothingModel(
             "Nylon Crossbody Bag",
@@ -526,7 +526,7 @@ public class DataSeeder {
             10,
             "https://cdn.media.amplience.net/i/harryrosen/20165957070-2?maxW=3840&fmt=auto");
     ClothingVariant crossbodyOliveS = crossbodyOliveAll[0];
-    // Linen Pants — baby blue, cream
+    // Linen Pants: baby blue, cream
     ClothingModel linenPants =
         createClothingModel(
             "Linen Pants",
@@ -545,7 +545,7 @@ public class DataSeeder {
         20,
         "https://imagescdn.simons.ca/images/20069/26100/14/A2_1.jpg?__=9");
 
-    // Puffer Jacket — black
+    // Puffer Jacket: black
     ClothingModel pufferJacket =
         createClothingModel(
             "Leather Jacket",
@@ -559,7 +559,7 @@ public class DataSeeder {
         20,
         "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fmensflair.com%2Fwp-content%2Fuploads%2F2023%2F07%2Fprivate-white-twin-track-brown.jpg&f=1&nofb=1&ipt=444be83c218c9cc448f22f8ef6140ae23116e36f6d83cbc1445dd9a7d160e16e");
 
-    // Layered Coach Jacket — navy, black
+    // Layered Coach Jacket: navy, black
     ClothingModel coachJacket =
         createClothingModel(
             "Layered Coach Jacket",
@@ -582,7 +582,7 @@ public class DataSeeder {
             "https://static.massimodutti.net/assets/public/6e82/4d4c/a2cb4feda5c8/5dade8157a53/03127433717-o1/03127433717-o1.jpg?ts=1775050514551&w=1440&f=auto");
     ClothingVariant coachBlackM = coachBlackAll[1];
 
-    // Retro Sunglasses — light blue, light green
+    // Retro Sunglasses: light blue, light green
     ClothingModel retroSunglasses =
         createClothingModel(
             "Retro Sunglasses",

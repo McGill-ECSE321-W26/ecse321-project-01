@@ -13,8 +13,8 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfiguration;
 
 // Configures Spring Security for stateless JWT authentication
-// - CSRF is disabled because we use stateless tokens (no cookies/sessions to protect)
-// - Sessions are disabled (STATELESS) every request must carry its own JWT
+// CSRF is disabled because we use stateless tokens (no cookies/sessions to protect)
+// Sessions are disabled (STATELESS) every request must carry its own JWT
 @Configuration
 @EnableMethodSecurity
 @Profile("!seed")

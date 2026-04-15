@@ -10,6 +10,9 @@ import { useToastStore } from '@/stores/toast'
 const router = useRouter()
 const auth = useAuthStore()
 const toast = useToastStore()
+
+// Extract both the employee's business ID (used in order records) and their
+// person ID
 const employeeID = auth.person?.id ?? ''
 const employeePersonId = auth.person?.personId ?? ''
 
@@ -20,6 +23,9 @@ const loading = ref(true)
 const activeFilter = ref<'all' | 'available' | 'mine'>('all')
 const updatingStatus = ref<string | null>(null)
 
+
+// orders are shown as soon as they arrive (behind the loading flag), while employees and customers are
+// supplementary and failing to load them should not block the page.
 onMounted(async () => {
   try {
     orders.value = await api<OrderResponseDto[]>('/orders')
@@ -34,12 +40,15 @@ onMounted(async () => {
   } catch { /* empty */ }
 })
 
+// Returns the subset of orders matching the active filter tab
 function filteredOrders() {
   if (activeFilter.value === 'available') return orders.value.filter(o => o.orderStatus === 'Preparing' && !o.employeeID)
   if (activeFilter.value === 'mine') return orders.value.filter(o => o.employeeID === employeeID)
   return orders.value
 }
 
+// Assigns the current employee to an unowned Preparing order via a PATCH,
+// then replaces the stale list entry with the server's response.
 async function assignSelf(order: OrderResponseDto) {
   updatingStatus.value = order.orderID
   try {
@@ -60,6 +69,7 @@ async function assignSelf(order: OrderResponseDto) {
   }
 }
 
+// Returns true only if the employee is permitted to claim this order.
 function canAssignSelf(order: OrderResponseDto) {
   if (order.orderStatus !== 'Preparing' || order.employeeID || !order.customerID) return false
   const customer = customers.value.find(c => c.id === order.customerID)
@@ -67,11 +77,13 @@ function canAssignSelf(order: OrderResponseDto) {
   return true
 }
 
+// Formats a nullable date into a readable locale string, returning '-' for nulls.
 function formatDate(d: Date | null) {
   if (!d) return '-'
   return new Date(d).toLocaleDateString('en-CA', { year: 'numeric', month: 'short', day: 'numeric' })
 }
 
+// Derives a display name for an employee from their email address
 function getEmployeeName(id: string | null | undefined) {
   if (!id) return '-'
   const emp = employees.value.find(e => e.id === id)

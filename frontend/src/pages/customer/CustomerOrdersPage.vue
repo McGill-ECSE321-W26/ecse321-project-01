@@ -11,13 +11,17 @@ const router = useRouter()
 const auth = useAuthStore()
 const toast = useToastStore()
 
-const orders = ref<OrderResponseDto[]>([])
+const orders = ref<OrderResponseDto[]>([]) // Customer's order history
 const loading = ref(true)
 const updatingOrder = ref<string | null>(null)
+
+
+// Delivery date inline-edit state
 const editingDelivery = ref<string | null>(null)
 const editDeliveryValue = ref<string>('')
 const saveDeliveryError = ref<string | null>(null)
 
+// Fetch all orders for the authenticated customer on mount
 onMounted(async () => {
   try {
     const customerID = auth.person?.id
@@ -28,6 +32,8 @@ onMounted(async () => {
   }
 })
 
+// PATCHes the order status to 'Cancelled', then replaces the stale entry
+// in the local list with the updated object returned by the server.
 async function cancelOrder(order: OrderResponseDto) {
   updatingOrder.value = order.orderID
   try {
@@ -39,6 +45,8 @@ async function cancelOrder(order: OrderResponseDto) {
         orderStatus: 'Cancelled',
       }),
     })
+
+    // Swap the old order entry with the server's response in-place
     const index = orders.value.findIndex(o => o.orderID === updated.orderID)
     if (index !== -1) orders.value[index] = updated
     toast.success('Order cancelled.')
@@ -49,22 +57,28 @@ async function cancelOrder(order: OrderResponseDto) {
   }
 }
 
+// Opens the inline date editor for the given order, pre-filled with its current delivery date.
 function startEditDelivery(order: OrderResponseDto) {
   editingDelivery.value = order.orderID
+  // Normalise to YYYY-MM-DD for the <input type="date"> binding
   editDeliveryValue.value = order.deliveryDate
     ? new Date(order.deliveryDate).toISOString().slice(0, 10)
     : ''
 }
 
+// Discards any unsaved changes and closes the inline editor.
 function cancelEditDelivery() {
   editingDelivery.value = null
   editDeliveryValue.value = ''
   saveDeliveryError.value = null
 }
 
+// Persists the edited delivery date. Skips the network call if the value
+// hasn't actually changed, to avoid unnecessary mutations.
 async function saveDeliveryDate(order: OrderResponseDto) {
   if (!editDeliveryValue.value) return
 
+  // Normalise the existing date to the same format for a reliable comparison
   const originalDate = order.deliveryDate
     ? new Date(order.deliveryDate).toISOString().slice(0, 10)
     : ''
@@ -87,6 +101,7 @@ async function saveDeliveryDate(order: OrderResponseDto) {
         orderStatus: order.orderStatus,
       }),
     })
+    // Replace the stale list entry with the server's canonical response
     const index = orders.value.findIndex(o => o.orderID === updated.orderID)
     if (index !== -1) orders.value[index] = updated
     editingDelivery.value = null
@@ -99,11 +114,13 @@ async function saveDeliveryDate(order: OrderResponseDto) {
   }
 }
 
+// format the date to be uniform
 function formatDate(date: Date | null) {
   if (!date) return '-'
   return new Date(date).toLocaleDateString('en-CA', { year: 'numeric', month: 'short', day: 'numeric' })
 }
 
+// makes sure that order is not cancelled or delivered before allowing modifications
 function canModify(order: OrderResponseDto) {
   return order.orderStatus !== 'Cancelled' && order.orderStatus !== 'Delivered'
 }

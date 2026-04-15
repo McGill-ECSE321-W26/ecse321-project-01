@@ -21,18 +21,20 @@ import type { ItemResponseDto } from '@/api/types/item'
 import type { CartTotalDto, CompleteCartItem } from '@/api/types/cart'
 import type { OrderResponseDto, OrderCreateRequestDto } from '@/api/types/order'
 
+// stores and routers
 const auth = useAuthStore()
 const cart = useCartStore()
 const router = useRouter()
 const toast = useToastStore()
 
+// Extract the customer ID and loyalty points from the authenticated user
 const customerId = computed(() => (auth.person as CustomerResponseDto)?.id)
 const availableLoyaltyPoints = computed(() => (auth.person as CustomerResponseDto)?.loyaltyPoints ?? 0)
 
-const items = ref<CompleteCartItem[]>([])
-const cartTotal = ref(0)
-const loading = ref(true)
-const error = ref('')
+const items = ref<CompleteCartItem[]>([]) // Enriched cart items displayed in the UI
+const cartTotal = ref(0) // keeps track of current cart total in dollars
+const loading = ref(true) // checks if cart is loading
+const error = ref('') // general error messages
 
 // Checkout dialog state
 const checkoutOpen = ref(false)
@@ -41,12 +43,15 @@ const usedLoyaltyPoints = ref(0)
 const checkoutError = ref('')
 const checkoutLoading = ref(false)
 
+// Earliest selectable delivery date is tomorrow
 const minDeliveryDate = computed(() => {
   const tomorrow = new Date()
   tomorrow.setDate(tomorrow.getDate() + 1)
   return tomorrow.toISOString().split('T')[0]
 })
 
+// Fetches cart items and the current total in parallel, then maps raw API
+// responses into the richer CompleteCartItem shape used by the template.
 async function loadCart() {
   loading.value = true
   error.value = ''
@@ -56,7 +61,10 @@ async function loadCart() {
       api<CartTotalDto>(`/carts/${customerId.value}`),
     ])
 
+    // Sync raw items into the global cart store
     cart.items = rawItems
+
+    // Transform API response into the UI-friendly shape
     items.value = rawItems.map(item => ({
       itemID: item.itemID,
       quantity: item.quantity,
@@ -76,14 +84,20 @@ async function loadCart() {
   }
 }
 
+// Increments or decrements an item's quantity by `delta`. Refuses to go below 1.
+// Refreshes the cart total after a successful PATCH. Asynch function
 async function updateQuantity(item: CompleteCartItem, delta: number) {
   const newQty = item.quantity + delta
   if (newQty < 1) return
   try {
     await api(`/carts/${customerId.value}/items/${item.itemID}`, { method: 'PATCH', body: JSON.stringify({ quantity: newQty }) })
+
+    // Update quantity optimistically in local state and the global store
     item.quantity = newQty
     const storeItem = cart.items.find(i => i.itemID === item.itemID)
     if (storeItem) storeItem.quantity = newQty
+
+    // Re-fetch total since the backend owns the pricing logic
     const totalDto = await api<CartTotalDto>(`/carts/${customerId.value}`)
     cartTotal.value = totalDto.cartTotal
     toast.success('Cart updated.')
@@ -93,11 +107,17 @@ async function updateQuantity(item: CompleteCartItem, delta: number) {
   }
 }
 
+// Deletes an item from the cart both on the server and in local state,
+// then refreshes the cart total.
 async function removeItem(itemID: string) {
   try {
     await api(`/carts/${customerId.value}/items/${itemID}`, { method: 'DELETE' })
+
+    // Filter the item out of both the local list and the global store
     items.value = items.value.filter(i => i.itemID !== itemID)
     cart.items = cart.items.filter(i => i.itemID !== itemID)
+
+    // Re-fetch total after removal
     const totalDto = await api<CartTotalDto>(`/carts/${customerId.value}`)
     cartTotal.value = totalDto.cartTotal
     toast.success('Item removed from cart.')
@@ -107,6 +127,7 @@ async function removeItem(itemID: string) {
   }
 }
 
+// Resets checkout form fields to their defaults before opening the dialog.
 function openCheckout() {
   deliveryDate.value = minDeliveryDate.value
   usedLoyaltyPoints.value = 0
@@ -114,6 +135,8 @@ function openCheckout() {
   checkoutOpen.value = true
 }
 
+// Validates the form, POSTs the order, refreshes auth with updated loyalty points,
+// clears the cart, and redirects the customer to the shop on success.
 async function placeOrder() {
   if (!deliveryDate.value) {
     checkoutError.value = 'Please select a delivery date.'

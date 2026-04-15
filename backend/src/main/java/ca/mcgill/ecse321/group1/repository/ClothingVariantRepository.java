@@ -7,6 +7,6 @@ public interface ClothingVariantRepository extends CrudRepository<ClothingVarian
 
   ClothingVariant findByClothingVariantIDAndArchivedFalse(String id);
 
-  // Unfiltered — includes archived records (for manager-level lookups)
+  //  includes archived records (for manager-level lookups)
   ClothingVariant findByClothingVariantID(String clothingVariantID);
 }

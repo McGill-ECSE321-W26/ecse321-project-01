@@ -34,6 +34,9 @@ const deleteDialogOpen = ref(false)
 const deleteLoading = ref(false)
 const deleteError = ref('')
 
+
+// Deletes the account, clears auth state, and redirects to the homepage.
+// On failure, the dialog stays open so the user can retry or dismiss.
 async function handleDeleteAccount() {
   deleteError.value = ''
   deleteLoading.value = true
@@ -49,23 +52,29 @@ async function handleDeleteAccount() {
   }
 }
 
+// Seeded from the current person's address so the input is pre-filled on open
 const newAddress = ref(person.value?.address ?? '')
 const addressError = ref('')
 const addressDialogOpen = ref(false)
 
+// Client-side validation runs before the network call to give instant feedback.
+// All three fields are cleared on success so the dialog reopens in a clean state.
 async function handlePasswordUpdate() {
   passwordError.value = ''
 
+  // all fields must be filled
   if (!oldPassword.value || !newPassword.value || !confirmPassword.value) {
     passwordError.value = 'Please fill in all fields.'
     return
   }
 
+  // confirmation must match the new password
   if (newPassword.value !== confirmPassword.value) {
     passwordError.value = 'New passwords do not match.'
     return
   }
 
+  // new password must actually differ from the old one
   if (oldPassword.value === newPassword.value) {
     passwordError.value = 'New password must be different from the current password.'
     return
@@ -77,6 +86,7 @@ async function handlePasswordUpdate() {
       method: 'PATCH',
       body: JSON.stringify({oldPassword: oldPassword.value, newPassword: newPassword.value}),
     })
+    // Reset form and close dialog on success
     passwordDialogOpen.value = false
     oldPassword.value = ''
     newPassword.value = ''
@@ -88,14 +98,18 @@ async function handlePasswordUpdate() {
   }
 }
 
+// Skips the network call entirely if the address hasn't changed,
+// then syncs the auth store with the server's response on success.
 async function handleAddressUpdate() {
   addressError.value = ''
 
+  // address field must not be empty
   if (!newAddress.value) {
     addressError.value = 'Please enter an address.'
     return
   }
 
+  // Early-exit if the value is identical to the current address
   if (newAddress.value === (person.value?.address ?? '')) {
     addressDialogOpen.value = false
     toast.info('No changes to save.')
@@ -108,6 +122,8 @@ async function handleAddressUpdate() {
       method: 'PATCH',
       body: JSON.stringify({address: newAddress.value}),
     })
+    // Push the server's canonical response into the auth store so all
+    // computed values derived from `auth.person` update reactively
     auth.updatePerson(updated)
     addressDialogOpen.value = false
     toast.success('Address updated.')
@@ -117,6 +133,7 @@ async function handleAddressUpdate() {
   }
 }
 
+// Derives a display name for an employee from their email address
 function getName(email: string | undefined) {
   if (!email) return ''
   return email.substring(0, email.indexOf('@')).replace('.', ' ')
